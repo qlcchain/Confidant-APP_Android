@@ -21,6 +21,23 @@
             android:layout_height="@dimen/x92"
             android:layout_centerVertical="true"
             app:imageButtonTextSize="20" />
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/unseen"
+            android:layout_width="wrap_content"
+            android:minWidth="@dimen/x30"
+            android:paddingLeft="@dimen/x5"
+            android:paddingRight="@dimen/x5"
+            android:layout_height="@dimen/x30"
+            android:text=""
+            android:layout_alignParentRight="true"
+            android:includeFontPadding="false"
+            android:layout_marginRight="0px"
+            android:layout_marginTop="0px"
+            android:background="@drawable/new_email_flag_bg"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="9sp" />
 
     </RelativeLayout>
     <TextView

@@ -15,6 +15,7 @@ public class EmailMessageEntity implements Parcelable{
     private Long id;
 
     private String account;
+    private String msgId;
     private String subject;
     private String from;
     private String to;
@@ -35,32 +36,6 @@ public class EmailMessageEntity implements Parcelable{
     }
 
 
-
-    @Generated(hash = 1976245364)
-    public EmailMessageEntity(Long id, String account, String subject, String from,
-            String to, String cc, String bcc, String date, boolean isSeen,
-            String priority, boolean isReplySign, long size,
-            boolean isContainerAttachment, int attachmentCount, String content,
-            String contentText) {
-        this.id = id;
-        this.account = account;
-        this.subject = subject;
-        this.from = from;
-        this.to = to;
-        this.cc = cc;
-        this.bcc = bcc;
-        this.date = date;
-        this.isSeen = isSeen;
-        this.priority = priority;
-        this.isReplySign = isReplySign;
-        this.size = size;
-        this.isContainerAttachment = isContainerAttachment;
-        this.attachmentCount = attachmentCount;
-        this.content = content;
-        this.contentText = contentText;
-    }
-
-
     protected EmailMessageEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -68,6 +43,7 @@ public class EmailMessageEntity implements Parcelable{
             id = in.readLong();
         }
         account = in.readString();
+        msgId = in.readString();
         subject = in.readString();
         from = in.readString();
         to = in.readString();
@@ -82,6 +58,31 @@ public class EmailMessageEntity implements Parcelable{
         attachmentCount = in.readInt();
         content = in.readString();
         contentText = in.readString();
+    }
+
+
+    @Generated(hash = 635971716)
+    public EmailMessageEntity(Long id, String account, String msgId, String subject, String from,
+            String to, String cc, String bcc, String date, boolean isSeen, String priority,
+            boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount,
+            String content, String contentText) {
+        this.id = id;
+        this.account = account;
+        this.msgId = msgId;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.date = date;
+        this.isSeen = isSeen;
+        this.priority = priority;
+        this.isReplySign = isReplySign;
+        this.size = size;
+        this.isContainerAttachment = isContainerAttachment;
+        this.attachmentCount = attachmentCount;
+        this.content = content;
+        this.contentText = contentText;
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -106,6 +107,14 @@ public class EmailMessageEntity implements Parcelable{
 
     public String getAccount() {
         return account;
+    }
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
     }
 
     public void setAccount(String account) {
@@ -265,6 +274,7 @@ public class EmailMessageEntity implements Parcelable{
             dest.writeLong(id);
         }
         dest.writeString(account);
+        dest.writeString(msgId);
         dest.writeString(subject);
         dest.writeString(from);
         dest.writeString(to);

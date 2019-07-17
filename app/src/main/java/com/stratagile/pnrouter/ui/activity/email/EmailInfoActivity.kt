@@ -5,9 +5,18 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.*
+import android.widget.Toast
 import com.pawegio.kandroid.setHeight
+import com.smailnet.eamil.Callback.GetAttachCallback
+import com.smailnet.eamil.Callback.GetReceiveCallback
+import com.smailnet.eamil.EmailMessage
+import com.smailnet.eamil.EmailReceiveClient
+import com.smailnet.eamil.MailAttachment
+import com.smailnet.eamil.Utils.MailUtil
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -21,8 +30,10 @@ import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.DateUtil
 import kotlinx.android.synthetic.main.email_info_view.*
+import java.io.ByteArrayInputStream
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 /**
  * @author zl
@@ -47,9 +58,43 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
     override fun initData() {
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
+        var msgId = emailMeaasgeData!!.msgId
         var to = emailMeaasgeData!!.to
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
+        var attachCount = emailMeaasgeData!!.attachmentCount
+        if(attachCount > 0)
+        {
+            var  attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.loadAll()
+            var aa = ""
+            var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+            var i = 0;
+            for (accach in attachList)
+            {
+                var inputStream = ByteArrayInputStream(accach.data);
+                var mailAttachment = MailAttachment(accach.name,inputStream,accach.msgId,accach.account);
+                listAccath.add(mailAttachment)
+            }
+            //MailUtil.saveFile(listAccath)
+           Islands.circularProgress(this)
+                    .setCancelable(false)
+                    .setMessage("附件下载中...")
+                    .show()
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        progressDialog.dismiss()
+                                    }
+                                    override fun gainFailure(errorMsg: String) {
+                                        progressDialog.dismiss()
+                                        Toast.makeText(this@EmailInfoActivity, "附件下载失败", Toast.LENGTH_SHORT).show()
+                                        Log.e("oversee", "错误日志：$errorMsg")
+                                    }
+                                },"INBOX",msgId)
+                    }
+        }
 
         var titleStr = intent.getStringExtra("title")
         title.text = getString(R.string.Inbox)

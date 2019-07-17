@@ -16,13 +16,12 @@
 package com.smailnet.eamil;
 
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.ConstUtli;
-import com.smailnet.eamil.Utils.ContentUtil;
+import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
 import com.sun.mail.imap.IMAPFolder;
@@ -211,7 +210,7 @@ class EmailCore {
         if (text != null){
             message.setText(text);
         }else if (content != null){
-           // message.setContent(content, "text/html");
+            // message.setContent(content, "text/html");
         }
         //** 附件测试
 
@@ -364,6 +363,8 @@ class EmailCore {
         imapStore.connect(imapHost, account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder("INBOX");
         folder.open(Folder.READ_ONLY);
+        Folder defaultFolder = imapStore.getDefaultFolder();
+        Folder[] allFolder = defaultFolder.list();
         int size = folder.getUnreadMessageCount();
         emailData.setUnReadCount(size);
 
@@ -400,16 +401,15 @@ class EmailCore {
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String id, subject, from, to,cc,bcc, date, content, contentText,priority;
+        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
         Boolean  isSeen,isReplySign,isContainerAttachment;
         int attachmentCount;
         int index = 0;
-        long uuid;
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         for (Message message : list){
             pmm = new PraseMimeMessage((MimeMessage)message);
-            id = folder.getUID(message) +"";
+            uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
                 subject = getSubject((MimeMessage)message);
@@ -423,21 +423,26 @@ class EmailCore {
                 date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
+                boolean isNew  =pmm.isNew();
                 isReplySign = isReplySign((MimeMessage)message);
-                attachmentCount = 0;
-                isContainerAttachment = isContainAttachment(message,attachmentCount);
+                List<MailAttachment> mailAttachments = new ArrayList<>();
+                MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                File file = Environment.getExternalStorageDirectory();
+                attachmentCount = mailAttachments.size();
+                isContainerAttachment = attachmentCount > 0;
                 StringBuffer contentTemp = new StringBuffer(30);
                 getMailTextContent(message, contentTemp);
                 content = contentTemp.toString();
                 contentText = getHtmlText(contentTemp.toString());
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(id,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
-                File file = Environment.getExternalStorageDirectory();
-                if(!file.exists()){
+
+              /*  if(!file.exists()){
                     file.mkdirs();
                 }
                 pmm.setAttachPath(file.toString()+"/");
@@ -445,7 +450,7 @@ class EmailCore {
                     pmm.saveAttachMent((Part)message);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
             }catch (Exception e)
             {
                 e.printStackTrace();
@@ -458,7 +463,50 @@ class EmailCore {
         imapStore.close();
         return emailMessageList;
     }
+    /**
+     * 使用IMAP协议接收服务器上的邮件附件
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
+        imapStore.connect(imapHost, account, password);
+        System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
+        folder.open(Folder.READ_WRITE);
 
+        Message message= folder.getMessageByUID(Long.valueOf(uid));
+
+        //设置标记
+       /* message.setFlag(Flags.Flag.SEEN,true);
+        message.saveChanges();*/
+        PraseMimeMessage pmm = null;
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        List<MailAttachment> mailAttachments = new ArrayList<>();
+        try {
+            pmm = new PraseMimeMessage((MimeMessage)message);
+            MailUtil.getAttachment(message, mailAttachments,uid,this.account);
+            File file = Environment.getExternalStorageDirectory();
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            pmm.setAttachPath(file.toString()+"/");
+            try {
+                pmm.saveAttachMent((Part)message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        folder.close(false);
+        imapStore.close();
+        return mailAttachments;
+    }
     /**
      *
      * @param host

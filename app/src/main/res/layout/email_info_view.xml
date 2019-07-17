@@ -460,6 +460,11 @@
                 android:text="@string/Attach"
                 android:textColor="@color/textColor"
                 android:textSize="19sp" />
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </TableLayout>
         </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

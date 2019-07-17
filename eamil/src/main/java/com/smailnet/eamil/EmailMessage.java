@@ -16,6 +16,8 @@
 
 package com.smailnet.eamil;
 
+import java.util.List;
+
 /**
  * 邮件内容集合
  */
@@ -36,6 +38,7 @@ public class EmailMessage {
     private int attachmentCount;
     private String content;
     private String contentText;
+    private List<MailAttachment> mailAttachmentList;
 
 
     public EmailMessage()
@@ -179,5 +182,13 @@ public class EmailMessage {
 
     public void setAttachmentCount(int attachmentCount) {
         this.attachmentCount = attachmentCount;
+    }
+
+    public List<MailAttachment> getMailAttachmentList() {
+        return mailAttachmentList;
+    }
+
+    public void setMailAttachmentList(List<MailAttachment> mailAttachmentList) {
+        this.mailAttachmentList = mailAttachmentList;
     }
 }

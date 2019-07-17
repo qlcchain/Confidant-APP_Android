@@ -239,11 +239,9 @@ public class PraseMimeMessage{
             for(int i=0;i<mp.getCount();i++){
                 BodyPart mpart = mp.getBodyPart(i);
                 String disposition = mpart.getDisposition();
-                if((disposition != null) &&((disposition.equals(Part.ATTACHMENT)) ||(disposition.equals(Part.INLINE)))){
+                if((disposition != null) &&((disposition.equalsIgnoreCase(Part.ATTACHMENT)) ||(disposition.equalsIgnoreCase(Part.INLINE)))){
                     fileName = mpart.getFileName();
-                    if(fileName.toLowerCase().indexOf("gb2312") != -1){
-                        fileName = MimeUtility.decodeText(fileName);
-                    }
+                    fileName = MimeUtility.decodeText(fileName);
                     saveFile(fileName,mpart.getInputStream());
                 }else{
                     fileName = mpart.getFileName();
@@ -295,6 +293,8 @@ public class PraseMimeMessage{
 
 
     private void saveFile(String fileName,InputStream in)throws Exception{
+        int len = in.available();
+        byte[] byt = MailUtil.inputStreamToByte(in);
         String osName = System.getProperty("os.name");
         String storedir = getAttachPath();
         String separator = "";
@@ -311,9 +311,9 @@ public class PraseMimeMessage{
         }*/
         File storefile = new File(storedir+separator+fileName);
         System.out.println("文件路径: "+storefile.toString());
-        for(int i=0;storefile.exists();i++){
+        /*for(int i=0;storefile.exists();i++){
             storefile = new File(storedir+separator+fileName+i);
-        }
+        }*/
         if(!storefile.exists())
         {
             try {
@@ -328,11 +328,16 @@ public class PraseMimeMessage{
         try{
             bos = new BufferedOutputStream(new FileOutputStream(storefile));
             bis = new BufferedInputStream(in);
+
+            int count = 0;
             int c;
             while((c=bis.read()) != -1){
                 bos.write(c);
                 bos.flush();
+                count +=c;
             }
+            int aa = count;
+            int bbb = aa;
         }catch(Exception exception){
             exception.printStackTrace();
             throw new Exception("文件保存失败!");

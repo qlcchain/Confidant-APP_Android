@@ -1,4 +1,4 @@
-package com.smailnet.eamil.Utils;
+package com.smailnet.eamil;
 
 import java.io.InputStream;
 
@@ -9,8 +9,26 @@ import java.io.InputStream;
  * 邮件附件类
  */
 public class MailAttachment {
+    private String msgId;
+    private String account;
     private String name;
     private InputStream inputStream;
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
     public String getName() {
         return name;
@@ -28,7 +46,9 @@ public class MailAttachment {
         this.inputStream = inputStream;
     }
 
-    public MailAttachment(String name, InputStream inputStream) {
+    public MailAttachment(String name, InputStream inputStream,String msgId,String account) {
+        this.msgId = msgId;
+        this.account = account;
         this.name = name;
         this.inputStream = inputStream;
     }

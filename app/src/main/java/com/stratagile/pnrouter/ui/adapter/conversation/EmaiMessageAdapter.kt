@@ -41,6 +41,22 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         message.setText(item.contentText)
         var time = helper.getView<TextView>(R.id.time)
         time.setText( DateUtil.getTimestampString(DateUtil.getDate(item.date), AppConfig.instance))
+
+        var unseen = helper.getView<TextView>(R.id.unseen)
+        if(item.isSeen())
+        {
+            unseen.visibility = View.VISIBLE
+        }else{
+            unseen.visibility = View.GONE
+        }
+        var attach = helper.getView<TextView>(R.id.attach)
+        if(item.attachmentCount >0)
+        {
+            attach.visibility = View.VISIBLE
+            attach.text = item.attachmentCount.toString();
+        }else{
+            attach.visibility = View.GONE
+        }
         var ivAvatar = helper.getView<ImageButtonWithText>(R.id.avatar)
         ivAvatar.setText(from)
     }

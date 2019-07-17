@@ -7,14 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.pawegio.kandroid.d
 import com.pawegio.kandroid.runOnUiThread
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
+import com.smailnet.eamil.MailAttachment
+import com.smailnet.eamil.Utils.MailUtil
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.ui.activity.email.EmailInfoActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEmailMessageComponent
@@ -107,19 +111,37 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                 override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
                                     var list = messageList;
                                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
+                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
                                     for (item in messageList)
                                     {
                                         var eamilMessage = EmailMessageEntity()
                                         eamilMessage.account = AppConfig.instance.emailConfig().account
+                                        eamilMessage.msgId = item.id
                                         eamilMessage.from = item.from
                                         eamilMessage.to = item.to
                                         eamilMessage.cc = item.cc
                                         eamilMessage.bcc = item.bcc
+                                        eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
+                                        eamilMessage.setAttachmentCount(item.attachmentCount)
+                                        eamilMessage.setIsSeen(item.isSeen)
+                                        eamilMessage.setIsReplySign(item.isReplySign)
                                         eamilMessage.subject = item.subject
                                         eamilMessage.content= item.content
                                         eamilMessage.contentText= item.contentText
                                         eamilMessage.date = item.date
                                         AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
+                                        var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
+                                        for (attachItem in mailAttachmentList)
+                                        {
+                                            var eamilAttach = EmailAttachEntity()
+                                            eamilAttach.account = AppConfig.instance.emailConfig().account
+                                            eamilAttach.msgId = item.id
+                                            eamilAttach.name = attachItem.name
+                                            val byt = MailUtil.inputStreamToByte(attachItem.inputStream)
+                                            attachItem.inputStream.read(byt)
+                                            eamilAttach.data = byt
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                        }
                                     }
                                     var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
                                     runOnUiThread {

@@ -1,4 +1,7 @@
 package com.smailnet.eamil.Utils;
+import android.os.Environment;
+
+import com.smailnet.eamil.MailAttachment;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.pop3.POP3Folder;
@@ -9,19 +12,22 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.search.*;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.Security;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 /**
- * @author jiangyw
+ * @author zl
  * @date 2019/1/7 19:29
  * <p>
  * 处理邮件工具类
@@ -179,10 +185,10 @@ public class MailUtil {
         return null;
     }
 
-    public void saveFile(List<MailAttachment> list) throws IOException {
+    public static void saveFile(List<MailAttachment> list, String savaPath) throws IOException {
         for (MailAttachment mailAttachment : list) {
             InputStream inputStream = mailAttachment.getInputStream();
-            FileOutputStream outputStream = new FileOutputStream(new File("C:\\Users\\jiangyw\\Desktop\\test.pdf"));
+            FileOutputStream outputStream = new FileOutputStream(new File(savaPath));
             int len;
             byte[] bytes = new byte[1024];
             while ((len = inputStream.read(bytes)) != -1) {
@@ -194,7 +200,51 @@ public class MailUtil {
         }
 
     }
+    /**
+     * 保存附件到指定目录里
+     */
+    public static void saveFile(List<MailAttachment> list)throws Exception{
+        for (MailAttachment mailAttachment : list) {
+            InputStream in = mailAttachment.getInputStream();
+            String osName = System.getProperty("os.name");
+            File file = Environment.getExternalStorageDirectory();
+            String storedir = file.toString()+"/";
+            String separator = "";
+            System.out.println(osName);
+            File storefile = new File(storedir+separator+mailAttachment.getName());
+            System.out.println("文件路径: "+storefile.toString());
+            /*for(int i=0;storefile.exists();i++){
+                storefile = new File(storedir+separator+mailAttachment.getName()+i);
+            }*/
+            if(!storefile.exists())
+            {
+                try {
+                    storefile.createNewFile();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            BufferedOutputStream bos = null;
+            BufferedInputStream bis = null;
+            try{
+                bos = new BufferedOutputStream(new FileOutputStream(storefile));
+                bis = new BufferedInputStream(in);
+                int c;
+                while((c=bis.read()) != -1){
+                    bos.write(c);
+                    bos.flush();
+                }
+            }catch(Exception exception){
+                exception.printStackTrace();
+                throw new Exception("文件保存失败!");
+            }finally{
+                bos.close();
+                bis.close();
+            }
+        }
 
+    }
     /**
      * 获取附件
      * 只获取附件里的
@@ -206,7 +256,7 @@ public class MailUtil {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void getAttachment(Part part, List<MailAttachment> list) throws UnsupportedEncodingException, MessagingException,
+    public static void getAttachment(Part part, List<MailAttachment> list,String msgId,String account) throws UnsupportedEncodingException, MessagingException,
             FileNotFoundException, IOException {
         if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
@@ -222,11 +272,9 @@ public class MailUtil {
                     InputStream is = bodyPart.getInputStream();
                     // 附件名通过MimeUtility解码，否则是乱码
                     String name = MimeUtility.decodeText(bodyPart.getFileName());
-                    list.add(new MailAttachment(name, is));
-
-
+                    list.add(new MailAttachment(name, is,msgId,account));
                 } else if (bodyPart.isMimeType("multipart/*")) {
-                    getAttachment(bodyPart, list);
+                    getAttachment(bodyPart, list,msgId,account);
                 } else {
                     String contentType = bodyPart.getContentType();
                     if (contentType.contains("name") || contentType.contains("application")) {
@@ -235,7 +283,7 @@ public class MailUtil {
                 }
             }
         } else if (part.isMimeType("message/rfc822")) {
-            getAttachment((Part) part.getContent(), list);
+            getAttachment((Part) part.getContent(), list,msgId,account);
         }
     }
 
@@ -401,7 +449,23 @@ public class MailUtil {
             pop3Store.close();
         }
     }
+    public static byte[] inputStreamToByte(InputStream inStream)
+    {
+        byte[] in_b = new byte[0];
+        ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+        byte[] buff = new byte[100]; //buff用于存放循环读取的临时数据
+        int rc = 0;
+        try {
+            while ((rc = inStream.read(buff, 0, 100)) > 0) {
+                swapStream.write(buff, 0, rc);
+            }
+            in_b = swapStream.toByteArray(); //in_b为转换之后的结果
+        }catch (Exception e)
+        {
 
+        }
+        return  in_b;
+    }
 
 }
 

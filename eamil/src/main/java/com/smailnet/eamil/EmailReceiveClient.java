@@ -18,6 +18,7 @@ package com.smailnet.eamil;
 
 import android.app.Activity;
 
+import com.smailnet.eamil.Callback.GetAttachCallback;
 import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
 
@@ -148,6 +149,42 @@ public class EmailReceiveClient {
             public void run() {
                 try {
                     final List<EmailCount> messageList = Operator.Core(emailConfig).imapReceiveMailCountAndMenu();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
+     * 使用imap协议接收邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void imapDownloadEmailAttach(final Activity activity, final GetAttachCallback getReceiveCallback, final String menu, final String uid){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<MailAttachment> messageList = Operator.Core(emailConfig).imapDownloadMailAttch(menu,uid);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
