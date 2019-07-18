@@ -10,7 +10,6 @@
         android:layout_height="@dimen/x450"
         android:layout_margin="@dimen/x10"
         android:background="@color/white"
-        android:minHeight="@dimen/x656"
         app:cardCornerRadius="@dimen/x5"
         app:cardElevation="@dimen/x5"
         app:layout_constraintTop_toTopOf="parent">
