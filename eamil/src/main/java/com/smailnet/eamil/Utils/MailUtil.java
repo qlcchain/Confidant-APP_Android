@@ -192,7 +192,7 @@ public class MailUtil {
             BufferedOutputStream bos = null;
             BufferedInputStream  bis = null;
             try{
-                File storefile = new File(savaPath+mailAttachment.getName());
+                File storefile = new File(savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName());
                 if(!storefile.exists())
                 {
                     try {

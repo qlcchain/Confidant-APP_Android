@@ -5,11 +5,14 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.View
 import android.webkit.*
 import android.widget.Toast
+import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.setHeight
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.EmailMessage
@@ -21,16 +24,19 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
+import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.DateUtil
 import kotlinx.android.synthetic.main.email_info_view.*
 import java.io.ByteArrayInputStream
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -48,6 +54,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     internal lateinit var mPresenter: EmailInfoPresenter
     var emailMeaasgeData:EmailMessageEntity? = null
     var emaiInfoAdapter : EmaiInfoAdapter? = null
+    var emaiAttachAdapter : EmaiAttachAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -63,37 +70,58 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
         var attachCount = emailMeaasgeData!!.attachmentCount
+
         if(attachCount > 0)
         {
-            /*var  attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.loadAll()
-            var aa = ""
+            val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+            var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+            var isDownload = false
             var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
             var i = 0;
             for (accach in attachList)
             {
-                var inputStream = ByteArrayInputStream(accach.data);
+                var file = File(save_dir+accach.account+"_"+accach.name)
+                if(file.exists())
+                {
+                    isDownload = true
+                }
+                /*var inputStream = ByteArrayInputStream(accach.data);
                 var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
-                listAccath.add(mailAttachment)
+                listAccath.add(mailAttachment)*/
             }
-            MailUtil.saveFile(listAccath)*/
-           Islands.circularProgress(this)
+            //MailUtil.saveFile(listAccath)
+          /*  val tipDialog: QMUITipDialog
+            tipDialog = QMUITipDialog.Builder(AppConfig.instance)
+                    .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                    .setTipWord("正在加载")
+                    .create()*/
+            if(!isDownload)
+            {
+                showProgressDialog(getString(R.string.Attachmentdownloading))
+                /*tipDialog.show()*/
+                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+
+                emailReceiveClient
+                        .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
+                            override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                //tipDialog.dismiss()
+                                closeProgressDialog()
+                            }
+                            override fun gainFailure(errorMsg: String) {
+                                //tipDialog.dismiss()
+                                closeProgressDialog()
+                                Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                            }
+                        },"INBOX",msgId,save_dir)
+            }
+
+           /*Islands.circularProgress(this)
                     .setCancelable(false)
                     .setMessage("附件下载中...")
                     .show()
                     .run { progressDialog ->
-                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                        emailReceiveClient
-                                .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
-                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                        progressDialog.dismiss()
-                                    }
-                                    override fun gainFailure(errorMsg: String) {
-                                        progressDialog.dismiss()
-                                        Toast.makeText(this@EmailInfoActivity, "附件下载失败", Toast.LENGTH_SHORT).show()
-                                        Log.e("oversee", "错误日志：$errorMsg")
-                                    }
-                                },"INBOX",msgId)
-                    }
+
+                    }*/
         }
 
         var titleStr = intent.getStringExtra("title")
@@ -141,6 +169,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
             }
         }
+        emailConfigEntityList = ArrayList<EmailInfoData>()
+        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
+        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
+        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         emaiInfoAdapter = EmaiInfoAdapter(emailConfigEntityList)
         emaiInfoAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
@@ -148,6 +180,21 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         recyclerViewleft.adapter = emaiInfoAdapter
         emaiInfoAdapter!!.setOnItemClickListener { adapter, view, position ->
+            /* var intent = Intent(activity!!, ConversationActivity::class.java)
+             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+             startActivity(intent)*/
+        }
+
+
+
+        emaiAttachAdapter = EmaiAttachAdapter(emailConfigEntityList)
+        emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+            true
+        }
+        recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
+        recyclerViewAttach.adapter = emaiAttachAdapter
+        emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
             /* var intent = Intent(activity!!, ConversationActivity::class.java)
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
              startActivity(intent)*/
@@ -242,7 +289,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
+    fun initAttachUI()
+    {
 
+    }
     override fun setupActivityComponent() {
         DaggerEmailInfoComponent
                 .builder()

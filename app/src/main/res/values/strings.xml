@@ -711,5 +711,7 @@
     <string name="Time">Time</string>
     <string name="Hide">Hide</string>
     <string name="Attach">Attach</string>
+    <string name="Attachmentdownloading">Attachment downloading...</string>
+    <string name="Attachment_download_failed">Attachment download failed</string>
 
 </resources>

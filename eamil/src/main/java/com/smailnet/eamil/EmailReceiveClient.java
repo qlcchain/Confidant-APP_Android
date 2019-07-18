@@ -179,12 +179,12 @@ public class EmailReceiveClient {
      * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapDownloadEmailAttach(final Activity activity, final GetAttachCallback getReceiveCallback, final String menu, final String uid){
+    public void imapDownloadEmailAttach(final Activity activity, final GetAttachCallback getReceiveCallback, final String menu, final String uid,final String path){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final List<MailAttachment> messageList = Operator.Core(emailConfig).imapDownloadMailAttch(menu,uid);
+                    final List<MailAttachment> messageList = Operator.Core(emailConfig).imapDownloadMailAttch(menu,uid,path);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

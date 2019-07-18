@@ -477,7 +477,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid) throws MessagingException, IOException {
+    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
@@ -494,12 +494,8 @@ class EmailCore {
         try {
             pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getAttachment(message, mailAttachments,uid,this.account);
-            File file = Environment.getExternalStorageDirectory();
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            pmm.setAttachPath(file.toString()+"/");
-            MailUtil.saveFile(mailAttachments,file.toString()+"/");
+            //pmm.setAttachPath(file.toString()+"/");
+            MailUtil.saveFile(mailAttachments,path);
            /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {
