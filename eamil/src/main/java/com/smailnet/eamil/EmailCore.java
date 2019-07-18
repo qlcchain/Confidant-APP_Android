@@ -29,6 +29,7 @@ import com.sun.mail.imap.IMAPStore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -69,8 +70,10 @@ import javax.mail.search.FlagTerm;
 
 import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
 import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
+import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAPS_PARTISLFETCH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_AUTH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_HOST;
+import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_PARTISLFETCH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_POST;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_CLASS;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_FALLBACK;
@@ -113,6 +116,8 @@ class EmailCore {
     private Message message;
 
     private int maxCount = 2;
+
+
 
     /**
      * 默认构造器
@@ -161,6 +166,8 @@ class EmailCore {
             properties.put(MAIL_IMAP_POST, imapPort);
             properties.put(MAIL_IMAP_HOST, imapHost);
             properties.put(MAIL_IMAP_AUTH, true);
+            properties.put(MAIL_IMAP_PARTISLFETCH, false);
+            properties.put(MAIL_IMAPS_PARTISLFETCH, false);
         }
 
         session = Session.getInstance(properties);
@@ -412,11 +419,11 @@ class EmailCore {
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
-                subject = getSubject((MimeMessage)message);
+                subject = message.getSubject();
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to =getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
+                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
@@ -425,21 +432,22 @@ class EmailCore {
                 isSeen = isSeen((MimeMessage)message);
                 boolean isNew  =pmm.isNew();
                 isReplySign = isReplySign((MimeMessage)message);
+
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                File file = Environment.getExternalStorageDirectory();
+                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = attachmentCount > 0;
                 StringBuffer contentTemp = new StringBuffer(30);
                 getMailTextContent(message, contentTemp);
                 content = contentTemp.toString();
                 contentText = getHtmlText(contentTemp.toString());
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                emailMessageList.add(emailMessage);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                emailMessageList.add(emailMessage);
+                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -476,9 +484,7 @@ class EmailCore {
         System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
-
         Message message= folder.getMessageByUID(Long.valueOf(uid));
-
         //设置标记
        /* message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
@@ -493,11 +499,12 @@ class EmailCore {
                 file.mkdirs();
             }
             pmm.setAttachPath(file.toString()+"/");
-            try {
+            MailUtil.saveFile(mailAttachments,file.toString()+"/");
+           /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
         }catch (Exception e)
         {
             e.printStackTrace();

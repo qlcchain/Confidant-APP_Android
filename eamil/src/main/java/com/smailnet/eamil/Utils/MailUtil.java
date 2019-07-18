@@ -1,5 +1,6 @@
 package com.smailnet.eamil.Utils;
 import android.os.Environment;
+import android.util.Log;
 
 import com.smailnet.eamil.MailAttachment;
 import com.sun.mail.imap.IMAPFolder;
@@ -188,15 +189,32 @@ public class MailUtil {
     public static void saveFile(List<MailAttachment> list, String savaPath) throws IOException {
         for (MailAttachment mailAttachment : list) {
             InputStream inputStream = mailAttachment.getInputStream();
-            FileOutputStream outputStream = new FileOutputStream(new File(savaPath));
-            int len;
-            byte[] bytes = new byte[1024];
-            while ((len = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, len);
-                outputStream.flush();
+            BufferedOutputStream bos = null;
+            BufferedInputStream  bis = null;
+            try{
+                File storefile = new File(savaPath+mailAttachment.getName());
+                if(!storefile.exists())
+                {
+                    try {
+                        storefile.createNewFile();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                bos = new BufferedOutputStream(new FileOutputStream(storefile));
+                bis = new BufferedInputStream(inputStream);
+                int c;
+                while((c=bis.read()) != -1){
+                    bos.write(c);
+                    bos.flush();
+                }
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }finally{
+                bos.close();
+                bis.close();
             }
-            inputStream.close();
-            outputStream.close();
         }
 
     }
@@ -246,6 +264,31 @@ public class MailUtil {
 
     }
     /**
+     * ----判断此邮件是否包含附件----
+     */
+    public boolean isContainAttach(Part part)throws Exception{
+        boolean attachflag = false;
+        if(part.isMimeType("multipart/*")){
+            Multipart mp = (Multipart)part.getContent();
+            for(int i=0;i<mp.getCount();i++){
+                BodyPart mpart = mp.getBodyPart(i);
+                String disposition = mpart.getDisposition();
+                if((disposition != null) &&((disposition.equals(Part.ATTACHMENT)) ||(disposition.equals(Part.INLINE))))
+                    attachflag = true;
+                else if(mpart.isMimeType("multipart/*")){
+
+                }else{
+                    String contype = mpart.getContentType();
+                    if(contype.toLowerCase().indexOf("application") != -1) attachflag=true;
+                    if(contype.toLowerCase().indexOf("name") != -1) attachflag=true;
+                }
+            }
+        }else if(part.isMimeType("message/rfc822")){
+            attachflag = isContainAttach((Part)part.getContent());
+        }
+        return attachflag;
+    }
+    /**
      * 获取附件
      * 只获取附件里的
      * 邮件内容里的附件（图片等）忽略
@@ -258,21 +301,31 @@ public class MailUtil {
      */
     public static void getAttachment(Part part, List<MailAttachment> list,String msgId,String account) throws UnsupportedEncodingException, MessagingException,
             FileNotFoundException, IOException {
+        System.out.println("getAttachment:begin"+System.currentTimeMillis());
         if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
             //复杂体邮件包含多个邮件体
             int partCount = multipart.getCount();
+            System.out.println("getAttachment:for"+System.currentTimeMillis());
             for (int i = 0; i < partCount; i++) {
                 //获得复杂体邮件中其中一个邮件体
+                System.out.println("getAttachment:for:"+i+System.currentTimeMillis());
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disposition = bodyPart.getDisposition();
                 if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE))) {
 
                     InputStream is = bodyPart.getInputStream();
+                    System.out.println("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
+                    //byte[] byt = MailUtil.toByteArray(is);
+                    byte[] byt = new byte[0];
+                    System.out.println("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                    Log.i("getAttachment",byt.length +"");
                     // 附件名通过MimeUtility解码，否则是乱码
+                    System.out.println("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
                     String name = MimeUtility.decodeText(bodyPart.getFileName());
-                    list.add(new MailAttachment(name, is,msgId,account));
+                    System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
+                    list.add(new MailAttachment(name,is, byt,msgId,account));
                 } else if (bodyPart.isMimeType("multipart/*")) {
                     getAttachment(bodyPart, list,msgId,account);
                 } else {
@@ -282,6 +335,7 @@ public class MailUtil {
                     }
                 }
             }
+            System.out.println("getAttachment:end"+System.currentTimeMillis());
         } else if (part.isMimeType("message/rfc822")) {
             getAttachment((Part) part.getContent(), list,msgId,account);
         }
@@ -473,6 +527,47 @@ public class MailUtil {
 
         }
         return  count;
+    }
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024*4];
+        int n = 0;
+        try{
+            while (-1 != (n = input.read(buffer))) {
+                output.write(buffer, 0, n);
+            }
+            output.flush();
+        }catch (Exception e)
+        {
+
+        }finally {
+            output.close();
+        }
+        return output.toByteArray();
+    }
+    public static byte[] read(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[1024];
+            int num = inputStream.read(buffer);
+            while (num != -1) {
+                baos.write(buffer, 0, num);
+                num = inputStream.read(buffer);
+            }
+            baos.flush();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (baos != null) {
+                baos.close();
+            }
+            return baos.toByteArray();
+        }
+
     }
 
 }

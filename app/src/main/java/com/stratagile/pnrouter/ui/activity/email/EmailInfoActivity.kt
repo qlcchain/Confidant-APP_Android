@@ -65,17 +65,17 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var attachCount = emailMeaasgeData!!.attachmentCount
         if(attachCount > 0)
         {
-            var  attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.loadAll()
+            /*var  attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.loadAll()
             var aa = ""
             var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
             var i = 0;
             for (accach in attachList)
             {
                 var inputStream = ByteArrayInputStream(accach.data);
-                var mailAttachment = MailAttachment(accach.name,inputStream,accach.msgId,accach.account);
+                var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
                 listAccath.add(mailAttachment)
             }
-            //MailUtil.saveFile(listAccath)
+            MailUtil.saveFile(listAccath)*/
            Islands.circularProgress(this)
                     .setCancelable(false)
                     .setMessage("附件下载中...")

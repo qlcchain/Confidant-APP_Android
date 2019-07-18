@@ -293,8 +293,6 @@ public class PraseMimeMessage{
 
 
     private void saveFile(String fileName,InputStream in)throws Exception{
-        int len = in.available();
-        int byt = MailUtil.getInputStreamSize(in);
         String osName = System.getProperty("os.name");
         String storedir = getAttachPath();
         String separator = "";
@@ -328,16 +326,11 @@ public class PraseMimeMessage{
         try{
             bos = new BufferedOutputStream(new FileOutputStream(storefile));
             bis = new BufferedInputStream(in);
-
-            int count = 0;
             int c;
             while((c=bis.read()) != -1){
                 bos.write(c);
                 bos.flush();
-                count +=c;
             }
-            int aa = count;
-            int bbb = aa;
         }catch(Exception exception){
             exception.printStackTrace();
             throw new Exception("文件保存失败!");

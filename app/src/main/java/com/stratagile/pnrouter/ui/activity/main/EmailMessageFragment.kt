@@ -135,10 +135,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilAttach.account = AppConfig.instance.emailConfig().account
                                             eamilAttach.msgId = item.id
                                             eamilAttach.name = attachItem.name
-                                            var bytSize = MailUtil.getInputStreamSize(attachItem.inputStream)
-                                            val byt = ByteArray(bytSize)
-                                            attachItem.inputStream.read(byt)
-                                            eamilAttach.data = byt
+                                            eamilAttach.data = attachItem.byt
                                             AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
                                         }
                                     }

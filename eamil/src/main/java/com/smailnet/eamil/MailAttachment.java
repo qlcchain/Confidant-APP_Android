@@ -13,6 +13,7 @@ public class MailAttachment {
     private String account;
     private String name;
     private InputStream inputStream;
+    private byte[] byt;
 
     public String getMsgId() {
         return msgId;
@@ -46,10 +47,19 @@ public class MailAttachment {
         this.inputStream = inputStream;
     }
 
-    public MailAttachment(String name, InputStream inputStream,String msgId,String account) {
+    public byte[] getByt() {
+        return byt;
+    }
+
+    public void setByt(byte[] byt) {
+        this.byt = byt;
+    }
+
+    public MailAttachment(String name,InputStream inputStream, byte[] byt, String msgId, String account) {
         this.msgId = msgId;
         this.account = account;
         this.name = name;
         this.inputStream = inputStream;
+        this.byt = byt;
     }
 }
