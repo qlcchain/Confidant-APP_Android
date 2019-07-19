@@ -48,7 +48,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setImapHost("imap.qq.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emainType","1")
+            Intent.putExtra("emailType","1")
             startActivity(Intent)
             finish()
         }
@@ -61,7 +61,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setImapHost("imap.qq.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emainType","2")
+            Intent.putExtra("emailType","2")
             startActivity(Intent)
             finish()
         }
@@ -74,7 +74,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setImapHost("imap.sina.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emainType","4")
+            Intent.putExtra("emailType","4")
             startActivity(Intent)
             finish()
         }

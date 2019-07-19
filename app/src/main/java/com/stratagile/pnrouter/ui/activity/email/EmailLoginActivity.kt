@@ -13,6 +13,7 @@ import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginComponent
@@ -170,7 +171,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
 
                         }
                     }
-
+                    ConstantValue.currentEmailConfigEntity = emailConfigEntity;
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
                 }
                 EventBus.getDefault().post(ChangeEmailConfig())

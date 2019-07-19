@@ -2377,6 +2377,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else{
             recyclerViewleftParent.setHeight(340)
         }
+        initLeftSubMenu()
         emaiConfigChooseAdapter!!.setNewData(emailConfigEntityList)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3808,58 +3809,59 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
-            if(AppConfig.instance.emailConfig().account != null)
-            {
-                rootName.visibility = View.VISIBLE
-                rootName.text = AppConfig.instance.emailConfig().account
-                emailMenu.visibility = View.VISIBLE
-                when(ConstantValue.chooseEmailMenu)
-                {
-                    0->
-                    {
-                        rootTitle.text = getString(R.string.Inbox)
-                    }
-                    1->
-                    {
-                        rootTitle.text = getString(R.string.Node_back_up)
-                    }
-                    2->
-                    {
-                        rootTitle.text = getString(R.string.Star)
-                    }
-                    3->
-                    {
-                        rootTitle.text = getString(R.string.Drafts)
-                    }
-                    4->
-                    {
-                        rootTitle.text = getString(R.string.Sent)
-                    }
-                    5->
-                    {
-                        rootTitle.text = getString(R.string.Spam)
-                    }
-                    6->
-                    {
-                        rootTitle.text = getString(R.string.Trash)
-                    }
-                    else ->
-                    {
-
-                    }
-                }
-            }else{
-                rootName.text  = ""
-                rootName.visibility = View.GONE
-                emailMenu.visibility = View.GONE
-                rootTitle.text = getString(R.string.Email)
-            }
-
-
-
+            initLeftSubMenu()
         }
 
         initLeftMenu(menu)
+    }
+    fun initLeftSubMenu()
+    {
+        if(AppConfig.instance.emailConfig().account != null)
+        {
+            rootName.visibility = View.VISIBLE
+            rootName.text = AppConfig.instance.emailConfig().account
+            emailMenu.visibility = View.VISIBLE
+            when(ConstantValue.chooseEmailMenu)
+            {
+                0->
+                {
+                    rootTitle.text = getString(R.string.Inbox)
+                }
+                1->
+                {
+                    rootTitle.text = getString(R.string.Node_back_up)
+                }
+                2->
+                {
+                    rootTitle.text = getString(R.string.Star)
+                }
+                3->
+                {
+                    rootTitle.text = getString(R.string.Drafts)
+                }
+                4->
+                {
+                    rootTitle.text = getString(R.string.Sent)
+                }
+                5->
+                {
+                    rootTitle.text = getString(R.string.Spam)
+                }
+                6->
+                {
+                    rootTitle.text = getString(R.string.Trash)
+                }
+                else ->
+                {
+
+                }
+            }
+        }else{
+            rootName.text  = ""
+            rootName.visibility = View.GONE
+            emailMenu.visibility = View.GONE
+            rootTitle.text = getString(R.string.Email)
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {

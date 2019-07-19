@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailMessageEntity
+import com.stratagile.pnrouter.db.EmailMessageEntityDao
 import com.stratagile.pnrouter.entity.events.ChangEmailMenu
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.entity.events.FromChat
@@ -29,6 +30,7 @@ import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main_menu.view.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -110,65 +112,75 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         mPresenter = presenter as EmailMessagePresenter
     }
     fun pullMessageList() {
-        var accountTest = AppConfig.instance.emailConfig().account
+        var account= AppConfig.instance.emailConfig().account
         var smtpHost = AppConfig.instance.emailConfig().smtpHost
-        Log.i("pullMessageList",accountTest +":"+smtpHost)
-        Islands.circularProgress(this.activity)
-                .setCancelable(false)
-                .setMessage("同步中...")
-                .show()
-                .run { progressDialog ->
-                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                    emailReceiveClient
-                            .imapReceiveAsyn(this.activity, object : GetReceiveCallback {
-                                override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
-                                    var list = messageList;
-                                    AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
-                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
-                                    for (item in messageList)
-                                    {
-                                        var eamilMessage = EmailMessageEntity()
-                                        eamilMessage.account = AppConfig.instance.emailConfig().account
-                                        eamilMessage.msgId = item.id
-                                        eamilMessage.menu = menu
-                                        eamilMessage.from = item.from
-                                        eamilMessage.to = item.to
-                                        eamilMessage.cc = item.cc
-                                        eamilMessage.bcc = item.bcc
-                                        eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                        eamilMessage.setAttachmentCount(item.attachmentCount)
-                                        eamilMessage.setIsSeen(item.isSeen)
-                                        eamilMessage.setIsReplySign(item.isReplySign)
-                                        eamilMessage.subject = item.subject
-                                        eamilMessage.content= item.content
-                                        eamilMessage.contentText= item.contentText
-                                        eamilMessage.date = item.date
-                                        AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
-                                        var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
-                                        for (attachItem in mailAttachmentList)
+        Log.i("pullMessageList",account +":"+smtpHost)
+        // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
+        var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
+        if(localEmailMessage.size == 0)
+        {
+            Islands.circularProgress(this.activity)
+                    .setCancelable(false)
+                    .setMessage("同步中...")
+                    .show()
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapReceiveAsyn(this.activity, object : GetReceiveCallback {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
+                                        var list = messageList;
+                                        AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
+                                        AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
+                                        for (item in messageList)
                                         {
-                                            var eamilAttach = EmailAttachEntity()
-                                            eamilAttach.account = AppConfig.instance.emailConfig().account
-                                            eamilAttach.msgId = item.id
-                                            eamilAttach.name = attachItem.name
-                                            eamilAttach.data = attachItem.byt
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                            var eamilMessage = EmailMessageEntity()
+                                            eamilMessage.account = AppConfig.instance.emailConfig().account
+                                            eamilMessage.msgId = item.id
+                                            eamilMessage.menu = menu
+                                            eamilMessage.from = item.from
+                                            eamilMessage.to = item.to
+                                            eamilMessage.cc = item.cc
+                                            eamilMessage.bcc = item.bcc
+                                            eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
+                                            eamilMessage.setAttachmentCount(item.attachmentCount)
+                                            eamilMessage.setIsSeen(item.isSeen)
+                                            eamilMessage.setIsReplySign(item.isReplySign)
+                                            eamilMessage.subject = item.subject
+                                            eamilMessage.content= item.content
+                                            eamilMessage.contentText= item.contentText
+                                            eamilMessage.date = item.date
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
+                                            var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
+                                            for (attachItem in mailAttachmentList)
+                                            {
+                                                var eamilAttach = EmailAttachEntity()
+                                                eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                eamilAttach.msgId = item.id
+                                                eamilAttach.name = attachItem.name
+                                                eamilAttach.data = attachItem.byt
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                            }
                                         }
+                                        var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+                                        runOnUiThread {
+                                            emaiMessageChooseAdapter!!.setNewData(emailMessageEntityList);
+                                            progressDialog.dismiss()
+                                        }
+
                                     }
-                                    var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
-                                    runOnUiThread {
-                                        emaiMessageChooseAdapter!!.setNewData(emailMessageEntityList);
+
+                                    override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()
+
                                     }
+                                },menu)
+                    }
+        }else{
+            runOnUiThread {
+                emaiMessageChooseAdapter!!.setNewData(localEmailMessage);
+            }
+        }
 
-                                }
-
-                                override fun gainFailure(errorMsg: String) {
-                                    progressDialog.dismiss()
-
-                                }
-                            },menu)
-                }
     }
     override fun initDataFromLocal() {
 
