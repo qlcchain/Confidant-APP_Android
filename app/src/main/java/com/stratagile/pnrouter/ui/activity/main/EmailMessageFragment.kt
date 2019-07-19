@@ -161,9 +161,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
                                             }
                                         }
-                                        var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+                                        //var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+                                        var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
                                         runOnUiThread {
-                                            emaiMessageChooseAdapter!!.setNewData(emailMessageEntityList);
+                                            emaiMessageChooseAdapter!!.setNewData(localEmailMessage);
                                             progressDialog.dismiss()
                                         }
 
