@@ -2830,7 +2830,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.VISIBLE
-        emailLook2.visibility = View.VISIBLE
+        rootTitleParent.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         ivNewGroup.visibility = View.VISIBLE
     }
@@ -2840,7 +2840,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         emailLook.visibility = View.GONE
-        emailLook2.visibility = View.GONE
+        rootTitleParent.visibility = View.GONE
         fileLook.visibility = View.VISIBLE
         ivNewGroup.visibility = View.GONE
     }
@@ -2850,7 +2850,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
         emailLook.visibility = View.GONE
-        emailLook2.visibility = View.GONE
+        rootTitleParent.visibility = View.GONE
         fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
         //contactFragment?.updata()
@@ -2862,7 +2862,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ivQrCode.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.GONE
-        emailLook2.visibility = View.GONE
+        rootTitleParent.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
     }
 
@@ -2888,72 +2888,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             delay(10000)
         }
 
+        initLeftMenu(ConstantValue.chooseFragMentMenu)
 
-        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-        if(emailConfigEntityList.size == 0)
-        {
-            recyclerViewleftParent.setHeight(0)
-        }else if(emailConfigEntityList.size == 1)
-        {
-            recyclerViewleftParent.setHeight(170)
-        }else{
-            recyclerViewleftParent.setHeight(340)
-        }
-
-        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        if(emailConfigEntityChoose.size > 0)
-        {
-            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-            AppConfig.instance.emailConfig()
-                    .setSmtpHost(emailConfigEntity.smtpHost)
-                    .setSmtpPort(emailConfigEntity.smtpPort)
-                    .setPopHost(emailConfigEntity.popHost)
-                    .setPopPort(emailConfigEntity.popPort)
-                    .setImapHost(emailConfigEntity.imapHost)
-                    .setImapPort(emailConfigEntity.imapPort)
-                    .setAccount(emailConfigEntity.account)
-                    .setPassword(emailConfigEntity.password)
-        }
-        emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
-        emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-            /*val floatMenu = FloatMenu(this)
-            floatMenu.items("菜单1", "菜单2", "菜单3")
-            floatMenu.show((activity!! as BaseActivity).point,0,0)*/
-            true
-        }
-        recyclerViewleft.adapter = emaiConfigChooseAdapter
-        emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-            /* var intent = Intent(activity!!, ConversationActivity::class.java)
-             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-             startActivity(intent)*/
-            var accountData = emaiConfigChooseAdapter!!.getItem(position)
-            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
-            var hasVerify = false
-            if(emailConfigEntityList.size > 0)
-            {
-                var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-                for (j in localemailConfigEntityList) {
-                    j.choose = false
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
-                }
-                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                emailConfigEntity.choose = true
-                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                AppConfig.instance.emailConfig()
-                        .setSmtpHost(emailConfigEntity.smtpHost)
-                        .setSmtpPort(emailConfigEntity.smtpPort)
-                        .setPopHost(emailConfigEntity.popHost)
-                        .setPopPort(emailConfigEntity.popPort)
-                        .setImapHost(emailConfigEntity.imapHost)
-                        .setImapPort(emailConfigEntity.imapPort)
-                        .setAccount(emailConfigEntity.account)
-                        .setPassword(emailConfigEntity.password)
-            }
-            EventBus.getDefault().post(ChangeEmailConfig())
-            /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-                mDrawer.closeDrawer(GravityCompat.START)
-            }*/
-        }
         if (VersionUtil.getDeviceBrand() == 3) {
             HMSAgent.connect(this, ConnectHandler {
                 KLog.i("华为推送 HMS connect end: " + it)
@@ -3244,6 +3180,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }*/
         }
+        newCricle.setOnClickListener {
+            //startActivity(Intent(this, EmailChooseActivity::class.java))
+            /*if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }*/
+        }
         if(ConstantValue.chooseEmailMenu == 0)
         {
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -3266,6 +3208,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         nodebackedup.setOnClickListener {
             ConstantValue.chooseEmailMenu = 1;
@@ -3279,6 +3222,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         starred.setOnClickListener {
             ConstantValue.chooseEmailMenu = 2;
@@ -3292,6 +3236,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         drafts.setOnClickListener {
             ConstantValue.chooseEmailMenu = 3;
@@ -3305,6 +3250,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         sent.setOnClickListener {
             ConstantValue.chooseEmailMenu = 4;
@@ -3318,6 +3264,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         spam.setOnClickListener {
             ConstantValue.chooseEmailMenu = 5;
@@ -3331,6 +3278,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
@@ -3344,6 +3292,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
         }
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
@@ -3643,6 +3592,82 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         initEvent()
     }
+    fun initLeftMenu(fragmentMenu:String)
+    {
+        if(fragmentMenu == "Circle")
+        {
+
+        }else{
+            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+            if(emailConfigEntityList.size == 0)
+            {
+                recyclerViewleftParent.setHeight(0)
+            }else if(emailConfigEntityList.size == 1)
+            {
+                recyclerViewleftParent.setHeight(170)
+            }else{
+                recyclerViewleftParent.setHeight(340)
+            }
+
+            var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+            if(emailConfigEntityChoose.size > 0)
+            {
+                var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                AppConfig.instance.emailConfig()
+                        .setSmtpHost(emailConfigEntity.smtpHost)
+                        .setSmtpPort(emailConfigEntity.smtpPort)
+                        .setPopHost(emailConfigEntity.popHost)
+                        .setPopPort(emailConfigEntity.popPort)
+                        .setImapHost(emailConfigEntity.imapHost)
+                        .setImapPort(emailConfigEntity.imapPort)
+                        .setAccount(emailConfigEntity.account)
+                        .setPassword(emailConfigEntity.password)
+                Inbox.setCount(emailConfigEntity.unReadCount)
+                spam.setCount(emailConfigEntity.garbageCount)
+            }
+            emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
+            emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+                /*val floatMenu = FloatMenu(this)
+                floatMenu.items("菜单1", "菜单2", "菜单3")
+                floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+                true
+            }
+            recyclerViewleft.adapter = emaiConfigChooseAdapter
+            emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+                /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                 intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                 startActivity(intent)*/
+                var accountData = emaiConfigChooseAdapter!!.getItem(position)
+                var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
+                var hasVerify = false
+                if(emailConfigEntityList.size > 0)
+                {
+                    var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+                    for (j in localemailConfigEntityList) {
+                        j.choose = false
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                    }
+                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                    emailConfigEntity.choose = true
+                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                    AppConfig.instance.emailConfig()
+                            .setSmtpHost(emailConfigEntity.smtpHost)
+                            .setSmtpPort(emailConfigEntity.smtpPort)
+                            .setPopHost(emailConfigEntity.popHost)
+                            .setPopPort(emailConfigEntity.popPort)
+                            .setImapHost(emailConfigEntity.imapHost)
+                            .setImapPort(emailConfigEntity.imapPort)
+                            .setAccount(emailConfigEntity.account)
+                            .setPassword(emailConfigEntity.password)
+                }
+                EventBus.getDefault().post(ChangeEmailConfig())
+                /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawer.closeDrawer(GravityCompat.START)
+                }*/
+            }
+        }
+
+    }
     fun initSwitchData() {
         var this_ = this
         var isStartWebsocket = false
@@ -3759,6 +3784,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         setToNews()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun changFragmentMenu(changFragmentMenu: ChangFragmentMenu) {
+
+        var menu = changFragmentMenu.menu
+        rootTitle.text = menu;
+        if(menu== "Circle")
+        {
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            routerList.forEach {
+                if (it.lastCheck) {
+                    rootName.text = it.routerName
+                    return@forEach
+                }
+            }
+            emailMenu.visibility = View.GONE
+            newAccount.visibility = View.GONE
+            newCricle.visibility = View.VISIBLE
+        }else{
+            emailMenu.visibility = View.VISIBLE
+            newAccount.visibility = View.VISIBLE
+            newCricle.visibility = View.GONE
+            rootName.text = AppConfig.instance.emailConfig().account
+        }
+        initLeftMenu(menu)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {
         KLog.i("要进入验证页面")
         if ((AppConfig.instance.mAppActivityManager.currentActivity() as Activity) is VerifyingFingerprintActivity) {
@@ -3810,7 +3860,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.openDrawer(GravityCompat.START)
             }
         })
-        emailLook2.setOnClickListener(View.OnClickListener {
+        rootTitleParent.setOnClickListener(View.OnClickListener {
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.openDrawer(GravityCompat.START)
             }

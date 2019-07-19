@@ -713,5 +713,7 @@
     <string name="Attach">Attach</string>
     <string name="Attachmentdownloading">Attachment downloading...</string>
     <string name="Attachment_download_failed">Attachment download failed</string>
+    <string name="New_Account">New Account</string>
+    <string name="Add_a_New_Circle">Add a New Circle</string>
 
 </resources>

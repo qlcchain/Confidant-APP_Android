@@ -419,7 +419,7 @@ class EmailCore {
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
-                subject = message.getSubject();
+                subject = getSubject((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
@@ -430,7 +430,17 @@ class EmailCore {
                 date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
-                boolean isNew  =pmm.isNew();
+                //设置标记
+                /*if(!isSeen)
+                {
+                    Flags flags=message.getFlags();
+                    if(flags.contains(Flags.Flag.SEEN))
+                    {
+                        message.setFlag(Flags.Flag.SEEN,false);
+                        message.saveChanges();
+                    }
+
+                }*/
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
@@ -486,7 +496,7 @@ class EmailCore {
         folder.open(Folder.READ_WRITE);
         Message message= folder.getMessageByUID(Long.valueOf(uid));
         //设置标记
-       /* message.setFlag(Flags.Flag.SEEN,true);
+        /*message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
@@ -660,7 +670,23 @@ class EmailCore {
     public static boolean isSeen(MimeMessage msg) throws MessagingException {
         return msg.getFlags().contains(Flags.Flag.SEEN);
     }
-
+    /**
+     * ---判断此邮件是否已读，如果未读返回返回false,反之返回true---
+     */
+    public boolean isNew(MimeMessage msg)throws MessagingException{
+        boolean isnew = false;
+        Flags flags = msg.getFlags();
+        Flags.Flag []flag = flags.getSystemFlags();
+        System.out.println("flags's length: "+flag.length);
+        for(int i=0;i<flag.length;i++){
+            if(flag[i] == Flags.Flag.SEEN){
+                isnew=true;
+                System.out.println("seen Message.......");
+                break;
+            }
+        }
+        return isnew;
+    }
     /**
      * 判断邮件是否需要阅读回执
      * @param msg 邮件内容

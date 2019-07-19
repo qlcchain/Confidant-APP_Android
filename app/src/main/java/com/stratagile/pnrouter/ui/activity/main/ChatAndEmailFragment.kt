@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.user.PrivacyPolicyFragment
@@ -46,6 +47,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.Simple
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeAnchor
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgePagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeRule
+import org.greenrobot.eventbus.EventBus
 import java.util.ArrayList
 
 /**

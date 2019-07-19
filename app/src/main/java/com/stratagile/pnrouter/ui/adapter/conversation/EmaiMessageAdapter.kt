@@ -45,9 +45,9 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var unseen = helper.getView<TextView>(R.id.unseen)
         if(item.isSeen())
         {
-            unseen.visibility = View.VISIBLE
-        }else{
             unseen.visibility = View.GONE
+        }else{
+            unseen.visibility = View.VISIBLE
         }
         var attach = helper.getView<TextView>(R.id.attach)
         if(item.attachmentCount >0)

@@ -323,7 +323,12 @@ public class MailUtil {
                     Log.i("getAttachment",byt.length +"");
                     // 附件名通过MimeUtility解码，否则是乱码
                     System.out.println("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
-                    String name = MimeUtility.decodeText(bodyPart.getFileName());
+                    int aaabb= bodyPart.getSize();
+                    String name = "";
+                    if(bodyPart.getFileName() != null)
+                    {
+                        name = MimeUtility.decodeText(bodyPart.getFileName());
+                    }
                     System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
                     list.add(new MailAttachment(name,is, byt,msgId,account));
                 } else if (bodyPart.isMimeType("multipart/*")) {

@@ -16,6 +16,7 @@ public class EmailMessageEntity implements Parcelable{
 
     private String account;
     private String msgId;
+    private String menu;
     private String subject;
     private String from;
     private String to;
@@ -44,6 +45,7 @@ public class EmailMessageEntity implements Parcelable{
         }
         account = in.readString();
         msgId = in.readString();
+        menu = in.readString();
         subject = in.readString();
         from = in.readString();
         to = in.readString();
@@ -61,14 +63,15 @@ public class EmailMessageEntity implements Parcelable{
     }
 
 
-    @Generated(hash = 635971716)
-    public EmailMessageEntity(Long id, String account, String msgId, String subject, String from,
-            String to, String cc, String bcc, String date, boolean isSeen, String priority,
+    @Generated(hash = 253822852)
+    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
+            String from, String to, String cc, String bcc, String date, boolean isSeen, String priority,
             boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount,
             String content, String contentText) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
+        this.menu = menu;
         this.subject = subject;
         this.from = from;
         this.to = to;
@@ -107,6 +110,14 @@ public class EmailMessageEntity implements Parcelable{
 
     public String getAccount() {
         return account;
+    }
+
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     public String getMsgId() {
@@ -275,6 +286,7 @@ public class EmailMessageEntity implements Parcelable{
         }
         dest.writeString(account);
         dest.writeString(msgId);
+        dest.writeString(menu);
         dest.writeString(subject);
         dest.writeString(from);
         dest.writeString(to);

@@ -16,15 +16,23 @@ import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailMessageEntity
+import com.stratagile.pnrouter.entity.events.ChangEmailMenu
+import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
+import com.stratagile.pnrouter.entity.events.FromChat
 import com.stratagile.pnrouter.ui.activity.email.EmailInfoActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEmailMessageComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.EmailMessageContract
 import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 /**
@@ -39,7 +47,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     @Inject
     lateinit internal var mPresenter: EmailMessagePresenter
     var emaiMessageChooseAdapter : EmaiMessageAdapter? = null
-
+    var menu = "INBOX"
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
+        menu = changEmailMenu.menu
+        pullMessageList()
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_mail_list, null);
         return view
@@ -65,6 +78,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             if (refreshLayout != null)
                 refreshLayout.isRefreshing = false
         }
+        EventBus.getDefault().register(this)
     }
     override fun onResume() {
         super.onResume()
@@ -79,6 +93,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
         {
+            EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMessageList()
         }
     }
@@ -115,6 +130,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         var eamilMessage = EmailMessageEntity()
                                         eamilMessage.account = AppConfig.instance.emailConfig().account
                                         eamilMessage.msgId = item.id
+                                        eamilMessage.menu = menu
                                         eamilMessage.from = item.from
                                         eamilMessage.to = item.to
                                         eamilMessage.cc = item.cc
@@ -151,7 +167,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                     progressDialog.dismiss()
 
                                 }
-                            },"INBOX")
+                            },menu)
                 }
     }
     override fun initDataFromLocal() {

@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.luck.picture.lib.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="@dimen/x20">
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardView3"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x450"
-        android:layout_margin="@dimen/x10"
-        android:background="@color/white"
-        app:cardCornerRadius="@dimen/x5"
-        app:cardElevation="@dimen/x5"
-        app:layout_constraintTop_toTopOf="parent">
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/x250"
+    android:background="@drawable/email_radius_bg"
+    android:layout_margin="@dimen/x5">
+
         <ImageView
             android:visibility="visible"
             android:id="@+id/iv_picture"
@@ -27,6 +20,7 @@
             android:layout_height="match_parent"
             android:scaleType="center"
             android:src="@mipmap/doc" />
+
         <LinearLayout
             android:id="@+id/ll_check"
             android:layout_width="40dp"
@@ -55,7 +49,7 @@
             android:text="gif"
             android:textColor="@color/white"
             android:textSize="11sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_long_chart"
@@ -67,20 +61,19 @@
             android:text="Long"
             android:textColor="@color/white"
             android:textSize="11sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_duration"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="15dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/buybuybuy"
             android:gravity="center_vertical"
             android:paddingLeft="5dp"
-            android:paddingTop="8dp"
-            android:text="00:00"
+            android:paddingTop="2dp"
+            android:text="10Kb"
             android:textColor="@color/white"
-            android:textSize="11sp"
-            android:visibility="visible" />
-    </android.support.v7.widget.CardView>
-</com.luck.picture.lib.widget.SquareRelativeLayout>
+            android:textSize="10sp"
+            android:visibility="gone" />
+</RelativeLayout>

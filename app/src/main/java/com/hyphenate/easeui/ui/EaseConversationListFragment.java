@@ -45,6 +45,7 @@ import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
+import com.stratagile.pnrouter.entity.events.ChangFragmentMenu;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -83,7 +84,14 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         }
 
     };
-
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            EventBus.getDefault().post(new ChangFragmentMenu("Circle"));
+        }
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         KLog.i("onCreate");

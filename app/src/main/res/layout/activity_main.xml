@@ -62,12 +62,12 @@
                     android:scaleType="centerCrop"
                     android:src="@mipmap/statusbar_leftbar_h" />
                 <LinearLayout
-                    android:id="@+id/emailLook2"
+                    android:id="@+id/rootTitleParent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/typeName"
+                        android:id="@+id/rootTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
@@ -75,7 +75,7 @@
                         android:textColor="@color/textColor"
                         android:textSize="16sp" />
                     <TextView
-                        android:id="@+id/nameTitle"
+                        android:id="@+id/rootName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
