@@ -3208,7 +3208,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
         nodebackedup.setOnClickListener {
             ConstantValue.chooseEmailMenu = 1;
@@ -3222,7 +3222,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
             ConstantValue.chooseEmailMenu = 2;
@@ -3236,7 +3236,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
             ConstantValue.chooseEmailMenu = 3;
@@ -3250,7 +3250,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
             ConstantValue.chooseEmailMenu = 4;
@@ -3264,7 +3264,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
             ConstantValue.chooseEmailMenu = 5;
@@ -3278,7 +3278,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.garbageMenu))
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
@@ -3292,7 +3292,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.sinaMenu[ConstantValue.chooseEmailMenu]))
+            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
@@ -3594,9 +3594,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun initLeftMenu(fragmentMenu:String)
     {
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0)
+        {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost(emailConfigEntity.smtpHost)
+                    .setSmtpPort(emailConfigEntity.smtpPort)
+                    .setPopHost(emailConfigEntity.popHost)
+                    .setPopPort(emailConfigEntity.popPort)
+                    .setImapHost(emailConfigEntity.imapHost)
+                    .setImapPort(emailConfigEntity.imapPort)
+                    .setAccount(emailConfigEntity.account)
+                    .setPassword(emailConfigEntity.password)
+            Inbox.setCount(emailConfigEntity.unReadCount)
+            spam.setCount(emailConfigEntity.garbageCount)
+            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+        }
         if(fragmentMenu == "Circle")
         {
-
+            recyclerViewleftParent.setHeight(0)
         }else{
             var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
             if(emailConfigEntityList.size == 0)
@@ -3609,22 +3626,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 recyclerViewleftParent.setHeight(340)
             }
 
-            var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-            if(emailConfigEntityChoose.size > 0)
-            {
-                var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-                AppConfig.instance.emailConfig()
-                        .setSmtpHost(emailConfigEntity.smtpHost)
-                        .setSmtpPort(emailConfigEntity.smtpPort)
-                        .setPopHost(emailConfigEntity.popHost)
-                        .setPopPort(emailConfigEntity.popPort)
-                        .setImapHost(emailConfigEntity.imapHost)
-                        .setImapPort(emailConfigEntity.imapPort)
-                        .setAccount(emailConfigEntity.account)
-                        .setPassword(emailConfigEntity.password)
-                Inbox.setCount(emailConfigEntity.unReadCount)
-                spam.setCount(emailConfigEntity.garbageCount)
-            }
+
             emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
             emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
                 /*val floatMenu = FloatMenu(this)
@@ -3788,6 +3790,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         var menu = changFragmentMenu.menu
         rootTitle.text = menu;
+        mainTitle.text = menu;
         if(menu== "Circle")
         {
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -3797,15 +3800,65 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     return@forEach
                 }
             }
+            rootName.visibility = View.VISIBLE
             emailMenu.visibility = View.GONE
             newAccount.visibility = View.GONE
             newCricle.visibility = View.VISIBLE
         }else{
-            emailMenu.visibility = View.VISIBLE
+
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
-            rootName.text = AppConfig.instance.emailConfig().account
+            if(AppConfig.instance.emailConfig().account != null)
+            {
+                rootName.visibility = View.VISIBLE
+                rootName.text = AppConfig.instance.emailConfig().account
+                emailMenu.visibility = View.VISIBLE
+                when(ConstantValue.chooseEmailMenu)
+                {
+                    0->
+                    {
+                        rootTitle.text = getString(R.string.Inbox)
+                    }
+                    1->
+                    {
+                        rootTitle.text = getString(R.string.Node_back_up)
+                    }
+                    2->
+                    {
+                        rootTitle.text = getString(R.string.Star)
+                    }
+                    3->
+                    {
+                        rootTitle.text = getString(R.string.Drafts)
+                    }
+                    4->
+                    {
+                        rootTitle.text = getString(R.string.Sent)
+                    }
+                    5->
+                    {
+                        rootTitle.text = getString(R.string.Spam)
+                    }
+                    6->
+                    {
+                        rootTitle.text = getString(R.string.Trash)
+                    }
+                    else ->
+                    {
+
+                    }
+                }
+            }else{
+                rootName.text  = ""
+                rootName.visibility = View.GONE
+                emailMenu.visibility = View.GONE
+                rootTitle.text = getString(R.string.Email)
+            }
+
+
+
         }
+
         initLeftMenu(menu)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

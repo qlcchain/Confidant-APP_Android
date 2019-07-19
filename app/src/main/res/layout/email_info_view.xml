@@ -11,6 +11,77 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/statusBar"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/headmainColor"
+            android:layout_height="@dimen/x104">
+            <LinearLayout
+                android:id="@+id/llCancel"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="@dimen/x40"
+                    android:src="@mipmap/arrow_exit_h"
+                    android:scaleType="centerCrop"
+                    android:layout_marginLeft="@dimen/x5"
+                    android:layout_height="@dimen/x40" />
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/Inbox"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/commemTextSize" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/multiSelectBtn"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/x22"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/backMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginRight="@dimen/x20"
+                    android:drawableLeft="@mipmap/tabbar_backups"
+                    android:textSize="15sp"
+                    android:text=""/>
+                <TextView
+                    android:id="@+id/deleteMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginRight="@dimen/x20"
+                    android:drawableLeft="@mipmap/tabbar_deleted"
+                    android:textSize="15sp"
+                    android:text=""/>
+                <TextView
+                    android:id="@+id/moreMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginRight="@dimen/x10"
+                    android:drawableLeft="@mipmap/statusbar_hedo"
+                    android:textSize="15sp"
+                    android:text=""/>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/x70"
             android:orientation="horizontal">

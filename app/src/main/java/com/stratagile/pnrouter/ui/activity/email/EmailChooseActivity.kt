@@ -37,6 +37,21 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
         setContentView(R.layout.email_choose_activity)
     }
     override fun initData() {
+
+        //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
+        qqCompany.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.qq.com")
+                    .setSmtpPort(465)
+                    .setPopHost("pop.qq.com")
+                    .setPopPort(995)
+                    .setImapHost("imap.qq.com")
+                    .setImapPort(993)
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emainType","1")
+            startActivity(Intent)
+            finish()
+        }
         qq.setOnClickListener {
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.qq.com")
@@ -45,10 +60,12 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.qq.com")
                     .setImapPort(993)
-            startActivity(Intent(this, EmailLoginActivity::class.java))
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emainType","2")
+            startActivity(Intent)
             finish()
         }
-        sina.setOnClickListener {
+        gmail.setOnClickListener {
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.sina.com")
                     .setSmtpPort(465)
@@ -56,7 +73,9 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.sina.com")
                     .setImapPort(993)
-            startActivity(Intent(this, EmailLoginActivity::class.java))
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emainType","4")
+            startActivity(Intent)
             finish()
         }
     }

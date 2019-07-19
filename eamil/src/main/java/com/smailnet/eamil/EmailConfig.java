@@ -27,6 +27,7 @@ package com.smailnet.eamil;
  */
 public class EmailConfig {
 
+    private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
     private int smtpPort;           //SMTP端口
     private int popPort;            //POP端口
     private int imapPort;           //IMAP端口
@@ -36,6 +37,13 @@ public class EmailConfig {
     private String account;         //邮箱帐号
     private String password;        //邮箱密码
 
+    public String getEmailType() {
+        return emailType;
+    }
+
+    public void setEmailType(String emailType) {
+        this.emailType = emailType;
+    }
 
     public EmailConfig setSmtpHost(String smtpHost){
         this.smtpHost = smtpHost;

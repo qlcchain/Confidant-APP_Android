@@ -24,7 +24,7 @@
         android:focusableInTouchMode="true"
         android:hint="@string/Account"
         android:textSize="20sp"
-        android:text="zhanglang108@sina.com"
+        android:text="283619512@qq.com"
         android:layout_marginLeft="4dp"
         android:singleLine="true"
         />

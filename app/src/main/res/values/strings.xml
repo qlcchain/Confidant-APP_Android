@@ -715,5 +715,10 @@
     <string name="Attachment_download_failed">Attachment download failed</string>
     <string name="New_Account">New Account</string>
     <string name="Add_a_New_Circle">Add a New Circle</string>
+    <string name="Mark_Unread">Mark Unread</string>
+    <string name="Star">Star</string>
+    <string name="Node_back_up">Node back up</string>
+    <string name="Move_to">Move to</string>
+    <string name="Delete">Delete</string>
 
 </resources>

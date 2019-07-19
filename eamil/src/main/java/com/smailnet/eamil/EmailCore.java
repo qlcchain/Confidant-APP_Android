@@ -384,6 +384,7 @@ class EmailCore {
         emailMessageList.add(emailData);
         return emailMessageList;
     }
+
     /**
      * 使用IMAP协议接收服务器上的邮件
      * @return
@@ -419,7 +420,13 @@ class EmailCore {
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
-                subject = getSubject((MimeMessage)message);
+                subject = "";
+                try {
+                    subject = getSubject((MimeMessage)message);
+                }catch (Exception e)
+                {
+
+                }
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
@@ -444,14 +451,26 @@ class EmailCore {
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
-                MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                try {
+                    MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                }catch (Exception e)
+                {
+
+                }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = attachmentCount > 0;
                 StringBuffer contentTemp = new StringBuffer(30);
-                getMailTextContent(message, contentTemp);
-                content = contentTemp.toString();
-                contentText = getHtmlText(contentTemp.toString());
+                content = "";
+                contentText = "";
+                try {
+                    getMailTextContent(message, contentTemp);
+                    content = contentTemp.toString();
+                    contentText = getHtmlText(contentTemp.toString());
+                }catch (Exception e)
+                {
+
+                }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);

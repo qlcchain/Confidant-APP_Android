@@ -4,6 +4,8 @@ import android.app.Activity
 import com.hyphenate.chat.EMMessage
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
+import com.stratagile.pnrouter.db.EmailConfigEntity
+import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.LoginReq_V4
 import com.stratagile.pnrouter.entity.ToxFileData
 import java.util.concurrent.ConcurrentHashMap
@@ -122,7 +124,9 @@ object ConstantValue {
         var sendMaxSize = 50000  //发送文字消息的最大字节数 原来是264 * 2，现在是5万
         var chooseEmailMenu = 0;//默认选择收件箱
         var chooseFragMentMenu = "Circle";//默认选择Circle
-        var sinaMenu = arrayOf("INBOX","节点","星标邮件","草稿夹","已发送","垃圾邮件","已删除")
+        var sinaMenu = arrayOf("INBOX","节点","星标邮件","草稿夹","已发送","垃圾邮件","已删除");
+        var qqMenu = arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+        var currentEmailConfigEntity:EmailConfigEntity ?= null
         //1：qq企业邮箱
         //2：qq邮箱
         //3：163邮箱

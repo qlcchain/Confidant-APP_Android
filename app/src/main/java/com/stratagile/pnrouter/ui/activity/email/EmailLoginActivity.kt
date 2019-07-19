@@ -36,15 +36,17 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
 
     @Inject
     internal lateinit var mPresenter: EmailLoginPresenter
+    var emailType: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
-       setContentView(R.layout.email_login_activity)
+        setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
+        emailType = intent.getStringExtra("emailType")
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             Islands
@@ -57,16 +59,16 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
     }
 
     override fun setupActivityComponent() {
-       DaggerEmailLoginComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .emailLoginModule(EmailLoginModule(this))
-               .build()
-               .inject(this)
+        DaggerEmailLoginComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .emailLoginModule(EmailLoginModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: EmailLoginContract.EmailLoginContractPresenter) {
-            mPresenter = presenter as EmailLoginPresenter
-        }
+        mPresenter = presenter as EmailLoginPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -108,11 +110,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                 {
                     var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
                     for (j in localemailConfigEntityList) {
-                       j.choose = false
+                        j.choose = false
                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
                     }
                     var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
                     emailConfigEntity.account = account
+                    emailConfigEntity.emailType = emailType
                     emailConfigEntity.password =  AppConfig.instance.emailConfig().password
                     emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
                     emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
@@ -125,6 +128,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                 }else{
                     var emailConfigEntity: EmailConfigEntity = EmailConfigEntity()
                     emailConfigEntity.account = account
+                    emailConfigEntity.emailType = emailType
                     emailConfigEntity.password =  AppConfig.instance.emailConfig().password
                     emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
                     emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
@@ -133,12 +137,46 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                     emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
                     emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
                     emailConfigEntity.choose = true
+                    when(emailType)
+                    {
+                        "1"->
+                        {
+                            //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                            emailConfigEntity.inboxMenu = "INBOX"
+                            emailConfigEntity.nodeMenu = "节点"
+                            emailConfigEntity.starMenu = ""
+                            emailConfigEntity.drafMenu = "Drafts"
+                            emailConfigEntity.sendMenu = "Sent Messages"
+                            emailConfigEntity.garbageMenu = "Junk"
+                            emailConfigEntity.deleteMenu = "Deleted Messages"
+                        }
+                        "2"->
+                        {
+                            //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                            emailConfigEntity.inboxMenu = "INBOX"
+                            emailConfigEntity.nodeMenu = "节点"
+                            emailConfigEntity.starMenu = ""
+                            emailConfigEntity.drafMenu = "Drafts"
+                            emailConfigEntity.sendMenu = "Sent Messages"
+                            emailConfigEntity.garbageMenu = "Junk"
+                            emailConfigEntity.deleteMenu = "Deleted Messages"
+                        }
+                        "3"->
+                        {
+
+                        }
+                        "4"->
+                        {
+
+                        }
+                    }
+
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
                 }
                 EventBus.getDefault().post(ChangeEmailConfig())
                 sycDataCountIMAP()
-               /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
-                finish()*/
+                /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
+                 finish()*/
             }
 
             override fun loginFailure(errorMsg: String) {
@@ -164,7 +202,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                             .imapReceiveAsynCount(this, object : GetCountCallback {
                                 override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
                                     progressDialog.dismiss()
-                                    Toast.makeText(AppConfig.instance, "邮件总数：" + count , Toast.LENGTH_SHORT).show()
                                     if(messageList.size >0)
                                     {
                                         var emailMessage = messageList.get(0)
@@ -176,12 +213,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                                             var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
                                             emailConfigEntity.unReadCount = emailMessage.unReadCount
                                             emailConfigEntity.garbageCount = emailMessage.garbageCount
-                                            emailConfigEntity.unReadMenu = "未读邮件"
-                                            emailConfigEntity.starMenu = "星标邮件"
-                                            emailConfigEntity.drafMenu = "草稿夹"
-                                            emailConfigEntity.sendMenu = "已发送"
-                                            emailConfigEntity.garbageMenu = "垃圾邮件"
-                                            emailConfigEntity.deleteMenu = "已删除"
                                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }
                                     }

@@ -7,20 +7,25 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ImageButton
-        android:id="@+id/qq"
+    <ImageView
+        android:id="@+id/qqCompany"
         android:layout_width="match_parent"
         android:layout_height="82dp"
         android:background="@color/white"
         android:contentDescription="Video Call Friend"
         android:gravity="left"
-        android:onClick="onClickVideoCall"
+        android:src="@mipmap/qqcompany" />
+    />
+    <ImageView
+        android:id="@+id/qq"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:background="@color/white"
+        android:gravity="left"
         android:src="@mipmap/qq" />
         />
-
-    <ImageButton
-        android:id="@+id/sina"
+    <ImageView
+        android:id="@+id/gmail"
         android:layout_marginTop="@dimen/x5"
         android:layout_width="match_parent"
         android:layout_height="82dp"
@@ -28,7 +33,7 @@
         android:contentDescription="Video Call Friend"
         android:gravity="left"
         android:onClick="onClickVideoCall"
-        android:src="@mipmap/sina" />
+        android:src="@mipmap/gmail" />
     />
 
 </LinearLayout>

@@ -23,21 +23,22 @@ public class EmailConfigEntity implements Parcelable{
     private String popHost;         //POP的Host
     private String imapHost;        //IMAP的Host
     private String account;         //邮箱帐号
+    private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
     private String password;        //邮箱密码
     private int unReadCount;        //未读数量
     private int garbageCount;       //垃圾未读邮件总数
-    private String unReadMenu;        //未读菜单名称
-    private String starMenu;        //未读菜单名称
-    private String drafMenu;        //未读菜单名称
-    private String sendMenu;        //未读菜单名称
-    private String garbageMenu;        //未读菜单名称
-    private String deleteMenu;        //未读菜单名称
+    private String inboxMenu;        //收件箱
+    private String nodeMenu;        //节点菜单
+    private String starMenu;        //星标
+    private String drafMenu;        //草稿
+    private String sendMenu;        //已发送
+    private String garbageMenu;      //垃圾邮件
+    private String deleteMenu;       //已删除
     private Boolean isChoose;        //是否默认邮箱
 
     public EmailConfigEntity() {
 
     }
-
 
     protected EmailConfigEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -52,10 +53,12 @@ public class EmailConfigEntity implements Parcelable{
         popHost = in.readString();
         imapHost = in.readString();
         account = in.readString();
+        emailType = in.readString();
         password = in.readString();
         unReadCount = in.readInt();
         garbageCount = in.readInt();
-        unReadMenu = in.readString();
+        inboxMenu = in.readString();
+        nodeMenu = in.readString();
         starMenu = in.readString();
         drafMenu = in.readString();
         sendMenu = in.readString();
@@ -65,12 +68,11 @@ public class EmailConfigEntity implements Parcelable{
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
-
-    @Generated(hash = 128457702)
+    @Generated(hash = 339666796)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
-            String popHost, String imapHost, String account, String password, int unReadCount,
-            int garbageCount, String unReadMenu, String starMenu, String drafMenu, String sendMenu,
-            String garbageMenu, String deleteMenu, Boolean isChoose) {
+            String popHost, String imapHost, String account, String emailType, String password,
+            int unReadCount, int garbageCount, String inboxMenu, String nodeMenu, String starMenu,
+            String drafMenu, String sendMenu, String garbageMenu, String deleteMenu, Boolean isChoose) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -79,10 +81,12 @@ public class EmailConfigEntity implements Parcelable{
         this.popHost = popHost;
         this.imapHost = imapHost;
         this.account = account;
+        this.emailType = emailType;
         this.password = password;
         this.unReadCount = unReadCount;
         this.garbageCount = garbageCount;
-        this.unReadMenu = unReadMenu;
+        this.inboxMenu = inboxMenu;
+        this.nodeMenu = nodeMenu;
         this.starMenu = starMenu;
         this.drafMenu = drafMenu;
         this.sendMenu = sendMenu;
@@ -167,29 +171,20 @@ public class EmailConfigEntity implements Parcelable{
         this.account = account;
     }
 
+    public String getEmailType() {
+        return emailType;
+    }
+
+    public void setEmailType(String emailType) {
+        this.emailType = emailType;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Boolean getChoose() {
-        return isChoose;
-    }
-
-    public void setChoose(Boolean choose) {
-        isChoose = choose;
-    }
-
-
-    public Boolean getIsChoose() {
-        return this.isChoose;
-    }
-
-    public void setIsChoose(Boolean isChoose) {
-        this.isChoose = isChoose;
     }
 
     public int getUnReadCount() {
@@ -200,14 +195,28 @@ public class EmailConfigEntity implements Parcelable{
         this.unReadCount = unReadCount;
     }
 
-
-
-    public String getUnReadMenu() {
-        return unReadMenu;
+    public int getGarbageCount() {
+        return garbageCount;
     }
 
-    public void setUnReadMenu(String unReadMenu) {
-        this.unReadMenu = unReadMenu;
+    public void setGarbageCount(int garbageCount) {
+        this.garbageCount = garbageCount;
+    }
+
+    public String getInboxMenu() {
+        return inboxMenu;
+    }
+
+    public void setInboxMenu(String inboxMenu) {
+        this.inboxMenu = inboxMenu;
+    }
+
+    public String getNodeMenu() {
+        return nodeMenu;
+    }
+
+    public void setNodeMenu(String nodeMenu) {
+        this.nodeMenu = nodeMenu;
     }
 
     public String getStarMenu() {
@@ -250,12 +259,12 @@ public class EmailConfigEntity implements Parcelable{
         this.deleteMenu = deleteMenu;
     }
 
-    public int getGarbageCount() {
-        return garbageCount;
+    public Boolean getChoose() {
+        return isChoose;
     }
 
-    public void setGarbageCount(int garbageCount) {
-        this.garbageCount = garbageCount;
+    public void setChoose(Boolean choose) {
+        isChoose = choose;
     }
 
     @Override
@@ -278,15 +287,25 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(popHost);
         dest.writeString(imapHost);
         dest.writeString(account);
+        dest.writeString(emailType);
         dest.writeString(password);
         dest.writeInt(unReadCount);
         dest.writeInt(garbageCount);
-        dest.writeString(unReadMenu);
+        dest.writeString(inboxMenu);
+        dest.writeString(nodeMenu);
         dest.writeString(starMenu);
         dest.writeString(drafMenu);
         dest.writeString(sendMenu);
         dest.writeString(garbageMenu);
         dest.writeString(deleteMenu);
         dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
+    }
+
+    public Boolean getIsChoose() {
+        return this.isChoose;
+    }
+
+    public void setIsChoose(Boolean isChoose) {
+        this.isChoose = isChoose;
     }
 }

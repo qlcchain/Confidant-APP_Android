@@ -312,7 +312,57 @@ object PopWindowUtil {
                 .create()
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showPopMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
+        ll_file.visibility = View.GONE
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+        var list = arrayListOf<FileOpreateType>();
+        var size = menuList.size
+        for (index in 0..size -1){
+            list.add(FileOpreateType(iconList[index], menuList[index]))
+        }
+       /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+        list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+        list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+        val selecRouterAdapter = FileChooseOpreateAdapter(list)
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        maskView.setOnSystemUiVisibilityChangeListener {
+            KLog.i("改变了。。。")
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
 
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
     fun getFileOpreateType(context: Activity) : ArrayList<FileOpreateType> {
         var list = ArrayList<FileOpreateType>()
         list.add(FileOpreateType("forward_h", context.getString(R.string.send_to_friend)))

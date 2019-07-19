@@ -6,20 +6,13 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
 import android.view.View
 import android.webkit.*
 import android.widget.Toast
 import com.hyphenate.easeui.utils.PathUtils
-import com.pawegio.kandroid.setHeight
-import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
 import com.smailnet.eamil.Callback.GetAttachCallback
-import com.smailnet.eamil.Callback.GetReceiveCallback
-import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
-import com.smailnet.eamil.Utils.MailUtil
-import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -34,12 +27,10 @@ import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.DateUtil
+import com.stratagile.pnrouter.utils.PopWindowUtil
 import kotlinx.android.synthetic.main.email_info_view.*
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 /**
  * @author zl
@@ -56,6 +47,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var emaiInfoAdapter : EmaiInfoAdapter? = null
     var emaiAttachAdapter : EmaiAttachAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -125,7 +117,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
 
         var titleStr = intent.getStringExtra("title")
-        title.text = getString(R.string.Inbox)
+        tvTitle.text = getString(R.string.Inbox)
         attach_info.text = getString(R.string.details)
         details.visibility = View.GONE
         inboxTitle.text = emailMeaasgeData!!.subject
@@ -198,6 +190,38 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             /* var intent = Intent(activity!!, ConversationActivity::class.java)
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
              startActivity(intent)*/
+        }
+
+        moreMenu.setOnClickListener {
+
+            /*list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+            list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+            list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+            var menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
+            var iconArray = arrayListOf<String>("sheet_mark","tabbar_attach_selected","statusbar_download_node","sheet_move","tabbar_deleted")
+            PopWindowUtil.showPopMenuWindow(this@EmailInfoActivity, moreMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    when (position) {
+                        0 -> {
+
+                        }
+                        1 -> {
+
+                        }
+                        2 -> {
+
+                        }
+                        3 -> {
+
+                        }
+                        4 -> {
+
+                        }
+                    }
+                }
+
+            })
         }
         val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {

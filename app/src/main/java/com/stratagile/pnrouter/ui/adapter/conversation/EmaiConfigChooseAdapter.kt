@@ -31,7 +31,7 @@ class EmaiConfigChooseAdapter(arrayList: MutableList<EmailConfigEntity>) : BaseQ
         menuItemView.setText(item.account)
 
         var choose = helper.getView<TextView>(R.id.choose)
-        if(item.isChoose )
+        if(item!!.choose )
         {
             choose.visibility = View.VISIBLE
         }else{
