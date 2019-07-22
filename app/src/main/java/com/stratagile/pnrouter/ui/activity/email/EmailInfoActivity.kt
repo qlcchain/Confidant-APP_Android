@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
@@ -77,6 +78,18 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+            emaiAttachAdapter = EmaiAttachAdapter(attachList)
+            emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                true
+            }
+            recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
+            recyclerViewAttach.adapter = emaiAttachAdapter
+            emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                 intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                 startActivity(intent)*/
+            }
             var isDownload = false
             var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
             var i = 0;
@@ -117,13 +130,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                         },menu,msgId,save_dir)
             }
 
-           /*Islands.circularProgress(this)
-                    .setCancelable(false)
-                    .setMessage("附件下载中...")
-                    .show()
-                    .run { progressDialog ->
 
-                    }*/
         }
 
         var titleStr = intent.getStringExtra("title")
@@ -185,18 +192,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
 
 
-        emaiAttachAdapter = EmaiAttachAdapter(emailConfigEntityList)
-        emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
-            true
-        }
-        recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
-        recyclerViewAttach.adapter = emaiAttachAdapter
-        emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-            /* var intent = Intent(activity!!, ConversationActivity::class.java)
-             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-             startActivity(intent)*/
-        }
         backBtn.setOnClickListener {
 
             onBackPressed()
@@ -337,6 +333,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
         webSettings.javaScriptEnabled = true // 设置支持javascript脚本
+        webSettings.setTextSize(WebSettings.TextSize.LARGER)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setSupportZoom(true)// 设置可以支持缩放
         webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
