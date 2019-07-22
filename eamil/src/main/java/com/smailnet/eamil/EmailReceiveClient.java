@@ -21,10 +21,12 @@ import android.app.Activity;
 import com.smailnet.eamil.Callback.GetAttachCallback;
 import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
+import com.smailnet.eamil.Callback.MarkCallback;
 
 import java.io.IOException;
 import java.util.List;
 
+import javax.mail.Flags;
 import javax.mail.MessagingException;
 
 /**
@@ -189,6 +191,42 @@ public class EmailReceiveClient {
                         @Override
                         public void run() {
                             getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
+     * 使用imap协议接收邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void imapMarkEmail(final Activity activity, final MarkCallback getReceiveCallback, final String menu, final String uid, final int flag,final boolean value, final String toMenu){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final boolean result = Operator.Core(emailConfig).imapMarkMail(menu,uid,flag,value,toMenu);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(result);
                         }
                     });
                 } catch (final MessagingException e) {

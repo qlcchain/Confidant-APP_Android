@@ -41,11 +41,11 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
         //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
         qqCompany.setOnClickListener {
             AppConfig.instance.emailConfig()
-                    .setSmtpHost("smtp.qq.com")
+                    .setSmtpHost("smtp.exmail.qq.com")
                     .setSmtpPort(465)
-                    .setPopHost("pop.qq.com")
+                    .setPopHost("pop.exmail.qq.com")
                     .setPopPort(995)
-                    .setImapHost("imap.qq.com")
+                    .setImapHost("imap.exmail.qq.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","1")

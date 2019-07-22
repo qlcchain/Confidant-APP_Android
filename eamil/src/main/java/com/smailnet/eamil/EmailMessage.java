@@ -31,6 +31,7 @@ public class EmailMessage {
     private String bcc;//密送
     private String date;
     private boolean isSeen;
+    private boolean isStar;
     private String priority;
     private boolean isReplySign;
     private long size;
@@ -46,7 +47,7 @@ public class EmailMessage {
 
     }
 
-    public   EmailMessage(String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
+    public   EmailMessage(String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen,boolean isStar, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
         this.id = id;
         this.subject = subject;
         this.from = from;
@@ -55,6 +56,7 @@ public class EmailMessage {
         this.bcc = bcc;
         this.date = date;
         this.isSeen = isSeen;
+        this.isStar = isStar;
         this.priority = priority;
         this.isReplySign = isReplySign;
         this.size = size;
@@ -142,6 +144,14 @@ public class EmailMessage {
 
     public void setSeen(boolean seen) {
         isSeen = seen;
+    }
+
+    public boolean isStar() {
+        return isStar;
+    }
+
+    public void setStar(boolean star) {
+        isStar = star;
     }
 
     public String getPriority() {

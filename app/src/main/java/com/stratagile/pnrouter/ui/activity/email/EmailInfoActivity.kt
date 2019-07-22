@@ -11,12 +11,14 @@ import android.webkit.*
 import android.widget.Toast
 import com.hyphenate.easeui.utils.PathUtils
 import com.smailnet.eamil.Callback.GetAttachCallback
+import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
@@ -28,6 +30,7 @@ import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.email_info_view.*
 import java.io.File
 import javax.inject.Inject
@@ -44,6 +47,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     @Inject
     internal lateinit var mPresenter: EmailInfoPresenter
     var emailMeaasgeData:EmailMessageEntity? = null
+    var menu:String= "INBOX"
     var emaiInfoAdapter : EmaiInfoAdapter? = null
     var emaiAttachAdapter : EmaiAttachAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,12 +61,18 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
     override fun initData() {
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
+        menu = intent.getStringExtra("menu")
         var msgId = emailMeaasgeData!!.msgId
         var to = emailMeaasgeData!!.to
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
         var attachCount = emailMeaasgeData!!.attachmentCount
-
+        if(emailMeaasgeData!!.isStar())
+        {
+            inboxStar.visibility =View.VISIBLE
+        }else{
+            inboxStar.visibility =View.GONE
+        }
         if(attachCount > 0)
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
@@ -104,7 +114,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                 closeProgressDialog()
                                 Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                             }
-                        },"INBOX",msgId,save_dir)
+                        },menu,msgId,save_dir)
             }
 
            /*Islands.circularProgress(this)
@@ -161,10 +171,6 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
             }
         }
-        emailConfigEntityList = ArrayList<EmailInfoData>()
-        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
-        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
-        emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         emaiInfoAdapter = EmaiInfoAdapter(emailConfigEntityList)
         emaiInfoAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
@@ -191,32 +197,124 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
              startActivity(intent)*/
         }
+        backBtn.setOnClickListener {
+
+            onBackPressed()
+        }
+        backMenu.setOnClickListener {
+
+
+        }
+        deleteMenu.setOnClickListener {
+
+        }
+
+        if(emailMeaasgeData!!.isSeen())
+        {
+            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+            emailReceiveClient
+                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                        override fun gainSuccess(result: Boolean) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            emailMeaasgeData!!.setIsSeen(false)
+                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                        }
+                        override fun gainFailure(errorMsg: String) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
+                    },menu,msgId,32,true,"")
+        }
 
         moreMenu.setOnClickListener {
 
             /*list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
             list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
             list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+            var starIcon = "tabbar_attach_selected"
+            var starFlag = false;
+            if(emailMeaasgeData!!.isStar())
+            {
+                starIcon = "tabbar_stars_selected"
+                starFlag = true
+            }
             var menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-            var iconArray = arrayListOf<String>("sheet_mark","tabbar_attach_selected","statusbar_download_node","sheet_move","tabbar_deleted")
+            var iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
             PopWindowUtil.showPopMenuWindow(this@EmailInfoActivity, moreMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     when (position) {
                         0 -> {
+                            showProgressDialog(getString(R.string.loading))
+                            /*tipDialog.show()*/
+                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
+                            emailReceiveClient
+                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                        override fun gainSuccess(result: Boolean) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                            emailMeaasgeData!!.setIsSeen(false)
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                        }
+                                        override fun gainFailure(errorMsg: String) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                        }
+                                    },menu,msgId,32,false,"")
                         }
                         1 -> {
+                            showProgressDialog(getString(R.string.loading))
+                            /*tipDialog.show()*/
+                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
+                            emailReceiveClient
+                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                        override fun gainSuccess(result: Boolean) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                            emailMeaasgeData!!.setIsStar(!starFlag)
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                            if(emailMeaasgeData!!.isStar())
+                                            {
+                                                inboxStar.visibility =View.VISIBLE
+                                            }else{
+                                                inboxStar.visibility =View.GONE
+                                            }
+                                        }
+                                        override fun gainFailure(errorMsg: String) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                        }
+                                    },menu,msgId,8,!starFlag,"")
                         }
                         2 -> {
 
                         }
                         3 -> {
-
+                            showMovePop()
                         }
                         4 -> {
+                            showProgressDialog(getString(R.string.loading))
+                            /*tipDialog.show()*/
+                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
+                            emailReceiveClient
+                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                        override fun gainSuccess(result: Boolean) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                        }
+                                        override fun gainFailure(errorMsg: String) {
+                                            //tipDialog.dismiss()
+                                            closeProgressDialog()
+                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                        }
+                                    },menu,msgId,2,true,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
                         }
                     }
                 }
@@ -313,6 +411,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
+    fun showMovePop()
+    {
+        moreMenu.performClick();
+    }
     fun initAttachUI()
     {
 
@@ -333,7 +435,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     override fun showProgressDialog() {
         progressDialog.show()
     }
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
     override fun closeProgressDialog() {
         progressDialog.hide()
     }

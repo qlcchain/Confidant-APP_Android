@@ -73,6 +73,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
             var intent = Intent(activity!!, EmailInfoActivity::class.java)
             intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
+            intent.putExtra("menu", menu)
             startActivity(intent)
         }
         refreshLayout.setOnRefreshListener {
@@ -117,7 +118,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         Log.i("pullMessageList",account +":"+smtpHost)
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
-        if(localEmailMessage.size == 0)
+        if(true)
         {
             Islands.circularProgress(this.activity)
                     .setCancelable(false)
@@ -144,6 +145,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
                                             eamilMessage.setAttachmentCount(item.attachmentCount)
                                             eamilMessage.setIsSeen(item.isSeen)
+                                            eamilMessage.setIsStar(item.isStar)
                                             eamilMessage.setIsReplySign(item.isReplySign)
                                             eamilMessage.subject = item.subject
                                             eamilMessage.content= item.content

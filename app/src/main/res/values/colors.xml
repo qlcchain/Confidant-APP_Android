@@ -8,6 +8,7 @@
     <color name="emailtextColor">#1E1E24</color>
     <color name="loginbtnColor">#6646F7</color>
     <color name="contentColor">#9496A1</color>
+    <color name="sentBtnbgColor">#E6E6E6</color>
     <color name="c_2A292B">#2A292B</color>
 
     <color name="timetextColor">#9B9B9B</color>
@@ -54,6 +55,7 @@
     <color name="color_666666">#666666</color>
     <color name="color_7f807f">#7F807F</color>
     <color name="color_test">#14803426</color>
+    <color name="btnstroke">#4A4E5C</color>
 
 
 </resources>

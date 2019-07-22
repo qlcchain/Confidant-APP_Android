@@ -322,7 +322,7 @@ class EmailCore {
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
             contentText = getHtmlText(contentTemp.toString());
-            EmailMessage emailMessage = new EmailMessage("",subject, from, to,"","", date,true,"",true,0,true,2, content,contentText);
+            EmailMessage emailMessage = new EmailMessage("",subject, from, to,"","", date,true,false,"",true,0,true,2, content,contentText);
             emailMessageList.add(emailMessage);
             Log.i("POP3", "邮件subject："+subject +"  时间："+date);
             File file = Environment.getExternalStorageDirectory();
@@ -410,7 +410,7 @@ class EmailCore {
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
         String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isReplySign,isContainerAttachment;
+        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
@@ -437,6 +437,7 @@ class EmailCore {
                 date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
+                isStar = isStar((MimeMessage)message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -472,7 +473,7 @@ class EmailCore {
 
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
@@ -538,6 +539,65 @@ class EmailCore {
         folder.close(false);
         imapStore.close();
         return mailAttachments;
+    }
+    /**
+     * 使用IMAP协议接收服务器上的邮件附件
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean imapMarkMail(String menu,String uid,int flag,boolean value,String toMenu) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        imapStore.connect(imapHost, account, password);
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
+        IMAPFolder folderTo = (IMAPFolder) imapStore.getFolder(toMenu);
+        folder.open(Folder.READ_WRITE);
+        try {
+            Message message= folder.getMessageByUID(Long.valueOf(uid));
+            //设置标记
+            switch (flag)
+            {
+                case 1:
+                    message.setFlag(Flags.Flag.ANSWERED,value);
+                    break;
+                case 2:
+                    if(folderTo!=null){
+                        folderTo.open(Folder.READ_WRITE);
+                        folder.copyMessages(new Message[]{message}, folderTo);
+                    }
+                    message.setFlag(Flags.Flag.DELETED,value);
+                    break;
+                case 4:
+                    message.setFlag(Flags.Flag.DRAFT,value);
+                    break;
+                case 8:
+                    message.setFlag(Flags.Flag.FLAGGED,value);
+                    break;
+                case 16:
+                    message.setFlag(Flags.Flag.RECENT,value);
+                    break;
+                case 32:
+                    message.setFlag(Flags.Flag.SEEN,value);
+                    break;
+            }
+
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+            if(folder!=null && folder.isOpen()){
+                folder.close(false);
+            }
+            if(folderTo!=null && folderTo.isOpen()){
+                folderTo.close(true);
+            }
+            imapStore.close();
+
+
+
+        }
+        return false;
     }
     /**
      *
@@ -688,6 +748,15 @@ class EmailCore {
      */
     public static boolean isSeen(MimeMessage msg) throws MessagingException {
         return msg.getFlags().contains(Flags.Flag.SEEN);
+    }
+    /**
+     * 判断邮件是否星标
+     * @param msg 邮件内容
+     * @return 如果邮件已读返回true,否则返回false
+     * @throws MessagingException
+     */
+    public static boolean isStar(MimeMessage msg) throws MessagingException {
+        return msg.getFlags().contains(Flags.Flag.FLAGGED);
     }
     /**
      * ---判断此邮件是否已读，如果未读返回返回false,反之返回true---

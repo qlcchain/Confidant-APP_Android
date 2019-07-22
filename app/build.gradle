@@ -132,7 +132,7 @@ android {
     }
 }
 greendao {
-    schemaVersion 60//数据库版本号
+    schemaVersion 61//数据库版本号
     daoPackage 'com.stratagile.pnrouter.db'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
     //targetGenDirTest：设置生成单元测试目录
@@ -189,7 +189,7 @@ dependencies {
 
     //implementation 'org.greenrobot:eventbus:3.1.1'
     implementation files('libs/klogLibrary-release.aar')
-
+    implementation files('libs/MagicIndicator-1.5.0.aar')
     // Rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
@@ -247,7 +247,7 @@ dependencies {
 
     //    implementation files('libs/hmssdk-push-2.6.3.301.jar')
     implementation 'com.huawei.android.hms:push:2.6.3.301'
-    compile 'com.github.hackware1993:MagicIndicator:1.5.0'
+    //compile 'com.github.hackware1993:MagicIndicator:1.5.0'
     implementation 'top.zibin:Luban:1.1.8'
     implementation 'com.github.mailhu:islands:2.0'
 }
