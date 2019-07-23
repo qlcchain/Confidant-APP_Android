@@ -78,28 +78,19 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-            emaiAttachAdapter = EmaiAttachAdapter(attachList)
-            emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
-                true
-            }
-            recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
-            recyclerViewAttach.adapter = emaiAttachAdapter
-            emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                /* var intent = Intent(activity!!, ConversationActivity::class.java)
-                 intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-                 startActivity(intent)*/
-            }
-            var isDownload = false
+            var isDownload = true
             var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
             var i = 0;
-            for (accach in attachList)
+            for (attach in attachList)
             {
-                var file = File(save_dir+accach.account+"_"+accach.name)
-                if(file.exists())
+                var file = File(save_dir+attach.account+"_"+attach.name)
+                if(!file.exists())
                 {
-                    isDownload = true
+                    isDownload = false
                 }
+                attach.localPath = save_dir+attach.account+"_"+attach.name
+                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
                 /*var inputStream = ByteArrayInputStream(accach.data);
                 var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
                 listAccath.add(mailAttachment)*/
@@ -121,6 +112,21 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                             override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
                                 //tipDialog.dismiss()
                                 closeProgressDialog()
+                                runOnUiThread {
+                                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                                    emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                                    emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                                        true
+                                    }
+                                    recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                                    recyclerViewAttach.adapter = emaiAttachAdapter
+                                    emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                                        /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                                         intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                                         startActivity(intent)*/
+                                    }
+                                }
                             }
                             override fun gainFailure(errorMsg: String) {
                                 //tipDialog.dismiss()
@@ -128,6 +134,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                 Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                             }
                         },menu,msgId,save_dir)
+            }else{
+                attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                    true
+                }
+                recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
+                recyclerViewAttach.adapter = emaiAttachAdapter
+                emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                     intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                     startActivity(intent)*/
+                }
             }
 
 

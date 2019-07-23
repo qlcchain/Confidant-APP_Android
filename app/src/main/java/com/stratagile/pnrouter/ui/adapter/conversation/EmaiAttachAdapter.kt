@@ -21,10 +21,14 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
 
     var isChooseMode = false
     override fun convert(helper: BaseViewHolder, item: EmailAttachEntity) {
-       /* var iv_picture = helper.getView<ImageView>(R.id.iv_picture)
+        var iv_picture = helper.getView<ImageView>(R.id.iv_picture)
         val file = File(item.localPath)
         val uri = Uri.fromFile(file)
-        iv_picture.setImageURI(uri)*/
+        iv_picture.setImageURI(uri)
+        var tv_long_chart = helper.getView<TextView>(R.id.tv_long_chart)
+        var size = (file.length() / 1000).toInt();
+        tv_long_chart.setText(size.toString()  +" KB")
+
 
     }
 

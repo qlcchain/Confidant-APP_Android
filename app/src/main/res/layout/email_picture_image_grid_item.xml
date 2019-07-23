@@ -11,7 +11,7 @@
             android:id="@+id/iv_picture"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="center"
+            android:scaleType="fitCenter"
             android:src="@drawable/email_ic_placeholder" />
         <ImageView
             android:visibility="gone"
@@ -49,19 +49,20 @@
             android:text="gif"
             android:textColor="@color/white"
             android:textSize="11sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_long_chart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x15"
+            android:layout_marginBottom="@dimen/x5"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/gif_tag"
-            android:text="Long"
+            android:layout_alignParentLeft="true"
+            android:text="10 KB"
             android:textColor="@color/white"
             android:textSize="11sp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_duration"
@@ -73,7 +74,8 @@
             android:paddingLeft="5dp"
             android:paddingTop="2dp"
             android:text="10Kb"
+            android:alpha="0.4"
             android:textColor="@color/white"
             android:textSize="10sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 </RelativeLayout>

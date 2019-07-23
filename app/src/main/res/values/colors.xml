@@ -10,9 +10,9 @@
     <color name="contentColor">#9496A1</color>
     <color name="sentBtnbgColor">#E6E6E6</color>
     <color name="c_2A292B">#2A292B</color>
-
-    <color name="timetextColor">#9B9B9B</color>
     <color name="attachColor">#A29B9B9B</color>
+    <color name="timetextColor">#9B9B9B</color>
+    <color name="whiteColor">#faf8f8</color>
 
     <color name="colorPrimaryDark">#999999</color>
     <color name="colorAccent">#2c2c2c</color>
