@@ -49,21 +49,21 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
         if (view == null) {
             viewHolder = new ViewHolder();
             view = LayoutInflater.from(mContext).inflate(R.layout.email_item_contact, null);
-            viewHolder.tvTitle = (TextView) view.findViewById(R.id.tv_city_name);
+            viewHolder.tvTitle = (TextView) view.findViewById(R.id.message);
             view.setTag(viewHolder);
-            viewHolder.tvLetter = (TextView) view.findViewById(R.id.tv_catagory);
+            //viewHolder.tvLetter = (TextView) view.findViewById(R.id.tv_catagory);
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
 
         int section = getSectionForPosition(position);
 
-        if (position == getPositionForSection(section)) {
+        /*if (position == getPositionForSection(section)) {
             viewHolder.tvLetter.setVisibility(View.GONE);
             viewHolder.tvLetter.setText(mContent.getSortLetters());
         } else {
             viewHolder.tvLetter.setVisibility(View.GONE);
-        }
+        }*/
 
         viewHolder.tvTitle.setText(this.list.get(position).getName());
 
@@ -73,7 +73,7 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
 
 
     final static class ViewHolder {
-        TextView tvLetter;
+        //TextView tvLetter;
         TextView tvTitle;
     }
 

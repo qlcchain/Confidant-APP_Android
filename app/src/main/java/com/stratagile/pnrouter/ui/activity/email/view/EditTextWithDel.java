@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.email.view;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +22,7 @@ import com.stratagile.pnrouter.R;
  * @date: 2016-03-01
  * @time: 15:59
  */
-public class EditTextWithDel extends AppCompatTextView {
+public class EditTextWithDel extends AppCompatEditText {
     private final static String TAG = "EditTextWithDel";
     private Drawable imgLeft,imgAble;
     private Context mContext;
