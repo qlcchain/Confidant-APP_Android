@@ -225,6 +225,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
         }
 
+        forWardbtn.setOnClickListener {
+            var intent = Intent(this, SelectEmailFriendActivity::class.java)
+            startActivity(intent)
+        }
         if(emailMeaasgeData!!.isSeen())
         {
             val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
