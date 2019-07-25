@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -25,6 +26,7 @@ import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.socks.library.KLog
@@ -35,6 +37,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
@@ -106,6 +109,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_DING_MSG = 4
     protected val REQUEST_CODE_FILE = 5
     protected val REQUEST_CODE_VIDEO = 6
+    protected val CHOOSE_PIC = 88 //选择原图还是压缩图
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -647,6 +651,60 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         return if (window.superDispatchTouchEvent(ev)) {
             true
         } else onTouchEvent(ev)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
+                if (cameraFile != null && cameraFile!!.exists()) {
+
+                }
+            } else if (requestCode == REQUEST_CODE_VIDEO) {
+                if (videoFile != null && videoFile!!.exists()) {
+                    var videoFilePath = videoFile!!.getAbsolutePath()
+                }
+            } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
+                KLog.i("选照片或者视频返回。。。")
+                val list = data!!.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+                KLog.i(list)
+                if (list != null && list.size > 0) {
+
+                    Thread {
+                        for (i in list.indices) {
+                            if (list[i].pictureType.contains("image")) {
+
+                            } else {
+                                //发视频
+
+                            }
+                            try {
+                                Thread.sleep(1000)
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
+                            }
+
+                        }
+                    }.start()
+                } else {
+                    Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
+                }
+            } else if (requestCode == REQUEST_CODE_FILE) {
+
+                if (data!!.hasExtra("path")) {
+                    val filePath = data.getStringExtra("path")
+                    if (filePath != null) {
+                        val file = File(filePath)
+                        val md5Data = ""
+                        if (file.exists()) {
+                            //sendFileMessage(filePath)
+                        }
+                    }
+                } else {
+                    val fileData = data.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("fileData")
+                    //sendFileFileForward(fileData)
+                }
+            }
+        }
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent
