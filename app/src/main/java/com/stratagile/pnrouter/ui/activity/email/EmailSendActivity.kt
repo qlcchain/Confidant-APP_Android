@@ -3,14 +3,11 @@ package com.stratagile.pnrouter.ui.activity.email
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -21,7 +18,7 @@ import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailSendPresenter
 import com.stratagile.pnrouter.ui.activity.email.view.ColorPickerView
 import com.stratagile.pnrouter.ui.activity.email.view.RichEditor
-import kotlinx.android.synthetic.main.email_rich_edit.*
+import kotlinx.android.synthetic.main.email_send_edit.*
 
 import javax.inject.Inject;
 
@@ -76,7 +73,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
 
     override fun initView() {
-        setContentView(R.layout.email_rich_edit)
+        setContentView(R.layout.email_send_edit)
     }
     override fun initData() {
         initUI()
