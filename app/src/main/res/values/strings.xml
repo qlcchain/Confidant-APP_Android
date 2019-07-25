@@ -722,6 +722,6 @@
     <string name="Delete">Delete</string>
     <string name="Reply">Reply</string>
     <string name="Recent_contacts">Recent contacts</string>
-
-
+    <string name="Subject">Subject</string>
+    <string name="Compose_email">Compose email</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.utils
 
 import android.app.Activity
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Gravity
@@ -27,9 +28,11 @@ import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.adapter.file.SelectPictureAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
+import com.stratagile.pnrouter.ui.adapter.popwindow.FileMenuOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
+import kotlinx.android.synthetic.main.email_send_edit.*
 
 import java.util.ArrayList
 
@@ -341,6 +344,56 @@ object PopWindowUtil {
         list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
         val selecRouterAdapter = FileChooseOpreateAdapter(list)
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        maskView.setOnSystemUiVisibilityChangeListener {
+            KLog.i("改变了。。。")
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showPopAttachMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_menu_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
+        ll_file.visibility = View.GONE
+        recyclerView.layoutManager = GridLayoutManager(AppConfig.instance, 4)
+        var list = arrayListOf<FileOpreateType>();
+        var size = menuList.size
+        for (index in 0..size -1){
+            list.add(FileOpreateType(iconList[index], menuList[index]))
+        }
+        /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+         list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+        val selecRouterAdapter = FileMenuOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])

@@ -3,18 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/x260"
+    android:id="@+id/itemParent"
     android:background="@drawable/email_radius_bg"
     android:layout_margin="@dimen/x3">
 
-        <ImageView
-            android:visibility="visible"
-            android:id="@+id/iv_picture"
-            android:layout_marginTop="@dimen/x2"
-            android:layout_marginBottom="@dimen/x2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/email_ic_placeholder" />
+    <ImageView
+        android:visibility="visible"
+        android:id="@+id/iv_picture"
+        android:layout_marginTop="@dimen/x2"
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/email_ic_placeholder" />
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_add"
+        android:layout_marginTop="@dimen/x2"
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:src="@mipmap/add_pictures" />
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/fileRoot"
@@ -54,50 +64,52 @@
             android:visibility="visible" />
     </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_check"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:gravity="right"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/check"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-        </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/deleteBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:gravity="right"
+        android:orientation="vertical"
+        android:padding="11dp">
 
         <TextView
-            android:id="@+id/tv_isGif"
+            android:id="@+id/check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/gif_tag"
-            android:text="gif"
+            android:gravity="center"
+            android:drawableLeft="@mipmap/tabbar_delete"
             android:textColor="@color/white"
-            android:textSize="11sp"
-            android:visibility="gone" />
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_isGif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/gif_tag"
+        android:text="gif"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:visibility="gone" />
 
 
 
-        <TextView
-            android:id="@+id/pic_size"
-            android:layout_width="match_parent"
-            android:layout_height="18dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/buybuybuy"
-            android:gravity="center_vertical"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:text="10Kb"
-            android:alpha="0.4"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:visibility="gone" />
+    <TextView
+        android:id="@+id/pic_size"
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/buybuybuy"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dp"
+        android:paddingTop="2dp"
+        android:text="10Kb"
+        android:alpha="0.4"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="gone" />
 </RelativeLayout>

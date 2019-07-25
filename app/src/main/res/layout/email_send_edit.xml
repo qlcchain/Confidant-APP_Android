@@ -1,16 +1,308 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/white"
     android:orientation="vertical">
-
-    <com.stratagile.pnrouter.ui.activity.email.view.RichEditor
-        android:id="@+id/re_main_editor"
+    <RelativeLayout
+        android:id="@+id/rl1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_below="@+id/statusBar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/headmainColor"
+        android:layout_height="@dimen/x104">
+        <LinearLayout
+            android:id="@+id/llCancel"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/backBtn"
+                android:layout_width="@dimen/x40"
+                android:src="@mipmap/tabbar_close"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="@dimen/x5"
+                android:layout_height="@dimen/x40" />
+            <RelativeLayout
+                android:id="@+id/list_itease_layout_info"
+                android:layout_width="match_parent"
 
+                android:layout_height="@dimen/x153"
+                android:gravity="center_vertical">
+
+                <RelativeLayout
+                    android:id="@+id/avatar_container_info"
+                    android:layout_width="@dimen/x92"
+                    android:layout_marginLeft="@dimen/x31"
+                    android:layout_centerVertical="true"
+                    android:layout_height="@dimen/x92"
+                    android:layout_alignParentLeft="true">
+
+                    <com.stratagile.pnrouter.view.ImageButtonWithText
+                        android:id="@+id/avatar_info"
+                        android:layout_width="@dimen/x72"
+                        android:layout_height="@dimen/x72"
+                        android:layout_centerVertical="true"
+                        app:imageButtonTextSize="20" />
+
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/title_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_above="@+id/draft_info"
+                    android:maxEms="8"
+                    android:text="Avaaaaaaaa"
+                    android:layout_toRightOf="@id/avatar_container_info"
+                    android:textColor="@color/emailtextColor"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/msg_state_info"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_toRightOf="@id/avatar_container_info"
+                    android:src="@drawable/ease_msg_state_fail_resend"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/mentioned_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@id/msg_state_info"
+                    android:paddingBottom="7dp"
+                    android:paddingLeft="7dp"
+                    android:paddingTop="7dp"
+                    android:text="@string/were_mentioned"
+                    android:textColor="#e84e40"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/draft_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/mentioned_info"
+                    android:text="@string/To_me"
+                    android:layout_alignBottom="@+id/avatar_container_info"
+                    android:layout_marginBottom="@dimen/x10"
+                    android:layout_marginLeft="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/contentColor"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/multiSelectBtn"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/x22"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/backMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/mainColor"
+                android:layout_marginRight="@dimen/x10"
+                android:drawableLeft="@mipmap/statusbar_sendout_h"
+                android:textSize="15sp"
+                android:text=""/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/x30">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/To"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/x45"
+                    android:layout_weight="0.5"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/addTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:drawableLeft="@mipmap/tabbar_add"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:id="@+id/showCcAndBcc"
+                    android:layout_marginLeft="@dimen/x10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:drawableLeft="@mipmap/tabbar_arrow_lower"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ccParent"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/x30">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Cc"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/x45"
+                    android:layout_weight="0.5"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/addCc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:drawableLeft="@mipmap/tabbar_add"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/bccParent"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/x30">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Bcc"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/x45"
+                    android:layout_weight="0.5"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/addBcc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:drawableLeft="@mipmap/tabbar_add"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/avatar_container"
+                android:layout_height="@dimen/x1"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dp"
+                android:background="@color/color_f2f2f2"/>
+            <LinearLayout
+                android:id="@+id/subjectParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/x30">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Subject"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/x45"
+                    android:layout_weight="0.5"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/addSubject"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:drawableRight="@mipmap/tabbar_attach_unselected"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/avatar_container"
+                android:layout_height="@dimen/x1"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dp"
+                android:background="@color/color_f2f2f2"/>
+            <com.stratagile.pnrouter.ui.activity.email.view.RichEditor
+                android:id="@+id/re_main_editor"
+                android:layout_width="match_parent"
+                android:minHeight="@dimen/x400"
+                android:layout_height="wrap_content"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/avatar_container"
+                android:layout_height="@dimen/x1"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dp"
+                android:background="@color/color_f2f2f2"/>
+            <LinearLayout
+                android:id="@+id/attachList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/attchtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/x40"
+                    android:layout_marginTop="@dimen/x20"
+                    android:drawableLeft="@mipmap/tabbar_attach_unselected"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:maxEms="8"
+                    android:text="@string/Attach"
+                    android:textColor="@color/contentColor"
+                    android:textSize="19sp" />
+                <android.support.v7.widget.RecyclerView
+                    android:layout_margin="@dimen/x20"
+                    android:id="@+id/recyclerViewAttach"
+                    android:background="@color/white"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
     <LinearLayout
         android:id="@+id/ll_main_color"
         android:layout_width="match_parent"
@@ -30,6 +322,8 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/EditorIconParent"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#f2f1f6">
@@ -136,6 +430,7 @@
         </HorizontalScrollView>
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/tv_main_preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

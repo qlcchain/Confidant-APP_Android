@@ -88,10 +88,6 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             var intent = Intent(this, PrivacyActivity::class.java)
             startActivity(intent)
         }
-        emailBtn.setOnClickListener {
-            var intent = Intent(this, EmailLoginActivity::class.java)
-            startActivity(intent)
-        }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         var avatarPath = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"

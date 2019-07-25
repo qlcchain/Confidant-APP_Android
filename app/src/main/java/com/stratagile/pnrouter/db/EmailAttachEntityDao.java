@@ -27,7 +27,9 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
         public final static Property Account = new Property(2, String.class, "account", false, "ACCOUNT");
         public final static Property Name = new Property(3, String.class, "name", false, "NAME");
         public final static Property LocalPath = new Property(4, String.class, "localPath", false, "LOCAL_PATH");
-        public final static Property Data = new Property(5, byte[].class, "data", false, "DATA");
+        public final static Property CanDelete = new Property(5, boolean.class, "canDelete", false, "CAN_DELETE");
+        public final static Property HasData = new Property(6, boolean.class, "hasData", false, "HAS_DATA");
+        public final static Property Data = new Property(7, byte[].class, "data", false, "DATA");
     }
 
 
@@ -48,7 +50,9 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
                 "\"ACCOUNT\" TEXT," + // 2: account
                 "\"NAME\" TEXT," + // 3: name
                 "\"LOCAL_PATH\" TEXT," + // 4: localPath
-                "\"DATA\" BLOB);"); // 5: data
+                "\"CAN_DELETE\" INTEGER NOT NULL ," + // 5: canDelete
+                "\"HAS_DATA\" INTEGER NOT NULL ," + // 6: hasData
+                "\"DATA\" BLOB);"); // 7: data
     }
 
     /** Drops the underlying database table. */
@@ -85,10 +89,12 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
         if (localPath != null) {
             stmt.bindString(5, localPath);
         }
+        stmt.bindLong(6, entity.getCanDelete() ? 1L: 0L);
+        stmt.bindLong(7, entity.getHasData() ? 1L: 0L);
  
         byte[] data = entity.getData();
         if (data != null) {
-            stmt.bindBlob(6, data);
+            stmt.bindBlob(8, data);
         }
     }
 
@@ -120,10 +126,12 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
         if (localPath != null) {
             stmt.bindString(5, localPath);
         }
+        stmt.bindLong(6, entity.getCanDelete() ? 1L: 0L);
+        stmt.bindLong(7, entity.getHasData() ? 1L: 0L);
  
         byte[] data = entity.getData();
         if (data != null) {
-            stmt.bindBlob(6, data);
+            stmt.bindBlob(8, data);
         }
     }
 
@@ -140,7 +148,9 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // account
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // localPath
-            cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5) // data
+            cursor.getShort(offset + 5) != 0, // canDelete
+            cursor.getShort(offset + 6) != 0, // hasData
+            cursor.isNull(offset + 7) ? null : cursor.getBlob(offset + 7) // data
         );
         return entity;
     }
@@ -152,7 +162,9 @@ public class EmailAttachEntityDao extends AbstractDao<EmailAttachEntity, Long> {
         entity.setAccount(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setLocalPath(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setData(cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5));
+        entity.setCanDelete(cursor.getShort(offset + 5) != 0);
+        entity.setHasData(cursor.getShort(offset + 6) != 0);
+        entity.setData(cursor.isNull(offset + 7) ? null : cursor.getBlob(offset + 7));
      }
     
     @Override

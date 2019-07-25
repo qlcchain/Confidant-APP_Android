@@ -17,6 +17,8 @@ public class EmailAttachEntity implements Parcelable{
     private String account;
     private String name;
     private String localPath;
+    private boolean canDelete;
+    private boolean hasData;
     private byte[] data;
 
     public EmailAttachEntity() {
@@ -33,17 +35,21 @@ public class EmailAttachEntity implements Parcelable{
         account = in.readString();
         name = in.readString();
         localPath = in.readString();
+        canDelete = in.readByte() != 0;
+        hasData = in.readByte() != 0;
         data = in.createByteArray();
     }
 
-    @Generated(hash = 269789248)
+    @Generated(hash = 448571763)
     public EmailAttachEntity(Long id, String msgId, String account, String name, String localPath,
-            byte[] data) {
+            boolean canDelete, boolean hasData, byte[] data) {
         this.id = id;
         this.msgId = msgId;
         this.account = account;
         this.name = name;
         this.localPath = localPath;
+        this.canDelete = canDelete;
+        this.hasData = hasData;
         this.data = data;
     }
 
@@ -58,14 +64,6 @@ public class EmailAttachEntity implements Parcelable{
             return new EmailAttachEntity[size];
         }
     };
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getMsgId() {
         return msgId;
@@ -99,6 +97,22 @@ public class EmailAttachEntity implements Parcelable{
         this.localPath = localPath;
     }
 
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
+    }
+
+    public boolean isHasData() {
+        return hasData;
+    }
+
+    public void setHasData(boolean hasData) {
+        this.hasData = hasData;
+    }
+
     public byte[] getData() {
         return data;
     }
@@ -124,6 +138,24 @@ public class EmailAttachEntity implements Parcelable{
         dest.writeString(account);
         dest.writeString(name);
         dest.writeString(localPath);
+        dest.writeByte((byte) (canDelete ? 1 : 0));
+        dest.writeByte((byte) (hasData ? 1 : 0));
         dest.writeByteArray(data);
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean getCanDelete() {
+        return this.canDelete;
+    }
+
+    public boolean getHasData() {
+        return this.hasData;
     }
 }
