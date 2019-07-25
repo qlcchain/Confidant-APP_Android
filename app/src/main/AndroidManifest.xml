@@ -317,6 +317,9 @@
             android:name=".ui.activity.email.EmailMainActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.email.EmailSendActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.email.EmailChooseActivity"
             android:screenOrientation="portrait" />
         <activity

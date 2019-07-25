@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.List;
 
@@ -49,7 +51,15 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
         if (view == null) {
             viewHolder = new ViewHolder();
             view = LayoutInflater.from(mContext).inflate(R.layout.email_item_contact, null);
-            viewHolder.tvTitle = (TextView) view.findViewById(R.id.message);
+            viewHolder.tvLetter = (TextView) view.findViewById(R.id.tvLetter);
+            viewHolder.friendName = (TextView) view.findViewById(R.id.friendName);
+            viewHolder.friendAdress = (TextView) view.findViewById(R.id.friendAdress);
+            viewHolder.ivAvatar = (ImageButtonWithText) view.findViewById(R.id.avatar);
+
+            //设置convertView的LayoutParams
+            view.setLayoutParams(new AbsListView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 285)
+            );
             view.setTag(viewHolder);
             //viewHolder.tvLetter = (TextView) view.findViewById(R.id.tv_catagory);
         } else {
@@ -58,15 +68,15 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
 
         int section = getSectionForPosition(position);
 
-        /*if (position == getPositionForSection(section)) {
-            viewHolder.tvLetter.setVisibility(View.GONE);
+        if (position == getPositionForSection(section)) {
+            viewHolder.tvLetter.setVisibility(View.VISIBLE);
             viewHolder.tvLetter.setText(mContent.getSortLetters());
         } else {
             viewHolder.tvLetter.setVisibility(View.GONE);
-        }*/
-
-        viewHolder.tvTitle.setText(this.list.get(position).getName());
-
+        }
+        viewHolder.friendName.setText(this.list.get(position).getName());
+        viewHolder.friendAdress.setText(this.list.get(position).getAccount());
+        viewHolder.ivAvatar.setText(this.list.get(position).getName());
         return view;
 
     }
@@ -74,7 +84,11 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
 
     final static class ViewHolder {
         //TextView tvLetter;
-        TextView tvTitle;
+        ImageButtonWithText ivAvatar;
+        TextView tvLetter;
+        TextView friendName;
+        TextView friendAdress;
+
     }
 
     public int getSectionForPosition(int position) {

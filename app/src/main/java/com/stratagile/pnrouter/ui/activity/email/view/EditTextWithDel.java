@@ -16,10 +16,10 @@ import com.stratagile.pnrouter.R;
 
 
 /**
- * @author: xiaolijuan
+ * @author: zl
  * @description: 自定义带有删除功能的EditText
  * @projectName: SelectCityDome
- * @date: 2016-03-01
+ * @date: 2019-07-24
  * @time: 15:59
  */
 public class EditTextWithDel extends AppCompatEditText {
@@ -49,7 +49,7 @@ public class EditTextWithDel extends AppCompatEditText {
         imgLeft = mContext.getResources().getDrawable(
                 R.mipmap.icon_search);
         imgAble = mContext.getResources().getDrawable(
-                R.mipmap.icon_delete_gray);
+                R.mipmap.icon_delete);
         addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
@@ -87,7 +87,7 @@ public class EditTextWithDel extends AppCompatEditText {
             Log.e(TAG, "eventX = " + eventX + "; eventY = " + eventY);
             Rect rect = new Rect();
             getGlobalVisibleRect(rect);
-            rect.left = rect.right - 50;
+            rect.left = rect.right - 100;
             if (rect.contains(eventX, eventY))
                 setText("");
         }

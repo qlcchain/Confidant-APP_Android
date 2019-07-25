@@ -17,9 +17,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.EmailAttachEntity
-import com.stratagile.pnrouter.db.EmailMessageEntity
-import com.stratagile.pnrouter.db.EmailMessageEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.events.ChangEmailMenu
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.entity.events.FromChat
@@ -162,6 +160,18 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 eamilAttach.data = attachItem.byt
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
                                             }
+
+                                            var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
+                                            var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length)
+                                            var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                                            if(localEmailContacts.size == 0)
+                                            {
+                                                var emailContactsEntity= EmailContactsEntity();
+                                                emailContactsEntity.name = name
+                                                emailContactsEntity.account = account
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                                            }
+
                                         }
                                         //var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
                                         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()

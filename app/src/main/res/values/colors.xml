@@ -13,6 +13,7 @@
     <color name="attachColor">#A29B9B9B</color>
     <color name="timetextColor">#9B9B9B</color>
     <color name="whiteColor">#faf8f8</color>
+    <color name="grayColor">#FFE6E6E6</color>
 
     <color name="colorPrimaryDark">#999999</color>
     <color name="colorAccent">#2c2c2c</color>
@@ -56,6 +57,6 @@
     <color name="color_7f807f">#7F807F</color>
     <color name="color_test">#14803426</color>
     <color name="btnstroke">#4A4E5C</color>
-
+    <color name="button_enabled">#333333</color>
 
 </resources>

@@ -721,5 +721,7 @@
     <string name="Move_to">Move to</string>
     <string name="Delete">Delete</string>
     <string name="Reply">Reply</string>
+    <string name="Recent_contacts">Recent contacts</string>
+
 
 </resources>

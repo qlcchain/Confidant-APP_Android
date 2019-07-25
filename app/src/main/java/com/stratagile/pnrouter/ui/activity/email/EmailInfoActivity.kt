@@ -224,11 +224,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         deleteMenu.setOnClickListener {
 
         }
-
+        tvRefuse.setOnClickListener {
+            var intent = Intent(this, EmailSendActivity::class.java)
+            startActivity(intent)
+        }
         forWardbtn.setOnClickListener {
             var intent = Intent(this, SelectEmailFriendActivity::class.java)
             startActivity(intent)
         }
+
         if(emailMeaasgeData!!.isSeen())
         {
             val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
