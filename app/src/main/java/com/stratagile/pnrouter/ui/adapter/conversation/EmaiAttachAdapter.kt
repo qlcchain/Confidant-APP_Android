@@ -28,11 +28,13 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         var iv_add = helper.getView<ImageView>(R.id.iv_add)
 
         var deleteBtn = helper.getView<LinearLayout>(R.id.deleteBtn)
+        var deleteBtnParent = helper.getView<LinearLayout>(R.id.deleteBtnParent)
         if(item.canDelete)
         {
-            deleteBtn.visibility = View.VISIBLE
+            deleteBtnParent.visibility = View.VISIBLE
+            helper.addOnClickListener(R.id.deleteBtn)
         }else{
-            deleteBtn.visibility = View.GONE
+            deleteBtnParent.visibility = View.GONE
         }
         if(item.isHasData)
         {
@@ -78,7 +80,9 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         }else{
             iv_picture.visibility = View.GONE
             iv_add.visibility = View.VISIBLE
-            helper.addOnClickListener(R.id.itemParent)
+            helper.addOnClickListener(R.id.iv_add)
+
+
         }
     }
 

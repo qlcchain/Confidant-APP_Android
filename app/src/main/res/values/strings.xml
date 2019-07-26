@@ -724,4 +724,6 @@
     <string name="Recent_contacts">Recent contacts</string>
     <string name="Subject">Subject</string>
     <string name="Compose_email">Compose email</string>
+    <string name="The_recipient_cant_be_empty">The recipient can\'t be empty</string>
+
 </resources>

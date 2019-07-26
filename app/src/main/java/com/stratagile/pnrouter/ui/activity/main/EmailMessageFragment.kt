@@ -158,6 +158,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 eamilAttach.msgId = item.id
                                                 eamilAttach.name = attachItem.name
                                                 eamilAttach.data = attachItem.byt
+                                                eamilAttach.hasData = true
+                                                eamilAttach.isCanDelete = false
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
                                             }
 

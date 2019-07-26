@@ -48,6 +48,7 @@ public class EmailSendClient {
     private Address[] to;
     private Address[] cc;
     private Address[] bcc;
+    private String[] attach;
     private EmailConfig emailConfig;
 
     public EmailSendClient(EmailConfig emailConfig){
@@ -96,6 +97,20 @@ public class EmailSendClient {
      */
     public EmailSendClient setCc(String cc){
         this.cc = AddressUtil.getInternetAddress(cc);
+        return this;
+    }
+    /**
+     * 设置附件路径
+     * @param attach
+     * @return
+     */
+    public EmailSendClient setAttach(String attach){
+        if(attach != null)
+        {
+            this.attach = attach.split(",");
+        }else{
+            this.attach = new String[]{};
+        }
         return this;
     }
 
@@ -151,7 +166,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .sendMail();
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -183,7 +198,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .sendMail();
                     getSendCallback.sendSuccess();
                 } catch (final MessagingException e) {

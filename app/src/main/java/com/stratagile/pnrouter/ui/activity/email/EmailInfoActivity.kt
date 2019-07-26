@@ -226,6 +226,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         tvRefuse.setOnClickListener {
             var intent = Intent(this, EmailSendActivity::class.java)
+            intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
             startActivity(intent)
         }
         forWardbtn.setOnClickListener {

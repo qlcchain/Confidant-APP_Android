@@ -203,7 +203,7 @@ class EmailCore {
      * @param content
      * @throws MessagingException
      */
-    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content) throws MessagingException {
+    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach) throws MessagingException {
         Message message = new MimeMessage(session);
         message.addRecipients(Message.RecipientType.TO, to);
         if (cc != null) {
@@ -225,36 +225,40 @@ class EmailCore {
         MimeMultipart msgMultipart = new MimeMultipart("mixed");//混合的组合关系
         //设置邮件的MINE消息体
         message.setContent(msgMultipart);
-        //附件1
-        MimeBodyPart attch1 = new MimeBodyPart();
+
+        if(attach.length > 0)
+        {
+            for (String attachPath :attach)
+            {
+                //附件
+                MimeBodyPart attch1 = new MimeBodyPart();
+                //把文件，添加到附件1中
+                //数据源
+                File fileTxt = new File(attachPath);
+                if(fileTxt.exists())
+                {
+                    //把内容，附件1，附件2加入到 MINE消息体中
+                    msgMultipart.addBodyPart(attch1);
+                    String aa = "";
+                    DataSource ds1 = new FileDataSource(fileTxt);
+                    //数据处理器
+                    DataHandler dh1 = new DataHandler(ds1 );
+                    //设置第一个附件的数据
+                    attch1.setDataHandler(dh1);
+                    //设置第一个附件的文件名
+                    String fileName = attachPath.substring(attachPath.lastIndexOf("/") +1,attachPath.length());
+                    attch1.setFileName(fileName);
+                }
+            }
+        }
+
         //正文内容
         MimeBodyPart contentMimeBodyPart = new MimeBodyPart();
         msgMultipart.addBodyPart(contentMimeBodyPart);
-        msgMultipart.addBodyPart(contentMimeBodyPart);
-
-        //正文内容
-        MimeBodyPart contentaaa = new MimeBodyPart();
 
 
-        //把文件，添加到附件1中
-        //数据源
-        File file1 = Environment.getExternalStorageDirectory();
 
-        File fileTxt = new File(ConstUtli.attchPath);
-        if(fileTxt.exists())
-        {
-            //把内容，附件1，附件2加入到 MINE消息体中
-            msgMultipart.addBodyPart(attch1);
-            String aa = "";
-            DataSource ds1 = new FileDataSource(fileTxt);
-            //数据处理器
-            DataHandler dh1 = new DataHandler(ds1 );
-            //设置第一个附件的数据
-            attch1.setDataHandler(dh1);
-            //设置第一个附件的文件名
-            String fileName = ConstUtli.attchPath.substring(ConstUtli.attchPath.lastIndexOf("/") +1,ConstUtli.attchPath.length());
-            attch1.setFileName(fileName);
-        }
+
 
         //正文（图片和文字部分）
         MimeMultipart bodyMultipart  = new MimeMultipart("related");

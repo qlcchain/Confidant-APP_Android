@@ -8,35 +8,41 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.hyphenate.easeui.model.EaseCompat
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
+import com.hyphenate.easeui.widget.ATEmailEditText
+import com.hyphenate.easeui.widget.TInputConnection
+import com.hyphenate.util.EMLog
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
-import com.smailnet.eamil.Callback.MarkCallback
-import com.smailnet.eamil.EmailReceiveClient
+import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Callback.GetSendCallback
+import com.smailnet.eamil.EmailSendClient
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
-import com.stratagile.pnrouter.db.EmailAttachEntityDao
+import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
@@ -52,8 +58,7 @@ import com.yanzhenjie.permission.PermissionListener
 import kotlinx.android.synthetic.main.email_picture_image_grid_item.*
 import kotlinx.android.synthetic.main.email_send_edit.*
 import java.io.File
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -97,6 +102,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     internal var isSuperscript = false
     //字体下标
     internal var isSubscript = false
+
+    private var onKeyDel = false
+
+    private var ctrlPress = false
     /********************变量 */
     //折叠视图的宽高
     private var mFoldedViewMeasureHeight: Int = 0
@@ -111,6 +120,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_VIDEO = 6
     protected val CHOOSE_PIC = 88 //选择原图还是压缩图
 
+    var emailMeaasgeInfoData: EmailMessageEntity? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -120,6 +131,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         setContentView(R.layout.email_send_edit)
     }
     override fun initData() {
+        emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
         initUI()
         initClickListener()
     }
@@ -131,8 +143,65 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         initEditor()
         initMenu()
         initColorPicker()
+        initBaseUI(emailMeaasgeInfoData!!)
         initAttachUI()
     }
+    fun initBaseUI(emailMessageEntity:EmailMessageEntity)
+    {
+        var fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
+        var fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<"),emailMessageEntity!!.from.length)
+        avatar_info.setText(fromName)
+        title_info.setText(fromName)
+        draft_info.setText(fromAdress)
+        val result = toAddress.addSpan(fromName, fromAdress)
+        var aa = "";
+
+        toAddress.setOnClickListener(this)
+        toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+             KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
+
+             // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
+             if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                 if (event.action == KeyEvent.ACTION_DOWN) {
+                     ctrlPress = true
+                 } else if (event.action == KeyEvent.ACTION_UP) {
+                     ctrlPress = false
+                 }
+             }
+             onKeyDel = true
+             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
+                      ATEmailEditText.KeyDownHelper(toAddress.getText())
+                  } else false
+         })
+        toAddress.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+            EMLog.d("key", "keyCode:" + event.keyCode + " action" + event.action + " ctrl:" + ctrlPress)
+            if (actionId == EditorInfo.IME_ACTION_SEND || event.keyCode == KeyEvent.KEYCODE_ENTER &&
+                    event.action == KeyEvent.ACTION_DOWN &&
+                    ctrlPress == true) {
+                val s = toAddress.getText().toString().trim({ it <= ' ' })
+                toAddress.setText("")
+                //listener.onSendBtnClicked(s, "")
+                true
+            } else {
+                false
+            }
+        })
+        var backspaceListener: TInputConnection.BackspaceListener = TInputConnection.BackspaceListener {
+            val editable = toAddress.getText()
+
+            if (editable!!.length == 0) {
+                return@BackspaceListener false
+            }
+            if (!onKeyDel) {
+                ATEmailEditText.KeyDownHelper(toAddress!!.getText())
+            }
+            onKeyDel = false
+            false
+        }
+        toAddress.setBackSpaceLisetener(backspaceListener)
+
+    }
+
     private fun initAttachUI()
     {
         var attachList =  arrayListOf<EmailAttachEntity>()
@@ -155,7 +224,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         emaiAttachAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
-                R.id.itemParent -> {
+                R.id.deleteBtn -> {
+                    emaiAttachAdapter!!.remove(position)
+                    emaiAttachAdapter!!.notifyDataSetChanged();
+                }
+                R.id.iv_add -> {
                     var menuArray = arrayListOf<String>(getString(R.string.attach_picture),getString(R.string.attach_take_pic),getString(R.string.attach_video),getString(R.string.attach_file))
                     var iconArray = arrayListOf<String>("sheet_album","sheet_camera","sheet_video","sheet_file")
                     PopWindowUtil.showPopAttachMenuWindow(this@EmailSendActivity, itemParent,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
@@ -196,6 +269,67 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
     }
 
+    /**
+     * 发送邮件
+     */
+    private fun sendEmail() {
+        val selectionEnd = toAddress.length()
+        val selectionStart = 0
+        val spans = toAddress!!.getText()!!.getSpans(selectionStart, selectionEnd, ATEmailEditText.DataSpan::class.java)
+        var adress = ""
+        var index = 0
+        for (span in spans) {
+            if (span != null && span!!.getUserId() != null && span!!.getUserId() != "") {
+                if (index > 0) {
+                    adress += "," + span!!.getUserId()
+                } else {
+                    adress += span!!.getUserId()
+                }
+                index++
+            }
+        }
+        var attachList = ""
+        var emaiAttachAdapterList = emaiAttachAdapter!!.data
+        for(item in emaiAttachAdapterList)
+        {
+            attachList +=item.localPath+","
+        }
+        if(attachList.length >0)
+        {
+            attachList = attachList.substring(0,attachList.length -1)
+        }
+        val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
+        var name = adress.substring(1,adress.indexOf("@"))
+        showProgressDialog("sending")
+        if(adress== "")
+        {
+            toast(R.string.The_recipient_cant_be_empty)
+            return
+        }
+        emailSendClient
+                .setTo(adress)                //收件人的邮箱地址
+                .setNickname(name)                                    //发件人昵称
+                .setSubject(subject.getText().toString())             //邮件标题
+                .setContent(re_main_editor.html)              //邮件正文
+                .setAttach(attachList)
+                .sendAsyn(this, object : GetSendCallback {
+                    override fun sendSuccess() {
+                        closeProgressDialog()
+                        runOnUiThread {
+                            Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                    }
+
+                    override fun sendFailure(errorMsg: String) {
+                        closeProgressDialog()
+                        Islands.ordinaryDialog(this@EmailSendActivity)
+                                .setText(null, getString(R.string.error))
+                                .setButton(getString(R.string.close), null, null)
+                                .click().show()
+                    }
+                })
+    }
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
 
@@ -415,6 +549,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         addCc.setOnClickListener(this)
         addBcc.setOnClickListener(this)
 
+        sendBtn.setOnClickListener(this)
+
     }
 
     override fun onClick(v: View) {
@@ -581,6 +717,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             startActivity(intent)
         }else if (id == R.id.backBtn ) {
             onBackPressed()
+        }else if (id == R.id.sendBtn ) {
+            sendEmail()
         }
 
     }
@@ -668,23 +806,23 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 val list = data!!.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
                 KLog.i(list)
                 if (list != null && list.size > 0) {
+                    var len = list.size
+                    //emaiAttachAdapter!!.remove(emaiAttachAdapter!!.itemCount)
+                    var itemCount = emaiAttachAdapter!!.itemCount
+                    for (i in 0 until len) {
+                        var emailAttachEntity = EmailAttachEntity()
+                        emailAttachEntity.isHasData = true
+                        emailAttachEntity.localPath = list.get(i).path
+                        emailAttachEntity.name = list.get(i).path.substring(list.get(0).path.indexOf(".")+1,list.get(0).path.length)
+                        emailAttachEntity.isCanDelete = true
+                        emaiAttachAdapter!!.addData(0,emailAttachEntity)
 
-                    Thread {
-                        for (i in list.indices) {
-                            if (list[i].pictureType.contains("image")) {
-
-                            } else {
-                                //发视频
-
-                            }
-                            try {
-                                Thread.sleep(1000)
-                            } catch (e: InterruptedException) {
-                                e.printStackTrace()
-                            }
-
-                        }
-                    }.start()
+                    }
+                   /* var emailAttachEntity = EmailAttachEntity()
+                    emailAttachEntity.isHasData = false
+                    emailAttachEntity.isCanDelete = false
+                    emaiAttachAdapter!!.addData(emailAttachEntity)*/
+                    emaiAttachAdapter!!.notifyDataSetChanged();
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }
