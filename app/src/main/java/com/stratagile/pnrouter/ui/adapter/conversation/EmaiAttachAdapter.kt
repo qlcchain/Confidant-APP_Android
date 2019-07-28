@@ -46,7 +46,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
             val fileName = item.name
             var iv_file = helper.getView<ImageView>(R.id.iv_file)
             var fileRoot = helper.getView<LinearLayout>(R.id.fileRoot)
-            if (fileName.contains("jpg") || fileName.contains("png")) {
+            if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
                 val uri = Uri.fromFile(file)
                 iv_picture.setImageURI(uri)
                 iv_picture.visibility = View.VISIBLE

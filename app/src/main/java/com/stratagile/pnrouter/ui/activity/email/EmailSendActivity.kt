@@ -59,6 +59,8 @@ import kotlinx.android.synthetic.main.email_picture_image_grid_item.*
 import kotlinx.android.synthetic.main.email_send_edit.*
 import java.io.File
 import javax.inject.Inject
+import com.stratagile.pnrouter.method.*
+import android.text.SpannableStringBuilder
 
 /**
  * @author zl
@@ -120,6 +122,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_VIDEO = 6
     protected val CHOOSE_PIC = 88 //选择原图还是压缩图
 
+    private val methods = arrayOf(QQ, WeChat, Weibo)
+    private var iterator: Iterator<Method> = methods.iterator()
+    private val methodContext = MethodContext()
+    private val users = arrayListOf(
+            User("1", "激浊扬清"),
+            User("2", "清风引佩下瑶台"),
+            User("3", "浊泾清渭"),
+            User("4", "刀光掩映孔雀屏"),
+            User("5", "清风徐来"),
+            User("6", "英雄无双风流婿"),
+            User("7", "源清流洁"),
+            User("8", "占断人间天上福"),
+            User("9", "清音幽韵"),
+            User("10", "碧箫声里双鸣凤"),
+            User("11", "风清弊绝"),
+            User("12", "天教艳质为眷属"),
+            User("13", "独清独醒"),
+            User("14", "千金一刻庆良宵"),
+            User("15", "必须要\\n\n，不然不够长"))
     var emailMeaasgeInfoData: EmailMessageEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,6 +161,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 初始化View
      */
     private fun initUI() {
+        if (methodContext.method == null) {
+            switch()
+        }
+        val user = users[0].copy()
+        (normalEdit.text as SpannableStringBuilder)
+                .append(methodContext.newSpannable(user))
+                .append(" ")
         initEditor()
         initMenu()
         initColorPicker()
@@ -865,5 +893,18 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    private fun switch() {
+        val method = circularMethod()
+        methodContext.method = method
+        methodContext.init(normalEdit)
+    }
 
+    private tailrec fun circularMethod(): Method {
+        return if (iterator.hasNext()) {
+            iterator.next()
+        } else {
+            iterator = methods.iterator()
+            circularMethod()
+        }
+    }
 }

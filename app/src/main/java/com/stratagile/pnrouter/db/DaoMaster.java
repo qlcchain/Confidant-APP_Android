@@ -22,7 +22,9 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
         DraftEntityDao.createTable(db, ifNotExists);
+        EmailAttachEntityDao.createTable(db, ifNotExists);
         EmailConfigEntityDao.createTable(db, ifNotExists);
+        EmailContactsEntityDao.createTable(db, ifNotExists);
         EmailMessageEntityDao.createTable(db, ifNotExists);
         FriendEntityDao.createTable(db, ifNotExists);
         GroupEntityDao.createTable(db, ifNotExists);
@@ -32,14 +34,14 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.createTable(db, ifNotExists);
         RouterUserEntityDao.createTable(db, ifNotExists);
         UserEntityDao.createTable(db, ifNotExists);
-        EmailAttachEntityDao.createTable(db, ifNotExists);
-        EmailContactsEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
         DraftEntityDao.dropTable(db, ifExists);
+        EmailAttachEntityDao.dropTable(db, ifExists);
         EmailConfigEntityDao.dropTable(db, ifExists);
+        EmailContactsEntityDao.dropTable(db, ifExists);
         EmailMessageEntityDao.dropTable(db, ifExists);
         FriendEntityDao.dropTable(db, ifExists);
         GroupEntityDao.dropTable(db, ifExists);
@@ -49,8 +51,6 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.dropTable(db, ifExists);
         RouterUserEntityDao.dropTable(db, ifExists);
         UserEntityDao.dropTable(db, ifExists);
-        EmailAttachEntityDao.dropTable(db, ifExists);
-        EmailContactsEntityDao.dropTable(db, ifExists);
     }
 
     /**
@@ -70,7 +70,9 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(DraftEntityDao.class);
+        registerDaoClass(EmailAttachEntityDao.class);
         registerDaoClass(EmailConfigEntityDao.class);
+        registerDaoClass(EmailContactsEntityDao.class);
         registerDaoClass(EmailMessageEntityDao.class);
         registerDaoClass(FriendEntityDao.class);
         registerDaoClass(GroupEntityDao.class);
@@ -80,8 +82,6 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(RouterEntityDao.class);
         registerDaoClass(RouterUserEntityDao.class);
         registerDaoClass(UserEntityDao.class);
-        registerDaoClass(EmailAttachEntityDao.class);
-        registerDaoClass(EmailContactsEntityDao.class);
     }
 
     public DaoSession newSession() {

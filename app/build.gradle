@@ -250,6 +250,7 @@ dependencies {
     //compile 'com.github.hackware1993:MagicIndicator:1.5.0'
     implementation 'top.zibin:Luban:1.1.8'
     implementation 'com.github.mailhu:islands:2.0'
+    implementation 'com.iyao.easyat:easyat:1.0.0'
 }
 
 def getSelfDefinedVersion(type) {
