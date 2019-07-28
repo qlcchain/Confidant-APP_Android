@@ -122,7 +122,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_VIDEO = 6
     protected val CHOOSE_PIC = 88 //选择原图还是压缩图
 
-    private val methods = arrayOf(QQ, WeChat, Weibo)
+    private val methods = arrayOf(Weibo)//arrayOf(Weibo,WeChat, QQ)
     private var iterator: Iterator<Method> = methods.iterator()
     private val methodContext = MethodContext()
     private val users = arrayListOf(
@@ -164,7 +164,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (methodContext.method == null) {
             switch()
         }
-        val user = users[0].copy()
+        var user = users[0].copy()
+        (normalEdit.text as SpannableStringBuilder)
+                .append(methodContext.newSpannable(user))
+                .append(" ")
+        user = users[1].copy()
+        (normalEdit.text as SpannableStringBuilder)
+                .append(methodContext.newSpannable(user))
+                .append(" ")
+        user = users[2].copy()
         (normalEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
                 .append(" ")
