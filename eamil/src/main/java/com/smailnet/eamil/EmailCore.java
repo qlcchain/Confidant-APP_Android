@@ -450,7 +450,7 @@ class EmailCore {
             int endIndex = lastTotalCount+pageSize;
             System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
             messagesAll = folder.getMessages(startIndex,endIndex);
-        }else{
+        }else if(newSize >0){
             noMoreData = true;
             int startIndex = lastTotalCount+1;
             int endIndex = lastTotalCount+newSize;
@@ -461,7 +461,8 @@ class EmailCore {
             }else{
                 messagesAll = folder.getMessages(startIndex,endIndex);
             }
-
+        }else{
+            messagesAll = new Message[]{};
         }
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
