@@ -24,6 +24,6 @@ import java.util.List;
  * 获取邮件结果回调
  */
 public interface GetReceiveCallback {
-    void gainSuccess(List<EmailMessage>  messageList, int count);
+    void gainSuccess(List<EmailMessage>  messageList, int totalCount,int totalUnreadCount,Boolean noMoreData);
     void gainFailure(String errorMsg);
 }

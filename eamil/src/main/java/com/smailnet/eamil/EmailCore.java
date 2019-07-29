@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -115,7 +116,7 @@ class EmailCore {
 
     private Message message;
 
-    private int maxCount = 2;
+    private int maxCount = 10;
 
 
 
@@ -366,49 +367,101 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailCount> imapReceiveMailCountAndMenu() throws MessagingException, IOException {
+    public List<EmailCount> imapReceiveMailCountAndMenu(final ArrayList<String> menuList) throws MessagingException, IOException {
 
         List<EmailCount> emailMessageList = new ArrayList<>();
         EmailCount emailData = new EmailCount();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         imapStore.connect(imapHost, account, password);
-        IMAPFolder folder = (IMAPFolder) imapStore.getFolder("INBOX");
+
+
+        /*Folder defaultFolder = imapStore.getDefaultFolder();
+        Folder[] allFolder = defaultFolder.list();*/
+
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menuList.get(0));
         folder.open(Folder.READ_ONLY);
-        Folder defaultFolder = imapStore.getDefaultFolder();
-        Folder[] allFolder = defaultFolder.list();
+        int total = folder.getMessageCount();
+        emailData.setTotalCount(total);
         int size = folder.getUnreadMessageCount();
         emailData.setUnReadCount(size);
 
-        IMAPFolder folderRB = (IMAPFolder) imapStore.getFolder("垃圾邮件");
-        folderRB.open(Folder.READ_ONLY);
-        int sizeRB = folderRB.getUnreadMessageCount();
-        emailData.setGarbageCount(sizeRB);
+        IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
+        folderDraf.open(Folder.READ_ONLY);
+        int totalDraf = folderDraf.getMessageCount();
+        emailData.setDrafTotalCount(totalDraf);
+        int sizeDraf = folderDraf.getUnreadMessageCount();
+        emailData.setDrafUnReadCount(sizeDraf);
+
+        IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
+        folderSend.open(Folder.READ_ONLY);
+        int totalSend = folderSend.getMessageCount();
+        emailData.setSendTotalCount(totalSend);
+        int sizeSend = folderSend.getUnreadMessageCount();
+        emailData.setSendunReadCount(sizeSend);
+
+        IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
+        folderGarbage.open(Folder.READ_ONLY);
+        int totalGarbage = folderGarbage.getMessageCount();
+        emailData.setGarbageCount(totalGarbage);
+        int sizeGarbage = folderGarbage.getUnreadMessageCount();
+        emailData.setGarbageUnReadCount(sizeGarbage);
+
+        IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
+        folderDelete.open(Folder.READ_ONLY);
+        int totalDelete = folderDelete.getMessageCount();
+        emailData.setDeleteTotalCount(totalDelete);
+        int sizeDelete = folderDelete.getUnreadMessageCount();
+        emailData.setDeleteUnReadCount(sizeDelete);
+
+
         folder.close(false);
+        folderDraf.close(false);
+        folderSend.close(false);
+        folderGarbage.close(false);
+        folderDelete.close(false);
+
         imapStore.close();
         emailMessageList.add(emailData);
         return emailMessageList;
     }
 
     /**
-     * 使用IMAP协议接收服务器上的邮件
+     * 使用IMAP协议接收服务器上的历史邮件
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailMessage> imapReceiveMail(String menu) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveMoreMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
+        HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
-        int size = folder.getUnreadMessageCount();
-        Message[] messagesAll = folder.getMessages();
-        if(messagesAll.length >maxCount)
+        int totalUnreadCount = folder.getUnreadMessageCount();
+        Message[] messagesAll = null;
+        int totalSize =   folder.getMessageCount();
+        int newSize=  totalSize - lastTotalCount;
+        boolean noMoreData = false;
+        if(lastTotalCount - beginIndex >=pageSize)
         {
-            messagesAll = folder.getMessages(messagesAll.length -(maxCount -1),messagesAll.length);
+            noMoreData = false;
+            int startIndex = lastTotalCount -(pageSize -1) -beginIndex - newSize;
+            int endIndex = lastTotalCount - beginIndex - newSize;
+            messagesAll = folder.getMessages(startIndex,endIndex);
         }else{
-            messagesAll = folder.getMessages();
+            noMoreData = true;
+            int addSize = lastTotalCount - beginIndex;
+            int startIndex = lastTotalCount -(addSize -1) -beginIndex - newSize;
+            int endIndex = lastTotalCount - beginIndex - newSize;
+            if(startIndex >= endIndex)
+            {
+                messagesAll = new Message[]{};
+            }else{
+                messagesAll = folder.getMessages(startIndex,endIndex);
+            }
+
         }
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
@@ -423,7 +476,7 @@ class EmailCore {
             pmm = new PraseMimeMessage((MimeMessage)message);
             uuid = folder.getUID(message) +"";
             try {
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
+                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -503,7 +556,12 @@ class EmailCore {
         System.out.println("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
-        return emailMessageList;
+        messageMap.put("emailMessageList",emailMessageList);
+        messageMap.put("totalCount",totalSize);
+        messageMap.put("totalUnreadCount",totalUnreadCount);
+        messageMap.put("noMoreData",noMoreData);
+
+        return messageMap;
     }
     /**
      * 使用IMAP协议接收服务器上的邮件附件

@@ -96,11 +96,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 listAccath.add(mailAttachment)*/
             }
             //MailUtil.saveFile(listAccath)
-          /*  val tipDialog: QMUITipDialog
-            tipDialog = QMUITipDialog.Builder(AppConfig.instance)
-                    .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                    .setTipWord("正在加载")
-                    .create()*/
+            /*  val tipDialog: QMUITipDialog
+              tipDialog = QMUITipDialog.Builder(AppConfig.instance)
+                      .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                      .setTipWord("正在加载")
+                      .create()*/
             if(!isDownload)
             {
                 showProgressDialog(getString(R.string.Attachmentdownloading))

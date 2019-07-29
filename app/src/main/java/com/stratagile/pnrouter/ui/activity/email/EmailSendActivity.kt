@@ -161,7 +161,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 初始化View
      */
     private fun initUI() {
-       /* if (methodContext.method == null) {
+        if (methodContext.method == null) {
             switch()
         }
         var user = users[0].copy()
@@ -175,7 +175,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         user = users[2].copy()
         (normalEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append(" ")*/
+                .append(" ")
         initEditor()
         initMenu()
         initColorPicker()

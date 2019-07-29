@@ -32,11 +32,12 @@ public class EmailMessageEntity implements Parcelable{
     private int attachmentCount;
     private String content;
     private String contentText;
+    private long messageTotalCount;
 
+    
     public EmailMessageEntity() {
 
     }
-
     protected EmailMessageEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -61,13 +62,13 @@ public class EmailMessageEntity implements Parcelable{
         attachmentCount = in.readInt();
         content = in.readString();
         contentText = in.readString();
+        messageTotalCount = in.readLong();
     }
-
-    @Generated(hash = 1287793818)
+    @Generated(hash = 1198496306)
     public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
             String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar,
             String priority, boolean isReplySign, long size, boolean isContainerAttachment,
-            int attachmentCount, String content, String contentText) {
+            int attachmentCount, String content, String contentText, long messageTotalCount) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
@@ -87,6 +88,7 @@ public class EmailMessageEntity implements Parcelable{
         this.attachmentCount = attachmentCount;
         this.content = content;
         this.contentText = contentText;
+        this.messageTotalCount = messageTotalCount;
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -253,6 +255,14 @@ public class EmailMessageEntity implements Parcelable{
         this.contentText = contentText;
     }
 
+    public long getMessageTotalCount() {
+        return messageTotalCount;
+    }
+
+    public void setMessageTotalCount(long messageTotalCount) {
+        this.messageTotalCount = messageTotalCount;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -284,36 +294,29 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeInt(attachmentCount);
         dest.writeString(content);
         dest.writeString(contentText);
+        dest.writeLong(messageTotalCount);
     }
-
     public boolean getIsSeen() {
         return this.isSeen;
     }
-
     public void setIsSeen(boolean isSeen) {
         this.isSeen = isSeen;
     }
-
     public boolean getIsStar() {
         return this.isStar;
     }
-
     public void setIsStar(boolean isStar) {
         this.isStar = isStar;
     }
-
     public boolean getIsReplySign() {
         return this.isReplySign;
     }
-
     public void setIsReplySign(boolean isReplySign) {
         this.isReplySign = isReplySign;
     }
-
     public boolean getIsContainerAttachment() {
         return this.isContainerAttachment;
     }
-
     public void setIsContainerAttachment(boolean isContainerAttachment) {
         this.isContainerAttachment = isContainerAttachment;
     }

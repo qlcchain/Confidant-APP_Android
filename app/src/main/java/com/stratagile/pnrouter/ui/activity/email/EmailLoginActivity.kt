@@ -193,6 +193,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
     }
     private fun sycDataCountIMAP()
     {
+        var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
         Islands.circularProgress(this)
                 .setCancelable(false)
                 .setMessage("同步中...")
@@ -212,8 +213,18 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                                         if(emailConfigEntityList.size > 0)
                                         {
                                             var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                            emailConfigEntity.unReadCount = emailMessage.unReadCount
-                                            emailConfigEntity.garbageCount = emailMessage.garbageCount
+                                            emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                            emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                            emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                            emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                            emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                            emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                            emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                            emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                            emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                            emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                            emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                            emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
                                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }
                                     }
@@ -226,7 +237,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                                     //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
                                     finish()
                                 }
-                            })
+                            },menuList)
                 }
     }
 

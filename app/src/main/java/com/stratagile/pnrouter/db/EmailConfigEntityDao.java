@@ -32,16 +32,28 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property Account = new Property(7, String.class, "account", false, "ACCOUNT");
         public final static Property EmailType = new Property(8, String.class, "emailType", false, "EMAIL_TYPE");
         public final static Property Password = new Property(9, String.class, "password", false, "PASSWORD");
-        public final static Property UnReadCount = new Property(10, int.class, "unReadCount", false, "UN_READ_COUNT");
-        public final static Property GarbageCount = new Property(11, int.class, "garbageCount", false, "GARBAGE_COUNT");
-        public final static Property InboxMenu = new Property(12, String.class, "inboxMenu", false, "INBOX_MENU");
-        public final static Property NodeMenu = new Property(13, String.class, "nodeMenu", false, "NODE_MENU");
-        public final static Property StarMenu = new Property(14, String.class, "starMenu", false, "STAR_MENU");
-        public final static Property DrafMenu = new Property(15, String.class, "drafMenu", false, "DRAF_MENU");
-        public final static Property SendMenu = new Property(16, String.class, "sendMenu", false, "SEND_MENU");
-        public final static Property GarbageMenu = new Property(17, String.class, "garbageMenu", false, "GARBAGE_MENU");
-        public final static Property DeleteMenu = new Property(18, String.class, "deleteMenu", false, "DELETE_MENU");
-        public final static Property IsChoose = new Property(19, Boolean.class, "isChoose", false, "IS_CHOOSE");
+        public final static Property TotalCount = new Property(10, int.class, "totalCount", false, "TOTAL_COUNT");
+        public final static Property UnReadCount = new Property(11, int.class, "unReadCount", false, "UN_READ_COUNT");
+        public final static Property NodeTotalCount = new Property(12, int.class, "nodeTotalCount", false, "NODE_TOTAL_COUNT");
+        public final static Property NodeUReadCount = new Property(13, int.class, "nodeUReadCount", false, "NODE_UREAD_COUNT");
+        public final static Property StarTotalCount = new Property(14, int.class, "starTotalCount", false, "STAR_TOTAL_COUNT");
+        public final static Property StarunReadCount = new Property(15, int.class, "starunReadCount", false, "STARUN_READ_COUNT");
+        public final static Property DrafTotalCount = new Property(16, int.class, "drafTotalCount", false, "DRAF_TOTAL_COUNT");
+        public final static Property DrafUnReadCount = new Property(17, int.class, "drafUnReadCount", false, "DRAF_UN_READ_COUNT");
+        public final static Property SendTotalCount = new Property(18, int.class, "sendTotalCount", false, "SEND_TOTAL_COUNT");
+        public final static Property SendunReadCount = new Property(19, int.class, "sendunReadCount", false, "SENDUN_READ_COUNT");
+        public final static Property GarbageCount = new Property(20, int.class, "garbageCount", false, "GARBAGE_COUNT");
+        public final static Property GarbageUnReadCount = new Property(21, int.class, "garbageUnReadCount", false, "GARBAGE_UN_READ_COUNT");
+        public final static Property DeleteTotalCount = new Property(22, int.class, "deleteTotalCount", false, "DELETE_TOTAL_COUNT");
+        public final static Property DeleteUnReadCount = new Property(23, int.class, "deleteUnReadCount", false, "DELETE_UN_READ_COUNT");
+        public final static Property InboxMenu = new Property(24, String.class, "inboxMenu", false, "INBOX_MENU");
+        public final static Property NodeMenu = new Property(25, String.class, "nodeMenu", false, "NODE_MENU");
+        public final static Property StarMenu = new Property(26, String.class, "starMenu", false, "STAR_MENU");
+        public final static Property DrafMenu = new Property(27, String.class, "drafMenu", false, "DRAF_MENU");
+        public final static Property SendMenu = new Property(28, String.class, "sendMenu", false, "SEND_MENU");
+        public final static Property GarbageMenu = new Property(29, String.class, "garbageMenu", false, "GARBAGE_MENU");
+        public final static Property DeleteMenu = new Property(30, String.class, "deleteMenu", false, "DELETE_MENU");
+        public final static Property IsChoose = new Property(31, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -67,16 +79,28 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"ACCOUNT\" TEXT," + // 7: account
                 "\"EMAIL_TYPE\" TEXT," + // 8: emailType
                 "\"PASSWORD\" TEXT," + // 9: password
-                "\"UN_READ_COUNT\" INTEGER NOT NULL ," + // 10: unReadCount
-                "\"GARBAGE_COUNT\" INTEGER NOT NULL ," + // 11: garbageCount
-                "\"INBOX_MENU\" TEXT," + // 12: inboxMenu
-                "\"NODE_MENU\" TEXT," + // 13: nodeMenu
-                "\"STAR_MENU\" TEXT," + // 14: starMenu
-                "\"DRAF_MENU\" TEXT," + // 15: drafMenu
-                "\"SEND_MENU\" TEXT," + // 16: sendMenu
-                "\"GARBAGE_MENU\" TEXT," + // 17: garbageMenu
-                "\"DELETE_MENU\" TEXT," + // 18: deleteMenu
-                "\"IS_CHOOSE\" INTEGER);"); // 19: isChoose
+                "\"TOTAL_COUNT\" INTEGER NOT NULL ," + // 10: totalCount
+                "\"UN_READ_COUNT\" INTEGER NOT NULL ," + // 11: unReadCount
+                "\"NODE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 12: nodeTotalCount
+                "\"NODE_UREAD_COUNT\" INTEGER NOT NULL ," + // 13: nodeUReadCount
+                "\"STAR_TOTAL_COUNT\" INTEGER NOT NULL ," + // 14: starTotalCount
+                "\"STARUN_READ_COUNT\" INTEGER NOT NULL ," + // 15: starunReadCount
+                "\"DRAF_TOTAL_COUNT\" INTEGER NOT NULL ," + // 16: drafTotalCount
+                "\"DRAF_UN_READ_COUNT\" INTEGER NOT NULL ," + // 17: drafUnReadCount
+                "\"SEND_TOTAL_COUNT\" INTEGER NOT NULL ," + // 18: sendTotalCount
+                "\"SENDUN_READ_COUNT\" INTEGER NOT NULL ," + // 19: sendunReadCount
+                "\"GARBAGE_COUNT\" INTEGER NOT NULL ," + // 20: garbageCount
+                "\"GARBAGE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 21: garbageUnReadCount
+                "\"DELETE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 22: deleteTotalCount
+                "\"DELETE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 23: deleteUnReadCount
+                "\"INBOX_MENU\" TEXT," + // 24: inboxMenu
+                "\"NODE_MENU\" TEXT," + // 25: nodeMenu
+                "\"STAR_MENU\" TEXT," + // 26: starMenu
+                "\"DRAF_MENU\" TEXT," + // 27: drafMenu
+                "\"SEND_MENU\" TEXT," + // 28: sendMenu
+                "\"GARBAGE_MENU\" TEXT," + // 29: garbageMenu
+                "\"DELETE_MENU\" TEXT," + // 30: deleteMenu
+                "\"IS_CHOOSE\" INTEGER);"); // 31: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -126,47 +150,59 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (password != null) {
             stmt.bindString(10, password);
         }
-        stmt.bindLong(11, entity.getUnReadCount());
-        stmt.bindLong(12, entity.getGarbageCount());
+        stmt.bindLong(11, entity.getTotalCount());
+        stmt.bindLong(12, entity.getUnReadCount());
+        stmt.bindLong(13, entity.getNodeTotalCount());
+        stmt.bindLong(14, entity.getNodeUReadCount());
+        stmt.bindLong(15, entity.getStarTotalCount());
+        stmt.bindLong(16, entity.getStarunReadCount());
+        stmt.bindLong(17, entity.getDrafTotalCount());
+        stmt.bindLong(18, entity.getDrafUnReadCount());
+        stmt.bindLong(19, entity.getSendTotalCount());
+        stmt.bindLong(20, entity.getSendunReadCount());
+        stmt.bindLong(21, entity.getGarbageCount());
+        stmt.bindLong(22, entity.getGarbageUnReadCount());
+        stmt.bindLong(23, entity.getDeleteTotalCount());
+        stmt.bindLong(24, entity.getDeleteUnReadCount());
  
         String inboxMenu = entity.getInboxMenu();
         if (inboxMenu != null) {
-            stmt.bindString(13, inboxMenu);
+            stmt.bindString(25, inboxMenu);
         }
  
         String nodeMenu = entity.getNodeMenu();
         if (nodeMenu != null) {
-            stmt.bindString(14, nodeMenu);
+            stmt.bindString(26, nodeMenu);
         }
  
         String starMenu = entity.getStarMenu();
         if (starMenu != null) {
-            stmt.bindString(15, starMenu);
+            stmt.bindString(27, starMenu);
         }
  
         String drafMenu = entity.getDrafMenu();
         if (drafMenu != null) {
-            stmt.bindString(16, drafMenu);
+            stmt.bindString(28, drafMenu);
         }
  
         String sendMenu = entity.getSendMenu();
         if (sendMenu != null) {
-            stmt.bindString(17, sendMenu);
+            stmt.bindString(29, sendMenu);
         }
  
         String garbageMenu = entity.getGarbageMenu();
         if (garbageMenu != null) {
-            stmt.bindString(18, garbageMenu);
+            stmt.bindString(30, garbageMenu);
         }
  
         String deleteMenu = entity.getDeleteMenu();
         if (deleteMenu != null) {
-            stmt.bindString(19, deleteMenu);
+            stmt.bindString(31, deleteMenu);
         }
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(20, isChoose ? 1L: 0L);
+            stmt.bindLong(32, isChoose ? 1L: 0L);
         }
     }
 
@@ -211,47 +247,59 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (password != null) {
             stmt.bindString(10, password);
         }
-        stmt.bindLong(11, entity.getUnReadCount());
-        stmt.bindLong(12, entity.getGarbageCount());
+        stmt.bindLong(11, entity.getTotalCount());
+        stmt.bindLong(12, entity.getUnReadCount());
+        stmt.bindLong(13, entity.getNodeTotalCount());
+        stmt.bindLong(14, entity.getNodeUReadCount());
+        stmt.bindLong(15, entity.getStarTotalCount());
+        stmt.bindLong(16, entity.getStarunReadCount());
+        stmt.bindLong(17, entity.getDrafTotalCount());
+        stmt.bindLong(18, entity.getDrafUnReadCount());
+        stmt.bindLong(19, entity.getSendTotalCount());
+        stmt.bindLong(20, entity.getSendunReadCount());
+        stmt.bindLong(21, entity.getGarbageCount());
+        stmt.bindLong(22, entity.getGarbageUnReadCount());
+        stmt.bindLong(23, entity.getDeleteTotalCount());
+        stmt.bindLong(24, entity.getDeleteUnReadCount());
  
         String inboxMenu = entity.getInboxMenu();
         if (inboxMenu != null) {
-            stmt.bindString(13, inboxMenu);
+            stmt.bindString(25, inboxMenu);
         }
  
         String nodeMenu = entity.getNodeMenu();
         if (nodeMenu != null) {
-            stmt.bindString(14, nodeMenu);
+            stmt.bindString(26, nodeMenu);
         }
  
         String starMenu = entity.getStarMenu();
         if (starMenu != null) {
-            stmt.bindString(15, starMenu);
+            stmt.bindString(27, starMenu);
         }
  
         String drafMenu = entity.getDrafMenu();
         if (drafMenu != null) {
-            stmt.bindString(16, drafMenu);
+            stmt.bindString(28, drafMenu);
         }
  
         String sendMenu = entity.getSendMenu();
         if (sendMenu != null) {
-            stmt.bindString(17, sendMenu);
+            stmt.bindString(29, sendMenu);
         }
  
         String garbageMenu = entity.getGarbageMenu();
         if (garbageMenu != null) {
-            stmt.bindString(18, garbageMenu);
+            stmt.bindString(30, garbageMenu);
         }
  
         String deleteMenu = entity.getDeleteMenu();
         if (deleteMenu != null) {
-            stmt.bindString(19, deleteMenu);
+            stmt.bindString(31, deleteMenu);
         }
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(20, isChoose ? 1L: 0L);
+            stmt.bindLong(32, isChoose ? 1L: 0L);
         }
     }
 
@@ -273,16 +321,28 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // account
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // emailType
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // password
-            cursor.getInt(offset + 10), // unReadCount
-            cursor.getInt(offset + 11), // garbageCount
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // inboxMenu
-            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13), // nodeMenu
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // starMenu
-            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // drafMenu
-            cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16), // sendMenu
-            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // garbageMenu
-            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // deleteMenu
-            cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0 // isChoose
+            cursor.getInt(offset + 10), // totalCount
+            cursor.getInt(offset + 11), // unReadCount
+            cursor.getInt(offset + 12), // nodeTotalCount
+            cursor.getInt(offset + 13), // nodeUReadCount
+            cursor.getInt(offset + 14), // starTotalCount
+            cursor.getInt(offset + 15), // starunReadCount
+            cursor.getInt(offset + 16), // drafTotalCount
+            cursor.getInt(offset + 17), // drafUnReadCount
+            cursor.getInt(offset + 18), // sendTotalCount
+            cursor.getInt(offset + 19), // sendunReadCount
+            cursor.getInt(offset + 20), // garbageCount
+            cursor.getInt(offset + 21), // garbageUnReadCount
+            cursor.getInt(offset + 22), // deleteTotalCount
+            cursor.getInt(offset + 23), // deleteUnReadCount
+            cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24), // inboxMenu
+            cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25), // nodeMenu
+            cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26), // starMenu
+            cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27), // drafMenu
+            cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // sendMenu
+            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // garbageMenu
+            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // deleteMenu
+            cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0 // isChoose
         );
         return entity;
     }
@@ -299,16 +359,28 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setAccount(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setEmailType(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setPassword(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setUnReadCount(cursor.getInt(offset + 10));
-        entity.setGarbageCount(cursor.getInt(offset + 11));
-        entity.setInboxMenu(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setNodeMenu(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
-        entity.setStarMenu(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
-        entity.setDrafMenu(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
-        entity.setSendMenu(cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16));
-        entity.setGarbageMenu(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
-        entity.setDeleteMenu(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
-        entity.setIsChoose(cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0);
+        entity.setTotalCount(cursor.getInt(offset + 10));
+        entity.setUnReadCount(cursor.getInt(offset + 11));
+        entity.setNodeTotalCount(cursor.getInt(offset + 12));
+        entity.setNodeUReadCount(cursor.getInt(offset + 13));
+        entity.setStarTotalCount(cursor.getInt(offset + 14));
+        entity.setStarunReadCount(cursor.getInt(offset + 15));
+        entity.setDrafTotalCount(cursor.getInt(offset + 16));
+        entity.setDrafUnReadCount(cursor.getInt(offset + 17));
+        entity.setSendTotalCount(cursor.getInt(offset + 18));
+        entity.setSendunReadCount(cursor.getInt(offset + 19));
+        entity.setGarbageCount(cursor.getInt(offset + 20));
+        entity.setGarbageUnReadCount(cursor.getInt(offset + 21));
+        entity.setDeleteTotalCount(cursor.getInt(offset + 22));
+        entity.setDeleteUnReadCount(cursor.getInt(offset + 23));
+        entity.setInboxMenu(cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24));
+        entity.setNodeMenu(cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25));
+        entity.setStarMenu(cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26));
+        entity.setDrafMenu(cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27));
+        entity.setSendMenu(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
+        entity.setGarbageMenu(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
+        entity.setDeleteMenu(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
+        entity.setIsChoose(cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0);
      }
     
     @Override

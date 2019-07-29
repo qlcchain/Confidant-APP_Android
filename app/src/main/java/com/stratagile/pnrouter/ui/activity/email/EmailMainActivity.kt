@@ -76,10 +76,10 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .popReceiveAsyn(this@EmailMainActivity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Int, totalUnreadCount: Int,noMoreData:Boolean) {
                                         progressDialog.dismiss()
-                                        Toast.makeText(this@EmailMainActivity, "邮件总数：" + count + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
-                                        Log.i("oversee", "邮件总数：" + count + " 标题：" + messageList[0].from)
+                                        Toast.makeText(this@EmailMainActivity, "邮件总数：" + totalCount + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
+                                        Log.i("oversee", "邮件总数：" + totalCount + " 标题：" + messageList[0].from)
                                     }
 
                                     override fun gainFailure(errorMsg: String) {
@@ -98,11 +98,11 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                     .run { progressDialog ->
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
-                                .imapReceiveAsyn(this@EmailMainActivity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
+                                .imapReceiveMoreAsyn(this@EmailMainActivity, object : GetReceiveCallback {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Int, totalUnreadCount: Int,noMoreData:Boolean) {
                                         progressDialog.dismiss()
-                                        Toast.makeText(this@EmailMainActivity, "邮件总数：" + count + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
-                                        Log.i("oversee", "邮件总数：" + count + " 标题：" + messageList[0].subject)
+                                        Toast.makeText(this@EmailMainActivity, "邮件总数：" + totalCount + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
+                                        Log.i("oversee", "邮件总数：" + totalCount + " 标题：" + messageList[0].subject)
                                     }
 
                                     override fun gainFailure(errorMsg: String) {
@@ -110,7 +110,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                                         Toast.makeText(this@EmailMainActivity, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
                                         Log.e("oversee", "错误日志：$errorMsg")
                                     }
-                                },"INBOX")
+                                },"INBOX",0,10,0)
                     }
         }
     }

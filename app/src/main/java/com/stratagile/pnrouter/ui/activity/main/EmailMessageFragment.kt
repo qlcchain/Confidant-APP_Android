@@ -6,33 +6,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.pawegio.kandroid.runOnUiThread
-import com.scwang.smartrefresh.layout.api.RefreshLayout
-import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener
+import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
-import com.smailnet.eamil.Utils.MailUtil
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.entity.events.AfterChangeEmailConfig
 import com.stratagile.pnrouter.entity.events.ChangEmailMenu
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
-import com.stratagile.pnrouter.entity.events.FromChat
+import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.ui.activity.email.EmailInfoActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEmailMessageComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.EmailMessageContract
 import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main_menu.view.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -55,7 +49,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         menu = changEmailMenu.menu
-        pullMessageList()
+        pullMoreMessageList()
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_mail_list, null);
@@ -78,15 +72,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             intent.putExtra("menu", menu)
             startActivity(intent)
         }
-       /* refreshLayout.setOnRefreshListener {
-            pullMessageList()
-            if (refreshLayout != null)
-                refreshLayout.isRefreshing = false
-        }*/
-        refreshLayout.setEnableAutoLoadMore(true)//开启自动加载功能（非必须）
+        /* refreshLayout.setOnRefreshListener {
+             pullMoreMessageList()
+             if (refreshLayout != null)
+                 refreshLayout.isRefreshing = false
+         }*/
+        refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
         refreshLayout.setOnRefreshListener { refreshLayout ->
             refreshLayout.layout.postDelayed({
-                pullMessageList()
+                pullMoreMessageList()
                 refreshLayout.finishRefresh()
                 refreshLayout.resetNoMoreData()//setNoMoreData(false);
             }, 2000)
@@ -97,17 +91,21 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                     Toast.makeText(AppConfig.instance, "数据全部加载完毕", Toast.LENGTH_SHORT).show()
                     refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
                 } else {
-                    pullMessageList()
+                    pullMoreMessageList()
                     refreshLayout.finishLoadMore()
                 }*/
-                pullMessageList()
-                refreshLayout.finishLoadMore()
+
             }, 2000)
+            pullMoreMessageList()
         }
 
         //触发自动刷新
-        refreshLayout.autoRefresh()
+        //refreshLayout.autoRefresh()
         EventBus.getDefault().register(this)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAddEmailConfig(afterChangeEmailConfig: AfterChangeEmailConfig) {
+        pullMoreMessageList()
     }
     override fun onResume() {
         super.onResume()
@@ -123,7 +121,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         if(isVisibleToUser)
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
-            //pullMessageList()
+            //pullMoreMessageList()
         }
     }
     override fun setupFragmentComponent() {
@@ -138,26 +136,69 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     override fun setPresenter(presenter: EmailMessageContract.EmailMessageContractPresenter) {
         mPresenter = presenter as EmailMessagePresenter
     }
-    fun pullMessageList() {
+    fun pullMoreMessageList() {
         var account= AppConfig.instance.emailConfig().account
         var smtpHost = AppConfig.instance.emailConfig().smtpHost
-        Log.i("pullMessageList",account +":"+smtpHost)
+        Log.i("pullMoreMessageList",account +":"+smtpHost)
+        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        var lastTotalCount = 0;
+        if(emailConfigEntityChoose.size > 0)
+        {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+              when(menu)
+              {
+                  emailConfigEntity.inboxMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.totalCount
+                 }
+                  emailConfigEntity.drafMenu->
+                  {
+                      lastTotalCount = emailConfigEntity.drafTotalCount
+                  }
+                  emailConfigEntity.sendMenu->
+                  {
+                      lastTotalCount = emailConfigEntity.sendTotalCount
+                  }
+                  emailConfigEntity.garbageMenu->
+                  {
+                      lastTotalCount = emailConfigEntity.garbageCount
+                  }
+                  emailConfigEntity.deleteMenu->
+                  {
+                      lastTotalCount = emailConfigEntity.deleteTotalCount
+                  }
+              }
+        }
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
         if(true)
         {
+            var beginIndex = if (localMessageList!= null){localMessageList.size}else{0}
+            /*  AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
+              AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()*/
             Islands.circularProgress(this.activity)
                     .setCancelable(false)
                     .setMessage("同步中...")
-                    .show()
                     .run { progressDialog ->
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
-                                .imapReceiveAsyn(this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, count: Int) {
+                                .imapReceiveMoreAsyn(this.activity, object : GetReceiveCallback {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Int, totalUnreadCount: Int, noMoreData:Boolean) {
+                                        if(noMoreData)
+                                        {
+                                            runOnUiThread {
+                                                refreshLayout.finishLoadMore()
+                                                toast(R.string.nomore)
+                                                //refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
+                                            }
+                                        }else{
+                                            runOnUiThread {
+                                                refreshLayout.finishLoadMore()
+                                            }
+                                        }
+
                                         var list = messageList;
-                                        AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
-                                        AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
                                         for (item in messageList)
                                         {
                                             var eamilMessage = EmailMessageEntity()
@@ -169,10 +210,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilMessage.cc = item.cc
                                             eamilMessage.bcc = item.bcc
                                             eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                            eamilMessage.setAttachmentCount(item.attachmentCount)
                                             eamilMessage.setIsSeen(item.isSeen)
                                             eamilMessage.setIsStar(item.isStar)
                                             eamilMessage.setIsReplySign(item.isReplySign)
+                                            eamilMessage.setAttachmentCount(item.attachmentCount)
                                             eamilMessage.subject = item.subject
                                             eamilMessage.content= item.content
                                             eamilMessage.contentText= item.contentText
@@ -216,7 +257,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         progressDialog.dismiss()
 
                                     }
-                                },menu)
+                                },menu,beginIndex,2,lastTotalCount)
                     }
         }else{
             runOnUiThread {

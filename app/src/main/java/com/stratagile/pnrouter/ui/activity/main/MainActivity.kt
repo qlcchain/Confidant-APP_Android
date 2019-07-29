@@ -2379,6 +2379,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         initLeftSubMenu()
         emaiConfigChooseAdapter!!.setNewData(emailConfigEntityList)
+        EventBus.getDefault().post(AfterChangeEmailConfig())
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {

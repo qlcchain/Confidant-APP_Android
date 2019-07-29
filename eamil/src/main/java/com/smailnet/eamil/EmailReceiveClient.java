@@ -24,9 +24,10 @@ import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.Callback.MarkCallback;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import javax.mail.Flags;
 import javax.mail.MessagingException;
 
 /**
@@ -59,7 +60,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                            getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -93,7 +94,7 @@ public class EmailReceiveClient {
             public void run() {
                 try {
                     List<EmailMessage> messageList = Operator.Core(emailConfig).popReceiveMail();
-                    getReceiveCallback.gainSuccess(messageList, messageList.size());
+                    getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false);
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());
@@ -109,16 +110,22 @@ public class EmailReceiveClient {
      * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback,final String menu){
+    public void imapReceiveMoreAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final int beginIndex, final int pageSize,final int lastTotalCount){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail(menu);
+                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveMoreMail(menu,beginIndex,pageSize,lastTotalCount);
+                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                   /* messageMap.put("totalCount",totalSize);
+                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
+                    final int totalCount = (int)messageMap.get("totalCount");
+                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -145,12 +152,12 @@ public class EmailReceiveClient {
      * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveAsynCount(final Activity activity, final GetCountCallback getReceiveCallback){
+    public void imapReceiveAsynCount(final Activity activity, final GetCountCallback getReceiveCallback,final ArrayList<String> menuList){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final List<EmailCount> messageList = Operator.Core(emailConfig).imapReceiveMailCountAndMenu();
+                    final List<EmailCount> messageList = Operator.Core(emailConfig).imapReceiveMailCountAndMenu(menuList);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -253,13 +260,19 @@ public class EmailReceiveClient {
      * 使用imap协议接收邮件，接收完毕但不切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveAsyn(final GetReceiveCallback getReceiveCallback){
+    public void imapReceiveMoreAsyn(final GetReceiveCallback getReceiveCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail("INBOX");
-                    getReceiveCallback.gainSuccess(messageList, messageList.size());
+                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveMoreMail("INBOX",0,10,10);
+                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                   /* messageMap.put("totalCount",totalSize);
+                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
+                    final int totalCount = (int)messageMap.get("totalCount");
+                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData);
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());

@@ -41,6 +41,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         public final static Property AttachmentCount = new Property(16, int.class, "attachmentCount", false, "ATTACHMENT_COUNT");
         public final static Property Content = new Property(17, String.class, "content", false, "CONTENT");
         public final static Property ContentText = new Property(18, String.class, "contentText", false, "CONTENT_TEXT");
+        public final static Property MessageTotalCount = new Property(19, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
     }
 
 
@@ -74,7 +75,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
                 "\"IS_CONTAINER_ATTACHMENT\" INTEGER NOT NULL ," + // 15: isContainerAttachment
                 "\"ATTACHMENT_COUNT\" INTEGER NOT NULL ," + // 16: attachmentCount
                 "\"CONTENT\" TEXT," + // 17: content
-                "\"CONTENT_TEXT\" TEXT);"); // 18: contentText
+                "\"CONTENT_TEXT\" TEXT," + // 18: contentText
+                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL );"); // 19: messageTotalCount
     }
 
     /** Drops the underlying database table. */
@@ -157,6 +159,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (contentText != null) {
             stmt.bindString(19, contentText);
         }
+        stmt.bindLong(20, entity.getMessageTotalCount());
     }
 
     @Override
@@ -233,6 +236,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (contentText != null) {
             stmt.bindString(19, contentText);
         }
+        stmt.bindLong(20, entity.getMessageTotalCount());
     }
 
     @Override
@@ -261,7 +265,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             cursor.getShort(offset + 15) != 0, // isContainerAttachment
             cursor.getInt(offset + 16), // attachmentCount
             cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // content
-            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18) // contentText
+            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // contentText
+            cursor.getLong(offset + 19) // messageTotalCount
         );
         return entity;
     }
@@ -287,6 +292,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         entity.setAttachmentCount(cursor.getInt(offset + 16));
         entity.setContent(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
         entity.setContentText(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
+        entity.setMessageTotalCount(cursor.getLong(offset + 19));
      }
     
     @Override
