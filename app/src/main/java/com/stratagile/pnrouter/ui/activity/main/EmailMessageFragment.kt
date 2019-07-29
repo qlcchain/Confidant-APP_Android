@@ -6,7 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.pawegio.kandroid.runOnUiThread
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
@@ -74,11 +78,35 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             intent.putExtra("menu", menu)
             startActivity(intent)
         }
-        refreshLayout.setOnRefreshListener {
+       /* refreshLayout.setOnRefreshListener {
             pullMessageList()
             if (refreshLayout != null)
                 refreshLayout.isRefreshing = false
+        }*/
+        refreshLayout.setEnableAutoLoadMore(true)//开启自动加载功能（非必须）
+        refreshLayout.setOnRefreshListener { refreshLayout ->
+            refreshLayout.layout.postDelayed({
+                pullMessageList()
+                refreshLayout.finishRefresh()
+                refreshLayout.resetNoMoreData()//setNoMoreData(false);
+            }, 2000)
         }
+        refreshLayout.setOnLoadMoreListener { refreshLayout ->
+            refreshLayout.layout.postDelayed({
+                /*if (mAdapter.getItemCount() > 30) {
+                    Toast.makeText(AppConfig.instance, "数据全部加载完毕", Toast.LENGTH_SHORT).show()
+                    refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
+                } else {
+                    pullMessageList()
+                    refreshLayout.finishLoadMore()
+                }*/
+                pullMessageList()
+                refreshLayout.finishLoadMore()
+            }, 2000)
+        }
+
+        //触发自动刷新
+        refreshLayout.autoRefresh()
         EventBus.getDefault().register(this)
     }
     override fun onResume() {

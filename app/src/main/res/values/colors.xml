@@ -58,5 +58,6 @@
     <color name="color_test">#14803426</color>
     <color name="btnstroke">#4A4E5C</color>
     <color name="button_enabled">#333333</color>
+    <color name="colorBackgroundDark">#f2f2f2</color>
 
 </resources>
