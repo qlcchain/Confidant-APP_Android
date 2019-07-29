@@ -105,7 +105,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddEmailConfig(afterChangeEmailConfig: AfterChangeEmailConfig) {
-        pullMoreMessageList()
+        //pullMoreMessageList()
     }
     override fun onResume() {
         super.onResume()

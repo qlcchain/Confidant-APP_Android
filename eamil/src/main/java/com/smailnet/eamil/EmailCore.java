@@ -447,15 +447,17 @@ class EmailCore {
         if(lastTotalCount - beginIndex >=pageSize)
         {
             noMoreData = false;
-            int startIndex = lastTotalCount -(pageSize -1) -beginIndex - newSize;
-            int endIndex = lastTotalCount - beginIndex - newSize;
+            int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
+            int endIndex = totalSize - beginIndex - newSize;
+            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
             messagesAll = folder.getMessages(startIndex,endIndex);
         }else{
             noMoreData = true;
-            int addSize = lastTotalCount - beginIndex;
-            int startIndex = lastTotalCount -(addSize -1) -beginIndex - newSize;
-            int endIndex = lastTotalCount - beginIndex - newSize;
-            if(startIndex >= endIndex)
+            int addSize = totalSize - beginIndex;
+            int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
+            int endIndex = totalSize - beginIndex - newSize;
+            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+            if(startIndex > endIndex)
             {
                 messagesAll = new Message[]{};
             }else{
