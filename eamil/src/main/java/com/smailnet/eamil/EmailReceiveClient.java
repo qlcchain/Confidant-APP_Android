@@ -105,9 +105,50 @@ public class EmailReceiveClient {
             }
         }).start();
     }
-
     /**
-     * 使用imap协议接收邮件，接收完毕并切回主线程
+     * 使用imap协议接收新邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void imapReceiveNewAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final int beginIndex, final int pageSize,final int lastTotalCount){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveNewMail(menu,beginIndex,pageSize,lastTotalCount);
+                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                   /* messageMap.put("totalCount",totalSize);
+                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
+                    final int totalCount = (int)messageMap.get("totalCount");
+                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData);
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
+     * 使用imap协议接收历史邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
     public void imapReceiveMoreAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final int beginIndex, final int pageSize,final int lastTotalCount){

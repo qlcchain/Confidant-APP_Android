@@ -22,6 +22,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -3188,6 +3189,29 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }*/
         }
+        mDrawer.setDrawerListener(object : DrawerLayout.DrawerListener {
+           override fun onDrawerStateChanged(arg0: Int) {
+
+                //Log.i("zhangshuli", "statechange")
+            }
+
+            override fun onDrawerSlide(arg0: View, arg1: Float) {
+
+                //Log.i("zhangshuli", "slide")
+
+            }
+
+            override fun onDrawerOpened(arg0: View) {
+
+                //Log.i("zhangshuli", "open")
+            }
+
+            override fun onDrawerClosed(arg0: View) {
+
+                EventBus.getDefault().post(OnDrawerOpened())
+                //Log.i("zhangshuli", "colse")
+            }
+        })
         if(ConstantValue.chooseEmailMenu == 0)
         {
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
