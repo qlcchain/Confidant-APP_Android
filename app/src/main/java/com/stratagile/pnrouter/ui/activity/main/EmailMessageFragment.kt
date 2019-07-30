@@ -81,10 +81,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         recyclerView.adapter = emaiMessageChooseAdapter
         recyclerView.scrollToPosition(0)
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+            var emailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(position)
             var intent = Intent(activity!!, EmailInfoActivity::class.java)
-            intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
+            intent.putExtra("emailMeaasgeData",emailMeaasgeData)
             intent.putExtra("menu", menu)
+            intent.putExtra("positionIndex", position)
             startActivity(intent)
+            emailMeaasgeData!!.setIsSeen(true)
+            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+            emaiMessageChooseAdapter!!.notifyItemChanged(position)
         }
         /* refreshLayout.setOnRefreshListener {
              pullMoreMessageList()
@@ -129,7 +134,27 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         EventBus.getDefault().register(this)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun changEmailMessage(changEmailMessage: ChangEmailMessage) {
+        if(changEmailMessage.type == 0)
+        {
+            emaiMessageChooseAdapter!!.notifyItemChanged(changEmailMessage.positon)
+        }else{
+            emaiMessageChooseAdapter!!.remove(changEmailMessage.positon)
+            emaiMessageChooseAdapter!!.notifyDataSetChanged()
+        }
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDrawerOpened(onDrawerOpened: OnDrawerOpened) {
+        if(menu.equals("node") || menu.equals("star")|| menu.equals(""))
+        {
+            var localMessageList = mutableListOf<EmailMessageEntity>()
+            runOnUiThread {
+                emaiMessageChooseAdapter!!.setNewData(localMessageList);
+            }
+            toast(R.string.nomore)
+            return;
+        }
         if(AppConfig.instance.emailConfig().account != null && !AppConfig.instance.emailConfig().account.equals(""))
         {
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
@@ -137,6 +162,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             {
                 showProgressDialog()
                 pullMoreMessageList(0)
+            }else{
+                runOnUiThread {
+                    emaiMessageChooseAdapter!!.setNewData(localMessageList);
+                }
             }
         }
     }

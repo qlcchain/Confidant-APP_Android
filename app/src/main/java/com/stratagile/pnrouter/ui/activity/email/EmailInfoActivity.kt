@@ -21,8 +21,10 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
+import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
+import com.stratagile.pnrouter.entity.events.ChangEmailMessage
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
@@ -33,6 +35,7 @@ import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.email_info_view.*
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import javax.inject.Inject
 
@@ -48,7 +51,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     @Inject
     internal lateinit var mPresenter: EmailInfoPresenter
     var emailMeaasgeData:EmailMessageEntity? = null
+    var positionIndex = 0;
     var menu:String= "INBOX"
+    var msgId = "";
     var emaiInfoAdapter : EmaiInfoAdapter? = null
     var emaiAttachAdapter : EmaiAttachAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,8 +67,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
     override fun initData() {
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
+        positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
-        var msgId = emailMeaasgeData!!.msgId
+        msgId = emailMeaasgeData!!.msgId
         var to = emailMeaasgeData!!.to
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
@@ -180,7 +186,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         if(cc!= null && cc != "" )
         {
-            var ccList  =cc.split(",")
+            var ccList  = cc.split(",")
             for(ccItem in ccList)
             {
                 var ccName = ccItem.substring(0,ccItem.indexOf("<"))
@@ -222,7 +228,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
         }
         deleteMenu.setOnClickListener {
-
+            showProgressDialog(getString(R.string.waiting))
+            deleteEmailSend()
         }
         tvRefuse.setOnClickListener {
             var intent = Intent(this, EmailSendActivity::class.java)
@@ -234,24 +241,17 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             startActivity(intent)
         }
 
-        if(emailMeaasgeData!!.isSeen())
-        {
-            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-            emailReceiveClient
-                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                        override fun gainSuccess(result: Boolean) {
-                            //tipDialog.dismiss()
-                            closeProgressDialog()
-                            emailMeaasgeData!!.setIsSeen(false)
-                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
-                        }
-                        override fun gainFailure(errorMsg: String) {
-                            //tipDialog.dismiss()
-                            closeProgressDialog()
-                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
-                        }
-                    },menu,msgId,32,true,"")
-        }
+        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+        emailReceiveClient
+                .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                    override fun gainSuccess(result: Boolean) {
+
+                    }
+                    override fun gainFailure(errorMsg: String) {
+
+                    }
+                },menu,msgId,32,true,"")
+
 
         moreMenu.setOnClickListener {
 
@@ -283,6 +283,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                             closeProgressDialog()
                                             emailMeaasgeData!!.setIsSeen(false)
                                             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                            EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
                                         }
                                         override fun gainFailure(errorMsg: String) {
                                             //tipDialog.dismiss()
@@ -309,6 +310,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                             }else{
                                                 inboxStar.visibility =View.GONE
                                             }
+                                            EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
                                         }
                                         override fun gainFailure(errorMsg: String) {
                                             //tipDialog.dismiss()
@@ -324,22 +326,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                             showMovePop()
                         }
                         4 -> {
-                            showProgressDialog(getString(R.string.loading))
-                            /*tipDialog.show()*/
-                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-
-                            emailReceiveClient
-                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                                        override fun gainSuccess(result: Boolean) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                        }
-                                        override fun gainFailure(errorMsg: String) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
-                                        }
-                                    },menu,msgId,2,true,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
+                            showProgressDialog(getString(R.string.waiting))
+                            deleteEmailSend()
                         }
                     }
                 }
@@ -350,7 +338,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
         }
-
+        //webSettings.setTextZoom(120);
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
         } else {
@@ -362,7 +350,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
         webSettings.javaScriptEnabled = true // 设置支持javascript脚本
-        webSettings.setTextSize(WebSettings.TextSize.LARGER)
+        webSettings.setTextSize(WebSettings.TextSize.LARGEST)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setSupportZoom(true)// 设置可以支持缩放
         webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
@@ -436,6 +424,60 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+    }
+    fun deleteEmailSend()
+    {
+        /*tipDialog.show()*/
+        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+        emailReceiveClient
+                .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                    override fun gainSuccess(result: Boolean) {
+                        //tipDialog.dismiss()
+                        closeProgressDialog()
+                        deleteEmail()
+                        finish()
+                    }
+                    override fun gainFailure(errorMsg: String) {
+                        //tipDialog.dismiss()
+                        closeProgressDialog()
+                        Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                    }
+                },menu,msgId,2,true,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
+    }
+    fun deleteEmail()
+    {
+        AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(emailMeaasgeData)
+        EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0)
+        {
+            var emailConfigEntity = emailConfigEntityChoose.get(0)
+            when(menu)
+            {
+                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+                {
+                    emailConfigEntity.totalCount -= 1
+
+                }
+                ConstantValue.currentEmailConfigEntity!!.drafMenu->
+                {
+                    emailConfigEntity.drafTotalCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.sendMenu->
+                {
+                    emailConfigEntity.sendTotalCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+                {
+                    emailConfigEntity.garbageCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+                {
+                    emailConfigEntity.deleteTotalCount -= 1
+                }
+            }
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+        }
     }
     fun showMovePop()
     {

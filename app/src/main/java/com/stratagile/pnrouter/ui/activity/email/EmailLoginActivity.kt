@@ -144,8 +144,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                         {
                             //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
                             emailConfigEntity.inboxMenu = "INBOX"
-                            emailConfigEntity.nodeMenu = "节点"
-                            emailConfigEntity.starMenu = ""
+                            emailConfigEntity.nodeMenu = "node"
+                            emailConfigEntity.starMenu = "star"
                             emailConfigEntity.drafMenu = "Drafts"
                             emailConfigEntity.sendMenu = "Sent Messages"
                             emailConfigEntity.garbageMenu = "Junk"
@@ -155,8 +155,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                         {
                             //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
                             emailConfigEntity.inboxMenu = "INBOX"
-                            emailConfigEntity.nodeMenu = "节点"
-                            emailConfigEntity.starMenu = ""
+                            emailConfigEntity.nodeMenu = "node"
+                            emailConfigEntity.starMenu = "star"
                             emailConfigEntity.drafMenu = "Drafts"
                             emailConfigEntity.sendMenu = "Sent Messages"
                             emailConfigEntity.garbageMenu = "Junk"

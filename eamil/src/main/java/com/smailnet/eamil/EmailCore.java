@@ -462,6 +462,7 @@ class EmailCore {
                 messagesAll = folder.getMessages(startIndex,endIndex);
             }
         }else{
+            noMoreData = true;
             messagesAll = new Message[]{};
         }
         List<Message> list  = Arrays.asList(messagesAll);
@@ -783,7 +784,7 @@ class EmailCore {
                     message.setFlag(Flags.Flag.SEEN,value);
                     break;
             }
-
+            //message.saveChanges();
             return true;
         }catch (Exception e)
         {

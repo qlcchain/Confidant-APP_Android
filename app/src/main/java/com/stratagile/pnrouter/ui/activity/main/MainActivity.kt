@@ -3224,6 +3224,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
+            rootTitle.text = getString(R.string.Inbox)
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3234,9 +3235,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
             EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
         nodebackedup.setOnClickListener {
+            rootTitle.text = getString(R.string.Node_back_up)
             ConstantValue.chooseEmailMenu = 1;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -3251,6 +3254,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
+            rootTitle.text = getString(R.string.Starred)
             ConstantValue.chooseEmailMenu = 2;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3265,6 +3269,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
+            rootTitle.text = getString(R.string.Drafts)
             ConstantValue.chooseEmailMenu = 3;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3279,6 +3284,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
+            rootTitle.text = getString(R.string.Sent)
             ConstantValue.chooseEmailMenu = 4;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3293,6 +3299,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
+            rootTitle.text = getString(R.string.Spam)
             ConstantValue.chooseEmailMenu = 5;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3308,6 +3315,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
+            rootTitle.text = getString(R.string.Trash)
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
