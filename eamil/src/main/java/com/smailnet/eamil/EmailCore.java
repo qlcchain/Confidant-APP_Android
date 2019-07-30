@@ -784,7 +784,7 @@ class EmailCore {
                     message.setFlag(Flags.Flag.SEEN,value);
                     break;
             }
-            //message.saveChanges();
+            message.saveChanges();
             return true;
         }catch (Exception e)
         {

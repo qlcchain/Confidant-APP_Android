@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
+import com.stratagile.pnrouter.db.EmailConfigEntity
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
@@ -54,6 +55,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var msgId = "";
     var emaiInfoAdapter : EmaiInfoAdapter? = null
     var emaiAttachAdapter : EmaiAttachAdapter? = null
+    var emailConfigEntityChoose:EmailConfigEntity? = null
+    var emailConfigEntityChooseList= mutableListOf<EmailConfigEntity>()
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -72,6 +75,34 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
         var attachCount = emailMeaasgeData!!.attachmentCount
+        emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChooseList.size > 0)
+        {
+            emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+        }
+        when(menu)
+        {
+            ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+            {
+                moreMenu.visibility = View.VISIBLE
+            }
+            ConstantValue.currentEmailConfigEntity!!.drafMenu->
+            {
+                moreMenu.visibility = View.GONE
+            }
+            ConstantValue.currentEmailConfigEntity!!.sendMenu->
+            {
+                moreMenu.visibility = View.VISIBLE
+            }
+            ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+            {
+                moreMenu.visibility = View.VISIBLE
+            }
+            ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+            {
+                moreMenu.visibility = View.VISIBLE
+            }
+        }
         if(emailMeaasgeData!!.isStar())
         {
             inboxStar.visibility =View.VISIBLE
@@ -158,7 +189,35 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
 
         var titleStr = intent.getStringExtra("title")
-        tvTitle.text = getString(R.string.Inbox)
+
+        when(menu)
+        {
+            ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+            {
+                tvTitle.text = getString(R.string.Inbox)
+
+            }
+            ConstantValue.currentEmailConfigEntity!!.starMenu->
+            {
+                tvTitle.text = getString(R.string.Starred)
+            }
+            ConstantValue.currentEmailConfigEntity!!.drafMenu->
+            {
+                tvTitle.text = getString(R.string.Drafts)
+            }
+            ConstantValue.currentEmailConfigEntity!!.sendMenu->
+            {
+                tvTitle.text = getString(R.string.Sent)
+            }
+            ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+            {
+                tvTitle.text = getString(R.string.Spam)
+            }
+            ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+            {
+                tvTitle.text = getString(R.string.Trash)
+            }
+        }
         attach_info.text = getString(R.string.details)
         details.visibility = View.GONE
         inboxTitle.text = emailMeaasgeData!!.subject
@@ -263,8 +322,32 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 starIcon = "tabbar_stars_selected"
                 starFlag = true
             }
-            var menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-            var iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            when(menu)
+            {
+                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
+
+                }
+                ConstantValue.currentEmailConfigEntity!!.sendMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star))
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon)
+                }
+                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
+                }
+                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to))
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move")
+                }
+            }
             PopWindowUtil.showPopMenuWindow(this@EmailInfoActivity, moreMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
@@ -450,55 +533,80 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     fun deleteEmail()
     {
         AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(emailMeaasgeData)
-        EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))
-        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        if(emailConfigEntityChoose.size > 0)
+        EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))       
+        if(emailConfigEntityChoose != null)
         {
-            var emailConfigEntity = emailConfigEntityChoose.get(0)
             when(menu)
             {
                 ConstantValue.currentEmailConfigEntity!!.inboxMenu->
                 {
-                    emailConfigEntity.totalCount -= 1
+                    emailConfigEntityChoose!!.totalCount -= 1
 
                 }
                 ConstantValue.currentEmailConfigEntity!!.drafMenu->
                 {
-                    emailConfigEntity.drafTotalCount -= 1
+                    emailConfigEntityChoose!!.drafTotalCount -= 1
                 }
                 ConstantValue.currentEmailConfigEntity!!.sendMenu->
                 {
-                    emailConfigEntity.sendTotalCount -= 1
+                    emailConfigEntityChoose!!.sendTotalCount -= 1
                 }
                 ConstantValue.currentEmailConfigEntity!!.garbageMenu->
                 {
-                    emailConfigEntity.garbageCount -= 1
+                    emailConfigEntityChoose!!.garbageCount -= 1
                 }
                 ConstantValue.currentEmailConfigEntity!!.deleteMenu->
                 {
-                    emailConfigEntity.deleteTotalCount -= 1
+                    emailConfigEntityChoose!!.deleteTotalCount -= 1
                 }
             }
-            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update( emailConfigEntityChoose)
         }
     }
     fun showMovePop()
     {
         var title = getString(R.string.Move_to)
         var starIcon = "tabbar_attach_selected"
-        var menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
-        var iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
+        var menuArray = arrayListOf<String>()
+        var iconArray = arrayListOf<String>()
+
+        var fistMenu = ""
+        var secondMenu = ""
+        when(menu)
+        {
+            ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+            {
+                menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
+                iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
+                fistMenu = ConstantValue.currentEmailConfigEntity!!.garbageMenu
+                secondMenu = ConstantValue.currentEmailConfigEntity!!.deleteMenu
+            }
+            ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+            {
+                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
+                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
+                fistMenu = ConstantValue.currentEmailConfigEntity!!.inboxMenu
+                secondMenu = ConstantValue.currentEmailConfigEntity!!.deleteMenu
+            }
+            ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+            {
+                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
+                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
+                fistMenu = ConstantValue.currentEmailConfigEntity!!.inboxMenu
+                secondMenu = ConstantValue.currentEmailConfigEntity!!.garbageMenu
+            }
+        }
         PopWindowUtil.showPopMoveMenuWindow(this@EmailInfoActivity, moreMenu,title,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
             override fun onSelect(position: Int, obj: Any) {
                 KLog.i("" + position)
                 when (position) {
                     0 -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.garbageMenu,2)
+                        deleteAndMoveEmailSend(fistMenu,2)
                     }
                     1 -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                        deleteAndMoveEmailSend(secondMenu,2)
                     }
                 }
             }

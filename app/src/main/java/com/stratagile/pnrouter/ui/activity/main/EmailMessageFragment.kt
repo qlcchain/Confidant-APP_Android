@@ -106,12 +106,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
              }, 2000)*/
 
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
-            if(localMessageList == null || localMessageList.size ==0)
-            {
-                pullMoreMessageList(localMessageList.size)
-            }else{
-                pullNewMessageList(localMessageList.size)
-            }
+            pullNewMessageList(localMessageList.size)
 
         }
         refreshLayout.setOnLoadMoreListener { refreshLayout ->

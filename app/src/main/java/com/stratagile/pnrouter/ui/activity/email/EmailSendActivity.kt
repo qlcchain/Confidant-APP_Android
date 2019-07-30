@@ -236,6 +236,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         toAddress.setBackSpaceLisetener(backspaceListener)
 
+
+        var URLText = "<html><body>"+emailMessageEntity!!.content+"</body></html>";
+        re_main_editor.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
 
     private fun initAttachUI()
