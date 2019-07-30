@@ -55,6 +55,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                 emaiMessageChooseAdapter!!.setNewData(localMessageList);
             }
         }
+        recyclerView.scrollToPosition(0)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_mail_list, null);
@@ -62,7 +63,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+        var account = AppConfig.instance.emailConfig().account
+        var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
         emaiMessageChooseAdapter = EmaiMessageAdapter(emailMessageEntityList)
         emaiMessageChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             /* val floatMenu = FloatMenu(activity)
@@ -71,6 +73,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             true
         }
         recyclerView.adapter = emaiMessageChooseAdapter
+        recyclerView.scrollToPosition(0)
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
             var intent = Intent(activity!!, EmailInfoActivity::class.java)
             intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
