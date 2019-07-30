@@ -37,7 +37,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
         setContentView(R.layout.email_choose_activity)
     }
     override fun initData() {
-
+        title.text = getString(R.string.NewAccount)
         //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
         qqCompany.setOnClickListener {
             AppConfig.instance.emailConfig()

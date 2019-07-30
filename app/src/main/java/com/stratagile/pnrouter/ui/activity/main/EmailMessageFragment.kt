@@ -43,19 +43,21 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     lateinit internal var mPresenter: EmailMessagePresenter
     var emaiMessageChooseAdapter : EmaiMessageAdapter? = null
     var menu = "INBOX"
+    var isChangeMenu = false
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         menu = changEmailMenu.menu
-        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+        /*var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
         if(localMessageList == null || localMessageList.size ==0)
         {
+            showProgressDialog()
             pullMoreMessageList(0)
         }else{
             runOnUiThread {
                 emaiMessageChooseAdapter!!.setNewData(localMessageList);
             }
         }
-        recyclerView.scrollToPosition(0)
+        recyclerView.scrollToPosition(0)*/
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_mail_list, null);
@@ -64,7 +66,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var account = AppConfig.instance.emailConfig().account
-        var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+        var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
+        if(account != null)
+        {
+            emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+        }
         emaiMessageChooseAdapter = EmaiMessageAdapter(emailMessageEntityList)
         emaiMessageChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             /* val floatMenu = FloatMenu(activity)
@@ -87,12 +93,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
          }*/
         refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
         refreshLayout.setOnRefreshListener { refreshLayout ->
-           /* refreshLayout.layout.postDelayed({
-                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
-                pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
-                refreshLayout.finishRefresh()
-                refreshLayout.resetNoMoreData()//setNoMoreData(false);
-            }, 2000)*/
+            /* refreshLayout.layout.postDelayed({
+                 var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
+                 pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
+                 refreshLayout.finishRefresh()
+                 refreshLayout.resetNoMoreData()//setNoMoreData(false);
+             }, 2000)*/
 
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
             if(localMessageList == null || localMessageList.size ==0)
@@ -124,12 +130,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDrawerOpened(onDrawerOpened: OnDrawerOpened) {
-        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
-        if (localMessageList== null || localMessageList.size == 0)
+        if(AppConfig.instance.emailConfig().account != null && !AppConfig.instance.emailConfig().account.equals(""))
         {
-            pullMoreMessageList(0)
+            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+            if (localMessageList== null || localMessageList.size == 0)
+            {
+                showProgressDialog()
+                pullMoreMessageList(0)
+            }
         }
-
     }
     override fun onResume() {
         super.onResume()
@@ -334,29 +343,29 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         if(emailConfigEntityChoose.size > 0)
         {
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-              when(menu)
-              {
-                  emailConfigEntity.inboxMenu->
-                 {
-                     lastTotalCount = emailConfigEntity.totalCount
-                 }
-                  emailConfigEntity.drafMenu->
-                  {
-                      lastTotalCount = emailConfigEntity.drafTotalCount
-                  }
-                  emailConfigEntity.sendMenu->
-                  {
-                      lastTotalCount = emailConfigEntity.sendTotalCount
-                  }
-                  emailConfigEntity.garbageMenu->
-                  {
-                      lastTotalCount = emailConfigEntity.garbageCount
-                  }
-                  emailConfigEntity.deleteMenu->
-                  {
-                      lastTotalCount = emailConfigEntity.deleteTotalCount
-                  }
-              }
+            when(menu)
+            {
+                emailConfigEntity.inboxMenu->
+                {
+                    lastTotalCount = emailConfigEntity.totalCount
+                }
+                emailConfigEntity.drafMenu->
+                {
+                    lastTotalCount = emailConfigEntity.drafTotalCount
+                }
+                emailConfigEntity.sendMenu->
+                {
+                    lastTotalCount = emailConfigEntity.sendTotalCount
+                }
+                emailConfigEntity.garbageMenu->
+                {
+                    lastTotalCount = emailConfigEntity.garbageCount
+                }
+                emailConfigEntity.deleteMenu->
+                {
+                    lastTotalCount = emailConfigEntity.deleteTotalCount
+                }
+            }
         }
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
 
@@ -376,12 +385,14 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
+                                                closeProgressDialog()
                                                 refreshLayout.finishLoadMore()
                                                 toast(R.string.nomore)
                                                 //refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
                                             }
                                         }else{
                                             runOnUiThread {
+                                                closeProgressDialog()
                                                 refreshLayout.finishLoadMore()
                                             }
                                         }
@@ -464,6 +475,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
 
     override fun closeProgressDialog() {
-        progressDialog.hide()
+        if(progressDialog!= null)
+            progressDialog.hide()
     }
 }
