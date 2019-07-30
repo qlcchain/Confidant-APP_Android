@@ -19,7 +19,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
@@ -33,7 +32,6 @@ import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.email_info_view.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -229,7 +227,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         deleteMenu.setOnClickListener {
             showProgressDialog(getString(R.string.waiting))
-            deleteEmailSend()
+            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
         }
         tvRefuse.setOnClickListener {
             var intent = Intent(this, EmailSendActivity::class.java)
@@ -327,7 +325,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                         }
                         4 -> {
                             showProgressDialog(getString(R.string.waiting))
-                            deleteEmailSend()
+                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
                         }
                     }
                 }
@@ -425,7 +423,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
-    fun deleteEmailSend()
+    fun deleteAndMoveEmailSend(menuTo:String,flag:Int)
     {
         /*tipDialog.show()*/
         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
@@ -434,15 +432,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                     override fun gainSuccess(result: Boolean) {
                         //tipDialog.dismiss()
                         closeProgressDialog()
-                        deleteEmail()
-                        finish()
+                        if(result)
+                        {
+                            deleteEmail()
+                            finish()
+                        }else{
+                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
                     }
                     override fun gainFailure(errorMsg: String) {
                         //tipDialog.dismiss()
                         closeProgressDialog()
                         Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
                     }
-                },menu,msgId,2,true,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
+                },menu,msgId,flag,true,menuTo)
     }
     fun deleteEmail()
     {
@@ -481,7 +484,26 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     }
     fun showMovePop()
     {
-        moreMenu.performClick();
+        var title = getString(R.string.Move_to)
+        var starIcon = "tabbar_attach_selected"
+        var menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
+        var iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
+        PopWindowUtil.showPopMoveMenuWindow(this@EmailInfoActivity, moreMenu,title,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+            override fun onSelect(position: Int, obj: Any) {
+                KLog.i("" + position)
+                when (position) {
+                    0 -> {
+                        showProgressDialog(getString(R.string.waiting))
+                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.garbageMenu,2)
+                    }
+                    1 -> {
+                        showProgressDialog(getString(R.string.waiting))
+                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                    }
+                }
+            }
+
+        })
     }
     fun initAttachUI()
     {

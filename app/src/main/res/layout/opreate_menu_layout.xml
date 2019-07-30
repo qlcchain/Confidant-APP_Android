@@ -35,9 +35,11 @@
                 android:singleLine="true"
                 android:ellipsize="middle"
                 android:maxEms="20"
+                android:text="Title"
+                android:textStyle="bold"
                 android:gravity="center"
                 android:textColor="@color/main_color"
-                android:textSize="14sp" />
+                android:textSize="18sp" />
         </LinearLayout>
         <View style="@style/divide_line_nomarge"/>
         <android.support.v7.widget.RecyclerView

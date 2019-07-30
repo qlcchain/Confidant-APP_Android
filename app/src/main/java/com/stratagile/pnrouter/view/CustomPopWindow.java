@@ -223,8 +223,11 @@ public class CustomPopWindow {
         });
 //        mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
 //        mContentView.setVisibility(View.GONE);
-
-        dismissHandler.sendEmptyMessageDelayed(0, 400);
+        if(mPopupWindow!=null){
+            mPopupWindow.dismiss();
+            instance = null;
+        }
+        //dismissHandler.sendEmptyMessageDelayed(0, 400);
     }
 
 
