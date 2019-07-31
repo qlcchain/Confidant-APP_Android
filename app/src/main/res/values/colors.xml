@@ -59,5 +59,6 @@
     <color name="btnstroke">#4A4E5C</color>
     <color name="button_enabled">#333333</color>
     <color name="colorBackgroundDark">#f2f2f2</color>
+    <color name="sent_contacts">#FF6646F7</color>
 
 </resources>

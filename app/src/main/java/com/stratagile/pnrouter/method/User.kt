@@ -6,19 +6,22 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import com.iyao.eastat.span.DataBindingSpan
 import com.iyao.eastat.span.DirtySpan
+import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 
 data class User(val id: String, var name: String): DataBindingSpan,
                                                    DirtySpan {
 
     fun getSpannedName(): Spannable {
-        return SpannableString("@$name").apply {
-            setSpan(ForegroundColorSpan(Color.CYAN), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return SpannableString("$name").apply {
+            var color = AppConfig.instance.getResources().getColor(R.color.sent_contacts)
+            setSpan(ForegroundColorSpan(color), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }
 
     override fun isDirty(text: Spannable): Boolean {
         val spanStart = text.getSpanStart(this)
         val spanEnd = text.getSpanEnd(this)
-        return spanStart >= 0 && spanEnd >= 0 && text.substring(spanStart, spanEnd) != "@$name"
+        return spanStart >= 0 && spanEnd >= 0 && text.substring(spanStart, spanEnd) != "$name"
     }
 }

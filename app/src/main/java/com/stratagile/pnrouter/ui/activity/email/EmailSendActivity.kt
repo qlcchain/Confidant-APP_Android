@@ -8,11 +8,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v7.widget.GridLayoutManager
+import android.text.Editable
+import android.text.InputType
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -61,6 +65,10 @@ import java.io.File
 import javax.inject.Inject
 import com.stratagile.pnrouter.method.*
 import android.text.SpannableStringBuilder
+import android.text.TextWatcher
+import android.webkit.*
+import android.widget.EditText
+import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 
 /**
  * @author zl
@@ -121,8 +129,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_FILE = 5
     protected val REQUEST_CODE_VIDEO = 6
     protected val CHOOSE_PIC = 88 //选择原图还是压缩图
-
-    private val methods = arrayOf(WeChat)//arrayOf(Weibo,WeChat, QQ)
+    private var imputOld: String? = null
+    private val methods = arrayOf(Weibo)//arrayOf(Weibo,WeChat, QQ)
     private var iterator: Iterator<Method> = methods.iterator()
     private val methodContext = MethodContext()
     private val users = arrayListOf(
@@ -165,22 +173,55 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             switch()
         }
         var user = users[0].copy()
-        (normalEdit.text as SpannableStringBuilder)
+        /*(normalEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append(" ")
+                .append(",123@qq.com")*/
+
         user = users[1].copy()
-        (normalEdit.text as SpannableStringBuilder)
+        /*(normalEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append(" ")
+                .append(",")
         user = users[2].copy()
         (normalEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append(" ")
+                .append(",")*/
+        val selectionEnd = normalEdit.length()
+        val selectionStart = 5
+        var aa = normalEdit!!.getText()
+        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         initEditor()
         initMenu()
         initColorPicker()
         initBaseUI(emailMeaasgeInfoData!!)
         initAttachUI()
+    }
+    private fun allSpan(editText: EditText)
+    {
+        var textStrList = editText.text.split(",")
+        var i = 0
+        for(str in textStrList)
+        {
+            if(str != "")
+            {
+                var beginIndex = i
+                var endIndex = i+str.length
+                val spans = editText!!.getText()!!.getSpans(beginIndex, endIndex, User::class.java)
+                if(spans.size == 0)
+                {
+                    var addUser = User(str, "aabb")
+                    /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
+                     (editText.text as SpannableStringBuilder).append(",")*/
+                    /*(editText.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(addUser))
+                            .append(" ")*/
+                    //editText.text.replace(beginIndex,endIndex,"")
+                    (normalEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(addUser))
+                            .append(",")
+                }
+            }
+            i += str.length+1
+        }
     }
     fun initBaseUI(emailMessageEntity:EmailMessageEntity)
     {
@@ -189,10 +230,46 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         avatar_info.setText(fromName)
         title_info.setText(fromName)
         draft_info.setText(fromAdress)
-        val result = toAddress.addSpan(fromName, fromAdress)
+        //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
+        var user = User(fromAdress,fromName)
+        (normalEdit.text as SpannableStringBuilder)
+                .append(methodContext.newSpannable(user))
+                .append("")
+        val selectionEnd = normalEdit.length()
+        val selectionStart = 0
+        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
+        var dd = ""
+        //根据输入框输入值的改变来过滤搜索
+        /*normalEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
-        toAddress.setOnClickListener(this)
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                var content = s.toString()
+                if(imputOld != content && content.lastIndexOf(",") == content.length -1)
+                {
+                    imputOld = content
+                    //allSpan(normalEdit)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })*/
+        normalEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+
+                }else{
+                    allSpan(normalEdit)
+                }
+            }
+        });
+        /*toAddress.setOnClickListener(this)
         toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
              KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
 
@@ -234,11 +311,98 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             onKeyDel = false
             false
         }
-        toAddress.setBackSpaceLisetener(backspaceListener)
+        toAddress.setBackSpaceLisetener(backspaceListener)*/
+
+        val webSettings = webView.getSettings()
+        if (Build.VERSION.SDK_INT >= 19) {
+            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+        }
+        //webSettings.setTextZoom(120);
+        if (Build.VERSION.SDK_INT >= 19) {
+            webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
+        } else {
+            webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
+        }
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
+        webSettings.javaScriptEnabled = true // 设置支持javascript脚本
+        webSettings.setTextSize(WebSettings.TextSize.LARGEST)
+//        webSettings.setPluginState(WebSettings.PluginState.ON);
+        webSettings.setSupportZoom(true)// 设置可以支持缩放
+        webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
+
+        webSettings.displayZoomControls = false//隐藏缩放工具
+        webSettings.useWideViewPort = true// 扩大比例的缩放
+
+        webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
+        webSettings.loadWithOverviewMode = true
+
+        webSettings.databaseEnabled = true//
+        webSettings.savePassword = true//保存密码
+        webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
+
+        webView.setSaveEnabled(true)
+        webView.setKeepScreenOn(true)
 
 
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView, title1: String?) {
+                super.onReceivedTitle(view, title1)
+                if (title1 != null) {
+                    //title.text = title1
+                }
+            }
+
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                if (newProgress == 100) {
+                    progressBar.visibility = View.GONE
+                } else {
+                    KLog.i("进度：" + newProgress)
+                    progressBar.visibility = View.VISIBLE
+                    progressBar.progress = newProgress
+                }
+                super.onProgressChanged(view, newProgress)
+            }
+
+        }
+        webView.webViewClient = object  : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                //view.loadUrl(url)
+                val intent = Intent()
+                intent.action = "android.intent.action.VIEW"
+                val url = Uri.parse(url)
+                intent.data = url
+                startActivity(intent)
+                return true
+            }
+
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
+                if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
+                        || error.getPrimaryError() == SslError.SSL_EXPIRED
+                        || error.getPrimaryError() == SslError.SSL_INVALID
+                        || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
+                    handler.proceed();
+                } else {
+                    handler.cancel();
+                }
+                super.onReceivedSslError(view, handler, error)
+            }
+
+            override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
+                KLog.i("ddddddd")
+                super.onReceivedHttpError(view, request, errorResponse)
+            }
+
+            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                KLog.i("ddddddd")
+                super.onReceivedError(view, request, error)
+            }
+        }
         var URLText = "<html><body>"+emailMessageEntity!!.content+"</body></html>";
-        re_main_editor.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
 
     private fun initAttachUI()
@@ -312,17 +476,22 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 发送邮件
      */
     private fun sendEmail() {
-        val selectionEnd = toAddress.length()
+        var contentHtml = re_main_editor.html
+        if(emailMeaasgeInfoData!!.content != null)
+        {
+            contentHtml +=emailMeaasgeInfoData!!.content
+        }
+        val selectionEnd = normalEdit.length()
         val selectionStart = 0
-        val spans = toAddress!!.getText()!!.getSpans(selectionStart, selectionEnd, ATEmailEditText.DataSpan::class.java)
+        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         var adress = ""
         var index = 0
         for (span in spans) {
-            if (span != null && span!!.getUserId() != null && span!!.getUserId() != "") {
+            if (span != null && span!!.id != null && span!!.id != "") {
                 if (index > 0) {
-                    adress += "," + span!!.getUserId()
+                    adress += "," + span!!.id
                 } else {
-                    adress += span!!.getUserId()
+                    adress += span!!.id
                 }
                 index++
             }
@@ -349,7 +518,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 .setTo(adress)                //收件人的邮箱地址
                 .setNickname(name)                                    //发件人昵称
                 .setSubject(subject.getText().toString())             //邮件标题
-                .setContent(re_main_editor.html)              //邮件正文
+                .setContent(contentHtml)              //邮件正文
                 .setAttach(attachList)
                 .sendAsyn(this, object : GetSendCallback {
                     override fun sendSuccess() {
