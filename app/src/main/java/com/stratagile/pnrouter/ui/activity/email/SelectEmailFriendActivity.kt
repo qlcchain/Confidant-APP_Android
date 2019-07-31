@@ -49,6 +49,7 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
         setContentView(R.layout.email_selectfriend)
     }
     override fun initData() {
+        title.text = getString(R.string.Forward_to)
         initDatas()
         initEvents()
         setAdapter()
@@ -143,6 +144,8 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
                 if (!indexString.contains(sortString)) {
                     indexString.add(sortString)
                 }
+            }else{
+                sortModel.setSortLetters("A")
             }
             mSortList.add(sortModel)
         }

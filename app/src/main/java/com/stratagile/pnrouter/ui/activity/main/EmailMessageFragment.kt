@@ -327,7 +327,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             }
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
-                                            var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length)
+                                            var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
                                             var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                                             if(localEmailContacts.size == 0)
                                             {
@@ -464,7 +464,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             }
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
-                                            var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length)
+                                            var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
                                             var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                                             if(localEmailContacts.size == 0)
                                             {

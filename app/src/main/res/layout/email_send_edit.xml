@@ -297,13 +297,12 @@
                     android:id="@+id/oldtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x40"
+                    android:layout_marginLeft="@dimen/x10"
                     android:layout_marginTop="@dimen/x20"
-                    android:drawableLeft="@mipmap/tabbar_attach_unselected"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:maxEms="8"
-                    android:text="@string/Original_text"
+                    android:text="@string/Original_mail"
                     android:textColor="@color/contentColor"
                     android:textSize="19sp" />
                 <WebView

@@ -729,6 +729,7 @@
     <string name="The_recipient_cant_be_empty">The recipient can\'t be empty</string>
     <string name="Original_text">Original</string>
     <string name="Original_mail">Original mail</string>
+    <string name="Forward_to">Forward to</string>
 
 
 </resources>
