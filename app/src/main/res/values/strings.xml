@@ -707,6 +707,7 @@
     <string name="From_me">From me</string>
     <string name="From">From</string>
     <string name="To">To</string>
+    <string name="Date">Date</string>
     <string name="Cc">Cc</string>
     <string name="Bcc">Bcc</string>
     <string name="Time">Time</string>
@@ -727,5 +728,7 @@
     <string name="Compose_email">Compose email</string>
     <string name="The_recipient_cant_be_empty">The recipient can\'t be empty</string>
     <string name="Original_text">Original</string>
+    <string name="Original_mail">Original mail</string>
+
 
 </resources>

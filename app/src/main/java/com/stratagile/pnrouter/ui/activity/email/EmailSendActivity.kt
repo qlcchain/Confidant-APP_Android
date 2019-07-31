@@ -312,7 +312,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             false
         }
         toAddress.setBackSpaceLisetener(backspaceListener)*/
-
+        var URLText = "<html><body>"+emailMessageEntity!!.content+"</body></html>";
+        re_main_editor.html = URLText
         val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
@@ -401,7 +402,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 super.onReceivedError(view, request, error)
             }
         }
-        var URLText = "<html><body>"+emailMessageEntity!!.content+"</body></html>";
+
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
     }
 
@@ -477,8 +478,23 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      */
     private fun sendEmail() {
         var contentHtml = re_main_editor.html
+        var from = emailMeaasgeInfoData!!.from
+        var to  = emailMeaasgeInfoData!!.to
+        var centerStr =  " <br />"+
+                " <br />"+
+                " <br />"+
+                "<div style=\"background: #f2f2f2;\">"+
+                getString(R.string.Original_mail)+
+                "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
+                "   <br />"+getString(R.string.To)+"：&quot;"+to+"：&quot;"+
+                "   <br />"+getString(R.string.Subject)+"："+emailMeaasgeInfoData!!.subject+
+                "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
+                "  </div>"+
+                "   <br />"+
+                "   <br />";
         if(emailMeaasgeInfoData!!.content != null)
         {
+            contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
         }
         val selectionEnd = normalEdit.length()
