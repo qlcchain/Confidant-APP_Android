@@ -519,7 +519,7 @@
                     android:visibility="gone" />
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/attachList"
+                android:id="@+id/attachListParent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

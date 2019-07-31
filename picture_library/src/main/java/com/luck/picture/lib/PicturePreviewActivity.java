@@ -225,7 +225,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             });
         }catch (Exception e)
         {
-
+          e.printStackTrace();
         }
     }
 

@@ -9,7 +9,15 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.webkit.*
 import android.widget.Toast
+import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
+import com.luck.picture.lib.PicturePreviewActivity
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.observable.ImagesObservable
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
@@ -25,6 +33,7 @@ import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
 import com.stratagile.pnrouter.entity.events.ChangEmailMessage
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
@@ -36,6 +45,8 @@ import com.stratagile.pnrouter.utils.PopWindowUtil
 import kotlinx.android.synthetic.main.email_info_view.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
+import java.io.Serializable
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -57,6 +68,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var emaiAttachAdapter : EmaiAttachAdapter? = null
     var emailConfigEntityChoose:EmailConfigEntity? = null
     var emailConfigEntityChooseList= mutableListOf<EmailConfigEntity>()
+    internal var previewImages: MutableList<LocalMedia> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -67,6 +79,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     }
 
     override fun initData() {
+        initPicPlug()
+        previewImages = ArrayList()
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
@@ -80,11 +94,21 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
         }
+        var account = AppConfig.instance.emailConfig().account
+        if(to.contains(account))
+        {
+            draft_info.text = getString(R.string.To_me)
+            detail_from_From.text = getString(R.string.From)
+        }else{
+            draft_info.text = getString(R.string.From_me)
+            detail_from_From.text = getString(R.string.To)
+        }
         when(menu)
         {
             ConstantValue.currentEmailConfigEntity!!.inboxMenu->
             {
                 moreMenu.visibility = View.VISIBLE
+
             }
             ConstantValue.currentEmailConfigEntity!!.drafMenu->
             {
@@ -97,6 +121,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             ConstantValue.currentEmailConfigEntity!!.garbageMenu->
             {
                 moreMenu.visibility = View.VISIBLE
+
             }
             ConstantValue.currentEmailConfigEntity!!.deleteMenu->
             {
@@ -109,8 +134,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }else{
             inboxStar.visibility =View.GONE
         }
+        attachListParent.visibility =View.GONE
         if(attachCount > 0)
         {
+            attachListParent.visibility =View.VISIBLE
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
 
@@ -126,6 +153,27 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 }
                 attach.localPath = save_dir+attach.account+"_"+attach.name
                 AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+
+                var fileName =  attach.name
+                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                    val localMedia = LocalMedia()
+                    localMedia.isCompressed = false
+                    localMedia.duration = 0
+                    localMedia.height = 100
+                    localMedia.width = 100
+                    localMedia.isChecked = false
+                    localMedia.isCut = false
+                    localMedia.mimeType = 0
+                    localMedia.num = 0
+                    localMedia.path = attach.localPath
+                    localMedia.pictureType = "image/jpeg"
+                    localMedia.setPosition(i)
+                    localMedia.sortIndex = i
+                    previewImages.add(localMedia)
+                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                }
+
+                i++
                 /*var inputStream = ByteArrayInputStream(accach.data);
                 var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
                 listAccath.add(mailAttachment)*/
@@ -157,9 +205,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                     recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
                                     recyclerViewAttach.adapter = emaiAttachAdapter
                                     emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                                        /* var intent = Intent(activity!!, ConversationActivity::class.java)
-                                         intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-                                         startActivity(intent)*/
+                                        var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                                        var fileName = emaiAttach!!.name
+                                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                            showImagList(position)
+                                        }else if(fileName.contains("mp4"))
+                                        {
+                                            val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                            intent.putExtra("path", emaiAttach.localPath)
+                                            startActivity(intent)
+                                        }else{
+                                            OpenFileUtil.getInstance(AppConfig.instance)
+                                            val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                                            startActivity(intent)
+                                        }
                                     }
                                 }
                             }
@@ -179,9 +238,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
                 recyclerViewAttach.adapter = emaiAttachAdapter
                 emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                    /* var intent = Intent(activity!!, ConversationActivity::class.java)
-                     intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-                     startActivity(intent)*/
+                    var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                    var fileName = emaiAttach!!.name
+                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        showImagList(position)
+                    }else if(fileName.contains("mp4"))
+                    {
+                        val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                        intent.putExtra("path", emaiAttach.localPath)
+                        startActivity(intent)
+                    }else{
+                        OpenFileUtil.getInstance(AppConfig.instance)
+                        val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                        startActivity(intent)
+                    }
                 }
             }
 
@@ -223,6 +293,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         inboxTitle.text = emailMeaasgeData!!.subject
         var fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
         var fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
+        var toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
+        var toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
@@ -237,8 +309,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 details.visibility = View.GONE
             }
         }
-        fromName_From.text = fromName
-        fromEmailAdress_From.text = fromAdress
+        if(to.contains(account))
+        {
+            fromName_From.text = fromName
+            fromEmailAdress_From.text = fromAdress
+        }else{
+            fromName_From.text = toName
+            fromEmailAdress_From.text = toAdress
+        }
         var emailConfigEntityList = ArrayList<EmailInfoData>()
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         if(cc!= null && cc != "" )
@@ -505,6 +583,56 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
         webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+    }
+
+    /**
+     * select local image
+     * //todo
+     */
+    protected fun initPicPlug() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+    }
+    fun showImagList(showIndex:Int)
+    {
+        val selectedImages = ArrayList<LocalMedia>()
+        val previewImages = ImagesObservable.getInstance().readLocalMedias("chat")
+        if (previewImages != null && previewImages.size > 0) {
+
+            val intentPicturePreviewActivity = Intent(this, PicturePreviewActivity::class.java)
+            val bundle = Bundle()
+            //ImagesObservable.getInstance().saveLocalMedia(previewImages);
+            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, selectedImages as Serializable)
+            bundle.putInt(PictureConfig.EXTRA_POSITION, showIndex)
+            bundle.putString("from", "chat")
+            intentPicturePreviewActivity.putExtras(bundle)
+            startActivity(intentPicturePreviewActivity)
+        }
     }
     fun deleteAndMoveEmailSend(menuTo:String,flag:Int)
     {

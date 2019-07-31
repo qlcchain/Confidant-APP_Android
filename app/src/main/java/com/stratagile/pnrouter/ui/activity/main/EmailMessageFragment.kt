@@ -312,14 +312,18 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
                                             for (attachItem in mailAttachmentList)
                                             {
-                                                var eamilAttach = EmailAttachEntity()
-                                                eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                eamilAttach.msgId = item.id
-                                                eamilAttach.name = attachItem.name
-                                                eamilAttach.data = attachItem.byt
-                                                eamilAttach.hasData = true
-                                                eamilAttach.isCanDelete = false
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id)).list()
+                                                if(attachList == null || attachList.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = item.id
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                                }
                                             }
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
@@ -445,14 +449,18 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
                                             for (attachItem in mailAttachmentList)
                                             {
-                                                var eamilAttach = EmailAttachEntity()
-                                                eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                eamilAttach.msgId = item.id
-                                                eamilAttach.name = attachItem.name
-                                                eamilAttach.data = attachItem.byt
-                                                eamilAttach.hasData = true
-                                                eamilAttach.isCanDelete = false
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachList == null || attachList.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = item.id
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+                                                }
                                             }
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))

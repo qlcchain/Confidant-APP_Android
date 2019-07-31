@@ -704,6 +704,7 @@
     <string name="Spam">Spam</string>
     <string name="Trash">Trash</string>
     <string name="To_me">To me</string>
+    <string name="From_me">From me</string>
     <string name="From">From</string>
     <string name="To">To</string>
     <string name="Cc">Cc</string>
