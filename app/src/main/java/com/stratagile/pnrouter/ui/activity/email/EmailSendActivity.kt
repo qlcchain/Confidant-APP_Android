@@ -497,7 +497,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "<div style=\"background: #f2f2f2;\">"+
                 getString(R.string.Original_mail)+
                 "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
-                "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
+                "   <br />"+getString(R.string.From)+"：&quot;"+toStr+"：&quot;"+
                 "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
                 "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
                 "  </div>"+
