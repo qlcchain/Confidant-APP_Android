@@ -16,6 +16,8 @@ public class EmailContactsEntity implements Parcelable{
 
     private String account;
     private String name;
+    private boolean choose;
+
 
 
     public EmailContactsEntity() {
@@ -30,13 +32,7 @@ public class EmailContactsEntity implements Parcelable{
         }
         account = in.readString();
         name = in.readString();
-    }
-
-    @Generated(hash = 151066049)
-    public EmailContactsEntity(Long id, String account, String name) {
-        this.id = id;
-        this.account = account;
-        this.name = name;
+        choose = in.readByte() != 0;
     }
 
     public static final Creator<EmailContactsEntity> CREATOR = new Creator<EmailContactsEntity>() {
@@ -75,6 +71,14 @@ public class EmailContactsEntity implements Parcelable{
         this.name = name;
     }
 
+    public boolean isChoose() {
+        return choose;
+    }
+
+    public void setChoose(boolean choose) {
+        this.choose = choose;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -90,5 +94,6 @@ public class EmailContactsEntity implements Parcelable{
         }
         dest.writeString(account);
         dest.writeString(name);
+        dest.writeByte((byte) (choose ? 1 : 0));
     }
 }
