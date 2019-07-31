@@ -35,6 +35,14 @@ public class EmailContactsEntity implements Parcelable{
         choose = in.readByte() != 0;
     }
 
+    @Generated(hash = 1550112172)
+    public EmailContactsEntity(Long id, String account, String name, boolean choose) {
+        this.id = id;
+        this.account = account;
+        this.name = name;
+        this.choose = choose;
+    }
+
     public static final Creator<EmailContactsEntity> CREATOR = new Creator<EmailContactsEntity>() {
         @Override
         public EmailContactsEntity createFromParcel(Parcel in) {
@@ -95,5 +103,9 @@ public class EmailContactsEntity implements Parcelable{
         dest.writeString(account);
         dest.writeString(name);
         dest.writeByte((byte) (choose ? 1 : 0));
+    }
+
+    public boolean getChoose() {
+        return this.choose;
     }
 }

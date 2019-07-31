@@ -133,6 +133,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private val methods = arrayOf(Weibo)//arrayOf(Weibo,WeChat, QQ)
     private var iterator: Iterator<Method> = methods.iterator()
     private val methodContext = MethodContext()
+    private val methodContextCc = MethodContext()
+    private val methodContextBcc = MethodContext()
     private val users = arrayListOf(
             User("1", "激浊扬清"),
             User("2", "清风引佩下瑶台"),
@@ -172,23 +174,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (methodContext.method == null) {
             switch()
         }
+
+
         var user = users[0].copy()
-        /*(normalEdit.text as SpannableStringBuilder)
+        /*(toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
                 .append(",123@qq.com")*/
 
         user = users[1].copy()
-        /*(normalEdit.text as SpannableStringBuilder)
+        /*(toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
                 .append(",")
         user = users[2].copy()
-        (normalEdit.text as SpannableStringBuilder)
+        (toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
                 .append(",")*/
-        val selectionEnd = normalEdit.length()
+        val selectionEnd = toAdressEdit.length()
         val selectionStart = 5
-        var aa = normalEdit!!.getText()
-        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
+        var aa = toAdressEdit!!.getText()
+        val spans = toAdressEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         initEditor()
         initMenu()
         initColorPicker()
@@ -215,7 +219,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             .append(methodContext.newSpannable(addUser))
                             .append(" ")*/
                     //editText.text.replace(beginIndex,endIndex,"")
-                    (normalEdit.text as SpannableStringBuilder)
+                    (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
                             .append(",")
                 }
@@ -226,22 +230,30 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     fun initBaseUI(emailMessageEntity:EmailMessageEntity)
     {
         var fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
-        var fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<"),emailMessageEntity!!.from.length)
+        var fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
         avatar_info.setText(fromName)
         title_info.setText(fromName)
         draft_info.setText(fromAdress)
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
         var user = User(fromAdress,fromName)
-        (normalEdit.text as SpannableStringBuilder)
+        (toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append("")
-        val selectionEnd = normalEdit.length()
+                .append(",")
+        user = User("zhanglang108@sina.com","zhanglang108")
+        (ccAdressEdit.text as SpannableStringBuilder)
+                .append(methodContextCc.newSpannable(user))
+                .append(",")
+        user = User("1144515262@qq.com","1144515262")
+        (bccAdressEdit.text as SpannableStringBuilder)
+                .append(methodContextBcc.newSpannable(user))
+                .append(",")
+        val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
-        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
+        val spans = toAdressEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         var dd = ""
         //根据输入框输入值的改变来过滤搜索
-        /*normalEdit.addTextChangedListener(object : TextWatcher {
+        /*toAdressEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
             }
@@ -251,7 +263,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if(imputOld != content && content.lastIndexOf(",") == content.length -1)
                 {
                     imputOld = content
-                    //allSpan(normalEdit)
+                    //allSpan(toAdressEdit)
                 }
             }
 
@@ -259,13 +271,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             }
         })*/
-        normalEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+        toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
             override fun onFocusChange( v:View,  hasFocus:Boolean) {
                 if(hasFocus)
                 {
 
                 }else{
-                    allSpan(normalEdit)
+                    allSpan(toAdressEdit)
                 }
             }
         });
@@ -478,14 +490,14 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private fun sendEmail() {
         var contentHtml = re_main_editor.html
         var from = emailMeaasgeInfoData!!.from
-        var to  = emailMeaasgeInfoData!!.to
+        var toStr  = emailMeaasgeInfoData!!.to
         var centerStr =  " <br />"+
                 " <br />"+
                 " <br />"+
                 "<div style=\"background: #f2f2f2;\">"+
                 getString(R.string.Original_mail)+
                 "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
-                "   <br />"+getString(R.string.To)+"：&quot;"+to+"：&quot;"+
+                "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
                 "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
                 "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
                 "  </div>"+
@@ -496,21 +508,57 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
         }
-        val selectionEnd = normalEdit.length()
-        val selectionStart = 0
-        val spans = normalEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
-        var adress = ""
-        var index = 0
-        for (span in spans) {
+        val toSelectionEnd = toAdressEdit.length()
+        val toSelectionStart = 0
+        val toSpans = toAdressEdit!!.getText()!!.getSpans(toSelectionStart, toSelectionEnd, User::class.java)
+        var toAdress = ""
+        var toIndex = 0
+        for (span in toSpans) {
             if (span != null && span!!.id != null && span!!.id != "") {
-                if (index > 0) {
-                    adress += "," + span!!.id
+                if (toIndex > 0) {
+                    toAdress += "," + span!!.id
                 } else {
-                    adress += span!!.id
+                    toAdress += span!!.id
                 }
-                index++
+                toIndex++
             }
         }
+        val ccSelectionEnd = ccAdressEdit.length()
+        val ccSelectionStart = 0
+        val ccSpans = ccAdressEdit!!.getText()!!.getSpans(ccSelectionStart, ccSelectionEnd, User::class.java)
+        var ccAdress = ""
+        var ccIndex = 0
+        for (span in ccSpans) {
+            if (span != null && span!!.id != null && span!!.id != "") {
+                if (ccIndex > 0) {
+                    ccAdress += "," + span!!.id
+                } else {
+                    ccAdress += span!!.id
+                }
+                ccIndex++
+            }
+        }
+        val bccSelectionEnd = bccAdressEdit.length()
+        val bccSelectionStart = 0
+        val bccSpans = bccAdressEdit!!.getText()!!.getSpans(bccSelectionStart, bccSelectionEnd, User::class.java)
+        var bccAdress = ""
+        var bccIndex = 0
+        for (span in bccSpans) {
+            if (span != null && span!!.id != null && span!!.id != "") {
+                if (bccIndex > 0) {
+                    bccAdress += "," + span!!.id
+                } else {
+                    bccAdress += span!!.id
+                }
+                bccIndex++
+            }
+        }
+        if(toAdress== "")
+        {
+            toast(R.string.The_recipient_cant_be_empty)
+            return
+        }
+
         var attachList = ""
         var emaiAttachAdapterList = emaiAttachAdapter!!.data
         for(item in emaiAttachAdapterList)
@@ -522,15 +570,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             attachList = attachList.substring(0,attachList.length -1)
         }
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
-        var name = adress.substring(1,adress.indexOf("@"))
+        var name = toAdress.substring(1,toAdress.indexOf("@"))
+
         showProgressDialog("sending")
-        if(adress== "")
-        {
-            toast(R.string.The_recipient_cant_be_empty)
-            return
-        }
         emailSendClient
-                .setTo(adress)                //收件人的邮箱地址
+                .setTo(toAdress)                //收件人的邮箱地址
+                .setCc(ccAdress)
+                .setBcc(bccAdress)
                 .setNickname(name)                                    //发件人昵称
                 .setSubject(subject.getText().toString())             //邮件标题
                 .setContent(contentHtml)              //邮件正文
@@ -1091,7 +1137,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private fun switch() {
         val method = circularMethod()
         methodContext.method = method
-        methodContext.init(normalEdit)
+        methodContext.init(toAdressEdit)
+        methodContextCc.method = method
+        methodContextCc.init(ccAdressEdit)
+        methodContextBcc.method = method
+        methodContextBcc.init(bccAdressEdit)
     }
 
     private tailrec fun circularMethod(): Method {
