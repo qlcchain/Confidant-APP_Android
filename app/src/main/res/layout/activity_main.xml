@@ -39,7 +39,7 @@
         <RelativeLayout
             android:id="@+id/rl1"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/x104"
+            android:layout_height="@dimen/x114"
             android:layout_below="@+id/statusBar"
             android:layout_marginTop="@dimen/x40"
             android:background="@color/headmainColor"
@@ -56,8 +56,8 @@
 
                 <ImageView
                     android:id="@+id/emailLook"
-                    android:layout_width="@dimen/x60"
-                    android:layout_height="@dimen/x60"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:padding="@dimen/x10"
                     android:scaleType="centerCrop"
                     android:src="@mipmap/statusbar_leftbar_h" />

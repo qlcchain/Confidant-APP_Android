@@ -49,6 +49,14 @@ public class AddressUtil {
      * @return
      */
     public static Address[] getInternetAddress(String address){
+        try {
+            Address[] addresses = new InternetAddress().parse(address);
+            return addresses;
+        } catch (AddressException e) {
+            e.printStackTrace();
+            return null;
+        }
+      /*  Address[] tos = new InternetAddress().parse(address);
         int length = (new String[]{address}).length;
         Address[] addresses = new InternetAddress[length];
         try {
@@ -57,6 +65,6 @@ public class AddressUtil {
         } catch (AddressException e) {
             e.printStackTrace();
             return null;
-        }
+        }*/
     }
 }

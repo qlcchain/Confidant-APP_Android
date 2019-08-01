@@ -16,21 +16,23 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/x120"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/x10"
+
         android:layout_marginTop="@dimen/x40"
         android:background="@color/headmainColor"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="@dimen/x60"
-            android:layout_height="@dimen/x60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x15"
             android:padding="@dimen/x10"
             android:scaleType="centerCrop"
-            android:src="@mipmap/statusbar_leftbar_h" />
+            android:src="@mipmap/statusbar_leftbar_n" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x10"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/mainTitle"
@@ -39,7 +41,7 @@
                 android:layout_centerInParent="true"
                 android:text="Circle"
                 android:textColor="@color/textColor"
-                android:textSize="16sp" />
+                android:textSize="23sp" />
             <TextView
                 android:visibility="gone"
                 android:id="@+id/account"
@@ -57,7 +59,7 @@
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/recyclerViewleftParent"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x170">
+        android:layout_height="wrap_content">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewleft"
             android:background="@color/white"
@@ -94,7 +96,7 @@
         android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/emailMenu"
-        android:layout_marginTop="@dimen/x10"
+        android:layout_marginTop="@dimen/x15"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -111,12 +113,11 @@
             app:itemCount="9"/>
         <View
             android:layout_width="match_parent"
-            android:layout_marginLeft="@dimen/x100"
+            android:layout_marginLeft="@dimen/x110"
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/nodebackedup"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -129,7 +130,6 @@
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/starred"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -142,7 +142,6 @@
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/drafts"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -155,7 +154,6 @@
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/sent"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -168,7 +166,6 @@
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/spam"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -181,7 +178,6 @@
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
             android:id="@+id/trash"
-            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"

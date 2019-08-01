@@ -74,8 +74,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             "1"->
             {
-                account_editText.setText("283619512@qq.com")
-                password_editText.setText("kpagrlcmliolbjii")
+
             }
             "2"->
             {
@@ -209,12 +208,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
                 }
                 EventBus.getDefault().post(ChangeEmailConfig())
-                showProgressDialog(getString(R.string.waiting))
+               /* showProgressDialog(getString(R.string.waiting))
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
-
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))*/
+                sycDataCountIMAP()
                 /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
                  finish()*/
             }

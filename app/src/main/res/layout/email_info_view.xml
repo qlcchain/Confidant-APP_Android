@@ -502,6 +502,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/x20"
+                android:layout_marginLeft="@dimen/x13"
+                android:layout_marginRight="@dimen/x13"
                 android:orientation="vertical">
                 <WebView
                     android:id="@+id/webView"
@@ -521,6 +524,7 @@
             <LinearLayout
                 android:id="@+id/attachListParent"
                 android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/x40"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView

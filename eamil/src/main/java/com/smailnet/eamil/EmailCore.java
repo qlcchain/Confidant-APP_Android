@@ -287,7 +287,10 @@ class EmailCore {
     public Message sendMail() throws MessagingException {
         Transport transport = session.getTransport(SMTP);
         transport.connect(smtpHost, account, password);
-        transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+        transport.sendMessage(message, message.getAllRecipients());
+       /* transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.CC));
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.BCC));*/
         transport.close();
         return message;
     }

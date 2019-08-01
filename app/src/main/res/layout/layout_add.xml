@@ -23,12 +23,12 @@
 
     </com.stratagile.pnrouter.view.DrawableAddTextView>
     <com.stratagile.pnrouter.view.DrawableAddTextView
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/newEmail"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x20"
         android:layout_height="@dimen/x108"
-        app:srcmy="@mipmap/group_add_a"
+        app:srcmy="@mipmap/sheet_mark"
         app:subtitle="@string/Communication"
         app:textmy="@string/New_Email">
 
@@ -37,7 +37,7 @@
         android:id="@+id/scanadd"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x108"
-        android:layout_marginTop="@dimen/x1"
+        android:layout_marginTop="@dimen/x20"
         app:srcmy="@mipmap/scavenging_a"
         app:subtitle="@string/Scan_to_add_contacts_code"
         app:textmy="@string/Scan_to_add_contacts">

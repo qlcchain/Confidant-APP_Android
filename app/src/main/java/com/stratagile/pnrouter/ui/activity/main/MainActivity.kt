@@ -2372,12 +2372,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
         if(emailConfigEntityList.size == 0)
         {
-            recyclerViewleftParent.setHeight(0)
+            //recyclerViewleftParent.setHeight(0)
         }else if(emailConfigEntityList.size == 1)
         {
-            recyclerViewleftParent.setHeight(170)
+            //recyclerViewleftParent.setHeight(getResources().getDimensionPixelSize(R.dimen.x130))
         }else{
-            recyclerViewleftParent.setHeight(340)
+            //recyclerViewleftParent.setHeight(R.dimen.x340)
         }
         initLeftSubMenu()
         emaiConfigChooseAdapter!!.setNewData(emailConfigEntityList)
@@ -3648,17 +3648,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         if(fragmentMenu == "Circle")
         {
-            recyclerViewleftParent.setHeight(0)
+            //recyclerViewleftParent.setHeight(0)
         }else{
             var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
             if(emailConfigEntityList.size == 0)
             {
-                recyclerViewleftParent.setHeight(0)
+                //recyclerViewleftParent.setHeight(0)
             }else if(emailConfigEntityList.size == 1)
             {
-                recyclerViewleftParent.setHeight(170)
+                //recyclerViewleftParent.setHeight(R.dimen.x130)
             }else{
-                recyclerViewleftParent.setHeight(340)
+                //recyclerViewleftParent.setHeight(R.dimen.x340)
             }
 
 
