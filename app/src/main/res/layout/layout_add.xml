@@ -22,7 +22,16 @@
         app:textmy="@string/Create_a_Group">
 
     </com.stratagile.pnrouter.view.DrawableAddTextView>
+    <com.stratagile.pnrouter.view.DrawableAddTextView
+        android:id="@+id/newEmail"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:layout_height="@dimen/x108"
+        app:srcmy="@mipmap/group_add_a"
+        app:subtitle="@string/Communication"
+        app:textmy="@string/New_Email">
 
+    </com.stratagile.pnrouter.view.DrawableAddTextView>
     <com.stratagile.pnrouter.view.DrawableAddTextView
         android:id="@+id/scanadd"
         android:layout_width="match_parent"

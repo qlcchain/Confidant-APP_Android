@@ -17,7 +17,7 @@
         android:src="@mipmap/qqcompany" />
     />
     <ImageView
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/qq"
         android:layout_width="match_parent"
         android:layout_height="82dp"

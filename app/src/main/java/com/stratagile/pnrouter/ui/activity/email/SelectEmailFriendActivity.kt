@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -25,7 +26,10 @@ import java.util.*
 
 import javax.inject.Inject;
 import android.text.method.Touch.onTouchEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
+import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 
 
 /**
@@ -41,6 +45,7 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
     internal lateinit var mPresenter: SelectEmailFriendPresenter
     private var adapter: SortAdapter? = null
     private var SourceDateList: List<ContactSortModel>? = null
+    var oldAdress = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -49,14 +54,52 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
         setContentView(R.layout.email_selectfriend)
     }
     override fun initData() {
-        title.text = getString(R.string.Forward_to)
+        oldAdress= intent.getStringExtra("oldAdress")
+        if(oldAdress != null)
+        {
+            title.text = getString(R.string.contacts)
+        }else{
+            title.text = getString(R.string.Forward_to)
+        }
         initDatas()
         initEvents()
         setAdapter()
     }
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.next, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.nextBtn) {
+            var count =  lv_contact.childCount  -1
+            var selectAdressStr = ""
+            var nameAdressStr = ""
+            for (position in 0..count)
+            {
+                var data = adapter!!.getItem(position) as ContactSortModel
+                if(data != null && data.isChoose)
+                {
+                    selectAdressStr += data.account +","
+                    nameAdressStr += data.name +","
+                }
+            }
+            var intent = Intent()
+            intent.putExtra("selectAdressStr", selectAdressStr)
+            intent.putExtra("nameAdressStr", nameAdressStr)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
     private fun setAdapter() {
         var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
+        for (item in emailContactsList)
+        {
+            if(oldAdress != null && oldAdress.contains(item.account))
+            {
+                item.choose = true;
+            }
+        }
         SourceDateList = filledData(emailContactsList)
         Collections.sort(SourceDateList, PinyinComparator())
         adapter = SortAdapter(this, SourceDateList)
@@ -77,8 +120,10 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
 
         //ListView的点击事件
         lv_contact.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
+            var data = adapter!!.getItem(position) as ContactSortModel
             val checkBox = view!!.findViewById(R.id.checkBox) as CheckBox
             checkBox.isChecked = !checkBox.isChecked
+            data.isChoose = checkBox.isChecked
             tv_title.setText((adapter!!.getItem(position) as ContactSortModel).getName())
             //hideSoftInput(this)
             //Toast.makeText(application, (adapter!!.getItem(position) as ContactSortModel).getName(), Toast.LENGTH_SHORT).show()
@@ -137,6 +182,7 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
             val sortModel = ContactSortModel()
             sortModel.setName(date[i].name)
             sortModel.setAccount(date[i].account)
+            sortModel.isChoose = date[i].choose
             val pinyin = PinyinUtils.getPingYin(date[i].name)
             val sortString = pinyin.substring(0, 1).toUpperCase()
             if (sortString.matches("[A-Z]".toRegex())) {

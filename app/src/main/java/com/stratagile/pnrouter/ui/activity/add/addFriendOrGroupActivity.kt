@@ -86,6 +86,12 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
             setResult(RESULT_OK, intent)
             finish()
         }
+        newEmail.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra("result", "3")
+            setResult(RESULT_OK, intent)
+            finish()
+        }
         scanadd.setOnClickListener {
             val intent = Intent()
             intent.putExtra("result", "1")

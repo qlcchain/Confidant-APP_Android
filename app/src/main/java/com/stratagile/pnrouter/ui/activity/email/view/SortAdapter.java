@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -55,6 +56,7 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
             viewHolder.friendName = (TextView) view.findViewById(R.id.friendName);
             viewHolder.friendAdress = (TextView) view.findViewById(R.id.friendAdress);
             viewHolder.ivAvatar = (ImageButtonWithText) view.findViewById(R.id.avatar);
+            viewHolder.checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 
             //设置convertView的LayoutParams
             view.setLayoutParams(new AbsListView.LayoutParams(
@@ -74,6 +76,7 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
         } else {
             viewHolder.tvLetter.setVisibility(View.GONE);
         }
+        viewHolder.checkBox.setChecked(this.list.get(position).isChoose());
         viewHolder.friendName.setText(this.list.get(position).getName());
         viewHolder.friendAdress.setText(this.list.get(position).getAccount());
         viewHolder.ivAvatar.setText(this.list.get(position).getName());
@@ -88,6 +91,7 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
         TextView tvLetter;
         TextView friendName;
         TextView friendAdress;
+        CheckBox checkBox;
 
     }
 

@@ -213,7 +213,8 @@ class EmailCore {
         if (bcc != null) {
             message.addRecipients(Message.RecipientType.BCC, bcc);
         }
-        message.setFrom(new InternetAddress(nickname + "<" + account + ">"));
+        String fromName = account.substring(0,account.indexOf("@"));
+        message.setFrom(new InternetAddress(fromName + "<" + account + ">"));
         message.setSubject(subject);
         if (text != null){
             message.setText(text);
@@ -283,11 +284,12 @@ class EmailCore {
      * 使用SMTP协议发送邮件
      * @throws MessagingException
      */
-    public void sendMail() throws MessagingException {
+    public Message sendMail() throws MessagingException {
         Transport transport = session.getTransport(SMTP);
         transport.connect(smtpHost, account, password);
         transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
         transport.close();
+        return message;
     }
 
     /**
@@ -616,6 +618,8 @@ class EmailCore {
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         for (Message message : list){
             pmm = new PraseMimeMessage((MimeMessage)message);
+            MimeMessage ooo = (MimeMessage)message;
+
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
@@ -799,6 +803,32 @@ class EmailCore {
 
 
 
+        }
+        return false;
+    }
+    /**
+     * 使用IMAP协议保存已发送或者草稿箱
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean imapSaveToSendMail(Message message,String toMenu) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        imapStore.connect(imapHost, account, password);
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
+        folder.open(Folder.READ_WRITE);
+        try {
+            message.setFlag(Flags.Flag.SEEN,true);
+            folder.appendMessages(new Message[] { message });
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+            if(folder!=null && folder.isOpen()){
+                folder.close(false);
+            }
+            imapStore.close();
         }
         return false;
     }

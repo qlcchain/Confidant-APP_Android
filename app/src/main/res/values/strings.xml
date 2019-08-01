@@ -620,6 +620,8 @@
     <string name="select_a_file">Select a File</string>
     <string name="Create_a_Group">Create a Group</string>
     <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
+    <string name="New_Email">New Email</string>
+    <string name="Communication">Communication via Email adress</string>
     <string name="Scan_to_add_contacts">Scan</string>
     <string name="Scan_to_add_contacts_code">Add contacts, join a circle or activate a Station</string>
     <string name="Share_My_Contact_Card">Share My Contact Card</string>
@@ -730,6 +732,7 @@
     <string name="Original_text">Original</string>
     <string name="Original_mail">Original mail</string>
     <string name="Forward_to">Forward to</string>
-
+    <string name="The_mail_has_been_sent">The mail has_been sent</string>
+    <string name="Mail_Delivery_Failed">Mail Delivery Failed</string>
 
 </resources>

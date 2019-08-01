@@ -76,6 +76,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
+import com.stratagile.pnrouter.ui.activity.email.EmailSendActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -4567,6 +4568,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     "2" ->
                     {
                         var intent = Intent(this, QRCodeActivity::class.java)
+                        intent.putExtra("flag",0)
+                        startActivity(intent)
+                    }
+                    "3" ->
+                    {
+                        var intent = Intent(this, EmailSendActivity::class.java)
                         intent.putExtra("flag",0)
                         startActivity(intent)
                     }

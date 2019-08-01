@@ -168,16 +168,16 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                 .setContent(text_editText.getText().toString())              //邮件正文
                 .sendAsyn(this, object : GetSendCallback {
                     override fun sendSuccess() {
-                        Toast.makeText(this@EmailMainActivity, "邮件已发送", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EmailMainActivity, R.string.The_mail_has_been_sent, Toast.LENGTH_SHORT).show()
                     }
 
                     override fun sendFailure(errorMsg: String) {
                         Islands.ordinaryDialog(this@EmailMainActivity)
-                                .setText(null, "邮件发送失败 ：$errorMsg")
-                                .setButton("关闭", null, null)
+                                .setText(null, getString(R.string.Mail_Delivery_Failed)+"：$errorMsg")
+                                .setButton(getString(R.string.close), null, null)
                                 .click().show()
                     }
-                })
+                },"")
     }
 
     fun getRealPathFromURI(contentUri: Uri): String? {

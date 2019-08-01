@@ -68,6 +68,8 @@ import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.webkit.*
 import android.widget.EditText
+import com.stratagile.pnrouter.db.EmailContactsEntity
+import com.stratagile.pnrouter.db.EmailContactsEntityDao
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 
 /**
@@ -128,6 +130,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     protected val REQUEST_CODE_DING_MSG = 4
     protected val REQUEST_CODE_FILE = 5
     protected val REQUEST_CODE_VIDEO = 6
+
+    protected val REQUEST_CODE_TO = 101
+    protected val REQUEST_CODE_CC = 102
+    protected val REQUEST_CODE_BCC = 103
     protected val CHOOSE_PIC = 88 //选择原图还是压缩图
     private var imputOld: String? = null
     private val methods = arrayOf(Weibo)//arrayOf(Weibo,WeChat, QQ)
@@ -151,7 +157,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             User("13", "独清独醒"),
             User("14", "千金一刻庆良宵"),
             User("15", "必须要\\n\n，不然不够长"))
+    var flag = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
+    var oldAdress = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -163,6 +171,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
     override fun initData() {
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
+        flag = intent.getIntExtra("flag",0)
         initUI()
         initClickListener()
     }
@@ -196,7 +205,22 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         initEditor()
         initMenu()
         initColorPicker()
-        initBaseUI(emailMeaasgeInfoData!!)
+        oldtitle.visibility = View.GONE
+        if(flag == 1)
+        {
+            initBaseUI(emailMeaasgeInfoData!!)
+            oldtitle.visibility = View.VISIBLE
+        }
+        toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+
+                }else{
+                    allSpan(toAdressEdit)
+                }
+            }
+        });
         initAttachUI()
     }
     private fun allSpan(editText: EditText)
@@ -212,16 +236,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 val spans = editText!!.getText()!!.getSpans(beginIndex, endIndex, User::class.java)
                 if(spans.size == 0)
                 {
-                    var addUser = User(str, "aabb")
+                    var name = str.substring(0,str.indexOf("@"))
+                    var addUser = User(str, name)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
                             .append(" ")*/
-                    //editText.text.replace(beginIndex,endIndex,"")
-                    (toAdressEdit.text as SpannableStringBuilder)
+                    editText.text.replace(beginIndex,endIndex,"")
+                    (editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
-                            .append(",")
+                            .append(" ")
                 }
             }
             i += str.length+1
@@ -239,14 +264,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var user = User(fromAdress,fromName)
         (toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
-                .append(",")
-        user = User("zhanglang108@sina.com","zhanglang108")
-        (ccAdressEdit.text as SpannableStringBuilder)
-                .append(methodContextCc.newSpannable(user))
-                .append(",")
-        user = User("1144515262@qq.com","1144515262")
-        (bccAdressEdit.text as SpannableStringBuilder)
-                .append(methodContextBcc.newSpannable(user))
                 .append(",")
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
@@ -271,16 +288,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             }
         })*/
-        toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
-
-                }else{
-                    allSpan(toAdressEdit)
-                }
-            }
-        });
         /*toAddress.setOnClickListener(this)
         toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
              KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
@@ -489,29 +496,90 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      */
     private fun sendEmail() {
         var contentHtml = re_main_editor.html
-        var from = emailMeaasgeInfoData!!.from
-        var toStr  = emailMeaasgeInfoData!!.to
-        var centerStr =  " <br />"+
-                " <br />"+
-                " <br />"+
-                "<div style=\"background: #f2f2f2;\">"+
-                getString(R.string.Original_mail)+
-                "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
-                "   <br />"+getString(R.string.From)+"：&quot;"+toStr+"：&quot;"+
-                "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
-                "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
-                "  </div>"+
-                "   <br />"+
-                "   <br />";
-        if(emailMeaasgeInfoData!!.content != null)
+
+        if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
         {
+            var from = emailMeaasgeInfoData!!.from
+            var toStr  = emailMeaasgeInfoData!!.to
+            var centerStr =  " <br />"+
+                    " <br />"+
+                    " <br />"+
+                    "<div style=\"background: #f2f2f2;\">"+
+                    getString(R.string.Original_mail)+
+                    "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
+                    "   <br />"+getString(R.string.From)+"：&quot;"+toStr+"：&quot;"+
+                    "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
+                    "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
+                    "  </div>"+
+                    "   <br />"+
+                    "   <br />";
             contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
         }
-        val toSelectionEnd = toAdressEdit.length()
+        contentHtml += "<span style=\'display:none\'  confidantKey=\'zhanglang108@sina.com_123456789aaaaaa##123456@sina.com_888888aaaaaa\'></span>";
+        var toAdress = getEditText(toAdressEdit)
+        var ccAdress = getEditText(ccAdressEdit)
+        var bccAdress = getEditText(bccAdressEdit)
+
+
+        var toAdressArr = toAdress.split(",")
+        for(item in toAdressArr)
+        {
+            if(item != "")
+            {
+                var name  = item.substring(0,item.indexOf("@"))
+                var account=item
+                var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                if(localEmailContacts.size == 0)
+                {
+                    var emailContactsEntity= EmailContactsEntity();
+                    emailContactsEntity.name = name
+                    emailContactsEntity.account = account
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }
+            }
+
+        }
+        var ccAdressArr = ccAdress.split(",")
+        for(item in ccAdressArr)
+        {
+            if(item != "")
+            {
+                var name  = item.substring(0,item.indexOf("@"))
+                var account=item
+                var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                if(localEmailContacts.size == 0)
+                {
+                    var emailContactsEntity= EmailContactsEntity();
+                    emailContactsEntity.name = name
+                    emailContactsEntity.account = account
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }
+            }
+
+        }
+        var bccAdressArr = bccAdress.split(",")
+        for(item in bccAdressArr)
+        {
+            if(item != "")
+            {
+                var name  = item.substring(0,item.indexOf("@"))
+                var account=item
+                var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                if(localEmailContacts.size == 0)
+                {
+                    var emailContactsEntity= EmailContactsEntity();
+                    emailContactsEntity.name = name
+                    emailContactsEntity.account = account
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }
+            }
+
+        }
+        /*val toSelectionEnd = toAdressEdit.length()
         val toSelectionStart = 0
         val toSpans = toAdressEdit!!.getText()!!.getSpans(toSelectionStart, toSelectionEnd, User::class.java)
-        var toAdress = ""
+
         var toIndex = 0
         for (span in toSpans) {
             if (span != null && span!!.id != null && span!!.id != "") {
@@ -526,7 +594,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val ccSelectionEnd = ccAdressEdit.length()
         val ccSelectionStart = 0
         val ccSpans = ccAdressEdit!!.getText()!!.getSpans(ccSelectionStart, ccSelectionEnd, User::class.java)
-        var ccAdress = ""
         var ccIndex = 0
         for (span in ccSpans) {
             if (span != null && span!!.id != null && span!!.id != "") {
@@ -541,7 +608,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val bccSelectionEnd = bccAdressEdit.length()
         val bccSelectionStart = 0
         val bccSpans = bccAdressEdit!!.getText()!!.getSpans(bccSelectionStart, bccSelectionEnd, User::class.java)
-        var bccAdress = ""
         var bccIndex = 0
         for (span in bccSpans) {
             if (span != null && span!!.id != null && span!!.id != "") {
@@ -552,7 +618,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
                 bccIndex++
             }
-        }
+        }*/
         if(toAdress== "")
         {
             toast(R.string.The_recipient_cant_be_empty)
@@ -597,7 +663,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 .setButton(getString(R.string.close), null, null)
                                 .click().show()
                     }
-                })
+                },ConstantValue.currentEmailConfigEntity!!.sendMenu)
     }
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
@@ -633,7 +699,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
     }
-
+    fun getEditText(edit:EditText):String
+    {
+        val toSelectionEnd = edit.length()
+        val toSelectionStart = 0
+        val toSpans = edit!!.getText()!!.getSpans(toSelectionStart, toSelectionEnd, User::class.java)
+        var toAdress = ""
+        var toIndex = 0
+        for (span in toSpans) {
+            if (span != null && span!!.id != null && span!!.id != "") {
+                if (toIndex > 0) {
+                    toAdress += "," + span!!.id
+                } else {
+                    toAdress += span!!.id
+                }
+                toIndex++
+            }
+        }
+        return toAdress
+    }
     /**
      * capture new image
      */
@@ -980,10 +1064,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
-        else if (id == R.id.addTo || id == R.id.addCc || id == R.id.addBcc ) {//预览
+        else if (id == R.id.addTo) {
             val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
-            intent.putExtra("diarys", re_main_editor.getHtml())
-            startActivity(intent)
+            oldAdress = getEditText(toAdressEdit)
+            intent.putExtra("oldAdress", oldAdress)
+            startActivityForResult(intent,REQUEST_CODE_TO)
+        }else if (id == R.id.addCc) {
+            val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
+            oldAdress = getEditText(ccAdressEdit)
+            intent.putExtra("oldAdress", oldAdress)
+            startActivityForResult(intent,REQUEST_CODE_CC)
+        }else if (id == R.id.addBcc) {
+            val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
+            oldAdress = getEditText(bccAdressEdit)
+            intent.putExtra("oldAdress", oldAdress)
+            startActivityForResult(intent,REQUEST_CODE_BCC)
         }else if (id == R.id.backBtn ) {
             onBackPressed()
         }else if (id == R.id.sendBtn ) {
@@ -1087,10 +1182,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         emaiAttachAdapter!!.addData(0,emailAttachEntity)
 
                     }
-                   /* var emailAttachEntity = EmailAttachEntity()
-                    emailAttachEntity.isHasData = false
-                    emailAttachEntity.isCanDelete = false
-                    emaiAttachAdapter!!.addData(emailAttachEntity)*/
+                    /* var emailAttachEntity = EmailAttachEntity()
+                     emailAttachEntity.isHasData = false
+                     emailAttachEntity.isCanDelete = false
+                     emaiAttachAdapter!!.addData(emailAttachEntity)*/
                     emaiAttachAdapter!!.notifyDataSetChanged();
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
@@ -1110,7 +1205,71 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     val fileData = data.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("fileData")
                     //sendFileFileForward(fileData)
                 }
+            } else if (requestCode == REQUEST_CODE_TO) {
+                if (data!!.hasExtra("selectAdressStr")) {
+                    var selectAdressStr = data!!.getStringExtra("selectAdressStr")
+                    var nameAdressStr = data!!.getStringExtra("nameAdressStr")
+                    var selectAdressStrArray = selectAdressStr.split(",")
+                    var nameAdressStrArray = nameAdressStr.split(",")
+                    var i = 0;
+                    for (item in selectAdressStrArray)
+                    {
+                        if(!oldAdress.contains(item))
+                        {
+                            var adress = item
+                            var name =  nameAdressStrArray.get(i)
+                            var user = User(adress,name)
+                            (toAdressEdit.text as SpannableStringBuilder)
+                                    .append(methodContext.newSpannable(user))
+                                    .append(",")
+                        }
+                        i++;
+                    }
+                }
+            } else if (requestCode == REQUEST_CODE_CC) {
+                if (data!!.hasExtra("selectAdressStr")) {
+                    var selectAdressStr = data!!.getStringExtra("selectAdressStr")
+                    var nameAdressStr = data!!.getStringExtra("nameAdressStr")
+                    var selectAdressStrArray = selectAdressStr.split(",")
+                    var nameAdressStrArray = nameAdressStr.split(",")
+                    var i = 0;
+                    for (item in selectAdressStrArray)
+                    {
+                        if(!oldAdress.contains(item))
+                        {
+                            var adress = item
+                            var name =  nameAdressStrArray.get(i)
+                            var user = User(adress,name)
+                            (ccAdressEdit.text as SpannableStringBuilder)
+                                    .append(methodContext.newSpannable(user))
+                                    .append(",")
+                        }
+                        i++;
+                    }
+                }
+            } else if (requestCode == REQUEST_CODE_BCC) {
+                if (data!!.hasExtra("selectAdressStr")) {
+                    var selectAdressStr = data!!.getStringExtra("selectAdressStr")
+                    var nameAdressStr = data!!.getStringExtra("nameAdressStr")
+                    var selectAdressStrArray = selectAdressStr.split(",")
+                    var nameAdressStrArray = nameAdressStr.split(",")
+                    var i = 0;
+                    for (item in selectAdressStrArray)
+                    {
+                        if(!oldAdress.contains(item))
+                        {
+                            var adress = item
+                            var name =  nameAdressStrArray.get(i)
+                            var user = User(adress,name)
+                            (bccAdressEdit.text as SpannableStringBuilder)
+                                    .append(methodContext.newSpannable(user))
+                                    .append(",")
+                        }
+                        i++;
+                    }
+                }
             }
+
         }
     }
     override fun setupActivityComponent() {

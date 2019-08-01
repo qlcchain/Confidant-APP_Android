@@ -17,6 +17,7 @@
 package com.smailnet.eamil;
 
 import android.app.Activity;
+import android.widget.EditText;
 
 import com.smailnet.eamil.Callback.GetSendCallback;
 import com.smailnet.eamil.Utils.AddressUtil;
@@ -160,20 +161,32 @@ public class EmailSendClient {
      * @param getSendCallback
      * @return
      */
-    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback){
+    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Operator.Core(emailConfig)
+                    Message message = Operator.Core(emailConfig)
                             .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .sendMail();
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getSendCallback.sendSuccess();
-                        }
-                    });
+                    try {
+                        Operator.Core(emailConfig).imapSaveToSendMail(message,toMenu);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendSuccess();
+                            }
+                        });
+                    }catch (Exception e)
+                    {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendFailure("");
+                            }
+                        });
+                    }
+
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     activity.runOnUiThread(new Runnable() {
