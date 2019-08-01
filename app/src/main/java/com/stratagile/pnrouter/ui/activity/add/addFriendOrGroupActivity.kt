@@ -86,6 +86,11 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
             setResult(RESULT_OK, intent)
             finish()
         }
+        newEmail.visibility = View.GONE
+        if(AppConfig.instance.emailConfig().account != null)
+        {
+            newEmail.visibility = View.VISIBLE
+        }
         newEmail.setOnClickListener {
             val intent = Intent()
             intent.putExtra("result", "3")

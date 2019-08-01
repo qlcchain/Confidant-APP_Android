@@ -177,8 +177,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
                     contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                 }
-                sendEmail();
             }
+            sendEmail();
         }else{
             runOnUiThread {
                 toast(R.string.error)
