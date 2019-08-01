@@ -124,7 +124,7 @@
                     android:layout_width="@dimen/x60"
                     android:padding="@dimen/x10"
                     android:layout_height="@dimen/x60"
-                    android:src="@mipmap/add_contacts"
+                    android:src="@mipmap/statusbar_plus"
                     android:visibility="visible" />
 
                 <ImageView
@@ -132,7 +132,7 @@
                     android:layout_width="@dimen/x60"
                     android:padding="@dimen/x10"
                     android:layout_height="@dimen/x60"
-                    android:src="@mipmap/add_contacts"
+                    android:src="@mipmap/statusbar_plus"
                     android:visibility="visible" />
             </RelativeLayout>
 
