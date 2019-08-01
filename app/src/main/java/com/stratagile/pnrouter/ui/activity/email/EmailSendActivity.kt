@@ -178,11 +178,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                 }
             }
-            sendEmail();
+
         }else{
-            runOnUiThread {
-                toast(R.string.error)
-            }
+            contactMapList = HashMap<String, String>()
+            sendEmail();
         }
     }
 
@@ -572,10 +571,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var fileKey16 = fileKey.substring(0,16)
             var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
             contentHtml = contentBufferMiStr;
-            var aaa = RxEncodeTool.base64Decode(contentBufferMiStr)
-            val miContent = AESCipher.aesDecryptBytes(aaa, fileKey16.toByteArray())
-            var aa = String(miContent)
-            var bb = ""
         }
         var confidantKey = "";
         for(item in contactMapList)
