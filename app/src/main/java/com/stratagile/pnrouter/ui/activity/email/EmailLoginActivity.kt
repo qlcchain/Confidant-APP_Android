@@ -70,6 +70,18 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
+        when(emailType)
+        {
+            "1"->
+            {
+                account_editText.setText("283619512@qq.com")
+                password_editText.setText("kpagrlcmliolbjii")
+            }
+            "2"->
+            {
+
+            }
+        }
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             Islands
