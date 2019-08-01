@@ -14,12 +14,19 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JSaveEmailConfRsp
+import com.stratagile.pnrouter.entity.LoginReq_V4
+import com.stratagile.pnrouter.entity.SaveEmailConf
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
+import com.stratagile.pnrouter.utils.LibsodiumUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import kotlinx.android.synthetic.main.email_login_activity.*
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.emailpassword_bar.*
@@ -33,11 +40,25 @@ import javax.inject.Inject
  * @date 2019/07/02 15:20:41
  */
 
-class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
+class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServiceMessageReceiver.SaveEmailConfCallback  {
 
     @Inject
     internal lateinit var mPresenter: EmailLoginPresenter
     var emailType: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
+
+    override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
+        runOnUiThread {
+           closeProgressDialog()
+        }
+        if(jSaveEmailConfRsp.params.retCode == 0)
+        {
+            sycDataCountIMAP()
+        }else{
+            runOnUiThread {
+                toast(R.string.Over_configure)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +68,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
         setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
@@ -175,7 +197,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
                 }
                 EventBus.getDefault().post(ChangeEmailConfig())
-                sycDataCountIMAP()
+                showProgressDialog(getString(R.string.waiting))
+                var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+
                 /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
                  finish()*/
             }
@@ -183,8 +210,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
             override fun loginFailure(errorMsg: String) {
                 progressDialog.dismiss()
                 Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, "登录失败 ：$errorMsg")
-                        .setButton("关闭", null, null)
+                        .setText(null, getString(R.string.fail))
+                        .setButton( getString(R.string.close), null, null)
                         .click()
                         .show()
             }
@@ -196,7 +223,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
         var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
         Islands.circularProgress(this)
                 .setCancelable(false)
-                .setMessage("同步中...")
+                .setMessage(getString(R.string.waiting))
                 .show()
                 .run { progressDialog ->
                     val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
@@ -240,5 +267,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                             },menuList)
                 }
     }
-
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.saveEmailConfCallback = null
+        super.onDestroy()
+    }
 }

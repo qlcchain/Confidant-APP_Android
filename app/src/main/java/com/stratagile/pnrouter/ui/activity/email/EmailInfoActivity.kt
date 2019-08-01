@@ -6,6 +6,7 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import android.view.View
 import android.webkit.*
 import android.widget.Toast
@@ -40,8 +41,7 @@ import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
-import com.stratagile.pnrouter.utils.DateUtil
-import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.email_info_view.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -583,7 +583,42 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             }
         }
         var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
-        webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        Log.i("URLText",emailMeaasgeData!!.content)
+        if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+        {
+
+            var miContentSoucreBgeinIndex= emailMeaasgeData!!.content.indexOf("\n")
+            var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+            if(miContentSoucreEndIndex == -1)
+            {
+                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+            }
+            var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
+            if(beginIndex == -1)
+            {
+                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+            }
+            var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
+            var endIndex = confidantkeyBefore.indexOf("'></span>")
+            var confidantkey = confidantkeyBefore.substring(14,endIndex)
+            var confidantkeyArr = confidantkey.split("&&")
+            var accountMi = confidantkeyArr.get(0)
+            var shareMiKey = confidantkeyArr.get(1)
+            var account =  String(RxEncodeTool.base64Decode(accountMi))
+            var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+            var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+            val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+            val sourceContent = String(miContent)
+
+            URLText = "<html><body>"+sourceContent+"</body></html>";
+            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        }else{
+            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        }
+
+
+
     }
 
     /**

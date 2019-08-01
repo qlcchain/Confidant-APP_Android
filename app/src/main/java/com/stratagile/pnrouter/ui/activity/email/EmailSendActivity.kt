@@ -47,7 +47,6 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailAttachEntity
 import com.stratagile.pnrouter.db.EmailMessageEntity
-import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
@@ -56,7 +55,6 @@ import com.stratagile.pnrouter.ui.activity.email.view.ColorPickerView
 import com.stratagile.pnrouter.ui.activity.email.view.RichEditor
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
-import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import kotlinx.android.synthetic.main.email_picture_image_grid_item.*
@@ -68,9 +66,14 @@ import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.webkit.*
 import android.widget.EditText
+import com.message.Message
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.EmailContactsEntity
 import com.stratagile.pnrouter.db.EmailContactsEntityDao
+import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
+import org.libsodium.jni.Sodium
 
 /**
  * @author zl
@@ -79,7 +82,7 @@ import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
  * @date 2019/07/25 11:21:29
  */
 
-class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener {
+class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback{
 
     @Inject
     internal lateinit var mPresenter: EmailSendPresenter
@@ -141,6 +144,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private val methodContext = MethodContext()
     private val methodContextCc = MethodContext()
     private val methodContextBcc = MethodContext()
+    var contactMapList = HashMap<String, String>()
     private val users = arrayListOf(
             User("1", "激浊扬清"),
             User("2", "清风引佩下瑶台"),
@@ -161,6 +165,27 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var emailMeaasgeInfoData: EmailMessageEntity? = null
     var oldAdress = ""
 
+    override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
+        if(jCheckmailUkeyRsp.params.retCode == 0)
+        {
+            var data = jCheckmailUkeyRsp.params.payload
+            for (item in data)
+            {
+                var value = item.pubKey;
+                val dst_public_MiKey_Friend = ByteArray(32)
+                val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
+                if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                    contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                }
+                sendEmail();
+            }
+        }else{
+            runOnUiThread {
+                toast(R.string.error)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -170,6 +195,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         setContentView(R.layout.email_send_edit)
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
         flag = intent.getIntExtra("flag",0)
         initUI()
@@ -490,13 +516,37 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
     }
+    private fun sendCheck()
+    {
 
+        var toAdress = getEditText(toAdressEdit)
+        toAdress = toAdress.replace(",,","")
+        var toAdressArr = toAdress.split(",");
+        if(toAdress== "")
+        {
+            toast(R.string.The_recipient_cant_be_empty)
+            return
+        }
+        var toAdressBase64 = ""
+        for (item in toAdressArr)
+        {
+            toAdressBase64 += RxEncodeTool.base64Encode2String(item.toByteArray()) +","
+        }
+        toAdressBase64 = toAdressBase64.substring(0,toAdressBase64.length -1)
+        var ccAdress = getEditText(ccAdressEdit)
+        ccAdress = ccAdress.replace(",,","")
+        var bccAdress = getEditText(bccAdressEdit)
+        ccAdress.replace(",,","")
+
+        var checkmailUkey = CheckmailUkey(toAdressArr.size,toAdressBase64)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
+    }
     /**
      * 发送邮件
      */
     private fun sendEmail() {
+        var fileKey = RxEncryptTool.generateAESKey()
         var contentHtml = re_main_editor.html
-
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
         {
             var from = emailMeaasgeInfoData!!.from
@@ -516,7 +566,29 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
         }
-        contentHtml += "<span style=\'display:none\'  confidantKey=\'zhanglang108@sina.com_123456789aaaaaa##123456@sina.com_888888aaaaaa\'></span>";
+        if(contactMapList.size >0)
+        {
+            val contentBuffer = contentHtml.toByteArray()
+            var fileKey16 = fileKey.substring(0,16)
+            var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+            contentHtml = contentBufferMiStr;
+            var aaa = RxEncodeTool.base64Decode(contentBufferMiStr)
+            val miContent = AESCipher.aesDecryptBytes(aaa, fileKey16.toByteArray())
+            var aa = String(miContent)
+            var bb = ""
+        }
+        var confidantKey = "";
+        for(item in contactMapList)
+        {
+            var account = item.key
+            var friendMiPublicKey = item.value
+            var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, friendMiPublicKey)))
+            confidantKey += account+"&&"+dstKey;
+        }
+        if(contactMapList.size >0)
+        {
+            contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
+        }
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)
         var bccAdress = getEditText(bccAdressEdit)
@@ -629,7 +701,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var emaiAttachAdapterList = emaiAttachAdapter!!.data
         for(item in emaiAttachAdapterList)
         {
-            attachList +=item.localPath+","
+            if(item.localPath != null)
+            {
+                attachList +=item.localPath+","
+            }
+
         }
         if(attachList.length >0)
         {
@@ -638,7 +714,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
         var name = toAdress.substring(1,toAdress.indexOf("@"))
 
-        showProgressDialog("sending")
+        runOnUiThread {
+            showProgressDialog()
+        }
+
         emailSendClient
                 .setTo(toAdress)                //收件人的邮箱地址
                 .setCc(ccAdress)
@@ -649,15 +728,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 .setAttach(attachList)
                 .sendAsyn(this, object : GetSendCallback {
                     override fun sendSuccess() {
-                        closeProgressDialog()
                         runOnUiThread {
+                            closeProgressDialog()
                             Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
                             finish()
                         }
                     }
 
                     override fun sendFailure(errorMsg: String) {
-                        closeProgressDialog()
+                        runOnUiThread {
+                            closeProgressDialog()
+                        }
                         Islands.ordinaryDialog(this@EmailSendActivity)
                                 .setText(null, getString(R.string.error))
                                 .setButton(getString(R.string.close), null, null)
@@ -1082,7 +1163,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }else if (id == R.id.backBtn ) {
             onBackPressed()
         }else if (id == R.id.sendBtn ) {
-            sendEmail()
+            sendCheck();
+            //sendEmail()
         }
 
     }
@@ -1310,5 +1392,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             iterator = methods.iterator()
             circularMethod()
         }
+    }
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.checkmailUkeyCallback = null
+        super.onDestroy()
     }
 }

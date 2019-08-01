@@ -715,3 +715,15 @@ data class EnableQlcNode(var Enable :Int,var Seed :String,  var Action : String 
  * (2)	响应（APP->Router）
  */
 data class CheckQlcNode(var Action : String = "CheckQlcNode")
+
+/**
+ * 88.	用户设置邮箱配置
+ * (2)	响应（APP->Router）
+ */
+data class SaveEmailConf(var Version:Int ,var Type:Int,var User :String,var Config :String,var Userkey :String,var Action : String = "SaveEmailConf")
+
+/**
+ * 98.	邮件加密时用户根据邮箱名查询目标公钥
+ * (2)	响应（APP->Router）
+ */
+data class CheckmailUkey(var Unum:Int ,var Users :String,var Action : String = "CheckmailUkey")

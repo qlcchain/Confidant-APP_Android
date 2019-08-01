@@ -734,5 +734,6 @@
     <string name="Forward_to">Forward to</string>
     <string name="The_mail_has_been_sent">The mail has_been sent</string>
     <string name="Mail_Delivery_Failed">Mail Delivery Failed</string>
+    <string name="Over_configure">Over-configure</string>
 
 </resources>

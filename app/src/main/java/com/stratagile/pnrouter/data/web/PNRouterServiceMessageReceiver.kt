@@ -556,6 +556,16 @@ val credentialsProvider: CredentialsProvider, private
                     val jCheckQlcNodeRsp = gson.fromJson(text, JCheckQlcNodeRsp::class.java)
                     qlcNodeCallBack?.checkQlcNodeRsp(jCheckQlcNodeRsp)
                 }
+                "SaveEmailConf" -> {
+                    val jSaveEmailConfRsp = gson.fromJson(text, JSaveEmailConfRsp::class.java)
+                    saveEmailConfCallback?.saveEmailConf(jSaveEmailConfRsp)
+                }
+                "CheckmailUkey" -> {
+                    val jCheckmailUkeyRsp = gson.fromJson(text, JCheckmailUkeyRsp::class.java)
+                    checkmailUkeyCallback?.checkmailUkey(jCheckmailUkeyRsp)
+                }
+
+
             }
         }
 
@@ -630,6 +640,10 @@ val credentialsProvider: CredentialsProvider, private
     var forwardFriendAndGroupBack : ForwardFriendAndGroupBack? = null
 
     var removeMemberCallBack:RemoveMemberCallBack ? = null
+
+    var saveEmailConfCallback: SaveEmailConfCallback? = null
+
+    var checkmailUkeyCallback: CheckmailUkeyCallback? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -998,6 +1012,12 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface RemoveMemberCallBack {
         fun removeMember(jRemoveMemberRsp: JRemoveMemberRsp)
+    }
+    interface SaveEmailConfCallback {
+        fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp)
+    }
+    interface CheckmailUkeyCallback {
+        fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp)
     }
 }
 

@@ -692,7 +692,7 @@ public class RxEncryptTool {
     public static String generateAESKey() {
         if(BuildConfig.DEBUG)
         {
-            return "welcometoqlc01010000000000000000";
+            return "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
         }else{
             try {
                 SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
@@ -703,7 +703,7 @@ public class RxEncryptTool {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return "welcometoqlc01010000000000000000";
+            return "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
         }
 
     }

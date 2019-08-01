@@ -351,7 +351,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         progressDialog.dismiss()
 
                                     }
-                                },menu,beginIndex,2,lastTotalCount)
+                                },menu,beginIndex,10,lastTotalCount)
                     }
         }else{
             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).list()
@@ -488,7 +488,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         progressDialog.dismiss()
 
                                     }
-                                },menu,beginIndex,2,lastTotalCount)
+                                },menu,beginIndex,10,lastTotalCount)
                     }
         }else{
             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
