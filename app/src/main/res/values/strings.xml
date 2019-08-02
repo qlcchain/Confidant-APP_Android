@@ -739,5 +739,6 @@
     <string name="QQ">QQ</string>
     <string name="Google">Google</string>
     <string name="Send_Email">Send Email</string>
+    <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
 
 </resources>

@@ -72,7 +72,7 @@ public class EditTextWithDel extends AppCompatEditText {
     // 设置删除图片
     private void setDrawable() {
         if (length() < 1) {
-            setCompoundDrawablesWithIntrinsicBounds(imgLeft, null, null, null);
+            //setCompoundDrawablesWithIntrinsicBounds(imgLeft, null, null, null);
         } else {
             setCompoundDrawablesWithIntrinsicBounds(imgLeft, null, imgAble, null);
         }

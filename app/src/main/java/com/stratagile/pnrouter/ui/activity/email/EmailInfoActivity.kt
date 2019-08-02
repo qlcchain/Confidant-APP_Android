@@ -383,7 +383,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             startActivity(intent)
         }
         forWardbtn.setOnClickListener {
-            var intent = Intent(this, SelectEmailFriendActivity::class.java)
+            var intent = Intent(this, EmailSendActivity::class.java)
+            intent.putExtra("flag",1)
+            intent.putExtra("foward",1)
+            intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
             startActivity(intent)
         }
 
@@ -597,7 +600,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
         {
 
-            var miContentSoucreBgeinIndex= emailMeaasgeData!!.content.indexOf("\n")
+            var miContentSoucreBgeinIndex= 0
             var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
             if(miContentSoucreEndIndex == -1)
             {

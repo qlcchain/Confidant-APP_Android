@@ -162,6 +162,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             User("14", "千金一刻庆良宵"),
             User("15", "必须要\\n\n，不然不够长"))
     var flag = 0;
+    var foward = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
     var oldAdress = ""
 
@@ -178,7 +179,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                 }
             }
-
+            sendEmail();
         }else{
             contactMapList = HashMap<String, String>()
             sendEmail();
@@ -197,6 +198,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
         flag = intent.getIntExtra("flag",0)
+        foward = intent.getIntExtra("foward",0)
         initUI()
         initClickListener()
     }
@@ -287,7 +289,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if(spans.size == 0)
                 {
                     var name = str.substring(0,str.indexOf("@"))
-                    var addUser = User(str, str)
+                    var addUser = User(str, name)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
@@ -312,10 +314,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         draft_info.setText(fromAdress)
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
-        var user = User(fromAdress,fromName)
-        (toAdressEdit.text as SpannableStringBuilder)
-                .append(methodContext.newSpannable(user))
-                .append(",")
+        if(foward == 0)
+        {
+            var user = User(fromAdress,fromName)
+            (toAdressEdit.text as SpannableStringBuilder)
+                    .append(methodContext.newSpannable(user))
+                    .append(",")
+        }
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
         val spans = toAdressEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
@@ -545,6 +550,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     {
 
         var toAdress = getEditText(toAdressEdit)
+
         toAdress = toAdress.replace(",,","")
         var toAdressArr = toAdress.split(",");
         if(toAdress== "")
@@ -552,10 +558,20 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             toast(R.string.The_recipient_cant_be_empty)
             return
         }
+        var subjectStr = subject.getText().toString()
+        if(subjectStr== "")
+        {
+            toast(R.string.The_subject_cant_be_empty)
+            return
+        }
         var toAdressBase64 = ""
         for (item in toAdressArr)
         {
-            toAdressBase64 += RxEncodeTool.base64Encode2String(item.toByteArray()) +","
+            if(item != "")
+            {
+                var temp = item.trim()
+                toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+            }
         }
         toAdressBase64 = toAdressBase64.substring(0,toAdressBase64.length -1)
         var ccAdress = getEditText(ccAdressEdit)
@@ -582,7 +598,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     "<div style=\"background: #f2f2f2;\">"+
                     getString(R.string.Original_mail)+
                     "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
-                    "   <br />"+getString(R.string.From)+"：&quot;"+toStr+"：&quot;"+
+                    "   <br />"+getString(R.string.To)+"：&quot;"+toStr+"：&quot;"+
                     "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
                     "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
                     "  </div>"+

@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.view.LayoutInflaterCompat
+import android.support.v4.view.LayoutInflaterFactory
 import android.text.Editable
+import android.text.Html
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.stratagile.pnrouter.R
@@ -26,9 +28,7 @@ import java.util.*
 
 import javax.inject.Inject;
 import android.text.method.Touch.onTouchEvent
-import android.view.Menu
-import android.view.MenuItem
-import android.view.MotionEvent
+import android.view.*
 import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 
 
@@ -47,6 +47,25 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
     private var SourceDateList: List<ContactSortModel>? = null
     var oldAdress = ""
     override fun onCreate(savedInstanceState: Bundle?) {
+        LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
+            if (name.equals("com.android.internal.view.menu.IconMenuItemView", ignoreCase = true) || name.equals("com.android.internal.view.menu.ActionMenuItemView", ignoreCase = true) || name.equals("android.support.v7.view.menu.ActionMenuItemView", ignoreCase = true)) {
+                try {
+                    val f = layoutInflater
+                    val view = f.createView(name, null, attrs)
+                    if (view is TextView) {
+                        view.setTextColor(resources.getColor(R.color.mainColor))
+                        view.isAllCaps = false
+                    }
+                    return@LayoutInflaterFactory view
+                } catch (e: InflateException) {
+                    e.printStackTrace()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+
+            }
+            null
+        })
         super.onCreate(savedInstanceState)
     }
 
@@ -67,8 +86,18 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.next, menu)
+        //val itemSubmit = menu.findItem(R.id.nextBtn)
         return true
     }
+
+    /*override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+
+        val itemSubmit = menu.findItem(R.id.nextBtn)
+        var menuStr = getString(R.string.next)
+        itemSubmit.setTitle(Html.fromHtml("<font color='#FF2B2B2B'>"+menuStr+"</font>"));
+        invalidateOptionsMenu()
+        return super.onPrepareOptionsMenu(menu)
+    }*/
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.nextBtn) {
             var count =  lv_contact.childCount  -1
