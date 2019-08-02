@@ -192,7 +192,7 @@ public class RichEditor extends WebView {
     }
 
     public void setEditorFontSize(int px) {
-        exec("javascript:RE.setBaseFontSize('" + px + "px');");
+        exec("javascript:RE.setBaseFontSize('" + px + "sp');");
     }
 
     @Override

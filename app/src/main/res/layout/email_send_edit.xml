@@ -170,6 +170,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
+                    android:padding="@dimen/x15"
                     android:drawableLeft="@mipmap/tabbar_add"
                     android:textSize="16sp"/>
                 <TextView
@@ -178,6 +179,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
+                    android:padding="@dimen/x15"
                     android:drawableLeft="@mipmap/tabbar_arrow_lower"
                     android:textSize="16sp"/>
             </LinearLayout>
@@ -256,24 +258,22 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_margin="@dimen/x30">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/Subject"
-                    android:textSize="16sp"/>
                 <EditText
                     android:id="@+id/subject"
-                    android:layout_marginLeft="@dimen/x20"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:hint="@string/Subject"
+                    android:textSize="16sp"
                     android:background="@null"/>
                 <TextView
                     android:id="@+id/addSubject"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
+                    android:padding="@dimen/x10"
                     android:drawableRight="@mipmap/tabbar_attach_unselected"
                     android:textSize="16sp"/>
             </LinearLayout>

@@ -231,10 +231,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         initMenu()
         initColorPicker()
         oldtitle.visibility = View.GONE
+        list_itease_layout_info.visibility = View.GONE
         if(flag == 1)
         {
             initBaseUI(emailMeaasgeInfoData!!)
             oldtitle.visibility = View.VISIBLE
+            list_itease_layout_info.visibility = View.VISIBLE
         }
         toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
             override fun onFocusChange( v:View,  hasFocus:Boolean) {
@@ -876,11 +878,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 初始化文本编辑器
      */
     private fun initEditor() {
-        //re_main_editor.setEditorHeight(400);
+        re_main_editor.setEditorHeight(150);
         //输入框显示字体的大小
         re_main_editor.setEditorFontSize(18)
         //输入框显示字体的颜色
-        re_main_editor.setEditorFontColor(Color.BLACK)
+        re_main_editor.setEditorFontColor(Color.RED)
         //输入框背景设置
         re_main_editor.setEditorBackgroundColor(Color.WHITE)
         //re_main_editor.setBackgroundColor(Color.BLUE);
