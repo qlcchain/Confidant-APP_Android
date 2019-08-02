@@ -3954,11 +3954,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     private fun initEvent() {
         emailLook.setOnClickListener(View.OnClickListener {
+            if(ConstantValue.chooseFragMentMenu== "Circle")
+            {
+                return@OnClickListener
+            }
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.openDrawer(GravityCompat.START)
             }
         })
         rootTitleParent.setOnClickListener(View.OnClickListener {
+            if(ConstantValue.chooseFragMentMenu== "Circle")
+            {
+                return@OnClickListener
+            }
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.openDrawer(GravityCompat.START)
             }

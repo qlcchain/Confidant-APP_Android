@@ -17,7 +17,6 @@
 package com.smailnet.eamil;
 
 import android.app.Activity;
-import android.widget.EditText;
 
 import com.smailnet.eamil.Callback.GetSendCallback;
 import com.smailnet.eamil.Utils.AddressUtil;
@@ -27,8 +26,6 @@ import java.io.UnsupportedEncodingException;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
 
 /**
@@ -170,7 +167,7 @@ public class EmailSendClient {
                             .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .sendMail();
                     try {
-                        Operator.Core(emailConfig).imapSaveToSendMail(message,toMenu);
+                        Operator.Core(emailConfig).imapSaveMail(message,toMenu);
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -199,7 +196,50 @@ public class EmailSendClient {
             }
         }).start();
     }
+    /**
+     * 异步发送邮件，发送完毕回调并切回到主线程
+     * @param activity
+     * @param getSendCallback
+     * @return
+     */
+    public void saveDraftsAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Message message = Operator.Core(emailConfig)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
+                            .saveDrafts();
+                    try {
+                        Operator.Core(emailConfig).imapSaveMail(message,toMenu);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendSuccess();
+                            }
+                        });
+                    }catch (Exception e)
+                    {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendFailure("");
+                            }
+                        });
+                    }
 
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSendCallback.sendFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
     /**
      * 异步发送邮件，发送完毕回调不切回到主线程
      * @param getSendCallback

@@ -597,38 +597,46 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         var URLText = "<html><body style ='font-size:25px;'>"+emailMeaasgeData!!.content+"</body></html>";
         Log.i("URLText",emailMeaasgeData!!.content)
-        if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+        try {
+            if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+            {
+
+                var miContentSoucreBgeinIndex= 0
+                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+                }
+                var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+                }
+                var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+                var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
+                var endIndex = confidantkeyBefore.indexOf("'></span>")
+                var confidantkey = confidantkeyBefore.substring(14,endIndex)
+                var confidantkeyArr = confidantkey.split("&&")
+                var accountMi = confidantkeyArr.get(0)
+                var shareMiKey = confidantkeyArr.get(1)
+                var account =  String(RxEncodeTool.base64Decode(accountMi))
+                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+                var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                val sourceContent = String(miContent)
+
+                emailMeaasgeData!!.content = sourceContent;
+                URLText = "<html><body>"+sourceContent+"</body></html>";
+                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+            }else{
+                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+            }
+        }catch (e:Exception)
         {
-
-            var miContentSoucreBgeinIndex= 0
-            var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
-            if(miContentSoucreEndIndex == -1)
-            {
-                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
-            }
-            var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
-            if(beginIndex == -1)
-            {
-                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
-            }
-            var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
-            var endIndex = confidantkeyBefore.indexOf("'></span>")
-            var confidantkey = confidantkeyBefore.substring(14,endIndex)
-            var confidantkeyArr = confidantkey.split("&&")
-            var accountMi = confidantkeyArr.get(0)
-            var shareMiKey = confidantkeyArr.get(1)
-            var account =  String(RxEncodeTool.base64Decode(accountMi))
-            var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-            var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-            val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-            val sourceContent = String(miContent)
-
-            URLText = "<html><body>"+sourceContent+"</body></html>";
-            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-        }else{
+            e.printStackTrace();
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
+
 
 
 

@@ -294,7 +294,13 @@ class EmailCore {
         transport.close();
         return message;
     }
-
+    /**
+     * 使用SMTP协议保存邮件
+     * @throws MessagingException
+     */
+    public Message saveDrafts() throws MessagingException {
+        return message;
+    }
     /**
      * 使用POP3协议接收服务器上的邮件
      * @return
@@ -815,7 +821,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean imapSaveToSendMail(Message message,String toMenu) throws MessagingException, IOException {
+    public boolean imapSaveMail(Message message, String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         imapStore.connect(imapHost, account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);

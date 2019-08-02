@@ -101,7 +101,7 @@
                     android:ellipsize="end"
                     android:maxEms="8"
                     android:text="信用管家消费提醒"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/infoTitle"
                     android:textSize="19sp" />
 
                 <TextView
