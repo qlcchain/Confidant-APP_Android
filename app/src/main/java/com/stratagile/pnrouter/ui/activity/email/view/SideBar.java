@@ -45,7 +45,7 @@ public class SideBar extends View {
     }
 
     private void init() {
-        setBackgroundColor(Color.parseColor("#FFFFFF"));
+        setBackgroundColor(Color.parseColor("#00DEDDDD"));
         letterList = Arrays.asList(INDEX_STRING);
     }
 
@@ -82,7 +82,7 @@ public class SideBar extends View {
 
         switch (action) {
             case MotionEvent.ACTION_UP:
-                setBackgroundColor(Color.parseColor("#FFFFFF"));
+                setBackgroundColor(Color.parseColor("#00DEDDDD"));
                 choose = -1;
                 invalidate();
                 if (mTextDialog != null) {

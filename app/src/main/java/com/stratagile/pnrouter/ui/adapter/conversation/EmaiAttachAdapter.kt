@@ -29,6 +29,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
 
         var deleteBtn = helper.getView<LinearLayout>(R.id.deleteBtn)
         var deleteBtnParent = helper.getView<LinearLayout>(R.id.deleteBtnParent)
+        var pic_size = helper.getView<TextView>(R.id.pic_size)
         if(item.canDelete)
         {
             deleteBtnParent.visibility = View.VISIBLE
@@ -36,11 +37,12 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         }else{
             deleteBtnParent.visibility = View.GONE
         }
+
         if(item.isHasData)
         {
             iv_picture.visibility = View.VISIBLE
             iv_add.visibility = View.GONE
-            var pic_size = helper.getView<TextView>(R.id.pic_size)
+            pic_size.visibility = View.VISIBLE
             val file = File(item.localPath)
             var size = (file.length() / 1000).toInt();
             val fileName = item.name
@@ -81,7 +83,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
             iv_picture.visibility = View.GONE
             iv_add.visibility = View.VISIBLE
             helper.addOnClickListener(R.id.iv_add)
-
+            pic_size.visibility = View.GONE
 
         }
     }

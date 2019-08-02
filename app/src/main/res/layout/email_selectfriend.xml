@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grayColor"
+    android:background="@color/grayColor2"
     android:orientation="vertical">
 
     <RelativeLayout
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="@dimen/x110">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:text="@string/contacts"
             android:layout_centerInParent="true"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textColor="@color/colorPrimary"
             android:layout_height="wrap_content" />
     </RelativeLayout>
@@ -24,26 +24,32 @@
         android:id="@+id/et_search"
         android:hint="@string/search"
         android:singleLine="true"
-        android:layout_marginLeft="@dimen/x40"
-        android:layout_marginRight="@dimen/x40"
-        android:paddingLeft="16dp"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x31"
+        android:paddingLeft="@dimen/x31"
         android:paddingRight="@dimen/x30"
-        android:textSize="14dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="@dimen/x19"
+        android:layout_marginTop="@dimen/x50"
         android:background="@drawable/ease_seabar_input"
 
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="@dimen/x69" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_toRightOf="@id/avatar_container"
+        android:layout_height="@dimen/x1"
+        android:layout_alignParentBottom="true"
+        android:background="@color/grayColor"/>
     <TextView
         android:visibility="visible"
         android:id="@+id/tv_catagory"
         android:layout_width="match_parent"
         android:layout_height="28dp"
         android:layout_marginTop="4dp"
-        android:background="#0D000000"
+        android:background="@color/grayColor2"
         android:gravity="center_vertical"
-        android:paddingLeft="@dimen/x25"
+        android:paddingLeft="@dimen/x35"
         android:text="@string/Recent_contacts"
         android:textColor="@android:color/black"
         android:textSize="14sp" />

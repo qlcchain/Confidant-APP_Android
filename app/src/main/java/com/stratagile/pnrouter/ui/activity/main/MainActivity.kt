@@ -2830,6 +2830,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
     fun setToNews() {
+        rl1.setBackgroundResource(R.color.headmainColor)
+        tvTitle.visibility = View.GONE
         tvTitle.text = getString(R.string.app_name)
         mainIv1.visibility = View.GONE
         fileLook.visibility = View.GONE
@@ -2840,7 +2842,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToFile() {
+        rl1.setBackgroundResource(R.color.mainColor)
         tvTitle.text = getString(R.string.file_)
+        tvTitle.visibility = View.VISIBLE
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         emailLook.visibility = View.GONE
@@ -2850,6 +2854,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToContact() {
+        rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.contacts)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
@@ -2861,6 +2867,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToMy() {
+        rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.my)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
@@ -2874,6 +2882,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         setContentView(R.layout.activity_main)
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
         tvTitle.text = getString(R.string.news)
+        tvTitle.visibility = View.GONE
 //        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
 //        statusBar.setLayoutParams(llp)
         val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))

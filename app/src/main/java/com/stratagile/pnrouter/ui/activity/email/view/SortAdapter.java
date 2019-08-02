@@ -59,9 +59,9 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
             viewHolder.checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 
             //设置convertView的LayoutParams
-            view.setLayoutParams(new AbsListView.LayoutParams(
+           /* view.setLayoutParams(new AbsListView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, 285)
-            );
+            );*/
             view.setTag(viewHolder);
             //viewHolder.tvLetter = (TextView) view.findViewById(R.id.tv_catagory);
         } else {

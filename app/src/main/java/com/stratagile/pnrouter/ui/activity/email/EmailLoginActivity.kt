@@ -47,14 +47,14 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     var emailType: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
-        runOnUiThread {
-           closeProgressDialog()
-        }
         if(jSaveEmailConfRsp.params.retCode == 0)
         {
-            sycDataCountIMAP()
+            runOnUiThread {
+                sycDataCountIMAP()
+            }
         }else{
             runOnUiThread {
+                closeProgressDialog()
                 toast(R.string.Over_configure)
             }
         }
@@ -85,7 +85,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         login.setOnClickListener {
             Islands
                     .circularProgress(this)
-                    .setMessage("登录中...")
+                    .setMessage(getString(R.string.loading))
                     .setCancelable(false)
                     .show()
                     .run { progressDialog -> login(progressDialog) }
@@ -137,83 +137,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         emailExamine.connectServer(this, object : GetConnectCallback {
             override fun loginSuccess() {
                 progressDialog.dismiss()
-                var account =  account_editText.getText().toString()
-                var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
-                var hasVerify = false
-                if(emailConfigEntityList.size > 0)
-                {
-                    var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-                    for (j in localemailConfigEntityList) {
-                        j.choose = false
-                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
-                    }
-                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                    emailConfigEntity.account = account
-                    emailConfigEntity.emailType = emailType
-                    emailConfigEntity.password =  AppConfig.instance.emailConfig().password
-                    emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
-                    emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
-                    emailConfigEntity.popHost =  AppConfig.instance.emailConfig().popHost
-                    emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
-                    emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
-                    emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
-                    emailConfigEntity.choose = true
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                }else{
-                    var emailConfigEntity: EmailConfigEntity = EmailConfigEntity()
-                    emailConfigEntity.account = account
-                    emailConfigEntity.emailType = emailType
-                    emailConfigEntity.password =  AppConfig.instance.emailConfig().password
-                    emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
-                    emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
-                    emailConfigEntity.popHost =  AppConfig.instance.emailConfig().popHost
-                    emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
-                    emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
-                    emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
-                    emailConfigEntity.choose = true
-                    when(emailType)
-                    {
-                        "1"->
-                        {
-                            //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
-                            emailConfigEntity.inboxMenu = "INBOX"
-                            emailConfigEntity.nodeMenu = "node"
-                            emailConfigEntity.starMenu = "star"
-                            emailConfigEntity.drafMenu = "Drafts"
-                            emailConfigEntity.sendMenu = "Sent Messages"
-                            emailConfigEntity.garbageMenu = "Junk"
-                            emailConfigEntity.deleteMenu = "Deleted Messages"
-                        }
-                        "2"->
-                        {
-                            //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
-                            emailConfigEntity.inboxMenu = "INBOX"
-                            emailConfigEntity.nodeMenu = "node"
-                            emailConfigEntity.starMenu = "star"
-                            emailConfigEntity.drafMenu = "Drafts"
-                            emailConfigEntity.sendMenu = "Sent Messages"
-                            emailConfigEntity.garbageMenu = "Junk"
-                            emailConfigEntity.deleteMenu = "Deleted Messages"
-                        }
-                        "3"->
-                        {
 
-                        }
-                        "4"->
-                        {
-
-                        }
-                    }
-                    ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
-                }
-                EventBus.getDefault().post(ChangeEmailConfig())
-               /* showProgressDialog(getString(R.string.waiting))
+                showProgressDialog(getString(R.string.waiting))
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))*/
-                sycDataCountIMAP()
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                //sycDataCountIMAP()
                 /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
                  finish()*/
             }
@@ -231,17 +161,88 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     }
     private fun sycDataCountIMAP()
     {
+        var account =  account_editText.getText().toString()
+        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+        var hasVerify = false
+        if(emailConfigEntityList.size > 0)
+        {
+            var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+            for (j in localemailConfigEntityList) {
+                j.choose = false
+                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+            }
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+            emailConfigEntity.account = account
+            emailConfigEntity.emailType = emailType
+            emailConfigEntity.password =  AppConfig.instance.emailConfig().password
+            emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
+            emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
+            emailConfigEntity.popHost =  AppConfig.instance.emailConfig().popHost
+            emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
+            emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
+            emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.choose = true
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+        }else{
+            var emailConfigEntity: EmailConfigEntity = EmailConfigEntity()
+            emailConfigEntity.account = account
+            emailConfigEntity.emailType = emailType
+            emailConfigEntity.password =  AppConfig.instance.emailConfig().password
+            emailConfigEntity.smtpHost =  AppConfig.instance.emailConfig().smtpHost
+            emailConfigEntity.smtpPort =  AppConfig.instance.emailConfig().smtpPort
+            emailConfigEntity.popHost =  AppConfig.instance.emailConfig().popHost
+            emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
+            emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
+            emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.choose = true
+            when(emailType)
+            {
+                "1"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "Drafts"
+                    emailConfigEntity.sendMenu = "Sent Messages"
+                    emailConfigEntity.garbageMenu = "Junk"
+                    emailConfigEntity.deleteMenu = "Deleted Messages"
+                }
+                "2"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "Drafts"
+                    emailConfigEntity.sendMenu = "Sent Messages"
+                    emailConfigEntity.garbageMenu = "Junk"
+                    emailConfigEntity.deleteMenu = "Deleted Messages"
+                }
+                "3"->
+                {
+
+                }
+                "4"->
+                {
+
+                }
+            }
+            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
+        }
+        EventBus.getDefault().post(ChangeEmailConfig())
         var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
         Islands.circularProgress(this)
                 .setCancelable(false)
                 .setMessage(getString(R.string.waiting))
-                .show()
                 .run { progressDialog ->
                     val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                     emailReceiveClient
                             .imapReceiveAsynCount(this, object : GetCountCallback {
                                 override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
-                                    progressDialog.dismiss()
+                                    //progressDialog.dismiss()
+                                    closeProgressDialog()
                                     if(messageList.size >0)
                                     {
                                         var emailMessage = messageList.get(0)

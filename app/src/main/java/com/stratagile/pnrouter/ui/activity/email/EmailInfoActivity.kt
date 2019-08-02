@@ -408,7 +408,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 ConstantValue.currentEmailConfigEntity!!.inboxMenu->
                 {
                     menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","statusbar_delete")
 
                 }
                 ConstantValue.currentEmailConfigEntity!!.sendMenu->
@@ -419,7 +419,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 ConstantValue.currentEmailConfigEntity!!.garbageMenu->
                 {
                     menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","tabbar_deleted")
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","statusbar_delete")
                 }
                 ConstantValue.currentEmailConfigEntity!!.deleteMenu->
                 {
@@ -582,7 +582,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 super.onReceivedError(view, request, error)
             }
         }
-        var URLText = "<html><body>"+emailMeaasgeData!!.content+"</body></html>";
+        var URLText = "<html><body style ='font-size:25px;'>"+emailMeaasgeData!!.content+"</body></html>";
         Log.i("URLText",emailMeaasgeData!!.content)
         if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
         {

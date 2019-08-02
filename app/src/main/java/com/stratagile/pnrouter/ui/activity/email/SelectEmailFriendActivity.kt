@@ -93,6 +93,8 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
     }
     private fun setAdapter() {
         var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
+        emailContactsList.addAll(emailContactsList)
+        emailContactsList.addAll(emailContactsList)
         for (item in emailContactsList)
         {
             if(oldAdress != null && oldAdress.contains(item.account))

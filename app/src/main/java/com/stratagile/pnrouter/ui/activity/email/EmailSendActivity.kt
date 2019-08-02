@@ -232,10 +232,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         initColorPicker()
         oldtitle.visibility = View.GONE
         list_itease_layout_info.visibility = View.GONE
+        sentTitle.visibility = View.VISIBLE
         if(flag == 1)
         {
             initBaseUI(emailMeaasgeInfoData!!)
             oldtitle.visibility = View.VISIBLE
+            sentTitle.visibility = View.GONE
             list_itease_layout_info.visibility = View.VISIBLE
         }
         toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
@@ -358,7 +360,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             false
         }
         toAddress.setBackSpaceLisetener(backspaceListener)*/
-        var URLText = "<html><body>"+emailMessageEntity!!.content+"</body></html>";
+        var URLText = "<html><body style ='font-size:25px;'>"+emailMessageEntity!!.content+"</body></html>";
         val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
@@ -878,18 +880,18 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 初始化文本编辑器
      */
     private fun initEditor() {
-        re_main_editor.setEditorHeight(150);
+        re_main_editor.setEditorHeight(120);
         //输入框显示字体的大小
-        re_main_editor.setEditorFontSize(18)
+        re_main_editor.setEditorFontSize(16)
         //输入框显示字体的颜色
-        re_main_editor.setEditorFontColor(Color.RED)
+        re_main_editor.setEditorFontColor(Color.GRAY)
         //输入框背景设置
         re_main_editor.setEditorBackgroundColor(Color.WHITE)
         //re_main_editor.setBackgroundColor(Color.BLUE);
         //re_main_editor.setBackgroundResource(R.drawable.bg);
         //re_main_editor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         //输入框文本padding
-        re_main_editor.setPadding(10, 10, 10, 10)
+        //re_main_editor.setPadding(10, 10, 10, 10)
         //输入提示文本
         re_main_editor.setPlaceholder(getString(R.string.Compose_email))
         //是否允许输入

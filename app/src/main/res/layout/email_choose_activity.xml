@@ -1,30 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
+    <com.stratagile.pnrouter.entity.MenuItemView
         android:id="@+id/qqCompany"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
-        android:background="@color/white"
-        android:contentDescription="Video Call Friend"
-        android:gravity="left"
-        android:src="@mipmap/qqcompany" />
-    />
-    <ImageView
-        android:visibility="visible"
-        android:id="@+id/qq"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/email_icon_qqmailbox"
+        app:itemText="@string/QQMAILBOX"/>
+    <View
         android:layout_width="match_parent"
-        android:layout_height="82dp"
-        android:background="@color/white"
-        android:gravity="left"
-        android:src="@mipmap/qq" />
-        />
+        android:layout_marginLeft="@dimen/x110"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/qq"
+        android:paddingLeft="@dimen/x10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/email_icon_qq"
+        app:itemText="@string/QQ"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x110"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
     <ImageView
         android:visibility="gone"
         android:id="@+id/gmail"
