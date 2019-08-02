@@ -424,38 +424,6 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 refreshLayout.finishLoadMore()
                                             }
                                         }
-                                        if(messageList.size > 0)
-                                        {
-                                            var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                                            if(emailConfigEntityChoose.size > 0)
-                                            {
-                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-                                                when(menu)
-                                                {
-                                                    emailConfigEntity.inboxMenu->
-                                                    {
-                                                        emailConfigEntity.totalCount += messageList.size
-                                                    }
-                                                    emailConfigEntity.drafMenu->
-                                                    {
-                                                        emailConfigEntity.drafTotalCount += messageList.size
-                                                    }
-                                                    emailConfigEntity.sendMenu->
-                                                    {
-                                                        emailConfigEntity.sendTotalCount += messageList.size
-                                                    }
-                                                    emailConfigEntity.garbageMenu->
-                                                    {
-                                                        emailConfigEntity.garbageCount += messageList.size
-                                                    }
-                                                    emailConfigEntity.deleteMenu->
-                                                    {
-                                                        emailConfigEntity.deleteTotalCount += messageList.size
-                                                    }
-                                                }
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                                            }
-                                        }
                                         var list = messageList;
                                         for (item in messageList)
                                         {

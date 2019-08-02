@@ -71,8 +71,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
 
-        account_editText.setText("")
-        password_editText.setText("")
+
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             showProgressDialog()
