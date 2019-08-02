@@ -67,14 +67,14 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
         }
         gmail.setOnClickListener {
             AppConfig.instance.emailConfig()
-                    .setSmtpHost("smtp.sina.com")
+                    .setSmtpHost("smtp.gmail.com")
                     .setSmtpPort(465)
-                    .setPopHost("pop.sina.com")
+                    .setPopHost("pop.gmail.com")
                     .setPopPort(995)
-                    .setImapHost("imap.sina.com")
+                    .setImapHost("imap.gmail.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emailType","4")
+            Intent.putExtra("emailType","3")
             startActivity(Intent)
             finish()
         }

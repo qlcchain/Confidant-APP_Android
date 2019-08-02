@@ -33,17 +33,13 @@
         android:layout_marginLeft="@dimen/x110"
         android:background="@color/color_ebebeb"
         android:layout_height="@dimen/x1" />
-    <ImageView
-        android:visibility="gone"
+    <com.stratagile.pnrouter.entity.MenuItemView
         android:id="@+id/gmail"
-        android:layout_marginTop="@dimen/x5"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
-        android:background="@color/white"
-        android:contentDescription="Video Call Friend"
-        android:gravity="left"
-        android:onClick="onClickVideoCall"
-        android:src="@mipmap/gmail" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/email_icon_google"
+        app:itemText="@string/Google"/>
     />
 
 </LinearLayout>

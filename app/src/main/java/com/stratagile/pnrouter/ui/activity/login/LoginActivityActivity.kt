@@ -25,6 +25,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.MailUtil
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -1046,8 +1048,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 showUnlock()
                 return@setOnClickListener
             }
-            //MobileInfoUtils.jumpStartInterface(this)
-            //return@setOnClickListener
             isFromScanAdmim = false
             isFromScan = false
             if (NetUtils.isNetworkAvalible(this)) {

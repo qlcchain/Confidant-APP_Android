@@ -51,6 +51,7 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
@@ -58,6 +59,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -140,7 +142,7 @@ class EmailCore {
         this.imapPort = String.valueOf(emailConfig.getImapPort());
         this.account = emailConfig.getAccount();
         this.password = emailConfig.getPassword();
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
 
         String sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
         String isFallback = "false";
@@ -170,8 +172,17 @@ class EmailCore {
             properties.put(MAIL_IMAP_PARTISLFETCH, false);
             properties.put(MAIL_IMAPS_PARTISLFETCH, false);
         }
-
-        session = Session.getInstance(properties);
+        // 构建授权信息，用于进行SMTP进行身份验证
+        Authenticator authenticator = new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                // 用户名、密码
+                String userName = properties.getProperty("mail.user");
+                String password = properties.getProperty("mail.password");
+                return new PasswordAuthentication(userName, password);
+            }
+        };
+        session = Session.getDefaultInstance(properties,authenticator);
     }
 
     /**
@@ -183,12 +194,12 @@ class EmailCore {
         Store store = session.getStore(POP3);
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
 
-        if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
+       /* if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
             transport.connect(smtpHost, account, password);
-        }
-        if (ConfigCheckUtil.getResult(popHost, popPort)) {
+        }*/
+        /*if (ConfigCheckUtil.getResult(popHost, popPort)) {
             store.connect(popHost, account, password);
-        }
+        }*/
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
             imapStore.connect(imapHost, account, password);
         }
@@ -386,54 +397,59 @@ class EmailCore {
         imapStore.connect(imapHost, account, password);
 
 
-        /*Folder defaultFolder = imapStore.getDefaultFolder();
-        Folder[] allFolder = defaultFolder.list();*/
+        Folder defaultFolder = imapStore.getDefaultFolder();
+        Folder[] allFolder = defaultFolder.list();
 
-        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menuList.get(0));
-        folder.open(Folder.READ_ONLY);
-        int total = folder.getMessageCount();
-        emailData.setTotalCount(total);
-        int size = folder.getUnreadMessageCount();
-        emailData.setUnReadCount(size);
+        try {
+            IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menuList.get(0));
+            folder.open(Folder.READ_ONLY);
+            int total = folder.getMessageCount();
+            emailData.setTotalCount(total);
+            int size = folder.getUnreadMessageCount();
+            emailData.setUnReadCount(size);
 
-        IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
-        folderDraf.open(Folder.READ_ONLY);
-        int totalDraf = folderDraf.getMessageCount();
-        emailData.setDrafTotalCount(totalDraf);
-        int sizeDraf = folderDraf.getUnreadMessageCount();
-        emailData.setDrafUnReadCount(sizeDraf);
+            IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
+            folderDraf.open(Folder.READ_ONLY);
+            int totalDraf = folderDraf.getMessageCount();
+            emailData.setDrafTotalCount(totalDraf);
+            int sizeDraf = folderDraf.getUnreadMessageCount();
+            emailData.setDrafUnReadCount(sizeDraf);
 
-        IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
-        folderSend.open(Folder.READ_ONLY);
-        int totalSend = folderSend.getMessageCount();
-        emailData.setSendTotalCount(totalSend);
-        int sizeSend = folderSend.getUnreadMessageCount();
-        emailData.setSendunReadCount(sizeSend);
+            IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
+            folderSend.open(Folder.READ_ONLY);
+            int totalSend = folderSend.getMessageCount();
+            emailData.setSendTotalCount(totalSend);
+            int sizeSend = folderSend.getUnreadMessageCount();
+            emailData.setSendunReadCount(sizeSend);
 
-        IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
-        folderGarbage.open(Folder.READ_ONLY);
-        int totalGarbage = folderGarbage.getMessageCount();
-        emailData.setGarbageCount(totalGarbage);
-        int sizeGarbage = folderGarbage.getUnreadMessageCount();
-        emailData.setGarbageUnReadCount(sizeGarbage);
+            IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
+            folderGarbage.open(Folder.READ_ONLY);
+            int totalGarbage = folderGarbage.getMessageCount();
+            emailData.setGarbageCount(totalGarbage);
+            int sizeGarbage = folderGarbage.getUnreadMessageCount();
+            emailData.setGarbageUnReadCount(sizeGarbage);
 
-        IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
-        folderDelete.open(Folder.READ_ONLY);
-        int totalDelete = folderDelete.getMessageCount();
-        emailData.setDeleteTotalCount(totalDelete);
-        int sizeDelete = folderDelete.getUnreadMessageCount();
-        emailData.setDeleteUnReadCount(sizeDelete);
+            IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
+            folderDelete.open(Folder.READ_ONLY);
+            int totalDelete = folderDelete.getMessageCount();
+            emailData.setDeleteTotalCount(totalDelete);
+            int sizeDelete = folderDelete.getUnreadMessageCount();
+            emailData.setDeleteUnReadCount(sizeDelete);
+            folder.close(false);
+            folderDraf.close(false);
+            folderSend.close(false);
+            folderGarbage.close(false);
+            folderDelete.close(false);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
 
+        }finally {
+            imapStore.close();
+            emailMessageList.add(emailData);
+            return emailMessageList;
+        }
 
-        folder.close(false);
-        folderDraf.close(false);
-        folderSend.close(false);
-        folderGarbage.close(false);
-        folderDelete.close(false);
-
-        imapStore.close();
-        emailMessageList.add(emailData);
-        return emailMessageList;
     }
     /**
      * 使用IMAP协议接收服务器上的新邮件
@@ -595,27 +611,54 @@ class EmailCore {
         int totalSize =   folder.getMessageCount();
         int newSize=  totalSize - lastTotalCount;
         boolean noMoreData = false;
-        if(lastTotalCount - beginIndex >=pageSize)
+        if(totalSize > 0)
         {
-            noMoreData = false;
-            int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
-            int endIndex = totalSize - beginIndex - newSize;
-            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-            messagesAll = folder.getMessages(startIndex,endIndex);
+            if(lastTotalCount == 0)
+            {
+                if(totalSize >= pageSize)
+                {
+                    noMoreData = false;
+                    int startIndex = totalSize - pageSize;
+                    int endIndex = totalSize ;
+                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                    messagesAll = folder.getMessages(startIndex,endIndex);
+                }else{
+                    noMoreData = false;
+                    int startIndex = 1;
+                    int endIndex = totalSize ;
+                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                    messagesAll = folder.getMessages(startIndex,endIndex);
+                }
+
+            }else{
+                if(lastTotalCount - beginIndex >=pageSize)
+                {
+                    noMoreData = false;
+                    int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
+                    int endIndex = totalSize - beginIndex - newSize;
+                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                    messagesAll = folder.getMessages(startIndex,endIndex);
+                }else{
+                    noMoreData = true;
+                    int addSize = lastTotalCount - beginIndex;
+                    int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
+                    int endIndex = totalSize - beginIndex - newSize;
+                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                    if(startIndex== 0 || startIndex > endIndex)
+                    {
+                        messagesAll = new Message[]{};
+                    }else{
+                        messagesAll = folder.getMessages(startIndex,endIndex);
+                    }
+
+                }
+            }
         }else{
             noMoreData = true;
-            int addSize = lastTotalCount - beginIndex;
-            int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
-            int endIndex = totalSize - beginIndex - newSize;
-            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-            if(startIndex== 0 || startIndex > endIndex)
-            {
-                messagesAll = new Message[]{};
-            }else{
-                messagesAll = folder.getMessages(startIndex,endIndex);
-            }
-
+            messagesAll = new Message[]{};
         }
+
+
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();

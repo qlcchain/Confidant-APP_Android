@@ -2900,7 +2900,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
-
         initLeftMenu(ConstantValue.chooseFragMentMenu)
 
         if (VersionUtil.getDeviceBrand() == 3) {
@@ -3638,6 +3637,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun initLeftMenu(fragmentMenu:String)
     {
+        var emailConfigEntityChooseALL = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        var accountStr = "";
+        for (item in emailConfigEntityChooseALL)
+        {
+            var account = item.account
+            var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+            var accountBase64 = String(RxEncodeTool.base64Encode(account))
+            var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+        }
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0)
         {
@@ -3833,6 +3842,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun changFragmentMenu(changFragmentMenu: ChangFragmentMenu) {
 
         var menu = changFragmentMenu.menu
+        ConstantValue.chooseFragMentMenu = menu
         rootTitle.text = menu;
         mainTitle.text = menu;
         if(menu== "Circle")

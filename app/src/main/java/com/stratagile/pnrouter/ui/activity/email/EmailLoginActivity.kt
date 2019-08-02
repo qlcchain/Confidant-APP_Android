@@ -54,7 +54,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             }
         }else{
             runOnUiThread {
-                closeProgressDialog()
                 sycDataCountIMAP()
                 //toast(R.string.Over_configure)
             }
@@ -71,24 +70,16 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
-        when(emailType)
-        {
-            "1"->
-            {
 
-            }
-            "2"->
-            {
-
-            }
-        }
+        account_editText.setText("")
+        password_editText.setText("")
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
+            showProgressDialog()
             Islands
                     .circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)
-                    .show()
                     .run { progressDialog -> login(progressDialog) }
         }
     }
@@ -137,9 +128,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         val emailExamine = EmailExamine(AppConfig.instance.emailConfig())
         emailExamine.connectServer(this, object : GetConnectCallback {
             override fun loginSuccess() {
-                progressDialog.dismiss()
-
-                showProgressDialog(getString(R.string.waiting))
+                //progressDialog.dismiss()
+                //showProgressDialog(getString(R.string.waiting))
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
@@ -150,9 +140,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             }
 
             override fun loginFailure(errorMsg: String) {
-                progressDialog.dismiss()
+                //progressDialog.dismiss()
+                runOnUiThread {
+                    closeProgressDialog()
+                    //toast(R.string.Over_configure)
+                }
                 Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, getString(R.string.fail))
+                        .setText(null, getString(R.string.fail)+errorMsg)
                         .setButton( getString(R.string.close), null, null)
                         .click()
                         .show()
@@ -222,7 +216,14 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "3"->
                 {
-
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "Drafts"
+                    emailConfigEntity.sendMenu = "Sent Messages"
+                    emailConfigEntity.garbageMenu = "Junk"
+                    emailConfigEntity.deleteMenu = "Deleted Messages"
                 }
                 "4"->
                 {
@@ -243,7 +244,10 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                             .imapReceiveAsynCount(this, object : GetCountCallback {
                                 override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
                                     //progressDialog.dismiss()
-                                    closeProgressDialog()
+                                    runOnUiThread {
+                                        closeProgressDialog()
+                                        //toast(R.string.Over_configure)
+                                    }
                                     if(messageList.size >0)
                                     {
                                         var emailMessage = messageList.get(0)

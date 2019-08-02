@@ -72,6 +72,8 @@ import com.stratagile.pnrouter.db.EmailContactsEntity
 import com.stratagile.pnrouter.db.EmailContactsEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 import org.libsodium.jni.Sodium
 
@@ -179,10 +181,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                 }
             }
-            sendEmail();
+            sendEmail(true);
         }else{
             contactMapList = HashMap<String, String>()
-            sendEmail();
+            sendEmail(true);
         }
     }
 
@@ -241,6 +243,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             oldtitle.visibility = View.VISIBLE
             sentTitle.visibility = View.GONE
             list_itease_layout_info.visibility = View.VISIBLE
+            if(foward == 1)
+            {
+                list_itease_layout_info.visibility = View.GONE
+                sentTitle.visibility = View.VISIBLE
+            }
+
         }
         toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
             override fun onFocusChange( v:View,  hasFocus:Boolean) {
@@ -585,7 +593,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     /**
      * 发送邮件
      */
-    private fun sendEmail() {
+    private fun sendEmail(send: Boolean) {
         var fileKey = RxEncryptTool.generateAESKey()
         var contentHtml = re_main_editor.html
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
@@ -754,34 +762,66 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         runOnUiThread {
             showProgressDialog()
         }
-
-        emailSendClient
-                .setTo(toAdress)                //收件人的邮箱地址
-                .setCc(ccAdress)
-                .setBcc(bccAdress)
-                .setNickname(name)                                    //发件人昵称
-                .setSubject(subject.getText().toString())             //邮件标题
-                .setContent(contentHtml)              //邮件正文
-                .setAttach(attachList)
-                .sendAsyn(this, object : GetSendCallback {
-                    override fun sendSuccess() {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
-                            finish()
+        if(send)
+        {
+            emailSendClient
+                    .setTo(toAdress)                //收件人的邮箱地址
+                    .setCc(ccAdress)
+                    .setBcc(bccAdress)
+                    .setNickname(name)                                    //发件人昵称
+                    .setSubject(subject.getText().toString())             //邮件标题
+                    .setContent(contentHtml)              //邮件正文
+                    .setAttach(attachList)
+                    .sendAsyn(this, object : GetSendCallback {
+                        override fun sendSuccess() {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
                         }
-                    }
 
-                    override fun sendFailure(errorMsg: String) {
-                        runOnUiThread {
-                            closeProgressDialog()
+                        override fun sendFailure(errorMsg: String) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                            }
+                            Islands.ordinaryDialog(this@EmailSendActivity)
+                                    .setText(null, getString(R.string.error))
+                                    .setButton(getString(R.string.close), null, null)
+                                    .click().show()
                         }
-                        Islands.ordinaryDialog(this@EmailSendActivity)
-                                .setText(null, getString(R.string.error))
-                                .setButton(getString(R.string.close), null, null)
-                                .click().show()
-                    }
-                },ConstantValue.currentEmailConfigEntity!!.sendMenu)
+                    },ConstantValue.currentEmailConfigEntity!!.sendMenu)
+
+        }else{
+            emailSendClient
+                    .setTo(toAdress)                //收件人的邮箱地址
+                    .setCc(ccAdress)
+                    .setBcc(bccAdress)
+                    .setNickname(name)                                    //发件人昵称
+                    .setSubject(subject.getText().toString())             //邮件标题
+                    .setContent(contentHtml)              //邮件正文
+                    .setAttach(attachList)
+                    .saveDraftsAsyn(this, object : GetSendCallback {
+                        override fun sendSuccess() {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+                        }
+
+                        override fun sendFailure(errorMsg: String) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                            }
+                            Islands.ordinaryDialog(this@EmailSendActivity)
+                                    .setText(null, getString(R.string.error))
+                                    .setButton(getString(R.string.close), null, null)
+                                    .click().show()
+                        }
+                    },ConstantValue.currentEmailConfigEntity!!.drafMenu)
+        }
+
     }
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
@@ -1421,7 +1461,30 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         methodContextBcc.method = method
         methodContextBcc.init(bccAdressEdit)
     }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+      /*  if (keyCode == KeyEvent.KEYCODE_BACK) {
+            var toAdress = getEditText(toAdressEdit)
+            if(toAdress!= "")
+            {
+                showDialog()
+            }else{
+                finish()
+            }
 
+        }*/
+        return false
+    }
+    fun showDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.Save_it_in_the_draft_box))
+                .setConfirmClickListener {
+                    sendEmail(false)
+                }.setCancelClickListener {
+                    finish()
+                }
+                .show()
+
+    }
     private tailrec fun circularMethod(): Method {
         return if (iterator.hasNext()) {
             iterator.next()

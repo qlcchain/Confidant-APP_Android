@@ -45,7 +45,7 @@ public class MailUtil {
     private static final int RECEIVE_IMAP_PORT = 993;
 
     private static final String RECEIVE_POP_HOST = "pop.exmail.qq.com";
-    private static final int RECEIVE_POP_PORT = 110;
+    private static final int RECEIVE_POP_PORT = 995;
 
     // 账号
     private String user;
@@ -59,7 +59,7 @@ public class MailUtil {
     private POP3Folder pop3Folder = null;
 
     public MailUtil() {
-        this("your email address", "your email password");
+        this("emaildev@qlink.mobi", "Qlcchain@123");
     }
 
     private MailUtil(String user, String password) {

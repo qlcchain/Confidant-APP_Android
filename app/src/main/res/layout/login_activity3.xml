@@ -16,7 +16,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginEnd="18dp"
         android:singleLine="true"
-        android:text="283619512@qq.com"
+        android:text=""
         android:hint="邮箱地址"
         tools:ignore="HardcodedText,TextFields" />
 
@@ -28,7 +28,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginEnd="18dp"
         android:singleLine="true"
-        android:text="kpagrlcmliolbjii"
+        android:text=""
         android:hint="邮箱密码"
         android:inputType="textPassword"
         tools:ignore="HardcodedText" />

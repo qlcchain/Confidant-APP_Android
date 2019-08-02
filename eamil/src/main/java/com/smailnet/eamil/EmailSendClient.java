@@ -166,12 +166,13 @@ public class EmailSendClient {
                     Message message = Operator.Core(emailConfig)
                             .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .sendMail();
+                    getSendCallback.sendSuccess();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu);
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                getSendCallback.sendSuccess();
+
                             }
                         });
                     }catch (Exception e)
@@ -179,7 +180,7 @@ public class EmailSendClient {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                getSendCallback.sendFailure("");
+                                //getSendCallback.sendFailure("");
                             }
                         });
                     }
