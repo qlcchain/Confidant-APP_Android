@@ -55,7 +55,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         }else{
             runOnUiThread {
                 closeProgressDialog()
-                toast(R.string.Over_configure)
+                sycDataCountIMAP()
+                //toast(R.string.Over_configure)
             }
         }
     }

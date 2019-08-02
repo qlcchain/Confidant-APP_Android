@@ -291,10 +291,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         attach_info.text = getString(R.string.details)
         details.visibility = View.GONE
         inboxTitle.text = emailMeaasgeData!!.subject
-        var fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
-        var fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
-        var toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
-        var toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
+        var fromName = ""
+        var fromAdress = ""
+        if(emailMeaasgeData!!.from.indexOf("<") >-1)
+        {
+            fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
+            fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
+        }
+        var toName = ""
+        var toAdress = ""
+        if(emailMeaasgeData!!.to.indexOf("<") >-1)
+        {
+            toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
+            toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
+        }
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
