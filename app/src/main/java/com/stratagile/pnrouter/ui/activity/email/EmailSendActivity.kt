@@ -250,10 +250,31 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
             }
         });
+        ccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+
+                }else{
+                    allSpan(ccAdressEdit)
+                }
+            }
+        });
+        bccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+
+                }else{
+                    allSpan(bccAdressEdit)
+                }
+            }
+        });
         initAttachUI()
     }
     private fun allSpan(editText: EditText)
     {
+
         var textStrList = editText.text.split(",")
         var i = 0
         for(str in textStrList)
@@ -266,16 +287,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if(spans.size == 0)
                 {
                     var name = str.substring(0,str.indexOf("@"))
-                    var addUser = User(str, name)
+                    var addUser = User(str, str)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
                             .append(" ")*/
-                    editText.text.replace(beginIndex,endIndex,"")
+                    editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
+                    /*editText.text.replace(beginIndex,endIndex,"")
                     (editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
-                            .append(" ")
+                            .append(" ")*/
                 }
             }
             i += str.length+1
