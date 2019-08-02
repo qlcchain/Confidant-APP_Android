@@ -1461,8 +1461,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         methodContextBcc.method = method
         methodContextBcc.init(bccAdressEdit)
     }
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-      /*  if (keyCode == KeyEvent.KEYCODE_BACK) {
+    /*override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+      *//*  if (keyCode == KeyEvent.KEYCODE_BACK) {
             var toAdress = getEditText(toAdressEdit)
             if(toAdress!= "")
             {
@@ -1471,9 +1471,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 finish()
             }
 
-        }*/
+        }*//*
         return false
-    }
+    }*/
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                 .setContentText(getString(R.string.Save_it_in_the_draft_box))
