@@ -27,7 +27,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         var iv_picture = helper.getView<ImageView>(R.id.iv_picture)
         var iv_add = helper.getView<ImageView>(R.id.iv_add)
 
-        var deleteBtn = helper.getView<LinearLayout>(R.id.deleteBtn)
+        var deleteBtn = helper.getView<TextView>(R.id.deleteBtn)
         var deleteBtnParent = helper.getView<LinearLayout>(R.id.deleteBtnParent)
         var pic_size = helper.getView<TextView>(R.id.pic_size)
         if(item.canDelete)

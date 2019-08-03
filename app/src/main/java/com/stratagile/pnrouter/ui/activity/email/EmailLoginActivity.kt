@@ -10,6 +10,7 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailExamine
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.islands.Islands
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -71,7 +72,26 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
 
+        if(BuildConfig.DEBUG)
+        {
+            when(emailType)
+            {
+                "1"->
+                {
+                    account_editText.setText("emaildev@qlink.mobi")
+                    password_editText.setText("Qlcchain@123")
+                }
+                "2"->
+                {
+                    account_editText.setText("283619512@qq.com")
+                    password_editText.setText("kpagrlcmliolbjii")
+                }
+                "3"->
+                {
 
+                }
+            }
+        }
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             showProgressDialog()

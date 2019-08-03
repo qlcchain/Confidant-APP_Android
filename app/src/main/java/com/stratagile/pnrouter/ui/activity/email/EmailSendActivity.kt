@@ -1238,7 +1238,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             intent.putExtra("oldAdress", oldAdress)
             startActivityForResult(intent,REQUEST_CODE_BCC)
         }else if (id == R.id.backBtn ) {
-            onBackPressed()
+            finish()
+            //onBackPressed()
         }else if (id == R.id.sendBtn ) {
             sendCheck();
             //sendEmail()
