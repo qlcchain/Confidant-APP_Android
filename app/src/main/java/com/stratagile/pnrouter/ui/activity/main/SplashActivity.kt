@@ -132,80 +132,83 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
-                if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
-                    try {
-                        myAuthCallback = MyAuthCallback(handler)
-                        val cryptoObjectHelper = CryptoObjectHelper()
-                        if (cancellationSignal == null) {
-                            cancellationSignal = CancellationSignal()
-                        }
-                        fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
-                                myAuthCallback, null)
-                        ConstantValue.notNeedVerify = false
-                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                        if(fingerprintSwitchFlag == "-1")
-                        {
-                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-                        }
-                        if (cancellationSignal != null) {
-                            cancellationSignal?.cancel()
-                            cancellationSignal = null
-                        }
-                    } catch (e: Exception) {
-                        if (cancellationSignal != null) {
-                            cancellationSignal?.cancel()
-                            cancellationSignal = null
-                        }
-                        ConstantValue.notNeedVerify = true
-                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                    }
-
-                } else {
-                    try {
-                        var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                        if (!mKeyguardManager.isKeyguardSecure()) {
-                            KLog.i("没有设置密码。。。。")
-                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                        }else{
+        if(!BuildConfig.DEBUG)
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                try {
+                    val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
+                    if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
+                        try {
+                            myAuthCallback = MyAuthCallback(handler)
+                            val cryptoObjectHelper = CryptoObjectHelper()
+                            if (cancellationSignal == null) {
+                                cancellationSignal = CancellationSignal()
+                            }
+                            fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
+                                    myAuthCallback, null)
+                            ConstantValue.notNeedVerify = false
                             var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
                             if(fingerprintSwitchFlag == "-1")
                             {
                                 SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
                             }
+                            if (cancellationSignal != null) {
+                                cancellationSignal?.cancel()
+                                cancellationSignal = null
+                            }
+                        } catch (e: Exception) {
+                            if (cancellationSignal != null) {
+                                cancellationSignal?.cancel()
+                                cancellationSignal = null
+                            }
+                            ConstantValue.notNeedVerify = true
+                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
                         }
-                        ConstantValue.notNeedVerify = false
-                    } catch (e: Exception) {
-                        ConstantValue.notNeedVerify = true
-                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+
+                    } else {
+                        try {
+                            var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                            if (!mKeyguardManager.isKeyguardSecure()) {
+                                KLog.i("没有设置密码。。。。")
+                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                            }else{
+                                var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+                                if(fingerprintSwitchFlag == "-1")
+                                {
+                                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+                                }
+                            }
+                            ConstantValue.notNeedVerify = false
+                        } catch (e: Exception) {
+                            ConstantValue.notNeedVerify = true
+                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                        }
+
                     }
 
-                }
-
-            } catch (e: Exception) {
-                ConstantValue.notNeedVerify = true
-                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-            }
-
-        } else {
-            try {
-                var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                if (!mKeyguardManager.isKeyguardSecure()) {
-                    KLog.i("没有设置密码。。。。")
+                } catch (e: Exception) {
+                    ConstantValue.notNeedVerify = true
                     SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                }else{
-                    var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                    if(fingerprintSwitchFlag == "-1")
-                    {
-                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-                    }
                 }
-                ConstantValue.notNeedVerify = false
-            } catch (e: Exception) {
-                ConstantValue.notNeedVerify = true
-                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+
+            } else {
+                try {
+                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                    if (!mKeyguardManager.isKeyguardSecure()) {
+                        KLog.i("没有设置密码。。。。")
+                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                    }else{
+                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+                        if(fingerprintSwitchFlag == "-1")
+                        {
+                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+                        }
+                    }
+                    ConstantValue.notNeedVerify = false
+                } catch (e: Exception) {
+                    ConstantValue.notNeedVerify = true
+                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                }
             }
         }
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)

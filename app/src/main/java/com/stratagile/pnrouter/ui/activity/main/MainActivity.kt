@@ -2368,20 +2368,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChooseEmailConfig(chooseEmailConfig: ChooseEmailConfig) {
+        initLeftSubMenuName()
+        initLeftMenu(ConstantValue.chooseFragMentMenu)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddEmailConfig(changeEmailConfig: ChangeEmailConfig) {
-        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-        if(emailConfigEntityList.size == 0)
-        {
-            //recyclerViewleftParent.setHeight(0)
-        }else if(emailConfigEntityList.size == 1)
-        {
-            //recyclerViewleftParent.setHeight(getResources().getDimensionPixelSize(R.dimen.x130))
-        }else{
-            //recyclerViewleftParent.setHeight(R.dimen.x340)
-        }
-        initLeftSubMenu()
-        emaiConfigChooseAdapter!!.setNewData(emailConfigEntityList)
-        EventBus.getDefault().post(AfterChangeEmailConfig())
+         initLeftSubMenuName()
+         initLeftMenu(ConstantValue.chooseFragMentMenu)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
@@ -2900,8 +2894,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
-        initLeftMenu(ConstantValue.chooseFragMentMenu)
-
+        var emailConfigEntityChooseALL = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        for (item in emailConfigEntityChooseALL)
+        {
+            var account = item.account
+            var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+            var accountBase64 = String(RxEncodeTool.base64Encode(account))
+            var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+        }
         if (VersionUtil.getDeviceBrand() == 3) {
             HMSAgent.connect(this, ConnectHandler {
                 KLog.i("华为推送 HMS connect end: " + it)
@@ -3637,16 +3638,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun initLeftMenu(fragmentMenu:String)
     {
-        var emailConfigEntityChooseALL = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-        var accountStr = "";
-        for (item in emailConfigEntityChooseALL)
-        {
-            var account = item.account
-            var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
-            var accountBase64 = String(RxEncodeTool.base64Encode(account))
-            var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
-        }
+       
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0)
         {
@@ -3715,7 +3707,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             .setAccount(emailConfigEntity.account)
                             .setPassword(emailConfigEntity.password)
                 }
-                EventBus.getDefault().post(ChangeEmailConfig())
+                EventBus.getDefault().post(ChooseEmailConfig())
                 /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                     mDrawer.closeDrawer(GravityCompat.START)
                 }*/
@@ -3862,12 +3854,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
-            initLeftSubMenu()
+            initLeftSubMenuName()
         }
 
         initLeftMenu(menu)
     }
-    fun initLeftSubMenu()
+    fun initLeftSubMenuName()
     {
         if(AppConfig.instance.emailConfig().account != null)
         {

@@ -178,13 +178,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         var account =  account_editText.getText().toString()
         var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
         var hasVerify = false
+        var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        for (j in localemailConfigEntityList) {
+            j.choose = false
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+        }
         if(emailConfigEntityList.size > 0)
         {
-            var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-            for (j in localemailConfigEntityList) {
-                j.choose = false
-                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
-            }
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
             emailConfigEntity.account = account
             emailConfigEntity.emailType = emailType
@@ -252,7 +252,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
         }
-        EventBus.getDefault().post(ChangeEmailConfig())
         var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
         Islands.circularProgress(this)
                 .setCancelable(false)
@@ -288,10 +287,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                                             emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
                                             emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
                                             emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
                                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }
                                     }
-
+                                    EventBus.getDefault().post(ChangeEmailConfig())
                                     finish()
                                 }
 

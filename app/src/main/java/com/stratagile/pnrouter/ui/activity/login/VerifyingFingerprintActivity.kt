@@ -189,6 +189,10 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
     }
 
     private fun showDialog() {
+        if(BuildConfig.DEBUG)
+        {
+            return
+        }
         if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {

@@ -141,12 +141,13 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDrawerOpened(onDrawerOpened: OnDrawerOpened) {
+        var localMessageList = mutableListOf<EmailMessageEntity>()
+        runOnUiThread {
+            emaiMessageChooseAdapter!!.setNewData(localMessageList);
+        }
         if(menu.equals("node") || menu.equals("star")|| menu.equals(""))
         {
-            var localMessageList = mutableListOf<EmailMessageEntity>()
-            runOnUiThread {
-                emaiMessageChooseAdapter!!.setNewData(localMessageList);
-            }
+
             toast(R.string.nomore)
             return;
         }

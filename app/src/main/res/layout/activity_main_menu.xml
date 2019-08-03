@@ -111,7 +111,7 @@
             android:background="@drawable/shape_menu_item"
             app:itemSrc="@mipmap/tabbar_inbox"
             app:itemText="@string/Inbox"
-            app:itemCount="9"/>
+            app:itemCount="0"/>
         <View
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x110"
