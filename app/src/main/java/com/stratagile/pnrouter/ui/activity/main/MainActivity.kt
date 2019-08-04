@@ -3658,20 +3658,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         if(fragmentMenu == "Circle")
         {
-            //recyclerViewleftParent.setHeight(0)
+            recyclerViewleftParent.setHeight(0)
         }else{
+            var aa = recyclerViewleftParent.height
             var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
             if(emailConfigEntityList.size == 0)
             {
-                //recyclerViewleftParent.setHeight(0)
+                recyclerViewleftParent.setHeight(0)
             }else if(emailConfigEntityList.size == 1)
             {
-                //recyclerViewleftParent.setHeight(R.dimen.x130)
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x110).toInt())
+            }else if(emailConfigEntityList.size == 2){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x220).toInt())
             }else{
-                //recyclerViewleftParent.setHeight(R.dimen.x340)
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x270).toInt())
             }
-
-
             emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
             emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
                 /*val floatMenu = FloatMenu(this)
