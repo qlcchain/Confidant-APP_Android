@@ -213,7 +213,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             switch()
         }
 
-
+        toAdressEdit.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         var user = users[0].copy()
         /*(toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
@@ -296,8 +296,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 val spans = editText!!.getText()!!.getSpans(beginIndex, endIndex, User::class.java)
                 if(spans.size == 0)
                 {
-                    var name = str.substring(0,str.indexOf("@"))
-                    var addUser = User(str, name)
+                    var addUser = User(str, str)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
@@ -792,10 +791,19 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             if(item.localPath != null)
             {
-                val fileBuffer = FileUtil.file2Byte(item.localPath)
-                var fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.substring(0,16).toByteArray(charset("UTF-8")))
-                var miLocalPath =""
-                //attachList +=item.localPath+","
+                if(contactMapList.size >0)
+                {
+                    val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
+                    if(code ==1)
+                    {
+                        attachList +=base58files_dir+","
+                    }
+                }else{
+                    attachList +=item.localPath+","
+                }
+
+
             }
 
         }
@@ -1373,11 +1381,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile!!.exists()) {
-
+                    var videoFilePath = cameraFile!!.getAbsolutePath()
+                    var emailAttachEntity = EmailAttachEntity()
+                    emailAttachEntity.isHasData = true
+                    emailAttachEntity.localPath = videoFilePath
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.indexOf(".")+1,videoFilePath.length)
+                    emailAttachEntity.isCanDelete = true
+                    emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                    emaiAttachAdapter!!.notifyDataSetChanged();
                 }
             } else if (requestCode == REQUEST_CODE_VIDEO) {
                 if (videoFile != null && videoFile!!.exists()) {
                     var videoFilePath = videoFile!!.getAbsolutePath()
+                    var emailAttachEntity = EmailAttachEntity()
+                    emailAttachEntity.isHasData = true
+                    emailAttachEntity.localPath = videoFilePath
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.indexOf(".")+1,videoFilePath.length)
+                    emailAttachEntity.isCanDelete = true
+                    emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                    emaiAttachAdapter!!.notifyDataSetChanged();
                 }
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 KLog.i("选照片或者视频返回。。。")
@@ -1396,10 +1418,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         emaiAttachAdapter!!.addData(0,emailAttachEntity)
 
                     }
-                    /* var emailAttachEntity = EmailAttachEntity()
-                     emailAttachEntity.isHasData = false
-                     emailAttachEntity.isCanDelete = false
-                     emaiAttachAdapter!!.addData(emailAttachEntity)*/
                     emaiAttachAdapter!!.notifyDataSetChanged();
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
@@ -1412,7 +1430,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         val file = File(filePath)
                         val md5Data = ""
                         if (file.exists()) {
-                            //sendFileMessage(filePath)
+                            var emailAttachEntity = EmailAttachEntity()
+                            emailAttachEntity.isHasData = true
+                            emailAttachEntity.localPath = file.path
+                            emailAttachEntity.name = file.path.substring(file.path.indexOf(".")+1,file.path.length)
+                            emailAttachEntity.isCanDelete = true
+                            emaiAttachAdapter!!.addData(0,emailAttachEntity)
                         }
                     }
                 } else {

@@ -877,7 +877,7 @@ class EmailCore {
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
-            message.setFlag(Flags.Flag.SEEN,true);
+            message.setFlag(Flags.Flag.DRAFT,true);
             folder.appendMessages(new Message[] { message });
             return true;
         }catch (Exception e)
