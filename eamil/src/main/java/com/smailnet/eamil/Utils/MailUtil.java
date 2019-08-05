@@ -192,17 +192,15 @@ public class MailUtil {
             try{
                 InputStream inputStream = mailAttachment.getInputStream();
 
-                BufferedInputStream in=null;
-                FileOutputStream out= null;
-                in=new BufferedInputStream(inputStream);
-                out=new FileOutputStream(savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName());
-                int len=-1;
-                byte[] b=new byte[4096];
-                while((len=in.read(b))!=-1){
-                    out.write(b,0,len);
+                FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                int len;
+                byte[] bytes = new byte[1024 * 1024];
+                while ((len = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, len);
+                    outputStream.flush();
                 }
-                in.close();
-                out.close();
+                inputStream.close();
+                outputStream.close();
             }catch(Exception exception){
                 exception.printStackTrace();
             }finally{

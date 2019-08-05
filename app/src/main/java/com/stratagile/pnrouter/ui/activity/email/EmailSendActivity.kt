@@ -422,6 +422,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         toAddress.setBackSpaceLisetener(backspaceListener)*/
         var URLText = "<html><body style ='font-size:25px;'>"+emailMessageEntity!!.content+"</body></html>";
+        if(emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText != "")
+        {
+            URLText = "<html><body style ='font-size:25px;'>"+emailMessageEntity!!.originalText+"</body></html>";
+        }
         val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
