@@ -614,6 +614,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             if(item != "")
             {
                 var temp = item.trim()
+                temp = temp.toLowerCase()
                 toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
