@@ -597,7 +597,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         var URLText = "<html><body style ='font-size:25px;'>"+emailMeaasgeData!!.content+"</body></html>";
         Log.i("URLText",emailMeaasgeData!!.content)
-        try {
+        if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+        {
+            URLText = "<html><body>"+emailMeaasgeData!!.originalText+"</body></html>";
+            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        }else{
+            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        }
+       /* try {
             if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
             {
 
@@ -658,7 +665,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             e.printStackTrace();
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-        }
+        }*/
 
 
 

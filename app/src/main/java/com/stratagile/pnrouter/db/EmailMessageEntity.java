@@ -32,12 +32,15 @@ public class EmailMessageEntity implements Parcelable{
     private int attachmentCount;
     private String content;
     private String contentText;
+    private String originalText;//如果有，说明是解密出来的，否则直接用content
+    private String aesKey;
     private long messageTotalCount;
 
     
     public EmailMessageEntity() {
 
     }
+
     protected EmailMessageEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -62,13 +65,17 @@ public class EmailMessageEntity implements Parcelable{
         attachmentCount = in.readInt();
         content = in.readString();
         contentText = in.readString();
+        originalText = in.readString();
+        aesKey = in.readString();
         messageTotalCount = in.readLong();
     }
-    @Generated(hash = 1198496306)
+
+    @Generated(hash = 2112183960)
     public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
             String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar,
             String priority, boolean isReplySign, long size, boolean isContainerAttachment,
-            int attachmentCount, String content, String contentText, long messageTotalCount) {
+            int attachmentCount, String content, String contentText, String originalText, String aesKey,
+            long messageTotalCount) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
@@ -88,8 +95,12 @@ public class EmailMessageEntity implements Parcelable{
         this.attachmentCount = attachmentCount;
         this.content = content;
         this.contentText = contentText;
+        this.originalText = originalText;
+        this.aesKey = aesKey;
         this.messageTotalCount = messageTotalCount;
     }
+
+  
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
         @Override
@@ -187,7 +198,7 @@ public class EmailMessageEntity implements Parcelable{
         return isSeen;
     }
 
-    public void setSeen(boolean seen) {
+    public void setIsSeen(boolean seen) {
         isSeen = seen;
     }
 
@@ -195,7 +206,7 @@ public class EmailMessageEntity implements Parcelable{
         return isStar;
     }
 
-    public void setStar(boolean star) {
+    public void setIsStar(boolean star) {
         isStar = star;
     }
 
@@ -211,7 +222,7 @@ public class EmailMessageEntity implements Parcelable{
         return isReplySign;
     }
 
-    public void setReplySign(boolean replySign) {
+    public void setIsReplySign(boolean replySign) {
         isReplySign = replySign;
     }
 
@@ -227,7 +238,7 @@ public class EmailMessageEntity implements Parcelable{
         return isContainerAttachment;
     }
 
-    public void setContainerAttachment(boolean containerAttachment) {
+    public void setIsContainerAttachment(boolean containerAttachment) {
         isContainerAttachment = containerAttachment;
     }
 
@@ -253,6 +264,22 @@ public class EmailMessageEntity implements Parcelable{
 
     public void setContentText(String contentText) {
         this.contentText = contentText;
+    }
+
+    public String getOriginalText() {
+        return originalText;
+    }
+
+    public void setOriginalText(String originalText) {
+        this.originalText = originalText;
+    }
+
+    public String getAesKey() {
+        return aesKey;
+    }
+
+    public void setAesKey(String aesKey) {
+        this.aesKey = aesKey;
     }
 
     public long getMessageTotalCount() {
@@ -294,30 +321,24 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeInt(attachmentCount);
         dest.writeString(content);
         dest.writeString(contentText);
+        dest.writeString(originalText);
+        dest.writeString(aesKey);
         dest.writeLong(messageTotalCount);
     }
+
     public boolean getIsSeen() {
         return this.isSeen;
     }
-    public void setIsSeen(boolean isSeen) {
-        this.isSeen = isSeen;
-    }
+
     public boolean getIsStar() {
         return this.isStar;
     }
-    public void setIsStar(boolean isStar) {
-        this.isStar = isStar;
-    }
+
     public boolean getIsReplySign() {
         return this.isReplySign;
     }
-    public void setIsReplySign(boolean isReplySign) {
-        this.isReplySign = isReplySign;
-    }
+
     public boolean getIsContainerAttachment() {
         return this.isContainerAttachment;
-    }
-    public void setIsContainerAttachment(boolean isContainerAttachment) {
-        this.isContainerAttachment = isContainerAttachment;
     }
 }

@@ -646,6 +646,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     "   <br />";
             contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
+
+            var endStr =  " <br />"+
+                    " <br />"+
+                    " <br />"+
+                    "<div"+
+                    getString(R.string.sendfromconfidant)+
+                    "  </div>"
         }
         if(contactMapList.size >0)
         {
@@ -780,7 +787,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             if(item.localPath != null)
             {
-                attachList +=item.localPath+","
+                val fileBuffer = FileUtil.file2Byte(item.localPath)
+                var fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.substring(0,16).toByteArray(charset("UTF-8")))
+                var miLocalPath =""
+                //attachList +=item.localPath+","
             }
 
         }

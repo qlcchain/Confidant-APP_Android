@@ -56,7 +56,13 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var subject = helper.getView<TextView>(R.id.subject)
         subject.setText(item.subject)
         var message = helper.getView<TextView>(R.id.message)
-        message.setText(item.contentText)
+        if(item.originalText != null && item.originalText != "")
+        {
+            var originalTextCun = StringUitl.getHtmlText(item.originalText)
+            message.setText(originalTextCun)
+        }else{
+            message.setText(item.contentText)
+        }
         var time = helper.getView<TextView>(R.id.time)
         time.setText( DateUtil.getTimestampString(DateUtil.getDate(item.date), AppConfig.instance))
 

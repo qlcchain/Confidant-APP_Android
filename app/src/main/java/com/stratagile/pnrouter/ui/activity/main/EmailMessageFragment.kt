@@ -25,6 +25,9 @@ import com.stratagile.pnrouter.ui.activity.main.contract.EmailMessageContract
 import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
+import com.stratagile.pnrouter.utils.AESCipher
+import com.stratagile.pnrouter.utils.LibsodiumUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -396,6 +399,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilMessage.subject = item.subject
                                             eamilMessage.content= item.content
                                             eamilMessage.contentText= item.contentText
+                                            eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
+                                            eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                             eamilMessage.date = item.date
                                             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
@@ -532,6 +537,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilMessage.subject = item.subject
                                             eamilMessage.content= item.content
                                             eamilMessage.contentText= item.contentText
+                                            eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
+                                            eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                             eamilMessage.date = item.date
                                             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
@@ -585,6 +592,65 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             }
         }
 
+    }
+    fun getOriginalText(emailMeaasgeData:EmailMessageEntity): HashMap<String, String>
+    {
+        var contactMapList = HashMap<String, String>()
+        if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+        {
+
+            var miContentSoucreBgeinIndex= 0
+            var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+            if(miContentSoucreEndIndex == -1)
+            {
+                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+            }
+            var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
+            if(beginIndex == -1)
+            {
+                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+            }
+            var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
+            var endIndex = confidantkeyBefore.indexOf("'></span>")
+            var confidantkey = confidantkeyBefore.substring(14,endIndex)
+
+            var confidantkeyArr = listOf<String>()
+            var accountMi = ""
+            var shareMiKey = ""
+            var account =  String(RxEncodeTool.base64Decode(accountMi))
+            if(confidantkey!!.contains("##"))
+            {
+                var confidantkeyList = confidantkey.split("##")
+                for(item in confidantkeyList)
+                {
+                    confidantkeyArr = item.split("&&")
+                    accountMi = confidantkeyArr.get(0)
+                    shareMiKey = confidantkeyArr.get(1)
+                    account =  String(RxEncodeTool.base64Decode(accountMi))
+                    if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
+                    {
+                        break;
+                    }
+                }
+
+            }else{
+                confidantkeyArr = confidantkey.split("&&")
+                accountMi = confidantkeyArr.get(0)
+                shareMiKey = confidantkeyArr.get(1)
+            }
+            var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+            var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+            val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+            val sourceContent = String(miContent)
+            contactMapList.put("originalText",sourceContent)
+            contactMapList.put("aesKey",aesKey)
+            return contactMapList
+        }else{
+            contactMapList.put("originalText",emailMeaasgeData!!.content)
+            contactMapList.put("aesKey","")
+           return contactMapList
+        }
     }
     override fun initDataFromLocal() {
 

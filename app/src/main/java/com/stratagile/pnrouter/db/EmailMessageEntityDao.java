@@ -41,7 +41,9 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         public final static Property AttachmentCount = new Property(16, int.class, "attachmentCount", false, "ATTACHMENT_COUNT");
         public final static Property Content = new Property(17, String.class, "content", false, "CONTENT");
         public final static Property ContentText = new Property(18, String.class, "contentText", false, "CONTENT_TEXT");
-        public final static Property MessageTotalCount = new Property(19, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
+        public final static Property OriginalText = new Property(19, String.class, "originalText", false, "ORIGINAL_TEXT");
+        public final static Property AesKey = new Property(20, String.class, "aesKey", false, "AES_KEY");
+        public final static Property MessageTotalCount = new Property(21, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
     }
 
 
@@ -76,7 +78,9 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
                 "\"ATTACHMENT_COUNT\" INTEGER NOT NULL ," + // 16: attachmentCount
                 "\"CONTENT\" TEXT," + // 17: content
                 "\"CONTENT_TEXT\" TEXT," + // 18: contentText
-                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL );"); // 19: messageTotalCount
+                "\"ORIGINAL_TEXT\" TEXT," + // 19: originalText
+                "\"AES_KEY\" TEXT," + // 20: aesKey
+                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL );"); // 21: messageTotalCount
     }
 
     /** Drops the underlying database table. */
@@ -159,7 +163,17 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (contentText != null) {
             stmt.bindString(19, contentText);
         }
-        stmt.bindLong(20, entity.getMessageTotalCount());
+ 
+        String originalText = entity.getOriginalText();
+        if (originalText != null) {
+            stmt.bindString(20, originalText);
+        }
+ 
+        String aesKey = entity.getAesKey();
+        if (aesKey != null) {
+            stmt.bindString(21, aesKey);
+        }
+        stmt.bindLong(22, entity.getMessageTotalCount());
     }
 
     @Override
@@ -236,7 +250,17 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (contentText != null) {
             stmt.bindString(19, contentText);
         }
-        stmt.bindLong(20, entity.getMessageTotalCount());
+ 
+        String originalText = entity.getOriginalText();
+        if (originalText != null) {
+            stmt.bindString(20, originalText);
+        }
+ 
+        String aesKey = entity.getAesKey();
+        if (aesKey != null) {
+            stmt.bindString(21, aesKey);
+        }
+        stmt.bindLong(22, entity.getMessageTotalCount());
     }
 
     @Override
@@ -266,7 +290,9 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             cursor.getInt(offset + 16), // attachmentCount
             cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // content
             cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // contentText
-            cursor.getLong(offset + 19) // messageTotalCount
+            cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19), // originalText
+            cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // aesKey
+            cursor.getLong(offset + 21) // messageTotalCount
         );
         return entity;
     }
@@ -292,7 +318,9 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         entity.setAttachmentCount(cursor.getInt(offset + 16));
         entity.setContent(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
         entity.setContentText(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
-        entity.setMessageTotalCount(cursor.getLong(offset + 19));
+        entity.setOriginalText(cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19));
+        entity.setAesKey(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
+        entity.setMessageTotalCount(cursor.getLong(offset + 21));
      }
     
     @Override

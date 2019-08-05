@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
@@ -188,32 +189,24 @@ public class MailUtil {
 
     public static void saveFile(List<MailAttachment> list, String savaPath) throws IOException {
         for (MailAttachment mailAttachment : list) {
-            InputStream inputStream = mailAttachment.getInputStream();
-            BufferedOutputStream bos = null;
-            BufferedInputStream  bis = null;
             try{
-                File storefile = new File(savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName());
-                if(!storefile.exists())
-                {
-                    try {
-                        storefile.createNewFile();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                InputStream inputStream = mailAttachment.getInputStream();
+
+                BufferedInputStream in=null;
+                BufferedOutputStream out= null;
+                in=new BufferedInputStream(inputStream);
+                out=new BufferedOutputStream(new FileOutputStream(savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                int len=-1;
+                byte[] b=new byte[1024 *500];
+                while((len=in.read(b))!=-1){
+                    out.write(b,0,len);
                 }
-                bos = new BufferedOutputStream(new FileOutputStream(storefile));
-                bis = new BufferedInputStream(inputStream);
-                int c;
-                while((c=bis.read()) != -1){
-                    bos.write(c);
-                    bos.flush();
-                }
+                in.close();
+                out.close();
             }catch(Exception exception){
                 exception.printStackTrace();
             }finally{
-                bos.close();
-                bis.close();
+
             }
         }
 
