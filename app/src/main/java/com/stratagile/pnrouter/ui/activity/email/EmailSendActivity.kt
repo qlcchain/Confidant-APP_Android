@@ -45,8 +45,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.EmailAttachEntity
-import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
@@ -68,13 +66,15 @@ import android.webkit.*
 import android.widget.EditText
 import com.message.Message
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.EmailContactsEntity
-import com.stratagile.pnrouter.db.EmailContactsEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
+import com.stratagile.pnrouter.entity.events.SendEmailSuccess
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
+import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
 
 /**
@@ -317,17 +317,43 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     {
         var fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
         var fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
+        var subjectText = emailMessageEntity.subject
+        if(foward == 0)
+        {
+            fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
+            fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
+        }else if(foward == 3)
+        {
+            fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("<"))
+            fromAdress = emailMessageEntity!!.to.substring(emailMessageEntity!!.to.indexOf("<")+1,emailMessageEntity!!.to.length-1)
+        }
+        var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(fromAdress)).list()
+        if(localEmailContacts.size != 0)
+        {
+            var localEmailContactsItem = localEmailContacts.get(0)
+            fromName = localEmailContactsItem.name
+        }
         avatar_info.setText(fromName)
         title_info.setText(fromName)
         draft_info.setText(fromAdress)
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
-        if(foward == 0)
+        if(foward == 0 || foward == 3)
         {
             var user = User(fromAdress,fromName)
             (toAdressEdit.text as SpannableStringBuilder)
                     .append(methodContext.newSpannable(user))
                     .append(",")
+        }
+        if(subjectText != null)
+        {
+            if(foward == 0)
+            {
+                subject.setText(getString(R.string.Reply)+":"+subjectText)
+            }else{
+                subject.setText(subjectText)
+            }
+
         }
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
@@ -485,7 +511,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
 
-        webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        if(foward == 3)
+        {
+            re_main_editor.setHtml(emailMessageEntity!!.content)
+        }else{
+            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+        }
+
     }
 
     private fun initAttachUI()
@@ -776,6 +808,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         override fun sendSuccess() {
                             runOnUiThread {
                                 closeProgressDialog()
+                                var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                                if(emailConfigEntityChooseList.size > 0) {
+                                    var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                                    emailConfigEntityChoose.sendMenuRefresh = true
+                                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
+                                }
+                                EventBus.getDefault().post(SendEmailSuccess())
                                 Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
                                 finish()
                             }

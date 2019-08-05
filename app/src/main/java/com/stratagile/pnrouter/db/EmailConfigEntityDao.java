@@ -53,7 +53,14 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property SendMenu = new Property(28, String.class, "sendMenu", false, "SEND_MENU");
         public final static Property GarbageMenu = new Property(29, String.class, "garbageMenu", false, "GARBAGE_MENU");
         public final static Property DeleteMenu = new Property(30, String.class, "deleteMenu", false, "DELETE_MENU");
-        public final static Property IsChoose = new Property(31, Boolean.class, "isChoose", false, "IS_CHOOSE");
+        public final static Property InboxMenuRefresh = new Property(31, Boolean.class, "inboxMenuRefresh", false, "INBOX_MENU_REFRESH");
+        public final static Property NodeMenuRefresh = new Property(32, Boolean.class, "nodeMenuRefresh", false, "NODE_MENU_REFRESH");
+        public final static Property StarMenuRefresh = new Property(33, Boolean.class, "starMenuRefresh", false, "STAR_MENU_REFRESH");
+        public final static Property DrafMenuRefresh = new Property(34, Boolean.class, "drafMenuRefresh", false, "DRAF_MENU_REFRESH");
+        public final static Property SendMenuRefresh = new Property(35, Boolean.class, "sendMenuRefresh", false, "SEND_MENU_REFRESH");
+        public final static Property GarbageMenuRefresh = new Property(36, Boolean.class, "garbageMenuRefresh", false, "GARBAGE_MENU_REFRESH");
+        public final static Property DeleteMenuRefresh = new Property(37, Boolean.class, "deleteMenuRefresh", false, "DELETE_MENU_REFRESH");
+        public final static Property IsChoose = new Property(38, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -100,7 +107,14 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"SEND_MENU\" TEXT," + // 28: sendMenu
                 "\"GARBAGE_MENU\" TEXT," + // 29: garbageMenu
                 "\"DELETE_MENU\" TEXT," + // 30: deleteMenu
-                "\"IS_CHOOSE\" INTEGER);"); // 31: isChoose
+                "\"INBOX_MENU_REFRESH\" INTEGER," + // 31: inboxMenuRefresh
+                "\"NODE_MENU_REFRESH\" INTEGER," + // 32: nodeMenuRefresh
+                "\"STAR_MENU_REFRESH\" INTEGER," + // 33: starMenuRefresh
+                "\"DRAF_MENU_REFRESH\" INTEGER," + // 34: drafMenuRefresh
+                "\"SEND_MENU_REFRESH\" INTEGER," + // 35: sendMenuRefresh
+                "\"GARBAGE_MENU_REFRESH\" INTEGER," + // 36: garbageMenuRefresh
+                "\"DELETE_MENU_REFRESH\" INTEGER," + // 37: deleteMenuRefresh
+                "\"IS_CHOOSE\" INTEGER);"); // 38: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -200,9 +214,44 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             stmt.bindString(31, deleteMenu);
         }
  
+        Boolean inboxMenuRefresh = entity.getInboxMenuRefresh();
+        if (inboxMenuRefresh != null) {
+            stmt.bindLong(32, inboxMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean nodeMenuRefresh = entity.getNodeMenuRefresh();
+        if (nodeMenuRefresh != null) {
+            stmt.bindLong(33, nodeMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean starMenuRefresh = entity.getStarMenuRefresh();
+        if (starMenuRefresh != null) {
+            stmt.bindLong(34, starMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean drafMenuRefresh = entity.getDrafMenuRefresh();
+        if (drafMenuRefresh != null) {
+            stmt.bindLong(35, drafMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean sendMenuRefresh = entity.getSendMenuRefresh();
+        if (sendMenuRefresh != null) {
+            stmt.bindLong(36, sendMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean garbageMenuRefresh = entity.getGarbageMenuRefresh();
+        if (garbageMenuRefresh != null) {
+            stmt.bindLong(37, garbageMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean deleteMenuRefresh = entity.getDeleteMenuRefresh();
+        if (deleteMenuRefresh != null) {
+            stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
+        }
+ 
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(32, isChoose ? 1L: 0L);
+            stmt.bindLong(39, isChoose ? 1L: 0L);
         }
     }
 
@@ -297,9 +346,44 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             stmt.bindString(31, deleteMenu);
         }
  
+        Boolean inboxMenuRefresh = entity.getInboxMenuRefresh();
+        if (inboxMenuRefresh != null) {
+            stmt.bindLong(32, inboxMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean nodeMenuRefresh = entity.getNodeMenuRefresh();
+        if (nodeMenuRefresh != null) {
+            stmt.bindLong(33, nodeMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean starMenuRefresh = entity.getStarMenuRefresh();
+        if (starMenuRefresh != null) {
+            stmt.bindLong(34, starMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean drafMenuRefresh = entity.getDrafMenuRefresh();
+        if (drafMenuRefresh != null) {
+            stmt.bindLong(35, drafMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean sendMenuRefresh = entity.getSendMenuRefresh();
+        if (sendMenuRefresh != null) {
+            stmt.bindLong(36, sendMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean garbageMenuRefresh = entity.getGarbageMenuRefresh();
+        if (garbageMenuRefresh != null) {
+            stmt.bindLong(37, garbageMenuRefresh ? 1L: 0L);
+        }
+ 
+        Boolean deleteMenuRefresh = entity.getDeleteMenuRefresh();
+        if (deleteMenuRefresh != null) {
+            stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
+        }
+ 
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(32, isChoose ? 1L: 0L);
+            stmt.bindLong(39, isChoose ? 1L: 0L);
         }
     }
 
@@ -342,7 +426,14 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // sendMenu
             cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // garbageMenu
             cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // deleteMenu
-            cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0 // isChoose
+            cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0, // inboxMenuRefresh
+            cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0, // nodeMenuRefresh
+            cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0, // starMenuRefresh
+            cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0, // drafMenuRefresh
+            cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0, // sendMenuRefresh
+            cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0, // garbageMenuRefresh
+            cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0, // deleteMenuRefresh
+            cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0 // isChoose
         );
         return entity;
     }
@@ -380,7 +471,14 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setSendMenu(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
         entity.setGarbageMenu(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
         entity.setDeleteMenu(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
-        entity.setIsChoose(cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0);
+        entity.setInboxMenuRefresh(cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0);
+        entity.setNodeMenuRefresh(cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0);
+        entity.setStarMenuRefresh(cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0);
+        entity.setDrafMenuRefresh(cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0);
+        entity.setSendMenuRefresh(cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0);
+        entity.setGarbageMenuRefresh(cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0);
+        entity.setDeleteMenuRefresh(cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0);
+        entity.setIsChoose(cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0);
      }
     
     @Override

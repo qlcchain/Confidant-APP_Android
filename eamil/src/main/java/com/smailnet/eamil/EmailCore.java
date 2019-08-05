@@ -20,7 +20,6 @@ import android.util.Log;
 
 import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
-import com.smailnet.eamil.Utils.ConstUtli;
 import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
@@ -29,7 +28,6 @@ import com.sun.mail.imap.IMAPStore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -551,7 +549,12 @@ class EmailCore {
                 content = "";
                 contentText = "";
                 try {
-                    getMailTextContent(message, contentTemp);
+                    //getMailTextContent(message, contentTemp);
+                    String contentType = message.getContentType();
+                    if (contentType.startsWith("text/plain")) {
+                        getMailTextContent2(message, contentTemp,true);
+                    } else
+                        getMailTextContent2(message,contentTemp, false);
                     content = contentTemp.toString();
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
@@ -720,7 +723,11 @@ class EmailCore {
                 content = "";
                 contentText = "";
                 try {
-                    getMailTextContent(message, contentTemp);
+                    String contentType = message.getContentType();
+                    if (contentType.startsWith("text/plain")) {
+                        getMailTextContent2(message, contentTemp,true);
+                    } else
+                        getMailTextContent2(message,contentTemp, false);
                     content = contentTemp.toString();
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
@@ -1115,6 +1122,25 @@ class EmailCore {
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 getMailTextContent(bodyPart,content);
+            }
+        }
+    }
+    public static void getMailTextContent2(Part part, StringBuffer content, boolean plainFlag) throws MessagingException, IOException {
+        //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
+        boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
+        if (part.isMimeType("text/html") && !isContainTextAttach && plainFlag == false) {
+            content.append(MimeUtility.decodeText(part.getContent().toString()));
+        } else if(part.isMimeType("text/plain") && !isContainTextAttach && plainFlag){
+            content.append(part.getContent().toString());
+            plainFlag = false;
+        } else if (part.isMimeType("message/rfc822")) {
+            getMailTextContent2((Part)part.getContent(),content,plainFlag);
+        } else if (part.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) part.getContent();
+            int partCount = multipart.getCount();
+            for (int i = 0; i < partCount; i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                getMailTextContent2(bodyPart,content,plainFlag);
             }
         }
     }

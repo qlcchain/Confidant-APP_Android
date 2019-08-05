@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.email.EmailInfoActivity
+import com.stratagile.pnrouter.ui.activity.email.EmailSendActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEmailMessageComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.EmailMessageContract
 import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
@@ -42,10 +43,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     @Inject
     lateinit internal var mPresenter: EmailMessagePresenter
     var emaiMessageChooseAdapter : EmaiMessageAdapter? = null
+    var name = "name"
     var menu = "INBOX"
     var isChangeMenu = false
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
+        name = changEmailMenu.name
         menu = changEmailMenu.menu
         /*var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
         if(localMessageList == null || localMessageList.size ==0)
@@ -82,11 +85,22 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         recyclerView.scrollToPosition(0)
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
             var emailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(position)
-            var intent = Intent(activity!!, EmailInfoActivity::class.java)
-            intent.putExtra("emailMeaasgeData",emailMeaasgeData)
-            intent.putExtra("menu", menu)
-            intent.putExtra("positionIndex", position)
-            startActivity(intent)
+            if(name == "Drafts")
+            {
+                var intent = Intent(activity!!, EmailSendActivity::class.java)
+                intent.putExtra("emailMeaasgeInfoData",emailMeaasgeData)
+                intent.putExtra("foward",3)
+                intent.putExtra("flag",1)
+                intent.putExtra("menu", menu)
+                intent.putExtra("positionIndex", position)
+                startActivity(intent)
+            }else{
+                var intent = Intent(activity!!, EmailInfoActivity::class.java)
+                intent.putExtra("emailMeaasgeData",emailMeaasgeData)
+                intent.putExtra("menu", menu)
+                intent.putExtra("positionIndex", position)
+                startActivity(intent)
+            }
             emailMeaasgeData!!.setIsSeen(true)
             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
             emaiMessageChooseAdapter!!.notifyItemChanged(position)
@@ -140,6 +154,40 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSendEmailSuccess(sendEmailSuccess: SendEmailSuccess) {
+        if(name == "Sent")
+        {
+            var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+            if(emailConfigEntityChooseList.size > 0)
+            {
+                var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                if(emailConfigEntityChoose.sendMenuRefresh)
+                {
+                    var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                    if (localMessageList== null || localMessageList.size == 0)
+                    {
+                        showProgressDialog()
+                        pullMoreMessageList(0)
+                    }else{
+                        showProgressDialog()
+                        pullNewMessageList(localMessageList.size)
+                    }
+                }else{
+                    var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                    if (localMessageList== null || localMessageList.size == 0)
+                    {
+                        showProgressDialog()
+                        pullMoreMessageList(0)
+                    }else{
+                        runOnUiThread {
+                            emaiMessageChooseAdapter!!.setNewData(localMessageList);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDrawerOpened(onDrawerOpened: OnDrawerOpened) {
         var localMessageList = mutableListOf<EmailMessageEntity>()
         runOnUiThread {
@@ -153,16 +201,49 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         }
         if(AppConfig.instance.emailConfig().account != null && !AppConfig.instance.emailConfig().account.equals(""))
         {
-            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
-            if (localMessageList== null || localMessageList.size == 0)
+            if(name == "Sent")
             {
-                showProgressDialog()
-                pullMoreMessageList(0)
+                var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                if(emailConfigEntityChooseList.size > 0)
+                {
+                    var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                    if(emailConfigEntityChoose.sendMenuRefresh)
+                    {
+                        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                        if (localMessageList== null || localMessageList.size == 0)
+                        {
+                            showProgressDialog()
+                            pullMoreMessageList(0)
+                        }else{
+                            showProgressDialog()
+                            pullNewMessageList(localMessageList.size)
+                        }
+                    }else{
+                        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                        if (localMessageList== null || localMessageList.size == 0)
+                        {
+                            showProgressDialog()
+                            pullMoreMessageList(0)
+                        }else{
+                            runOnUiThread {
+                                emaiMessageChooseAdapter!!.setNewData(localMessageList);
+                            }
+                        }
+                    }
+                }
             }else{
-                runOnUiThread {
-                    emaiMessageChooseAdapter!!.setNewData(localMessageList);
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                if (localMessageList== null || localMessageList.size == 0)
+                {
+                    showProgressDialog()
+                    pullMoreMessageList(0)
+                }else{
+                    runOnUiThread {
+                        emaiMessageChooseAdapter!!.setNewData(localMessageList);
+                    }
                 }
             }
+
         }
     }
     override fun onResume() {
@@ -246,6 +327,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
+                                                closeProgressDialog()
                                                 refreshLayout.finishRefresh()
                                                 refreshLayout.resetNoMoreData()
                                                 toast(R.string.nomore)
@@ -253,6 +335,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             }
                                         }else{
                                             runOnUiThread {
+                                                closeProgressDialog()
                                                 refreshLayout.finishRefresh()
                                                 refreshLayout.resetNoMoreData()
                                             }
@@ -268,22 +351,27 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                     emailConfigEntity.inboxMenu->
                                                     {
                                                         emailConfigEntity.totalCount += messageList.size
+                                                        emailConfigEntity.inboxMenuRefresh = false
                                                     }
                                                     emailConfigEntity.drafMenu->
                                                     {
                                                         emailConfigEntity.drafTotalCount += messageList.size
+                                                        emailConfigEntity.drafMenuRefresh = false
                                                     }
                                                     emailConfigEntity.sendMenu->
                                                     {
                                                         emailConfigEntity.sendTotalCount += messageList.size
+                                                        emailConfigEntity.sendMenuRefresh = false
                                                     }
                                                     emailConfigEntity.garbageMenu->
                                                     {
                                                         emailConfigEntity.garbageCount += messageList.size
+                                                        emailConfigEntity.garbageMenuRefresh = false
                                                     }
                                                     emailConfigEntity.deleteMenu->
                                                     {
                                                         emailConfigEntity.deleteTotalCount += messageList.size
+                                                        emailConfigEntity.deleteMenuRefresh = false
                                                     }
                                                 }
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)

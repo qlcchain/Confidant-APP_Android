@@ -195,6 +195,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.inboxMenuRefresh = false
+            emailConfigEntity.nodeMenuRefresh = false
+            emailConfigEntity.starMenuRefresh = false
+            emailConfigEntity.drafMenuRefresh = false
+            emailConfigEntity.sendMenuRefresh = false
+            emailConfigEntity.garbageMenuRefresh = false
+            emailConfigEntity.deleteMenuRefresh = false
             emailConfigEntity.choose = true
             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
         }else{
@@ -208,6 +215,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.inboxMenuRefresh = false
+            emailConfigEntity.nodeMenuRefresh = false
+            emailConfigEntity.starMenuRefresh = false
+            emailConfigEntity.drafMenuRefresh = false
+            emailConfigEntity.sendMenuRefresh = false
+            emailConfigEntity.garbageMenuRefresh = false
+            emailConfigEntity.deleteMenuRefresh = false
             emailConfigEntity.choose = true
             when(emailType)
             {

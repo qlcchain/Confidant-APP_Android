@@ -48,6 +48,14 @@ public class EmailConfigEntity implements Parcelable{
     private String sendMenu;        //已发送
     private String garbageMenu;      //垃圾邮件
     private String deleteMenu;       //已删除
+    private Boolean inboxMenuRefresh;        //收件箱是否需要刷新
+    private Boolean nodeMenuRefresh;        //节点菜单否需要刷新
+    private Boolean starMenuRefresh;        //星标否需要刷新
+    private Boolean drafMenuRefresh;        //草稿否需要刷新
+    private Boolean sendMenuRefresh;        //已发送否需要刷新
+    private Boolean garbageMenuRefresh;      //垃圾邮件否需要刷新
+    private Boolean deleteMenuRefresh;       //已删除否需要刷新
+
     private Boolean isChoose;        //是否默认邮箱
 
     public EmailConfigEntity() {
@@ -90,18 +98,35 @@ public class EmailConfigEntity implements Parcelable{
         sendMenu = in.readString();
         garbageMenu = in.readString();
         deleteMenu = in.readString();
+        byte tmpInboxMenuRefresh = in.readByte();
+        inboxMenuRefresh = tmpInboxMenuRefresh == 0 ? null : tmpInboxMenuRefresh == 1;
+        byte tmpNodeMenuRefresh = in.readByte();
+        nodeMenuRefresh = tmpNodeMenuRefresh == 0 ? null : tmpNodeMenuRefresh == 1;
+        byte tmpStarMenuRefresh = in.readByte();
+        starMenuRefresh = tmpStarMenuRefresh == 0 ? null : tmpStarMenuRefresh == 1;
+        byte tmpDrafMenuRefresh = in.readByte();
+        drafMenuRefresh = tmpDrafMenuRefresh == 0 ? null : tmpDrafMenuRefresh == 1;
+        byte tmpSendMenuRefresh = in.readByte();
+        sendMenuRefresh = tmpSendMenuRefresh == 0 ? null : tmpSendMenuRefresh == 1;
+        byte tmpGarbageMenuRefresh = in.readByte();
+        garbageMenuRefresh = tmpGarbageMenuRefresh == 0 ? null : tmpGarbageMenuRefresh == 1;
+        byte tmpDeleteMenuRefresh = in.readByte();
+        deleteMenuRefresh = tmpDeleteMenuRefresh == 0 ? null : tmpDeleteMenuRefresh == 1;
         byte tmpIsChoose = in.readByte();
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
-    @Generated(hash = 2118832705)
+    @Generated(hash = 1289100305)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
             String popHost, String imapHost, String account, String emailType, String password,
             int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount, int starTotalCount,
             int starunReadCount, int drafTotalCount, int drafUnReadCount, int sendTotalCount,
             int sendunReadCount, int garbageCount, int garbageUnReadCount, int deleteTotalCount,
             int deleteUnReadCount, String inboxMenu, String nodeMenu, String starMenu, String drafMenu,
-            String sendMenu, String garbageMenu, String deleteMenu, Boolean isChoose) {
+            String sendMenu, String garbageMenu, String deleteMenu, Boolean inboxMenuRefresh,
+            Boolean nodeMenuRefresh, Boolean starMenuRefresh, Boolean drafMenuRefresh,
+            Boolean sendMenuRefresh, Boolean garbageMenuRefresh, Boolean deleteMenuRefresh,
+            Boolean isChoose) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -133,6 +158,13 @@ public class EmailConfigEntity implements Parcelable{
         this.sendMenu = sendMenu;
         this.garbageMenu = garbageMenu;
         this.deleteMenu = deleteMenu;
+        this.inboxMenuRefresh = inboxMenuRefresh;
+        this.nodeMenuRefresh = nodeMenuRefresh;
+        this.starMenuRefresh = starMenuRefresh;
+        this.drafMenuRefresh = drafMenuRefresh;
+        this.sendMenuRefresh = sendMenuRefresh;
+        this.garbageMenuRefresh = garbageMenuRefresh;
+        this.deleteMenuRefresh = deleteMenuRefresh;
         this.isChoose = isChoose;
     }
 
@@ -396,6 +428,62 @@ public class EmailConfigEntity implements Parcelable{
         this.deleteMenu = deleteMenu;
     }
 
+    public Boolean getInboxMenuRefresh() {
+        return inboxMenuRefresh;
+    }
+
+    public void setInboxMenuRefresh(Boolean inboxMenuRefresh) {
+        this.inboxMenuRefresh = inboxMenuRefresh;
+    }
+
+    public Boolean getNodeMenuRefresh() {
+        return nodeMenuRefresh;
+    }
+
+    public void setNodeMenuRefresh(Boolean nodeMenuRefresh) {
+        this.nodeMenuRefresh = nodeMenuRefresh;
+    }
+
+    public Boolean getStarMenuRefresh() {
+        return starMenuRefresh;
+    }
+
+    public void setStarMenuRefresh(Boolean starMenuRefresh) {
+        this.starMenuRefresh = starMenuRefresh;
+    }
+
+    public Boolean getDrafMenuRefresh() {
+        return drafMenuRefresh;
+    }
+
+    public void setDrafMenuRefresh(Boolean drafMenuRefresh) {
+        this.drafMenuRefresh = drafMenuRefresh;
+    }
+
+    public Boolean getSendMenuRefresh() {
+        return sendMenuRefresh;
+    }
+
+    public void setSendMenuRefresh(Boolean sendMenuRefresh) {
+        this.sendMenuRefresh = sendMenuRefresh;
+    }
+
+    public Boolean getGarbageMenuRefresh() {
+        return garbageMenuRefresh;
+    }
+
+    public void setGarbageMenuRefresh(Boolean garbageMenuRefresh) {
+        this.garbageMenuRefresh = garbageMenuRefresh;
+    }
+
+    public Boolean getDeleteMenuRefresh() {
+        return deleteMenuRefresh;
+    }
+
+    public void setDeleteMenuRefresh(Boolean deleteMenuRefresh) {
+        this.deleteMenuRefresh = deleteMenuRefresh;
+    }
+
     public Boolean getChoose() {
         return isChoose;
     }
@@ -447,6 +535,13 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(sendMenu);
         dest.writeString(garbageMenu);
         dest.writeString(deleteMenu);
+        dest.writeByte((byte) (inboxMenuRefresh == null ? 0 : inboxMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (nodeMenuRefresh == null ? 0 : nodeMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (starMenuRefresh == null ? 0 : starMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (drafMenuRefresh == null ? 0 : drafMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (sendMenuRefresh == null ? 0 : sendMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (garbageMenuRefresh == null ? 0 : garbageMenuRefresh ? 1 : 2));
+        dest.writeByte((byte) (deleteMenuRefresh == null ? 0 : deleteMenuRefresh ? 1 : 2));
         dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
     }
 

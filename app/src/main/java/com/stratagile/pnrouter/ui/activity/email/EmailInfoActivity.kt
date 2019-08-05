@@ -426,8 +426,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 }
                 ConstantValue.currentEmailConfigEntity!!.sendMenu->
                 {
-                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star))
-                    iconArray = arrayListOf<String>("sheet_mark",starIcon)
+                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_delete")
                 }
                 ConstantValue.currentEmailConfigEntity!!.garbageMenu->
                 {
@@ -616,10 +616,33 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
                 var endIndex = confidantkeyBefore.indexOf("'></span>")
                 var confidantkey = confidantkeyBefore.substring(14,endIndex)
-                var confidantkeyArr = confidantkey.split("&&")
-                var accountMi = confidantkeyArr.get(0)
-                var shareMiKey = confidantkeyArr.get(1)
+
+                var confidantkeyArr = listOf<String>()
+                var accountMi = ""
+                var shareMiKey = ""
                 var account =  String(RxEncodeTool.base64Decode(accountMi))
+                if(confidantkey!!.contains("##"))
+                {
+                    var confidantkeyList = confidantkey.split("##")
+                    for(item in confidantkeyList)
+                    {
+                        confidantkeyArr = item.split("&&")
+                        accountMi = confidantkeyArr.get(0)
+                        shareMiKey = confidantkeyArr.get(1)
+                        account =  String(RxEncodeTool.base64Decode(accountMi))
+                        if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
+                        {
+                            break;
+                        }
+                    }
+
+                }else{
+                    confidantkeyArr = confidantkey.split("&&")
+                    accountMi = confidantkeyArr.get(0)
+                    shareMiKey = confidantkeyArr.get(1)
+                }
+
+
                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())

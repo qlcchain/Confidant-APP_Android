@@ -11,6 +11,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.EmailContactsEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.MenuItemView
@@ -28,13 +29,30 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
 
     var isChooseMode = false
     override fun convert(helper: BaseViewHolder, item: EmailMessageEntity) {
+        var formName = ""
         var  from = item.from;
-        if(from.indexOf("<") >0)
+        var account = ""
+        if(from.contains(item.account))
         {
-            from = from.substring(0,from.indexOf("<"))
+            from = item.to;
+            account = from.substring(from.indexOf("<") +1,from.length - 1)
+            var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+            if(localEmailContacts.size != 0)
+            {
+                var localEmailContactsItem = localEmailContacts.get(0)
+                formName = localEmailContactsItem.name
+            }else{
+                formName = from.substring(0,from.indexOf("<"))
+            }
+        }else{
+            if(from.indexOf("<") >0)
+            {
+                formName = from.substring(0,from.indexOf("<"))
+            }
         }
+
         var title = helper.getView<TextView>(R.id.title)
-        title.setText(from)
+        title.setText(formName)
         var subject = helper.getView<TextView>(R.id.subject)
         subject.setText(item.subject)
         var message = helper.getView<TextView>(R.id.message)
@@ -66,7 +84,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             attach.visibility = View.GONE
         }
         var ivAvatar = helper.getView<ImageButtonWithText>(R.id.avatar)
-        ivAvatar.setText(from)
+        ivAvatar.setText(formName)
     }
 
 }

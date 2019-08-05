@@ -3246,7 +3246,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }
 
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.inboxMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Inbox",ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
         nodebackedup.setOnClickListener {
             rootTitle.text = getString(R.string.Node_back_up)
@@ -3261,7 +3261,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.nodeMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Nodebackedup",ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
             rootTitle.text = getString(R.string.Starred)
@@ -3276,7 +3276,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.starMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Starred",ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
             rootTitle.text = getString(R.string.Drafts)
@@ -3291,7 +3291,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.drafMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Drafts",ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
             rootTitle.text = getString(R.string.Sent)
@@ -3306,7 +3306,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.sendMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Sent",ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
             rootTitle.text = getString(R.string.Spam)
@@ -3321,7 +3321,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.garbageMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Spam",ConstantValue.currentEmailConfigEntity!!.garbageMenu))
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
@@ -3336,7 +3336,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
-            EventBus.getDefault().post(ChangEmailMenu(ConstantValue.currentEmailConfigEntity!!.deleteMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
