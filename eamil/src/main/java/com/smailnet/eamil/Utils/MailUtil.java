@@ -187,18 +187,11 @@ public class MailUtil {
         return null;
     }
 
-    public static void saveFile(List<MailAttachment> list, String savaPath,String aesKey) throws IOException {
+    public static void saveFile(List<MailAttachment> list, String savaPath) throws IOException {
         for (MailAttachment mailAttachment : list) {
             try{
                 InputStream inputStream = mailAttachment.getInputStream();
                 InputStream newInput = inputStream;
-
-                if(aesKey != null && aesKey.equals(""))
-                {
-                   /* byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-                    byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
-                    newInput = FileUtil.byteTOInputStream(miFile);*/
-                }
                 FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
                 int len;
                 byte[] bytes = new byte[1024 * 1024];

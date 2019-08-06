@@ -72,6 +72,7 @@ import javax.mail.search.FlagTerm;
 import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
 import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAPS_PARTISLFETCH;
+import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAPS_fetchsize;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_AUTH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_HOST;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_PARTISLFETCH;
@@ -79,6 +80,8 @@ import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_POST;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_CLASS;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_FALLBACK;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_PORT;
+import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_fetchsize;
+import static com.smailnet.eamil.Utils.ConstUtli.MAIL_MIME_BASE64_IGNOREERRORS;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_AUTH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_HOST;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_POST;
@@ -167,8 +170,14 @@ class EmailCore {
             properties.put(MAIL_IMAP_POST, imapPort);
             properties.put(MAIL_IMAP_HOST, imapHost);
             properties.put(MAIL_IMAP_AUTH, true);
-            properties.put(MAIL_IMAP_PARTISLFETCH, false);
-            properties.put(MAIL_IMAPS_PARTISLFETCH, false);
+            properties.put(MAIL_MIME_BASE64_IGNOREERRORS, "true");
+            properties.put(MAIL_IMAP_PARTISLFETCH, "false");
+            properties.put(MAIL_IMAPS_PARTISLFETCH, "false");
+            properties.put(MAIL_IMAP_fetchsize,"1048576");
+            properties.put(MAIL_IMAPS_fetchsize,"1048576");
+            properties.put("mail.imap.connectionpoolsize","10");
+            properties.put("mail.imaps.connectionpoolsize","10");
+
         }
         // 构建授权信息，用于进行SMTP进行身份验证
         Authenticator authenticator = new Authenticator() {
@@ -180,7 +189,8 @@ class EmailCore {
                 return new PasswordAuthentication(userName, password);
             }
         };
-        session = Session.getDefaultInstance(properties,authenticator);
+        //session = Session.getDefaultInstance(properties,authenticator);
+        session = Session.getInstance(properties);
     }
 
     /**
@@ -671,6 +681,7 @@ class EmailCore {
         int index = 0;
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        long beginTime = System.currentTimeMillis();
         for (Message message : list){
             pmm = new PraseMimeMessage((MimeMessage)message);
             MimeMessage ooo = (MimeMessage)message;
@@ -759,6 +770,7 @@ class EmailCore {
             index ++;
         }
         System.out.println("time_"+"end:"+System.currentTimeMillis());
+        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
@@ -774,7 +786,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
+    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
@@ -792,7 +804,10 @@ class EmailCore {
             pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getAttachment(message, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            MailUtil.saveFile(mailAttachments,path,aesKey);
+            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            long aa = System.currentTimeMillis();
+            MailUtil.saveFile(mailAttachments,path);
+            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
            /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {

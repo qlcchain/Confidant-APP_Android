@@ -43,7 +43,11 @@ public class ConstUtli {
     public static final String MAIL_POP3_SOCKETFACTORY_PORT = "mail.pop3.socketFactory.port";
     public static final String MAIL_IMAP_SOCKETFACTORY_PORT = "mail.imap.socketFactory.port";
     public static final String BLACK_HOLE = "sbl.spamhaus.org";
+
+    public static final String MAIL_MIME_BASE64_IGNOREERRORS = "mail.mime.base64.ignoreerrors";
     public static final String MAIL_IMAP_PARTISLFETCH = "mail.imap.partialfetch";
     public static final String MAIL_IMAPS_PARTISLFETCH = "mail.imaps.partialfetch";
+    public static final String MAIL_IMAP_fetchsize = "mail.imap.fetchsize";
+    public static final String MAIL_IMAPS_fetchsize = "mail.imaps.fetchsize";
     public static String attchPath = "";
 }

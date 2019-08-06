@@ -227,7 +227,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                 closeProgressDialog()
                                 Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                             }
-                        },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                        },menu,msgId,save_dir)
             }else{
                 attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                 emaiAttachAdapter = EmaiAttachAdapter(attachList)

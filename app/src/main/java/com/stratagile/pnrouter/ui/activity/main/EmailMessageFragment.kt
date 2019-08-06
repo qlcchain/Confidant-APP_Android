@@ -406,7 +406,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
                                             for (attachItem in mailAttachmentList)
                                             {
-                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id)).list()
+                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
                                                 if(attachList == null || attachList.size == 0)
                                                 {
                                                     var eamilAttach = EmailAttachEntity()
