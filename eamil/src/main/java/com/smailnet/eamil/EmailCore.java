@@ -774,7 +774,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path) throws MessagingException, IOException {
+    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
@@ -792,7 +792,7 @@ class EmailCore {
             pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getAttachment(message, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            MailUtil.saveFile(mailAttachments,path);
+            MailUtil.saveFile(mailAttachments,path,aesKey);
            /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {
@@ -880,6 +880,7 @@ class EmailCore {
             if(flag.equals("draf"))
             {
                 message.setFlag(Flags.Flag.DRAFT,true);
+                message.setFlag(Flags.Flag.SEEN,true);
             }
             folder.appendMessages(new Message[] { message });
             return true;
