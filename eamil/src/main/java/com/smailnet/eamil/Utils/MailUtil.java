@@ -49,6 +49,19 @@ public class MailUtil {
     private static final int RECEIVE_POP_PORT = 995;
     final static int BUFFER_SIZE = 4096;
 
+    private final static int CONNECT_TIMEOUT = 20 * 1000; // milliseconds
+    private final static int WRITE_TIMEOUT = 40 * 1000; // milliseconds
+    private final static int READ_TIMEOUT = 40 * 1000; // milliseconds
+    private final static int FETCH_SIZE = 256 * 1024; // bytes, default 16K
+    private final static int POOL_TIMEOUT = 45 * 1000; // milliseconds, default 45 sec
+
+    private static final int APPEND_BUFFER_SIZE = 4 * 1024 * 1024; // bytes
+
+    static final int SMALL_MESSAGE_SIZE = 32 * 1024; // bytes
+
+    static final int ATTACHMENT_BUFFER_SIZE = 8192; // bytes
+    static final int DEFAULT_ATTACHMENT_DOWNLOAD_SIZE = 256 * 1024; // bytes
+
     // 账号
     private String user;
     // 密码
@@ -199,9 +212,9 @@ public class MailUtil {
                     byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     newInput = byteTOInputStream(miFile);
 
-                    FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName())));
                     int len;
-                    byte[] bytes = new byte[1024 * 1024];
+                    byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = newInput.read(bytes)) != -1) {
                         outputStream.write(bytes, 0, len);
                         outputStream.flush();
@@ -210,9 +223,9 @@ public class MailUtil {
                     newInput.close();
                     outputStream.close();
                 }else{
-                    FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName())));
                     int len;
-                    byte[] bytes = new byte[1024 * 1024];
+                    byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = inputStream.read(bytes)) != -1) {
                         outputStream.write(bytes, 0, len);
                         outputStream.flush();
