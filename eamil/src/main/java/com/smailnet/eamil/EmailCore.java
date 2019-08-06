@@ -28,6 +28,8 @@ import com.sun.mail.imap.IMAPStore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -786,7 +788,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path) throws MessagingException, IOException {
+    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
@@ -806,7 +808,7 @@ class EmailCore {
             //pmm.setAttachPath(file.toString()+"/");
             System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path);
+            MailUtil.saveFile(mailAttachments,path,aesKey);
             System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
            /* try {
                 pmm.saveAttachMent((Part)message);
@@ -1257,4 +1259,5 @@ class EmailCore {
             return MimeUtility.decodeText(encodeText);
         }
     }
+
 }

@@ -47,6 +47,7 @@ public class MailUtil {
 
     private static final String RECEIVE_POP_HOST = "pop.exmail.qq.com";
     private static final int RECEIVE_POP_PORT = 995;
+    final static int BUFFER_SIZE = 4096;
 
     // 账号
     private String user;
@@ -187,20 +188,39 @@ public class MailUtil {
         return null;
     }
 
-    public static void saveFile(List<MailAttachment> list, String savaPath) throws IOException {
+    public static void saveFile(List<MailAttachment> list, String savaPath,String aesKey) throws IOException {
         for (MailAttachment mailAttachment : list) {
             try{
                 InputStream inputStream = mailAttachment.getInputStream();
-                InputStream newInput = inputStream;
-                FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
-                int len;
-                byte[] bytes = new byte[1024 * 1024];
-                while ((len = inputStream.read(bytes)) != -1) {
-                    outputStream.write(bytes, 0, len);
-                    outputStream.flush();
+                if(aesKey !=null && !aesKey.equals(""))
+                {
+                    InputStream newInput = null;
+                    byte[] fileBufferMi =  InputStreamTOByte(inputStream);
+                    byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    newInput = byteTOInputStream(miFile);
+
+                    FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                    int len;
+                    byte[] bytes = new byte[1024 * 1024];
+                    while ((len = newInput.read(bytes)) != -1) {
+                        outputStream.write(bytes, 0, len);
+                        outputStream.flush();
+                    }
+                    inputStream.close();
+                    newInput.close();
+                    outputStream.close();
+                }else{
+                    FileOutputStream outputStream = new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName()));
+                    int len;
+                    byte[] bytes = new byte[1024 * 1024];
+                    while ((len = inputStream.read(bytes)) != -1) {
+                        outputStream.write(bytes, 0, len);
+                        outputStream.flush();
+                    }
+                    inputStream.close();
+                    outputStream.close();
                 }
-                inputStream.close();
-                outputStream.close();
+
             }catch(Exception exception){
                 exception.printStackTrace();
             }finally{
@@ -565,6 +585,33 @@ public class MailUtil {
         }
 
     }
+    /**
+     * 将InputStream转换成byte数组
+     * @param in InputStream
+     * @return byte[]
+     * @throws IOException
+     */
+    public static byte[] InputStreamTOByte(InputStream in) throws IOException{
 
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] data = new byte[BUFFER_SIZE];
+        int count = -1;
+        while((count = in.read(data,0,BUFFER_SIZE)) != -1)
+            outStream.write(data, 0, count);
+
+        data = null;
+        return outStream.toByteArray();
+    }
+    /**
+     * 将byte数组转换成InputStream
+     * @param in
+     * @return
+     * @throws Exception
+     */
+    public static InputStream byteTOInputStream(byte[] in) throws Exception{
+
+        ByteArrayInputStream is = new ByteArrayInputStream(in);
+        return is;
+    }
 }
 
