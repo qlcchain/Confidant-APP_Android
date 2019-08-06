@@ -386,7 +386,18 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             startActivity(intent)
         }
         forWardbtn.setOnClickListener {
-            showDialog()
+            if(emailMeaasgeData!!.attachmentCount >0)
+            {
+                showDialog()
+            }else{
+                var intent = Intent(this, EmailSendActivity::class.java)
+                intent.putExtra("flag",1)
+                intent.putExtra("foward",1)
+                intent.putExtra("menu",menu)
+                intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
+                startActivity(intent)
+            }
+
         }
 
         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())

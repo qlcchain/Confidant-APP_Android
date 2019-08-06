@@ -544,7 +544,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private fun initAttachUI()
     {
         attachListEntity =  arrayListOf<EmailAttachEntity>()
-        var attachCount = emailMeaasgeInfoData!!.attachmentCount
+        var attachCount = 0
+        if(emailMeaasgeInfoData != null)
+        {
+            attachCount = emailMeaasgeInfoData!!.attachmentCount
+        }
         if(attach > 0 && attachCount > 0)
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
@@ -800,14 +804,14 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
         }
-        var endStr =  "<div MyConfidantBegin=''"+
+        var endStr =  "<div MyConfidantBegin=''>"+
                 "<br />"+
                 " <br />"+
                 " <br />"+
-                "<div"+
+                "<span>"+
                 getString(R.string.sendfromconfidant)+
-                "</div>"+
-                "</div MyConfidantEnd=''>"
+                "</span>"+
+                "</div>"
         contentHtml += endStr
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)

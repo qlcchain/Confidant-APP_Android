@@ -4624,6 +4624,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     {
                         var intent = Intent(this, EmailSendActivity::class.java)
                         intent.putExtra("flag",0)
+                        intent.putExtra("menu","")
                         startActivity(intent)
                     }
                 }
