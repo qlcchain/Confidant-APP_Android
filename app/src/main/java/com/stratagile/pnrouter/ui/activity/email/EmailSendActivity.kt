@@ -597,6 +597,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 closeProgressDialog()
                                 runOnUiThread {
                                     attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                    for (item in attachListData)
+                                    {
+                                        item.isHasData = true
+                                        item.isCanDelete = true
+                                    }
                                     attachListEntity.addAll(attachListData)
                                     updataAttachUI()
                                 }
@@ -609,6 +614,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
             }else{
                 attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                for (item in attachListData)
+                {
+                    item.isHasData = true
+                    item.isCanDelete = true
+                }
                 attachListEntity.addAll(attachListData)
                 updataAttachUI()
             }
