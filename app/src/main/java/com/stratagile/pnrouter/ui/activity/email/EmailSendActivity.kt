@@ -1385,7 +1385,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
-                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.indexOf("/")+1,videoFilePath.length)
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/")+1,videoFilePath.length)
                     emailAttachEntity.isCanDelete = true
                     emaiAttachAdapter!!.addData(0,emailAttachEntity)
                     emaiAttachAdapter!!.notifyDataSetChanged();
@@ -1396,7 +1396,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
-                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.indexOf("/")+1,videoFilePath.length)
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/")+1,videoFilePath.length)
                     emailAttachEntity.isCanDelete = true
                     emaiAttachAdapter!!.addData(0,emailAttachEntity)
                     emaiAttachAdapter!!.notifyDataSetChanged();
@@ -1413,7 +1413,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         var emailAttachEntity = EmailAttachEntity()
                         emailAttachEntity.isHasData = true
                         emailAttachEntity.localPath = list.get(i).path
-                        emailAttachEntity.name = list.get(i).path.substring(list.get(0).path.indexOf("/")+1,list.get(0).path.length)
+                        emailAttachEntity.name = list.get(i).path.substring(list.get(0).path.lastIndexOf("/")+1,list.get(0).path.length)
                         emailAttachEntity.isCanDelete = true
                         emaiAttachAdapter!!.addData(0,emailAttachEntity)
 
@@ -1433,7 +1433,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             var emailAttachEntity = EmailAttachEntity()
                             emailAttachEntity.isHasData = true
                             emailAttachEntity.localPath = file.path
-                            emailAttachEntity.name = file.path.substring(file.path.indexOf("/")+1,file.path.length)
+                            emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/")+1,file.path.length)
                             emailAttachEntity.isCanDelete = true
                             emaiAttachAdapter!!.addData(0,emailAttachEntity)
                         }
