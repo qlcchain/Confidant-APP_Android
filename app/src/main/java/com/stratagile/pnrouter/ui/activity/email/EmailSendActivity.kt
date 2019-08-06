@@ -70,6 +70,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.entity.events.SendEmailSuccess
+import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.pnrouter.view.SweetAlertDialog
@@ -578,7 +579,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                             .start()
                                 }
                                 3 -> {
-                                    startActivityForResult(Intent(this@EmailSendActivity, SelectFileActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
+                                    startActivityForResult(Intent(this@EmailSendActivity, FileChooseActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
+                                    //startActivityForResult(Intent(this@EmailSendActivity, SelectFileActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
                                 }
 
                             }
@@ -671,7 +673,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var account = item.key
             var friendMiPublicKey = item.value
             var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, friendMiPublicKey)))
-            confidantKey += account+"&&"+dstKey;
+            confidantKey += account+"&&"+dstKey+"##";
+        }
+        if(confidantKey != "")
+        {
+            var myAccountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+            var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
+            confidantKey += myAccountBase64+"&&"+dstKey;
         }
         if(contactMapList.size >0)
         {
