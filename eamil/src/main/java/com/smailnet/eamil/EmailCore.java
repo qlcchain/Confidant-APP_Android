@@ -871,13 +871,16 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean imapSaveMail(Message message, String toMenu) throws MessagingException, IOException {
+    public boolean imapSaveMail(Message message, String toMenu,String flag) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         imapStore.connect(imapHost, account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
-            message.setFlag(Flags.Flag.DRAFT,true);
+            if(flag.equals("draf"))
+            {
+                message.setFlag(Flags.Flag.DRAFT,true);
+            }
             folder.appendMessages(new Message[] { message });
             return true;
         }catch (Exception e)

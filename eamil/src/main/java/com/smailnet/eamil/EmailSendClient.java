@@ -168,7 +168,7 @@ public class EmailSendClient {
                             .sendMail();
                     getSendCallback.sendSuccess();
                     try {
-                        Operator.Core(emailConfig).imapSaveMail(message,toMenu);
+                        Operator.Core(emailConfig).imapSaveMail(message,toMenu,"send");
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -203,7 +203,7 @@ public class EmailSendClient {
      * @param getSendCallback
      * @return
      */
-    public void saveDraftsAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu){
+    public void saveDraftsAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu, final String flag){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -212,7 +212,7 @@ public class EmailSendClient {
                             .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
                             .saveDrafts();
                     try {
-                        Operator.Core(emailConfig).imapSaveMail(message,toMenu);
+                        Operator.Core(emailConfig).imapSaveMail(message,toMenu,flag);
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
