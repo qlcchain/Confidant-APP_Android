@@ -2894,6 +2894,35 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
+        var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
+        var localEmailContactAcount = ""
+        var localEmailContactAcountDelete = ""
+        for (item in localEmailContacts)
+        {
+            var account = item.account.toLowerCase()
+            if(!localEmailContactAcount.contains(account))
+            {
+                localEmailContactAcount += account +","
+            }else{
+                localEmailContactAcountDelete += account +","
+            }
+        }
+        if(localEmailContactAcountDelete.length > 0)
+        {
+            var  localEmailContactAcountDeleteArr = localEmailContactAcountDelete.split(",")
+            for (item in localEmailContactAcountDeleteArr)
+            {
+                if(item!="")
+                {
+                    var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(item)).list()
+                    if(localEmailContacts != null && localEmailContacts.size >0)
+                    {
+                        var localEmailContactsItem = localEmailContacts.get(0)
+                        AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.delete(localEmailContactsItem)
+                    }
+                }
+            }
+        }
         var emailConfigEntityChooseALL = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
         for (item in emailConfigEntityChooseALL)
         {

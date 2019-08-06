@@ -95,6 +95,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                 intent.putExtra("foward",3)
                 intent.putExtra("flag",1)
                 intent.putExtra("menu", menu)
+                intent.putExtra("attach",1)
                 intent.putExtra("positionIndex", position)
                 startActivity(intent)
             }else{
@@ -199,7 +200,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         if(menu.equals("node") || menu.equals("star")|| menu.equals(""))
         {
 
-            toast(R.string.nomore)
+            //toast(R.string.No_mail)
             return;
         }
         if(AppConfig.instance.emailConfig().account != null && !AppConfig.instance.emailConfig().account.equals(""))
@@ -333,7 +334,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 closeProgressDialog()
                                                 refreshLayout.finishRefresh()
                                                 refreshLayout.resetNoMoreData()
-                                                toast(R.string.nomore)
+                                                //toast(R.string.No_mail)
                                                 //refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
                                             }
                                         }else{
@@ -422,6 +423,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
                                             var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                            account = account.toLowerCase()
                                             var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                                             if(localEmailContacts.size == 0)
                                             {
@@ -509,7 +511,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             runOnUiThread {
                                                 closeProgressDialog()
                                                 refreshLayout.finishLoadMore()
-                                                toast(R.string.nomore)
+                                                //toast(R.string.No_mail)
                                                 //refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
                                             }
                                         }else{
@@ -560,6 +562,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
                                             var name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
                                             var account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                            account = account.toLowerCase()
                                             var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                                             if(localEmailContacts.size == 0)
                                             {

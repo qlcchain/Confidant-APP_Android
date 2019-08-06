@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.email_info_view.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -379,15 +380,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         tvRefuse.setOnClickListener {
             var intent = Intent(this, EmailSendActivity::class.java)
             intent.putExtra("flag",1)
+            intent.putExtra("attach",0)
+            intent.putExtra("menu",menu)
             intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
             startActivity(intent)
         }
         forWardbtn.setOnClickListener {
-            var intent = Intent(this, EmailSendActivity::class.java)
-            intent.putExtra("flag",1)
-            intent.putExtra("foward",1)
-            intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
-            startActivity(intent)
+            showDialog()
         }
 
         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
@@ -671,7 +670,28 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
 
     }
+    fun showDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.Send_attachments))
+                .setConfirmClickListener {
+                    var intent = Intent(this, EmailSendActivity::class.java)
+                    intent.putExtra("flag",1)
+                    intent.putExtra("foward",1)
+                    intent.putExtra("attach",1)
+                    intent.putExtra("menu",menu)
+                    intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
+                    startActivity(intent)
+                }.setCancelClickListener {
+                    var intent = Intent(this, EmailSendActivity::class.java)
+                    intent.putExtra("flag",1)
+                    intent.putExtra("foward",1)
+                    intent.putExtra("menu",menu)
+                    intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
+                    startActivity(intent)
+                }
+                .show()
 
+    }
     /**
      * select local image
      * //todo

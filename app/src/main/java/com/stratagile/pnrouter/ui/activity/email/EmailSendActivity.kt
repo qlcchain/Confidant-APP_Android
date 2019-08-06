@@ -64,7 +64,15 @@ import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.webkit.*
 import android.widget.EditText
+import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.OpenFileUtil
+import com.luck.picture.lib.PicturePreviewActivity
+import com.luck.picture.lib.observable.ImagesObservable
 import com.message.Message
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
+import com.smailnet.eamil.Callback.GetAttachCallback
+import com.smailnet.eamil.EmailReceiveClient
+import com.smailnet.eamil.MailAttachment
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
@@ -77,6 +85,9 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
+import java.io.ByteArrayInputStream
+import java.io.Serializable
+
 
 /**
  * @author zl
@@ -148,6 +159,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private val methodContextCc = MethodContext()
     private val methodContextBcc = MethodContext()
     var contactMapList = HashMap<String, String>()
+    internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
     private val users = arrayListOf(
             User("1", "激浊扬清"),
             User("2", "清风引佩下瑶台"),
@@ -168,6 +180,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var foward = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
     var oldAdress = ""
+    var attach = 0;
+    var menu:String= "INBOX"
+    var attachListEntity =  arrayListOf<EmailAttachEntity>()
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
         if(jCheckmailUkeyRsp.params.retCode == 0)
@@ -202,6 +217,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
         flag = intent.getIntExtra("flag",0)
         foward = intent.getIntExtra("foward",0)
+        attach = intent.getIntExtra("attach",0)
+        menu = intent.getStringExtra("menu")
         initUI()
         initClickListener()
     }
@@ -526,12 +543,89 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
     private fun initAttachUI()
     {
-        var attachList =  arrayListOf<EmailAttachEntity>()
+        attachListEntity =  arrayListOf<EmailAttachEntity>()
+        var attachCount = emailMeaasgeInfoData!!.attachmentCount
+        if(attach > 0 && attachCount > 0)
+        {
+            val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+            var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
+            var isDownload = true
+            var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+            var i = 0;
+            for (attach in attachListData)
+            {
+                var file = File(save_dir+attach.account+"_"+attach.name)
+                if(!file.exists())
+                {
+                    isDownload = false
+                }
+                attach.localPath = save_dir+attach.account+"_"+attach.name
+                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+
+                var fileName =  attach.name
+                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                    val localMedia = LocalMedia()
+                    localMedia.isCompressed = false
+                    localMedia.duration = 0
+                    localMedia.height = 100
+                    localMedia.width = 100
+                    localMedia.isChecked = false
+                    localMedia.isCut = false
+                    localMedia.mimeType = 0
+                    localMedia.num = 0
+                    localMedia.path = attach.localPath
+                    localMedia.pictureType = "image/jpeg"
+                    localMedia.setPosition(i)
+                    localMedia.sortIndex = i
+                    previewImages.add(localMedia)
+                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                }
+
+                i++
+
+            }
+            if(!isDownload)
+            {
+                showProgressDialog(getString(R.string.Attachmentdownloading))
+                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+
+                emailReceiveClient
+                        .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
+                            override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                //tipDialog.dismiss()
+                                closeProgressDialog()
+                                runOnUiThread {
+                                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                    attachListEntity.addAll(attachListData)
+                                    updataAttachUI()
+                                }
+                            }
+                            override fun gainFailure(errorMsg: String) {
+                                //tipDialog.dismiss()
+                                closeProgressDialog()
+                                Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                            }
+                        },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
+            }else{
+                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                attachListEntity.addAll(attachListData)
+                updataAttachUI()
+            }
+
+
+        }else{
+            updataAttachUI()
+        }
+    }
+    fun updataAttachUI()
+    {
+
         var emailAttachEntity = EmailAttachEntity()
         emailAttachEntity.isHasData = false
         emailAttachEntity.isCanDelete = false
-        attachList.add(emailAttachEntity)
-        emaiAttachAdapter = EmaiAttachAdapter(attachList)
+        attachListEntity.add(emailAttachEntity)
+        emaiAttachAdapter = EmaiAttachAdapter(attachListEntity)
         emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
             true
@@ -589,6 +683,22 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     })
                 }
             }
+        }
+    }
+    fun showImagList(showIndex:Int)
+    {
+        val selectedImages = java.util.ArrayList<LocalMedia>()
+        val previewImages = ImagesObservable.getInstance().readLocalMedias("chat")
+        if (previewImages != null && previewImages.size > 0) {
+
+            val intentPicturePreviewActivity = Intent(this, PicturePreviewActivity::class.java)
+            val bundle = Bundle()
+            //ImagesObservable.getInstance().saveLocalMedia(previewImages);
+            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, selectedImages as Serializable)
+            bundle.putInt(PictureConfig.EXTRA_POSITION, showIndex)
+            bundle.putString("from", "chat")
+            intentPicturePreviewActivity.putExtras(bundle)
+            startActivity(intentPicturePreviewActivity)
         }
     }
     private fun sendCheck()
@@ -653,12 +763,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             contentHtml +=  centerStr
             contentHtml +=emailMeaasgeInfoData!!.content
 
-            var endStr =  " <br />"+
-                    " <br />"+
-                    " <br />"+
-                    "<div"+
-                    getString(R.string.sendfromconfidant)+
-                    "  </div>"
+
         }
         if(contactMapList.size >0)
         {
@@ -685,6 +790,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
         }
+        var endStr =  "<div MyConfidantBegin=''"+
+                "<br />"+
+                " <br />"+
+                " <br />"+
+                "<div"+
+                getString(R.string.sendfromconfidant)+
+                "</div>"+
+                "</div MyConfidantEnd=''>"
+        contentHtml += endStr
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)
         var bccAdress = getEditText(bccAdressEdit)
@@ -697,6 +811,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var name  = item.substring(0,item.indexOf("@"))
                 var account=item
+                account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                 if(localEmailContacts.size == 0)
                 {
@@ -715,6 +830,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var name  = item.substring(0,item.indexOf("@"))
                 var account=item
+                account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                 if(localEmailContacts.size == 0)
                 {
@@ -733,6 +849,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var name  = item.substring(0,item.indexOf("@"))
                 var account=item
+                account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
                 if(localEmailContacts.size == 0)
                 {
@@ -822,11 +939,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
         var name = toAdress.substring(1,toAdress.indexOf("@"))
 
-        runOnUiThread {
-            showProgressDialog()
-        }
+
         if(send)
         {
+            runOnUiThread {
+                showProgressDialog(getString(R.string.Sending))
+            }
             emailSendClient
                     .setTo(toAdress)                //收件人的邮箱地址
                     .setCc(ccAdress)
@@ -863,6 +981,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     },ConstantValue.currentEmailConfigEntity!!.sendMenu)
 
         }else{
+            runOnUiThread {
+                showProgressDialog(getString(R.string.Saving))
+            }
             emailSendClient
                     .setTo(toAdress)                //收件人的邮箱地址
                     .setCc(ccAdress)
