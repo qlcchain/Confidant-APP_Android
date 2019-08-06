@@ -812,7 +812,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 getString(R.string.sendfromconfidant)+
                 "</span>"+
                 "</div>"
-        contentHtml += endStr
+        //contentHtml += endStr
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)
         var bccAdress = getEditText(bccAdressEdit)

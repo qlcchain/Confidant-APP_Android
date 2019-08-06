@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:background="@color/white"
-        android:layout_height="@dimen/x84">
+        android:layout_height="@dimen/x104">
         <net.lucode.hackware.magicindicator.MagicIndicator
             android:id="@+id/indicator"
             android:layout_centerHorizontal="true"

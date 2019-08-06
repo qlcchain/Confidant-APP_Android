@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -37,6 +38,7 @@ import com.stratagile.pnrouter.ui.activity.user.PrivacyPolicyFragment
 import com.stratagile.pnrouter.ui.activity.user.TermsOfServiceFragment
 import kotlinx.android.synthetic.main.activity_privacy.*
 import net.lucode.hackware.magicindicator.ViewPagerHelper
+import net.lucode.hackware.magicindicator.buildins.UIUtil
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator
@@ -80,7 +82,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
         var icon = ArrayList<Drawable>()
         icon.add(getResources().getDrawable(R.mipmap.tabbar_circle_selected))
         icon.add(getResources().getDrawable(R.mipmap.tabbar_email_selected))
-
+        commonNavigator.isAdjustMode = true
         viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 if (position == 0) {
@@ -105,9 +107,25 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
             }
 
             override fun getTitleView(context: Context, index: Int): IPagerTitleView {
-                val badgePagerTitleView = BadgePagerTitleView(context)
+                //val badgePagerTitleView = BadgePagerTitleView(context)
+                val simplePagerTitleView = ColorTransitionPagerTitleView(context)
+                simplePagerTitleView.setText(titles.get(index))
+                simplePagerTitleView.normalColor =  Color.parseColor("#FF9496A1")
+                simplePagerTitleView.textSize = 18f
+                var icon: Drawable = icon.get(index)
+               // icon.setBounds(60,0,150,90);
+                if(index == 0)
+                {
+                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x105).toInt(),resources.getDimension(R.dimen.x60).toInt());
+                }else{
+                    icon.setBounds(resources.getDimension(R.dimen.x60).toInt(),0,resources.getDimension(R.dimen.x125).toInt(),resources.getDimension(R.dimen.x60).toInt());
+                }
+                simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
+                simplePagerTitleView.selectedColor = Color.parseColor("#FF2B2B2B")
+                simplePagerTitleView.setOnClickListener {  viewPager.setCurrentItem(index) }
+                return simplePagerTitleView
+               /* val simplePagerTitleView = SimplePagerTitleView(context)
 
-                val simplePagerTitleView = SimplePagerTitleView(context)
                 //simplePagerTitleView.setLayoutParams(LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
                 var icon: Drawable = icon.get(index)
                 icon.setBounds(-30,0,60,90);
@@ -131,7 +149,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
                 // don't cancel badge when tab selected
                 badgePagerTitleView.isAutoCancelBadge = false
                 badgePagerTitleView.badgeView.visibility = View.GONE
-                return badgePagerTitleView
+                return badgePagerTitleView*/
 //                val colorTransitionPagerTitleView = ColorTransitionPagerTitleView(context)
 //                colorTransitionPagerTitleView.normalColor = Color.GRAY
 //                colorTransitionPagerTitleView.selectedColor = Color.BLACK
@@ -146,19 +164,23 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
 
             override fun getIndicator(context: Context): IPagerIndicator {
                 val indicator = LinePagerIndicator(context)
-                indicator.mode = LinePagerIndicator.MODE_MATCH_EDGE
-                indicator.lineHeight = resources.getDimension(R.dimen.x4)
+                indicator.setColors(Color.parseColor("#FF6646F7"))
                 return indicator
+            }
+
+            override fun getTitleWeight(context: Context?, index: Int): Float {
+                return if (index == 0) {
+                    1.0f
+                } else {
+                    1.0f
+                }
             }
         }
         indicator.setNavigator(commonNavigator)
         val titleContainer = commonNavigator.titleContainer // must after setNavigator
         titleContainer.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
-        titleContainer.dividerDrawable = object : ColorDrawable() {
-            override fun getIntrinsicWidth(): Int {
-                return resources.getDimension(R.dimen.x140).toInt()
-            }
-        }
+        titleContainer.dividerPadding = UIUtil.dip2px(AppConfig.instance, 15.0)
+        titleContainer.dividerDrawable = resources.getDrawable(R.drawable.simple_splitter)
         ViewPagerHelper.bind(indicator, viewPager);
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
