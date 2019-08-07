@@ -677,6 +677,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                     FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                                                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                                     ConstantValue.loginReq = null
+                                                    AppConfig.instance.deleteEmailData()
                                                     runOnUiThread {
                                                         toast("Import success")
                                                         startActivity(Intent(_this, LoginActivityActivity::class.java))

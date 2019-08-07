@@ -988,7 +988,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
         var name = toAdress.substring(1,toAdress.indexOf("@"))
 
-
+        var subjectStr = emailSendClient.getUTFStr(subject.getText().toString())
         if(send)
         {
             runOnUiThread {

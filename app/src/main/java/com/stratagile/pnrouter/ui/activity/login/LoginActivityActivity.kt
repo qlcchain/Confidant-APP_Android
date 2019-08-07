@@ -2367,6 +2367,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 RSAData.userName = username
                                 localMiArrayList.add(RSAData)
                                 FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+                                AppConfig.instance.deleteEmailData()
                                 runOnUiThread {
                                     toast("Import success")
                                     initRouterUI()

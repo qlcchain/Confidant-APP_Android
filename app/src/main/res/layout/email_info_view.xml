@@ -99,7 +99,7 @@
                     android:singleLine="true"
                     android:textStyle="bold"
                     android:ellipsize="end"
-                    android:maxEms="18"
+                    android:maxEms="15"
                     android:text="信用管家消费提醒信用管家消费提醒"
                     android:textColor="@color/infoTitle"
                     android:textSize="19sp" />

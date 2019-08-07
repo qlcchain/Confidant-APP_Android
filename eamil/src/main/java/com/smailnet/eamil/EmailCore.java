@@ -16,6 +16,7 @@
 package com.smailnet.eamil;
 
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.smailnet.eamil.Utils.AddressUtil;
@@ -38,6 +39,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,8 +125,18 @@ class EmailCore {
     private Message message;
 
     private int maxCount = 10;
+    private final static int CONNECT_TIMEOUT = 20 * 1000; // milliseconds
+    private final static int WRITE_TIMEOUT = 40 * 1000; // milliseconds
+    private final static int READ_TIMEOUT = 40 * 1000; // milliseconds
+    private final static int FETCH_SIZE = 256 * 1024; // bytes, default 16K
+    private final static int POOL_TIMEOUT = 45 * 1000; // milliseconds, default 45 sec
 
+    private static final int APPEND_BUFFER_SIZE = 4 * 1024 * 1024; // bytes
 
+    static final int SMALL_MESSAGE_SIZE = 32 * 1024; // bytes
+
+    static final int ATTACHMENT_BUFFER_SIZE = 8192; // bytes
+    static final int DEFAULT_ATTACHMENT_DOWNLOAD_SIZE = 256 * 1024; // bytes
 
     /**
      * 默认构造器
@@ -181,6 +194,9 @@ class EmailCore {
             properties.put("mail.imaps.connectionpoolsize","10");
 
         }
+        properties.put("mail.imaps.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
+        properties.put("mail.imap.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
+        properties.put("mail.smtp.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
         // 构建授权信息，用于进行SMTP进行身份验证
         Authenticator authenticator = new Authenticator() {
             @Override
@@ -236,7 +252,21 @@ class EmailCore {
         }
         String fromName = account.substring(0,account.indexOf("@"));
         message.setFrom(new InternetAddress(fromName + "<" + account + ">"));
-        message.setSubject(subject);
+        String subjectNew = subject;
+       /* try {
+            subjectNew = (MimeUtility.encodeText(subject,MimeUtility.mimeCharset("gb2312"), null));
+        }catch (Exception e)
+        {
+
+        }*/
+        try {
+            subjectNew =MimeUtility.encodeText(subject);
+        }catch (Exception E)
+        {
+
+        }
+        message.setSubject(subjectNew);
+
         if (text != null){
             message.setText(text);
         }else if (content != null){
@@ -247,7 +277,7 @@ class EmailCore {
         //整封邮件的MINE消息体
         MimeMultipart msgMultipart = new MimeMultipart("mixed");//混合的组合关系
         //设置邮件的MINE消息体
-        message.setContent(msgMultipart);
+        message.setContent(msgMultipart,"text/html;charset=utf-8");
 
         if(attach.length > 0)
         {
@@ -270,7 +300,14 @@ class EmailCore {
                     attch1.setDataHandler(dh1);
                     //设置第一个附件的文件名
                     String fileName = attachPath.substring(attachPath.lastIndexOf("/") +1,attachPath.length());
-                    attch1.setFileName(fileName);
+                    String fileNameNew = fileName;
+                    try {
+                        fileNameNew =MimeUtility.encodeWord(fileNameNew);
+                    }catch (Exception E)
+                    {
+
+                    }
+                    attch1.setFileName(fileNameNew);
                 }
             }
         }
@@ -933,7 +970,106 @@ class EmailCore {
      * @return 解码后的邮件主题
      */
     public static String getSubject(MimeMessage msg) throws UnsupportedEncodingException, MessagingException {
-        return MimeUtility.decodeText(msg.getSubject());
+        /*String subjectStr = getUTF8(msg.getSubject());
+        String subjectStr2 = getUTF82(msg.getSubject());
+        String subject = MimeUtility.unfold(msg.getSubject());*/
+        String  aa = msg.getHeader("subject")[0];
+        String bb = MimeUtility.decodeText(aa);
+        String cc = MimeUtility.decodeText(msg.getSubject());
+        return bb;
+    }
+    public static String decodeMime(String text) {
+        if (text == null)
+            return null;
+
+        // https://tools.ietf.org/html/rfc2047
+        // encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
+
+        int i = 0;
+        boolean first = true;
+        List<MimeTextPart> parts = new ArrayList<>();
+
+        while (i < text.length()) {
+            int s = text.indexOf("=?", i);
+            if (s < 0)
+                break;
+
+            int q1 = text.indexOf("?", s + 2);
+            if (q1 < 0)
+                break;
+
+            int q2 = text.indexOf("?", q1 + 1);
+            if (q2 < 0)
+                break;
+
+            int e = text.indexOf("?=", q2 + 1);
+            if (e < 0)
+                break;
+
+            String plain = text.substring(i, s);
+            if (!first)
+                plain = plain.replaceAll("[ \t\n\r]$", "");
+            if (!TextUtils.isEmpty(plain))
+                parts.add(new MimeTextPart(plain));
+
+            parts.add(new MimeTextPart(
+                    text.substring(s + 2, q1),
+                    text.substring(q1 + 1, q2),
+                    text.substring(q2 + 1, e)));
+
+            i = e + 2;
+            first = false;
+        }
+
+        if (i < text.length())
+            parts.add(new MimeTextPart(text.substring(i)));
+
+        // Fold words to not break encoding
+        int p = 0;
+        while (p + 1 < parts.size()) {
+            MimeTextPart p1 = parts.get(p);
+            MimeTextPart p2 = parts.get(p + 1);
+            if (p1.charset != null && p1.charset.equalsIgnoreCase(p2.charset) &&
+                    p1.encoding != null && p1.encoding.equalsIgnoreCase(p2.encoding)) {
+                p1.text += p2.text;
+                parts.remove(p + 1);
+            } else
+                p++;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (MimeTextPart part : parts)
+            sb.append(part);
+        return sb.toString();
+    }
+    private static class MimeTextPart {
+        String charset;
+        String encoding;
+        String text;
+
+        MimeTextPart(String text) {
+            this.text = text;
+        }
+
+        MimeTextPart(String charset, String encoding, String text) {
+            this.charset = charset;
+            this.encoding = encoding;
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            if (charset == null)
+                return text;
+
+            String word = "=?" + charset + "?" + encoding + "?" + text + "?=";
+            try {
+                return decodeMime(MimeUtility.decodeWord(word));
+            } catch (Throwable ex) {
+
+                return word;
+            }
+        }
     }
     /**
      * 获得邮件发件人
@@ -1259,5 +1395,26 @@ class EmailCore {
             return MimeUtility.decodeText(encodeText);
         }
     }
+    public static String getUTF8(String source)
+    {
+        String newStr = source;
+        try {
+            newStr = new String(source.getBytes("UTF-8"), "ISO-8859-1");
+        }catch (Exception e)
+        {
 
+        }
+        return  newStr;
+    }
+    public static String getUTF82(String source)
+    {
+        String newStr = source;
+        try {
+            newStr = new String(source.getBytes("ISO-8859-1"), "UTF-8");
+        }catch (Exception e)
+        {
+
+        }
+        return  newStr;
+    }
 }

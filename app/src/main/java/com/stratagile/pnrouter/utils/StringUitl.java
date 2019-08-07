@@ -875,4 +875,15 @@ public class StringUitl {
         }
         return flag;
     }
+    public static String getUTF8(String source)
+    {
+        String newStr = source;
+        try {
+            newStr = new String(source.getBytes("UTF-8"), "ISO-8859-1");
+        }catch (Exception e)
+        {
+
+        }
+       return  newStr;
+    }
 }

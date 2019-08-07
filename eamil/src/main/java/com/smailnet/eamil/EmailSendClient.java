@@ -262,4 +262,16 @@ public class EmailSendClient {
             }
         }).start();
     }
+    public String getUTFStr(String source)
+    {
+        String subject = source;
+        try {
+             subject = MimeUtility.encodeText(source);
+        }catch (Exception e)
+        {
+
+        }
+
+        return subject;
+    }
 }
