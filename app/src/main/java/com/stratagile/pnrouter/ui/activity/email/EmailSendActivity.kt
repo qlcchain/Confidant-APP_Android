@@ -310,6 +310,60 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             override fun onFocusChange( v:View,  hasFocus:Boolean) {
                 if(hasFocus)
                 {
+                    if(toAdressEdit.text.toString()!="")
+                    {
+                        if(toAdressEditLastContent != toAdressEdit.text.toString())
+                        {
+                            sendCheck(false)
+                        }
+                    }else{
+                        lockTips.visibility = View.GONE
+                    }
+
+                    toAdressEditLastContent = toAdressEdit.text.toString()
+                }
+            }
+        });
+        bccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+                    if(toAdressEdit.text.toString()!="")
+                    {
+                        if(toAdressEditLastContent != toAdressEdit.text.toString())
+                        {
+                            sendCheck(false)
+                        }
+                    }else{
+                        lockTips.visibility = View.GONE
+                    }
+
+                    toAdressEditLastContent = toAdressEdit.text.toString()
+                }
+            }
+        });
+        subject.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
+                    if(toAdressEdit.text.toString()!="")
+                    {
+                        if(toAdressEditLastContent != toAdressEdit.text.toString())
+                        {
+                            sendCheck(false)
+                        }
+                    }else{
+                        lockTips.visibility = View.GONE
+                    }
+
+                    toAdressEditLastContent = toAdressEdit.text.toString()
+                }
+            }
+        });
+        ccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+            override fun onFocusChange( v:View,  hasFocus:Boolean) {
+                if(hasFocus)
+                {
 
                 }else{
                     allSpan(ccAdressEdit)
@@ -1637,6 +1691,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     //sendFileFileForward(fileData)
                 }
             } else if (requestCode == REQUEST_CODE_TO) {
+                toAdressEdit.requestFocus()
                 if (data!!.hasExtra("selectAdressStr")) {
                     var selectAdressStr = data!!.getStringExtra("selectAdressStr")
                     var nameAdressStr = data!!.getStringExtra("nameAdressStr")
@@ -1658,6 +1713,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     }
                 }
             } else if (requestCode == REQUEST_CODE_CC) {
+                ccAdressEdit.requestFocus()
                 if (data!!.hasExtra("selectAdressStr")) {
                     var selectAdressStr = data!!.getStringExtra("selectAdressStr")
                     var nameAdressStr = data!!.getStringExtra("nameAdressStr")
@@ -1679,6 +1735,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     }
                 }
             } else if (requestCode == REQUEST_CODE_BCC) {
+                bccAdressEdit.requestFocus()
                 if (data!!.hasExtra("selectAdressStr")) {
                     var selectAdressStr = data!!.getStringExtra("selectAdressStr")
                     var nameAdressStr = data!!.getStringExtra("nameAdressStr")
