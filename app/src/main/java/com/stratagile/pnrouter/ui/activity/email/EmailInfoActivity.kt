@@ -605,13 +605,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 super.onReceivedError(view, request, error)
             }
         }
-        var URLText = "<html><body style ='font-size:25px;'>"+emailMeaasgeData!!.content+"</body></html>";
+        var URLText = "";
         Log.i("URLText",emailMeaasgeData!!.content)
         if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
         {
-            URLText = "<html><body>"+emailMeaasgeData!!.originalText+"</body></html>";
+            URLText = "<html><body style ='font-size:25px;'>"+emailMeaasgeData!!.originalText+"</body></html>";
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }else{
+            URLText = "<html><body style ='font-size:25px;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
        /* try {

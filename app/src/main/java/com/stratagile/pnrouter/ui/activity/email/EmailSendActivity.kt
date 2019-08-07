@@ -183,6 +183,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var attach = 0;
     var menu:String= "INBOX"
     var attachListEntity =  arrayListOf<EmailAttachEntity>()
+    var isSendCheck = false
+    var toAdressEditLastContent = ""
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
         if(jCheckmailUkeyRsp.params.retCode == 0)
@@ -197,10 +199,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                 }
             }
-            sendEmail(true);
+            if(isSendCheck)
+            {
+                sendEmail(true);
+            }
+           runOnUiThread {
+               if(contactMapList.size > 0)
+               {
+                   lockTips.visibility = View.VISIBLE
+               }
+           }
         }else{
             contactMapList = HashMap<String, String>()
-            sendEmail(true);
+            if(isSendCheck)
+            {
+                sendEmail(true);
+            }
+            runOnUiThread {
+                lockTips.visibility = View.GONE
+            }
         }
     }
 
@@ -275,6 +292,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                 }else{
                     allSpan(toAdressEdit)
+                    if(toAdressEdit.text.toString()!="")
+                    {
+                        if(toAdressEditLastContent != toAdressEdit.text.toString())
+                        {
+                            sendCheck(false)
+                        }
+                    }else{
+                        lockTips.visibility = View.GONE
+                    }
+
+                    toAdressEditLastContent = toAdressEdit.text.toString()
                 }
             }
         });
@@ -659,6 +687,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emaiAttachAdapter!!.notifyDataSetChanged();
                 }
                 R.id.iv_add -> {
+                    hideSoftKeyboard()
                     var menuArray = arrayListOf<String>(getString(R.string.attach_picture),getString(R.string.attach_take_pic),getString(R.string.attach_video),getString(R.string.attach_file))
                     var iconArray = arrayListOf<String>("sheet_album","sheet_camera","sheet_video","sheet_file")
                     PopWindowUtil.showPopAttachMenuWindow(this@EmailSendActivity, itemParent,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
@@ -715,9 +744,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             startActivity(intentPicturePreviewActivity)
         }
     }
-    private fun sendCheck()
+    private fun sendCheck(flag:Boolean)
     {
 
+        isSendCheck = flag
         var toAdress = getEditText(toAdressEdit)
 
         toAdress = toAdress.replace(",,","")
@@ -728,7 +758,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             return
         }
         var subjectStr = subject.getText().toString()
-        if(subjectStr== "")
+        if(flag== true && subjectStr== "")
         {
             toast(R.string.The_subject_cant_be_empty)
             return
@@ -823,6 +853,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             if(item != "")
             {
+                if(!StringUitl.checkEmail(item))
+                {
+                    toast(R.string.Illegal_address)
+                    return
+                }
                 var name  = item.substring(0,item.indexOf("@"))
                 var account=item
                 account = account.toLowerCase()
@@ -1454,7 +1489,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
             //onBackPressed()
         }else if (id == R.id.sendBtn ) {
-            sendCheck();
+            sendCheck(true);
             //sendEmail()
         }
 

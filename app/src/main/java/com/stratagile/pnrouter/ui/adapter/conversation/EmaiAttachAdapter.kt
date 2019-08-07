@@ -37,7 +37,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         }else{
             deleteBtnParent.visibility = View.GONE
         }
-
+        var fileRoot = helper.getView<LinearLayout>(R.id.fileRoot)
         if(item.isHasData)
         {
             iv_picture.visibility = View.VISIBLE
@@ -47,7 +47,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
             var size = (file.length() / 1000).toInt();
             val fileName = item.name
             var iv_file = helper.getView<ImageView>(R.id.iv_file)
-            var fileRoot = helper.getView<LinearLayout>(R.id.fileRoot)
+
             if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
                 val uri = Uri.fromFile(file)
                 iv_picture.setImageURI(uri)
@@ -82,6 +82,7 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
         }else{
             iv_picture.visibility = View.GONE
             iv_add.visibility = View.VISIBLE
+            fileRoot.visibility = View.GONE
             helper.addOnClickListener(R.id.iv_add)
             pic_size.visibility = View.GONE
 

@@ -165,6 +165,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
             override fun getIndicator(context: Context): IPagerIndicator {
                 val indicator = LinePagerIndicator(context)
                 indicator.setColors(Color.parseColor("#FF6646F7"))
+                indicator.lineHeight = UIUtil.dip2px(context, 1.5).toFloat()
                 return indicator
             }
 

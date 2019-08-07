@@ -58,8 +58,15 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var message = helper.getView<TextView>(R.id.message)
         if(item.originalText != null && item.originalText != "")
         {
-            var originalTextCun = StringUitl.getHtmlText(item.originalText)
-            message.setText(originalTextCun)
+            var originalTextCun = StringUitl.StripHT(item.originalText)
+            var originalTextCunNew = originalTextCun
+            var endIndex = originalTextCunNew.indexOf(" ")
+            if(endIndex < 0)
+            {
+                endIndex = originalTextCunNew.length
+            }
+            originalTextCunNew =  originalTextCunNew.substring(0,endIndex)
+            message.setText(originalTextCunNew)
         }else{
             message.setText(item.contentText)
         }

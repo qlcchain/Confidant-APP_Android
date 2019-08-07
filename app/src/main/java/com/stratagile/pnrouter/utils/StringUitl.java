@@ -837,7 +837,42 @@ public class StringUitl {
     {
         String regFormat = "\\s*|\t|\r|\n";
         String regTag = "<[^>]*>";
-        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;","");
+        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"");
         return text;
+    }
+    //从html中提取纯文本
+    public static String StripHT(String strHtml) {
+        //定义script的正则表达式
+        String regEx_script="<script[^>]*?>[\\s\\S]*?<\\/script>";
+        //定义style的正则表达式
+        String regEx_style="<style[^>]*?>[\\s\\S]*?<\\/style>";
+        //定义HTML标签的正则表达式
+        String regEx_html="<[^>]+>";
+        //定义空格回车换行符
+        String regEx_space = "\\s*|\t|\r|\n";//定义空格回车换行符
+        String txtcontent = strHtml.replaceAll(regEx_script, ""); //剔出<html>的标签
+        txtcontent = txtcontent.replaceAll(regEx_style, ""); //剔出<html>的标签
+        txtcontent = txtcontent.replaceAll("</?[^>]+>", ""); //剔出<html>的标签
+        txtcontent = txtcontent.replaceAll("<a>\\s*|\t|\r|\n</a>", "");//去除字符串中的空格,回车,换行符,制表符
+        txtcontent = txtcontent.replaceAll("&nbsp;"," ");
+        return txtcontent;
+    }
+    /**
+     * 验证邮箱
+     *
+     * @param email
+     * @return
+     */
+    public static boolean checkEmail(String email) {
+        boolean flag = false;
+        try {
+            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+            Pattern regex = Pattern.compile(check);
+            Matcher matcher = regex.matcher(email);
+            flag = matcher.matches();
+        } catch (Exception e) {
+            flag = false;
+        }
+        return flag;
     }
 }

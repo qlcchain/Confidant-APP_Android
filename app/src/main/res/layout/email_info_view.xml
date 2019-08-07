@@ -99,8 +99,8 @@
                     android:singleLine="true"
                     android:textStyle="bold"
                     android:ellipsize="end"
-                    android:maxEms="8"
-                    android:text="信用管家消费提醒"
+                    android:maxEms="18"
+                    android:text="信用管家消费提醒信用管家消费提醒"
                     android:textColor="@color/infoTitle"
                     android:textSize="19sp" />
 
@@ -570,7 +570,7 @@
             android:background="@drawable/btn_whitestroke"
             android:drawableLeft="@mipmap/btn_reply"
             android:text="@string/Reply"
-            android:paddingLeft="@dimen/x110"
+            android:paddingLeft="@dimen/x90"
             android:gravity="center_vertical"
             android:layout_height="@dimen/x85"
             />
@@ -581,7 +581,7 @@
         <TextView
             android:id="@+id/forWardbtn"
             android:layout_width="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="1"
             android:gravity="center"
             android:textSize="16sp"
             android:textColor="@color/white"

@@ -746,5 +746,7 @@
     <string name="No_mail">No mail</string>
     <string name="Sending">Sending</string>
     <string name="Saving">Saving</string>
+    <string name="Illegal_address">Illegal address</string>
+
 
 </resources>
