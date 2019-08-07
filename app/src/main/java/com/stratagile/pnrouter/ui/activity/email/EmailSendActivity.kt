@@ -809,6 +809,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
 
         }
+        var needTipsShow = true;
+        if(contentHtml.contains("MyConfidantBegin"))
+        {
+            needTipsShow = false
+        }
         if(contactMapList.size >0)
         {
             val contentBuffer = contentHtml.toByteArray()
@@ -842,7 +847,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 getString(R.string.sendfromconfidant)+
                 "</span>"+
                 "</div>"
-        //contentHtml += endStr
+        if(needTipsShow)
+        {
+            contentHtml += endStr
+        }
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)
         var bccAdress = getEditText(bccAdressEdit)

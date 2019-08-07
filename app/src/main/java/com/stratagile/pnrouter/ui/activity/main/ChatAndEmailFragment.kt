@@ -111,7 +111,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
                 val simplePagerTitleView = ColorTransitionPagerTitleView(context)
                 simplePagerTitleView.setText(titles.get(index))
                 simplePagerTitleView.normalColor =  Color.parseColor("#FF9496A1")
-                simplePagerTitleView.textSize = 18f
+                simplePagerTitleView.textSize = 17f
                 var icon: Drawable = icon.get(index)
                // icon.setBounds(60,0,150,90);
                 if(index == 0)

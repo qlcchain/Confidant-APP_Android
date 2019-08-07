@@ -602,6 +602,18 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
         {
 
+            var endStr = ""
+            if(emailMeaasgeData!!.content.contains("MyConfidantBegin"))
+            {
+                endStr =  "<div MyConfidantBegin=''>"+
+                        "<br />"+
+                        " <br />"+
+                        " <br />"+
+                        "<span>"+
+                        getString(R.string.sendfromconfidant)+
+                        "</span>"+
+                        "</div>"
+            }
             var miContentSoucreBgeinIndex= 0
             var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
             if(miContentSoucreEndIndex == -1)
@@ -652,7 +664,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             {
 
             }
-            contactMapList.put("originalText",sourceContent)
+
+            contactMapList.put("originalText",sourceContent + endStr)
             if(sourceContent != "")
             {
                 contactMapList.put("aesKey",aesKey)

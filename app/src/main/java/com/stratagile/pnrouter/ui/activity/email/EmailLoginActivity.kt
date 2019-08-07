@@ -88,8 +88,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "3"->
                 {
-                    account_editText.setText("kuangzihui1989@gmail.com")
-                    password_editText.setText("applela19890712")
+
                 }
             }
         }
@@ -99,19 +98,18 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             if(account_editText.getText().toString().equals(""))
             {
                 toast(R.string.NeedAccount)
-                return@setOnClickListener;
+                return@setOnClickListener
             }
             if(password_editText.getText().toString().equals("")  )
             {
                 toast(R.string.NeedPassword)
-                return@setOnClickListener;
+                return@setOnClickListener
             }
-            //showProgressDialog()
+            showProgressDialog()
             Islands
                     .circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)
-                    .show()
                     .run { progressDialog -> login(progressDialog) }
         }
     }
@@ -142,6 +140,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
      * @param progressDialog
      */
     private fun login(progressDialog: ProgressDialog) {
+
         AppConfig.instance.emailConfig()
                 .setAccount(account_editText.getText().toString())
                 .setPassword(password_editText.getText().toString())
@@ -151,12 +150,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             override fun loginSuccess() {
                 //progressDialog.dismiss()
                 //showProgressDialog(getString(R.string.waiting))
-                progressDialog.dismiss()
-                Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, getString(R.string.success))
-                        .setButton( getString(R.string.close), null, null)
-                        .click()
-                        .show()
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
@@ -168,9 +161,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
 
             override fun loginFailure(errorMsg: String) {
                 //progressDialog.dismiss()
-                progressDialog.dismiss()
                 runOnUiThread {
-                    //closeProgressDialog()
+                    closeProgressDialog()
                     //toast(R.string.Over_configure)
                 }
                 Islands.ordinaryDialog(this@EmailLoginActivity)
