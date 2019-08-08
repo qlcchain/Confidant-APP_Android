@@ -150,10 +150,34 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     fun changEmailMessage(changEmailMessage: ChangEmailMessage) {
         if(changEmailMessage.type == 0)
         {
+            var emailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(changEmailMessage.positon)
+            emailMeaasgeData!!.setIsSeen(false)
             emaiMessageChooseAdapter!!.notifyItemChanged(changEmailMessage.positon)
         }else{
             emaiMessageChooseAdapter!!.remove(changEmailMessage.positon)
             emaiMessageChooseAdapter!!.notifyDataSetChanged()
+        }
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun changEmailStar(changEmailStar: ChangEmailStar) {
+        var emailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(changEmailStar.positon)
+        if(name == "Starred")
+        {
+            if(changEmailStar.type == 0)
+            {
+                emaiMessageChooseAdapter!!.remove(changEmailStar.positon)
+                emaiMessageChooseAdapter!!.notifyDataSetChanged()
+            }
+        }else{
+            if(changEmailStar.type == 0)
+            {
+                emailMeaasgeData!!.setIsStar(false)
+            }else{
+                emailMeaasgeData!!.setIsStar(true)
+            }
+
+            emaiMessageChooseAdapter!!.notifyItemChanged(changEmailStar.positon)
         }
 
     }
@@ -197,11 +221,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         runOnUiThread {
             emaiMessageChooseAdapter!!.setNewData(localMessageList);
         }
-        if(menu.equals("node") || menu.equals("star")|| menu.equals(""))
+        if(menu.equals("star"))
         {
-
-            //toast(R.string.No_mail)
+            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.IsStar.eq(true)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+            runOnUiThread {
+                emaiMessageChooseAdapter!!.setNewData(localMessageList);
+            }
             return;
+        }else  if(menu.equals("node") || menu.equals("star")|| menu.equals("")){
+
         }
         if(AppConfig.instance.emailConfig().account != null && !AppConfig.instance.emailConfig().account.equals(""))
         {

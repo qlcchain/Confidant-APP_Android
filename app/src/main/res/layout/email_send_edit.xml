@@ -186,6 +186,7 @@
                     android:layout_height="wrap_content"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
                     android:background="@null"
                     />

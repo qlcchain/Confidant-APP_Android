@@ -870,6 +870,10 @@ class EmailCore {
     public boolean imapMarkMail(String menu,String uid,int flag,boolean value,String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         imapStore.connect(imapHost, account, password);
+        if(menu.equals("star"))
+        {
+            menu = "INBOX";
+        }
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         IMAPFolder folderTo = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);

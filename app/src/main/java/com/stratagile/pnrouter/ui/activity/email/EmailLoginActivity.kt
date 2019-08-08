@@ -95,12 +95,14 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             //配置发件服务器
-            if(account_editText.getText().toString().equals(""))
+            var account = account_editText.getText().toString().trim()
+            var password = password_editText.getText().toString().trim()
+            if(account.equals(""))
             {
                 toast(R.string.NeedAccount)
                 return@setOnClickListener
             }
-            if(password_editText.getText().toString().equals("")  )
+            if(password.equals("")  )
             {
                 toast(R.string.NeedPassword)
                 return@setOnClickListener
@@ -141,9 +143,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
      */
     private fun login(progressDialog: ProgressDialog) {
 
+        var account = account_editText.getText().toString().trim()
+        var password = password_editText.getText().toString().trim()
         AppConfig.instance.emailConfig()
-                .setAccount(account_editText.getText().toString())
-                .setPassword(password_editText.getText().toString())
+                .setAccount(account)
+                .setPassword(password)
 
         val emailExamine = EmailExamine(AppConfig.instance.emailConfig())
         emailExamine.connectServer(this, object : GetConnectCallback {

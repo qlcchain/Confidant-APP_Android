@@ -34,6 +34,8 @@ import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.EmailInfoData
 import com.stratagile.pnrouter.entity.events.ChangEmailMessage
+import com.stratagile.pnrouter.entity.events.ChangEmailStar
+import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
@@ -104,12 +106,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             draft_info.text = getString(R.string.From_me)
             detail_from_From.text = getString(R.string.To)
         }
+        if(emailMeaasgeData!!.content!= "" && emailMeaasgeData!!.content.contains("confidantkey"))
+        {
+            lockTips.visibility = View.VISIBLE
+        }else{
+            lockTips.visibility = View.GONE
+        }
         when(menu)
         {
             ConstantValue.currentEmailConfigEntity!!.inboxMenu->
             {
                 moreMenu.visibility = View.VISIBLE
 
+            }
+            ConstantValue.currentEmailConfigEntity!!.starMenu->
+            {
+                moreMenu.visibility = View.VISIBLE
             }
             ConstantValue.currentEmailConfigEntity!!.drafMenu->
             {
@@ -133,9 +145,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             inboxStar.visibility =View.VISIBLE
         }else{
-            inboxStar.visibility =View.GONE
+            inboxStar.visibility =View.INVISIBLE
         }
         attachListParent.visibility =View.GONE
+        loadingBar.visibility = View.GONE
+        loadingTips.visibility = View.GONE
         if(attachCount > 0)
         {
             attachListParent.visibility =View.VISIBLE
@@ -187,7 +201,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                       .create()*/
             if(!isDownload)
             {
-                showProgressDialog(getString(R.string.Attachmentdownloading))
+                loadingBar.visibility = View.VISIBLE
+                loadingTips.visibility = View.VISIBLE
+                //showProgressDialog(getString(R.string.Attachmentdownloading))
                 /*tipDialog.show()*/
                 val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
@@ -195,7 +211,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                         .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
                             override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
                                 //tipDialog.dismiss()
-                                closeProgressDialog()
+                                loadingBar.visibility = View.GONE
+                                loadingTips.visibility = View.GONE
                                 runOnUiThread {
                                     attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                                     emaiAttachAdapter = EmaiAttachAdapter(attachList)
@@ -225,7 +242,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                             }
                             override fun gainFailure(errorMsg: String) {
                                 //tipDialog.dismiss()
-                                closeProgressDialog()
+                                //closeProgressDialog()
+                                loadingBar.visibility = View.GONE
+                                loadingTips.visibility = View.GONE
                                 Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                             }
                         },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
@@ -434,6 +453,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                     iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_download_node","sheet_move","statusbar_delete")
 
                 }
+                ConstantValue.currentEmailConfigEntity!!.starMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Star))
+                    iconArray = arrayListOf<String>(starIcon)
+                }
                 ConstantValue.currentEmailConfigEntity!!.sendMenu->
                 {
                     menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Delete))
@@ -453,9 +477,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             PopWindowUtil.showPopMenuWindow(this@EmailInfoActivity, moreMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
-                    when (position) {
-                        0 -> {
-                            showProgressDialog(getString(R.string.loading))
+                    var data = obj as FileOpreateType
+                    when (data.name) {
+                        "Mark Unread" -> {
+                            showProgressDialog(getString(R.string.waiting))
                             /*tipDialog.show()*/
                             val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
@@ -466,6 +491,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                             closeProgressDialog()
                                             emailMeaasgeData!!.setIsSeen(false)
                                             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                            var test = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
                                             EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
                                         }
                                         override fun gainFailure(errorMsg: String) {
@@ -475,8 +501,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                         }
                                     },menu,msgId,32,false,"")
                         }
-                        1 -> {
-                            showProgressDialog(getString(R.string.loading))
+                        "Star" -> {
+                            showProgressDialog(getString(R.string.waiting))
                             /*tipDialog.show()*/
                             val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
@@ -490,10 +516,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                             if(emailMeaasgeData!!.isStar())
                                             {
                                                 inboxStar.visibility =View.VISIBLE
+                                                EventBus.getDefault().post(ChangEmailStar(positionIndex,1))
                                             }else{
-                                                inboxStar.visibility =View.GONE
+                                                inboxStar.visibility =View.INVISIBLE
+                                                EventBus.getDefault().post(ChangEmailStar(positionIndex,0))
                                             }
-                                            EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
+
                                         }
                                         override fun gainFailure(errorMsg: String) {
                                             //tipDialog.dismiss()
@@ -502,13 +530,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                         }
                                     },menu,msgId,8,!starFlag,"")
                         }
-                        2 -> {
+                        "" -> {
 
                         }
-                        3 -> {
+                        "Move_to" -> {
                             showMovePop()
                         }
-                        4 -> {
+                        "Delete" -> {
                             showProgressDialog(getString(R.string.waiting))
                             deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
                         }
@@ -780,7 +808,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     fun deleteEmail()
     {
         AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(emailMeaasgeData)
-        EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))       
+        EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))
         if(emailConfigEntityChoose != null)
         {
             when(menu)

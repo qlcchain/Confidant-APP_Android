@@ -749,5 +749,6 @@
     <string name="Illegal_address">Illegal address</string>
     <string name="NeedAccount">Need Account</string>
     <string name="NeedPassword">Need Password</string>
+    <string name="Downloading">Downloading</string>
 
 </resources>

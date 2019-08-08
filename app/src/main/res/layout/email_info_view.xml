@@ -103,7 +103,21 @@
                     android:text="信用管家消费提醒信用管家消费提醒"
                     android:textColor="@color/infoTitle"
                     android:textSize="19sp" />
-
+                <TextView
+                    android:id="@+id/lockTips"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/inboxStar"
+                    android:layout_marginTop="@dimen/x20"
+                    android:singleLine="true"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:maxEms="8"
+                    android:drawableLeft="@mipmap/tabbar_email_encryption"
+                    android:text=""
+                    android:textColor="@color/textColor"
+                    android:textSize="22sp" />
                 <TextView
                     android:id="@+id/inboxStar"
                     android:visibility="invisible"
@@ -541,6 +555,25 @@
                     android:text="@string/Attach"
                     android:textColor="@color/contentColor"
                     android:textSize="19sp" />
+                <ProgressBar
+                    android:id="@+id/loadingBar"
+                    android:visibility="gone"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:indeterminateBehavior="repeat"
+                    android:indeterminateDrawable="@drawable/loadinganim" />
+
+                <TextView
+                    android:id="@+id/loadingTips"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/Downloading" />
+
                 <android.support.v7.widget.RecyclerView
                     android:layout_margin="@dimen/x20"
                     android:id="@+id/recyclerViewAttach"

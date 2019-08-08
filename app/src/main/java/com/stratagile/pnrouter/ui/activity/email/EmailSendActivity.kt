@@ -247,8 +247,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (methodContext.method == null) {
             switch()
         }
-
-        toAdressEdit.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         var user = users[0].copy()
         /*(toAdressEdit.text as SpannableStringBuilder)
                 .append(methodContext.newSpannable(user))
@@ -292,60 +290,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                 }else{
                     allSpan(toAdressEdit)
-                    if(toAdressEdit.text.toString()!="")
-                    {
-                        if(toAdressEditLastContent != toAdressEdit.text.toString())
-                        {
-                            sendCheck(false)
-                        }
-                    }else{
-                        lockTips.visibility = View.GONE
-                    }
-
-                    toAdressEditLastContent = toAdressEdit.text.toString()
-                }
-            }
-        });
-        ccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
-                    if(toAdressEdit.text.toString()!="")
-                    {
-                        if(toAdressEditLastContent != toAdressEdit.text.toString())
-                        {
-                            sendCheck(false)
-                        }
-                    }else{
-                        lockTips.visibility = View.GONE
-                    }
-
-                    toAdressEditLastContent = toAdressEdit.text.toString()
-                }
-            }
-        });
-        bccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
-                    if(toAdressEdit.text.toString()!="")
-                    {
-                        if(toAdressEditLastContent != toAdressEdit.text.toString())
-                        {
-                            sendCheck(false)
-                        }
-                    }else{
-                        lockTips.visibility = View.GONE
-                    }
-
-                    toAdressEditLastContent = toAdressEdit.text.toString()
-                }
-            }
-        });
-        subject.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
                     if(toAdressEdit.text.toString()!="")
                     {
                         if(toAdressEditLastContent != toAdressEdit.text.toString())
@@ -1167,11 +1111,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var toAdress = ""
         var toIndex = 0
         for (span in toSpans) {
-            if (span != null && span!!.id != null && span!!.id != "") {
+            var id = span!!.id
+            if(id != null)
+            {
+                id = id.trim()
+            }
+            if (span != null && id != null && id!= "") {
                 if (toIndex > 0) {
-                    toAdress += "," + span!!.id
+                    toAdress += "," + id
                 } else {
-                    toAdress += span!!.id
+                    toAdress += id
                 }
                 toIndex++
             }
