@@ -56,6 +56,22 @@ public class EmailConfigEntity implements Parcelable{
     private Boolean garbageMenuRefresh;      //垃圾邮件否需要刷新
     private Boolean deleteMenuRefresh;       //已删除否需要刷新
 
+    private long inboxMaxMessageId;        //Inbox消息id
+    private long inboxMinMessageId;        //Inbox消息id
+    private long nodeMaxMessageId;        //node消息id
+    private long starMaxMessageId;        //star消息id
+    private long drafMaxMessageId;        //draf消息id
+    private long sendMaxMessageId;        //send消息id
+    private long garbageMaxMessageId;      //garbage邮件id
+    private long deleteMaxMessageId;       //delete消息id
+
+    private long nodeMinMessageId;        //node消息id
+    private long starMinMessageId;        //star消息id
+    private long drafMinMessageId;        //draf消息id
+    private long sendMinMessageId;        //send消息id
+    private long garbageMinMessageId;      //garbage邮件id
+    private long deleteMinMessageId;       //delete消息id
+
     private Boolean isChoose;        //是否默认邮箱
 
     public EmailConfigEntity() {
@@ -112,11 +128,25 @@ public class EmailConfigEntity implements Parcelable{
         garbageMenuRefresh = tmpGarbageMenuRefresh == 0 ? null : tmpGarbageMenuRefresh == 1;
         byte tmpDeleteMenuRefresh = in.readByte();
         deleteMenuRefresh = tmpDeleteMenuRefresh == 0 ? null : tmpDeleteMenuRefresh == 1;
+        inboxMaxMessageId = in.readLong();
+        inboxMinMessageId = in.readLong();
+        nodeMaxMessageId = in.readLong();
+        starMaxMessageId = in.readLong();
+        drafMaxMessageId = in.readLong();
+        sendMaxMessageId = in.readLong();
+        garbageMaxMessageId = in.readLong();
+        deleteMaxMessageId = in.readLong();
+        nodeMinMessageId = in.readLong();
+        starMinMessageId = in.readLong();
+        drafMinMessageId = in.readLong();
+        sendMinMessageId = in.readLong();
+        garbageMinMessageId = in.readLong();
+        deleteMinMessageId = in.readLong();
         byte tmpIsChoose = in.readByte();
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
-    @Generated(hash = 1289100305)
+    @Generated(hash = 1818281174)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
             String popHost, String imapHost, String account, String emailType, String password,
             int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount, int starTotalCount,
@@ -126,7 +156,11 @@ public class EmailConfigEntity implements Parcelable{
             String sendMenu, String garbageMenu, String deleteMenu, Boolean inboxMenuRefresh,
             Boolean nodeMenuRefresh, Boolean starMenuRefresh, Boolean drafMenuRefresh,
             Boolean sendMenuRefresh, Boolean garbageMenuRefresh, Boolean deleteMenuRefresh,
-            Boolean isChoose) {
+            long inboxMaxMessageId, long inboxMinMessageId, long nodeMaxMessageId,
+            long starMaxMessageId, long drafMaxMessageId, long sendMaxMessageId,
+            long garbageMaxMessageId, long deleteMaxMessageId, long nodeMinMessageId,
+            long starMinMessageId, long drafMinMessageId, long sendMinMessageId,
+            long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -165,6 +199,20 @@ public class EmailConfigEntity implements Parcelable{
         this.sendMenuRefresh = sendMenuRefresh;
         this.garbageMenuRefresh = garbageMenuRefresh;
         this.deleteMenuRefresh = deleteMenuRefresh;
+        this.inboxMaxMessageId = inboxMaxMessageId;
+        this.inboxMinMessageId = inboxMinMessageId;
+        this.nodeMaxMessageId = nodeMaxMessageId;
+        this.starMaxMessageId = starMaxMessageId;
+        this.drafMaxMessageId = drafMaxMessageId;
+        this.sendMaxMessageId = sendMaxMessageId;
+        this.garbageMaxMessageId = garbageMaxMessageId;
+        this.deleteMaxMessageId = deleteMaxMessageId;
+        this.nodeMinMessageId = nodeMinMessageId;
+        this.starMinMessageId = starMinMessageId;
+        this.drafMinMessageId = drafMinMessageId;
+        this.sendMinMessageId = sendMinMessageId;
+        this.garbageMinMessageId = garbageMinMessageId;
+        this.deleteMinMessageId = deleteMinMessageId;
         this.isChoose = isChoose;
     }
 
@@ -484,6 +532,118 @@ public class EmailConfigEntity implements Parcelable{
         this.deleteMenuRefresh = deleteMenuRefresh;
     }
 
+    public long getInboxMaxMessageId() {
+        return inboxMaxMessageId;
+    }
+
+    public void setInboxMaxMessageId(long inboxMaxMessageId) {
+        this.inboxMaxMessageId = inboxMaxMessageId;
+    }
+
+    public long getInboxMinMessageId() {
+        return inboxMinMessageId;
+    }
+
+    public void setInboxMinMessageId(long inboxMinMessageId) {
+        this.inboxMinMessageId = inboxMinMessageId;
+    }
+
+    public long getNodeMaxMessageId() {
+        return nodeMaxMessageId;
+    }
+
+    public void setNodeMaxMessageId(long nodeMaxMessageId) {
+        this.nodeMaxMessageId = nodeMaxMessageId;
+    }
+
+    public long getStarMaxMessageId() {
+        return starMaxMessageId;
+    }
+
+    public void setStarMaxMessageId(long starMaxMessageId) {
+        this.starMaxMessageId = starMaxMessageId;
+    }
+
+    public long getDrafMaxMessageId() {
+        return drafMaxMessageId;
+    }
+
+    public void setDrafMaxMessageId(long drafMaxMessageId) {
+        this.drafMaxMessageId = drafMaxMessageId;
+    }
+
+    public long getSendMaxMessageId() {
+        return sendMaxMessageId;
+    }
+
+    public void setSendMaxMessageId(long sendMaxMessageId) {
+        this.sendMaxMessageId = sendMaxMessageId;
+    }
+
+    public long getGarbageMaxMessageId() {
+        return garbageMaxMessageId;
+    }
+
+    public void setGarbageMaxMessageId(long garbageMaxMessageId) {
+        this.garbageMaxMessageId = garbageMaxMessageId;
+    }
+
+    public long getDeleteMaxMessageId() {
+        return deleteMaxMessageId;
+    }
+
+    public void setDeleteMaxMessageId(long deleteMaxMessageId) {
+        this.deleteMaxMessageId = deleteMaxMessageId;
+    }
+
+    public long getNodeMinMessageId() {
+        return nodeMinMessageId;
+    }
+
+    public void setNodeMinMessageId(long nodeMinMessageId) {
+        this.nodeMinMessageId = nodeMinMessageId;
+    }
+
+    public long getStarMinMessageId() {
+        return starMinMessageId;
+    }
+
+    public void setStarMinMessageId(long starMinMessageId) {
+        this.starMinMessageId = starMinMessageId;
+    }
+
+    public long getDrafMinMessageId() {
+        return drafMinMessageId;
+    }
+
+    public void setDrafMinMessageId(long drafMinMessageId) {
+        this.drafMinMessageId = drafMinMessageId;
+    }
+
+    public long getSendMinMessageId() {
+        return sendMinMessageId;
+    }
+
+    public void setSendMinMessageId(long sendMinMessageId) {
+        this.sendMinMessageId = sendMinMessageId;
+    }
+
+    public long getGarbageMinMessageId() {
+        return garbageMinMessageId;
+    }
+
+    public void setGarbageMinMessageId(long garbageMinMessageId) {
+        this.garbageMinMessageId = garbageMinMessageId;
+    }
+
+    public long getDeleteMinMessageId() {
+        return deleteMinMessageId;
+    }
+
+    public void setDeleteMinMessageId(long deleteMinMessageId) {
+        this.deleteMinMessageId = deleteMinMessageId;
+    }
+
     public Boolean getChoose() {
         return isChoose;
     }
@@ -492,11 +652,28 @@ public class EmailConfigEntity implements Parcelable{
         isChoose = choose;
     }
 
+    /**
+     * Describe the kinds of special objects contained in this Parcelable
+     * instance's marshaled representation. For example, if the object will
+     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
+     * the return value of this method must include the
+     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
+     *
+     * @return a bitmask indicating the set of special object types marshaled
+     * by this Parcelable object instance.
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         if (id == null) {
@@ -542,6 +719,20 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeByte((byte) (sendMenuRefresh == null ? 0 : sendMenuRefresh ? 1 : 2));
         dest.writeByte((byte) (garbageMenuRefresh == null ? 0 : garbageMenuRefresh ? 1 : 2));
         dest.writeByte((byte) (deleteMenuRefresh == null ? 0 : deleteMenuRefresh ? 1 : 2));
+        dest.writeLong(inboxMaxMessageId);
+        dest.writeLong(inboxMinMessageId);
+        dest.writeLong(nodeMaxMessageId);
+        dest.writeLong(starMaxMessageId);
+        dest.writeLong(drafMaxMessageId);
+        dest.writeLong(sendMaxMessageId);
+        dest.writeLong(garbageMaxMessageId);
+        dest.writeLong(deleteMaxMessageId);
+        dest.writeLong(nodeMinMessageId);
+        dest.writeLong(starMinMessageId);
+        dest.writeLong(drafMinMessageId);
+        dest.writeLong(sendMinMessageId);
+        dest.writeLong(garbageMinMessageId);
+        dest.writeLong(deleteMinMessageId);
         dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
     }
 

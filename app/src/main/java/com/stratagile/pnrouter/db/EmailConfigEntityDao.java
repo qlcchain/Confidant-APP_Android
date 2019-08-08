@@ -60,7 +60,21 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property SendMenuRefresh = new Property(35, Boolean.class, "sendMenuRefresh", false, "SEND_MENU_REFRESH");
         public final static Property GarbageMenuRefresh = new Property(36, Boolean.class, "garbageMenuRefresh", false, "GARBAGE_MENU_REFRESH");
         public final static Property DeleteMenuRefresh = new Property(37, Boolean.class, "deleteMenuRefresh", false, "DELETE_MENU_REFRESH");
-        public final static Property IsChoose = new Property(38, Boolean.class, "isChoose", false, "IS_CHOOSE");
+        public final static Property InboxMaxMessageId = new Property(38, long.class, "inboxMaxMessageId", false, "INBOX_MAX_MESSAGE_ID");
+        public final static Property InboxMinMessageId = new Property(39, long.class, "inboxMinMessageId", false, "INBOX_MIN_MESSAGE_ID");
+        public final static Property NodeMaxMessageId = new Property(40, long.class, "nodeMaxMessageId", false, "NODE_MAX_MESSAGE_ID");
+        public final static Property StarMaxMessageId = new Property(41, long.class, "starMaxMessageId", false, "STAR_MAX_MESSAGE_ID");
+        public final static Property DrafMaxMessageId = new Property(42, long.class, "drafMaxMessageId", false, "DRAF_MAX_MESSAGE_ID");
+        public final static Property SendMaxMessageId = new Property(43, long.class, "sendMaxMessageId", false, "SEND_MAX_MESSAGE_ID");
+        public final static Property GarbageMaxMessageId = new Property(44, long.class, "garbageMaxMessageId", false, "GARBAGE_MAX_MESSAGE_ID");
+        public final static Property DeleteMaxMessageId = new Property(45, long.class, "deleteMaxMessageId", false, "DELETE_MAX_MESSAGE_ID");
+        public final static Property NodeMinMessageId = new Property(46, long.class, "nodeMinMessageId", false, "NODE_MIN_MESSAGE_ID");
+        public final static Property StarMinMessageId = new Property(47, long.class, "starMinMessageId", false, "STAR_MIN_MESSAGE_ID");
+        public final static Property DrafMinMessageId = new Property(48, long.class, "drafMinMessageId", false, "DRAF_MIN_MESSAGE_ID");
+        public final static Property SendMinMessageId = new Property(49, long.class, "sendMinMessageId", false, "SEND_MIN_MESSAGE_ID");
+        public final static Property GarbageMinMessageId = new Property(50, long.class, "garbageMinMessageId", false, "GARBAGE_MIN_MESSAGE_ID");
+        public final static Property DeleteMinMessageId = new Property(51, long.class, "deleteMinMessageId", false, "DELETE_MIN_MESSAGE_ID");
+        public final static Property IsChoose = new Property(52, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -114,7 +128,21 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"SEND_MENU_REFRESH\" INTEGER," + // 35: sendMenuRefresh
                 "\"GARBAGE_MENU_REFRESH\" INTEGER," + // 36: garbageMenuRefresh
                 "\"DELETE_MENU_REFRESH\" INTEGER," + // 37: deleteMenuRefresh
-                "\"IS_CHOOSE\" INTEGER);"); // 38: isChoose
+                "\"INBOX_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 38: inboxMaxMessageId
+                "\"INBOX_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 39: inboxMinMessageId
+                "\"NODE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 40: nodeMaxMessageId
+                "\"STAR_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 41: starMaxMessageId
+                "\"DRAF_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 42: drafMaxMessageId
+                "\"SEND_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 43: sendMaxMessageId
+                "\"GARBAGE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 44: garbageMaxMessageId
+                "\"DELETE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 45: deleteMaxMessageId
+                "\"NODE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 46: nodeMinMessageId
+                "\"STAR_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 47: starMinMessageId
+                "\"DRAF_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 48: drafMinMessageId
+                "\"SEND_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 49: sendMinMessageId
+                "\"GARBAGE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 50: garbageMinMessageId
+                "\"DELETE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 51: deleteMinMessageId
+                "\"IS_CHOOSE\" INTEGER);"); // 52: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -248,10 +276,24 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (deleteMenuRefresh != null) {
             stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
         }
+        stmt.bindLong(39, entity.getInboxMaxMessageId());
+        stmt.bindLong(40, entity.getInboxMinMessageId());
+        stmt.bindLong(41, entity.getNodeMaxMessageId());
+        stmt.bindLong(42, entity.getStarMaxMessageId());
+        stmt.bindLong(43, entity.getDrafMaxMessageId());
+        stmt.bindLong(44, entity.getSendMaxMessageId());
+        stmt.bindLong(45, entity.getGarbageMaxMessageId());
+        stmt.bindLong(46, entity.getDeleteMaxMessageId());
+        stmt.bindLong(47, entity.getNodeMinMessageId());
+        stmt.bindLong(48, entity.getStarMinMessageId());
+        stmt.bindLong(49, entity.getDrafMinMessageId());
+        stmt.bindLong(50, entity.getSendMinMessageId());
+        stmt.bindLong(51, entity.getGarbageMinMessageId());
+        stmt.bindLong(52, entity.getDeleteMinMessageId());
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(39, isChoose ? 1L: 0L);
+            stmt.bindLong(53, isChoose ? 1L: 0L);
         }
     }
 
@@ -380,10 +422,24 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (deleteMenuRefresh != null) {
             stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
         }
+        stmt.bindLong(39, entity.getInboxMaxMessageId());
+        stmt.bindLong(40, entity.getInboxMinMessageId());
+        stmt.bindLong(41, entity.getNodeMaxMessageId());
+        stmt.bindLong(42, entity.getStarMaxMessageId());
+        stmt.bindLong(43, entity.getDrafMaxMessageId());
+        stmt.bindLong(44, entity.getSendMaxMessageId());
+        stmt.bindLong(45, entity.getGarbageMaxMessageId());
+        stmt.bindLong(46, entity.getDeleteMaxMessageId());
+        stmt.bindLong(47, entity.getNodeMinMessageId());
+        stmt.bindLong(48, entity.getStarMinMessageId());
+        stmt.bindLong(49, entity.getDrafMinMessageId());
+        stmt.bindLong(50, entity.getSendMinMessageId());
+        stmt.bindLong(51, entity.getGarbageMinMessageId());
+        stmt.bindLong(52, entity.getDeleteMinMessageId());
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(39, isChoose ? 1L: 0L);
+            stmt.bindLong(53, isChoose ? 1L: 0L);
         }
     }
 
@@ -433,7 +489,21 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0, // sendMenuRefresh
             cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0, // garbageMenuRefresh
             cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0, // deleteMenuRefresh
-            cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0 // isChoose
+            cursor.getLong(offset + 38), // inboxMaxMessageId
+            cursor.getLong(offset + 39), // inboxMinMessageId
+            cursor.getLong(offset + 40), // nodeMaxMessageId
+            cursor.getLong(offset + 41), // starMaxMessageId
+            cursor.getLong(offset + 42), // drafMaxMessageId
+            cursor.getLong(offset + 43), // sendMaxMessageId
+            cursor.getLong(offset + 44), // garbageMaxMessageId
+            cursor.getLong(offset + 45), // deleteMaxMessageId
+            cursor.getLong(offset + 46), // nodeMinMessageId
+            cursor.getLong(offset + 47), // starMinMessageId
+            cursor.getLong(offset + 48), // drafMinMessageId
+            cursor.getLong(offset + 49), // sendMinMessageId
+            cursor.getLong(offset + 50), // garbageMinMessageId
+            cursor.getLong(offset + 51), // deleteMinMessageId
+            cursor.isNull(offset + 52) ? null : cursor.getShort(offset + 52) != 0 // isChoose
         );
         return entity;
     }
@@ -478,7 +548,21 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setSendMenuRefresh(cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0);
         entity.setGarbageMenuRefresh(cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0);
         entity.setDeleteMenuRefresh(cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0);
-        entity.setIsChoose(cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0);
+        entity.setInboxMaxMessageId(cursor.getLong(offset + 38));
+        entity.setInboxMinMessageId(cursor.getLong(offset + 39));
+        entity.setNodeMaxMessageId(cursor.getLong(offset + 40));
+        entity.setStarMaxMessageId(cursor.getLong(offset + 41));
+        entity.setDrafMaxMessageId(cursor.getLong(offset + 42));
+        entity.setSendMaxMessageId(cursor.getLong(offset + 43));
+        entity.setGarbageMaxMessageId(cursor.getLong(offset + 44));
+        entity.setDeleteMaxMessageId(cursor.getLong(offset + 45));
+        entity.setNodeMinMessageId(cursor.getLong(offset + 46));
+        entity.setStarMinMessageId(cursor.getLong(offset + 47));
+        entity.setDrafMinMessageId(cursor.getLong(offset + 48));
+        entity.setSendMinMessageId(cursor.getLong(offset + 49));
+        entity.setGarbageMinMessageId(cursor.getLong(offset + 50));
+        entity.setDeleteMinMessageId(cursor.getLong(offset + 51));
+        entity.setIsChoose(cursor.isNull(offset + 52) ? null : cursor.getShort(offset + 52) != 0);
      }
     
     @Override

@@ -306,6 +306,23 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                                             emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
                                             emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
                                             emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+
+                                            emailConfigEntity.inboxMaxMessageId = emailMessage.inboxMaxMessageId
+                                            emailConfigEntity.inboxMinMessageId = emailMessage.inboxMinMessageId
+                                            emailConfigEntity.nodeMaxMessageId = emailMessage.nodeMaxMessageId
+                                            emailConfigEntity.nodeMinMessageId = emailMessage.nodeMinMessageId
+
+                                            emailConfigEntity.starMaxMessageId = emailMessage.starMaxMessageId
+                                            emailConfigEntity.starMinMessageId = emailMessage.starMinMessageId
+                                            emailConfigEntity.drafMaxMessageId = emailMessage.drafMaxMessageId
+                                            emailConfigEntity.drafMinMessageId = emailMessage.drafMinMessageId
+                                            emailConfigEntity.sendMaxMessageId = emailMessage.sendMaxMessageId
+                                            emailConfigEntity.sendMinMessageId = emailMessage.sendMinMessageId
+                                            emailConfigEntity.garbageMaxMessageId = emailMessage.garbageMaxMessageId
+                                            emailConfigEntity.garbageMinMessageId = emailMessage.garbageMinMessageId
+                                            emailConfigEntity.deleteMaxMessageId = emailMessage.deleteMaxMessageId
+                                            emailConfigEntity.deleteMinMessageId = emailMessage.deleteMinMessageId
+
                                             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
                                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }

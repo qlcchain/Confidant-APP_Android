@@ -42,6 +42,22 @@ public class EmailCount {
     private int deleteTotalCount;        //delete消息总数
     private int deleteUnReadCount;        //delete未读数量
 
+    private long inboxMaxMessageId;        //Inbox消息id
+    private long inboxMinMessageId;        //Inbox消息id
+    private long nodeMaxMessageId;        //node消息id
+    private long starMaxMessageId;        //star消息id
+    private long drafMaxMessageId;        //draf消息id
+    private long sendMaxMessageId;        //send消息id
+    private long garbageMaxMessageId;      //garbage邮件id
+    private long deleteMaxMessageId;       //delete消息id
+
+    private long nodeMinMessageId;        //node消息id
+    private long starMinMessageId;        //star消息id
+    private long drafMinMessageId;        //draf消息id
+    private long sendMinMessageId;        //send消息id
+    private long garbageMinMessageId;      //garbage邮件id
+    private long deleteMinMessageId;       //delete消息id
+
     public int getTotalCount() {
         return totalCount;
     }
@@ -152,5 +168,117 @@ public class EmailCount {
 
     public void setDeleteUnReadCount(int deleteUnReadCount) {
         this.deleteUnReadCount = deleteUnReadCount;
+    }
+
+    public long getInboxMaxMessageId() {
+        return inboxMaxMessageId;
+    }
+
+    public void setInboxMaxMessageId(long inboxMaxMessageId) {
+        this.inboxMaxMessageId = inboxMaxMessageId;
+    }
+
+    public long getInboxMinMessageId() {
+        return inboxMinMessageId;
+    }
+
+    public void setInboxMinMessageId(long inboxMinMessageId) {
+        this.inboxMinMessageId = inboxMinMessageId;
+    }
+
+    public long getNodeMaxMessageId() {
+        return nodeMaxMessageId;
+    }
+
+    public void setNodeMaxMessageId(long nodeMaxMessageId) {
+        this.nodeMaxMessageId = nodeMaxMessageId;
+    }
+
+    public long getStarMaxMessageId() {
+        return starMaxMessageId;
+    }
+
+    public void setStarMaxMessageId(long starMaxMessageId) {
+        this.starMaxMessageId = starMaxMessageId;
+    }
+
+    public long getDrafMaxMessageId() {
+        return drafMaxMessageId;
+    }
+
+    public void setDrafMaxMessageId(long drafMaxMessageId) {
+        this.drafMaxMessageId = drafMaxMessageId;
+    }
+
+    public long getSendMaxMessageId() {
+        return sendMaxMessageId;
+    }
+
+    public void setSendMaxMessageId(long sendMaxMessageId) {
+        this.sendMaxMessageId = sendMaxMessageId;
+    }
+
+    public long getGarbageMaxMessageId() {
+        return garbageMaxMessageId;
+    }
+
+    public void setGarbageMaxMessageId(long garbageMaxMessageId) {
+        this.garbageMaxMessageId = garbageMaxMessageId;
+    }
+
+    public long getDeleteMaxMessageId() {
+        return deleteMaxMessageId;
+    }
+
+    public void setDeleteMaxMessageId(long deleteMaxMessageId) {
+        this.deleteMaxMessageId = deleteMaxMessageId;
+    }
+
+    public long getNodeMinMessageId() {
+        return nodeMinMessageId;
+    }
+
+    public void setNodeMinMessageId(long nodeMinMessageId) {
+        this.nodeMinMessageId = nodeMinMessageId;
+    }
+
+    public long getStarMinMessageId() {
+        return starMinMessageId;
+    }
+
+    public void setStarMinMessageId(long starMinMessageId) {
+        this.starMinMessageId = starMinMessageId;
+    }
+
+    public long getDrafMinMessageId() {
+        return drafMinMessageId;
+    }
+
+    public void setDrafMinMessageId(long drafMinMessageId) {
+        this.drafMinMessageId = drafMinMessageId;
+    }
+
+    public long getSendMinMessageId() {
+        return sendMinMessageId;
+    }
+
+    public void setSendMinMessageId(long sendMinMessageId) {
+        this.sendMinMessageId = sendMinMessageId;
+    }
+
+    public long getGarbageMinMessageId() {
+        return garbageMinMessageId;
+    }
+
+    public void setGarbageMinMessageId(long garbageMinMessageId) {
+        this.garbageMinMessageId = garbageMinMessageId;
+    }
+
+    public long getDeleteMinMessageId() {
+        return deleteMinMessageId;
+    }
+
+    public void setDeleteMinMessageId(long deleteMinMessageId) {
+        this.deleteMinMessageId = deleteMinMessageId;
     }
 }
