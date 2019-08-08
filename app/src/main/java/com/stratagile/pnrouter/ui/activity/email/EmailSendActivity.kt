@@ -466,6 +466,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
         }
+        webView.setLayerType(View.LAYER_TYPE_NONE, null);
+        re_main_editor.setLayerType(View.LAYER_TYPE_NONE, null);
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
         webSettings.javaScriptEnabled = true // 设置支持javascript脚本
         webSettings.setTextSize(WebSettings.TextSize.LARGEST)

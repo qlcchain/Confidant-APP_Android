@@ -560,6 +560,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
         }
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
+        webView.setLayerType(View.LAYER_TYPE_NONE, null);
         webSettings.javaScriptEnabled = true // 设置支持javascript脚本
         webSettings.setTextSize(WebSettings.TextSize.LARGEST)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
