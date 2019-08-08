@@ -745,7 +745,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                     accountMi = confidantkeyArr.get(0)
                     shareMiKey = confidantkeyArr.get(1)
                     account =  String(RxEncodeTool.base64Decode(accountMi))
-                    if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
+                    if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
                     {
                         break;
                     }

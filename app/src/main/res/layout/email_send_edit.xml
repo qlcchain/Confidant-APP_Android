@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:background="@color/white"
+    android:transitionGroup="true"
     android:orientation="vertical">
 
     <RelativeLayout

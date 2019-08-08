@@ -547,7 +547,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             re_main_editor.setHtml(emailMessageEntity!!.content)
         }else{
-            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+            try {
+                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+            }catch (e:Exception)
+            {
+                e.printStackTrace()
+            }
+
         }
 
     }
@@ -735,7 +741,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
     private fun sendCheck(flag:Boolean)
     {
-
+        contactMapList = HashMap<String, String>()
         isSendCheck = flag
         var toAdress = getEditText(toAdressEdit)
         toAdress = toAdress.replace(",,","")
@@ -832,7 +838,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     "   <br />"+
                     "   <br />";
             contentHtml +=  centerStr
-            contentHtml +=emailMeaasgeInfoData!!.content
+            if(emailMeaasgeInfoData!!.originalText != "")
+            {
+                contentHtml +=emailMeaasgeInfoData!!.originalText
+            }else{
+                contentHtml +=emailMeaasgeInfoData!!.content
+            }
 
 
         }
@@ -845,6 +856,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             val contentBuffer = contentHtml.toByteArray()
             var fileKey16 = fileKey.substring(0,16)
+            Log.i("fileKey16",fileKey16)
             var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
             contentHtml = contentBufferMiStr;
         }
