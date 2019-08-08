@@ -708,52 +708,59 @@ class EmailCore {
         int totalSize =   folder.getMessageCount();
         int newSize=  totalSize - lastTotalCount;
         boolean noMoreData = false;
-        if(totalSize > 0)
+        if(newSize < 0)
         {
-            if(lastTotalCount == 0)
+            noMoreData = true;
+            messagesAll = new Message[]{};
+        }else {
+            if(totalSize > 0)
             {
-                if(totalSize >= pageSize)
+                if(lastTotalCount == 0)
                 {
-                    noMoreData = false;
-                    int startIndex = totalSize - pageSize;
-                    int endIndex = totalSize ;
-                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-                    messagesAll = folder.getMessages(startIndex,endIndex);
-                }else{
-                    noMoreData = false;
-                    int startIndex = 1;
-                    int endIndex = totalSize ;
-                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-                    messagesAll = folder.getMessages(startIndex,endIndex);
-                }
-
-            }else{
-                if(lastTotalCount - beginIndex >=pageSize)
-                {
-                    noMoreData = false;
-                    int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
-                    int endIndex = totalSize - beginIndex - newSize;
-                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-                    messagesAll = folder.getMessages(startIndex,endIndex);
-                }else{
-                    noMoreData = true;
-                    int addSize = lastTotalCount - beginIndex;
-                    int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
-                    int endIndex = totalSize - beginIndex - newSize;
-                    System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
-                    if(startIndex== 0 || startIndex > endIndex)
+                    if(totalSize >= pageSize)
                     {
-                        messagesAll = new Message[]{};
+                        noMoreData = false;
+                        int startIndex = totalSize - pageSize;
+                        int endIndex = totalSize ;
+                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        messagesAll = folder.getMessages(startIndex,endIndex);
                     }else{
+                        noMoreData = false;
+                        int startIndex = 1;
+                        int endIndex = totalSize ;
+                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
                         messagesAll = folder.getMessages(startIndex,endIndex);
                     }
 
+                }else{
+                    if(lastTotalCount - beginIndex >=pageSize)
+                    {
+                        noMoreData = false;
+                        int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
+                        int endIndex = totalSize - beginIndex - newSize;
+                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        messagesAll = folder.getMessages(startIndex,endIndex);
+                    }else{
+                        noMoreData = true;
+                        int addSize = lastTotalCount - beginIndex;
+                        int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
+                        int endIndex = totalSize - beginIndex - newSize;
+                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        if(startIndex== 0 || startIndex > endIndex)
+                        {
+                            messagesAll = new Message[]{};
+                        }else{
+                            messagesAll = folder.getMessages(startIndex,endIndex);
+                        }
+
+                    }
                 }
+            }else{
+                noMoreData = true;
+                messagesAll = new Message[]{};
             }
-        }else{
-            noMoreData = true;
-            messagesAll = new Message[]{};
         }
+
 
 
         List<Message> list  = Arrays.asList(messagesAll);
