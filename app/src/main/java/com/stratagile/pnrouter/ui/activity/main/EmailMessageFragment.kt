@@ -762,12 +762,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             var sourceContent = ""
             try{
                 sourceContent = String(miContent)
+                contactMapList.put("originalText",sourceContent + endStr)
             }catch (e:Exception)
             {
-
+                contactMapList.put("originalText","")
             }
-
-            contactMapList.put("originalText",sourceContent + endStr)
             if(sourceContent != "")
             {
                 contactMapList.put("aesKey",aesKey)
@@ -777,7 +776,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
             return contactMapList
         }else{
-            contactMapList.put("originalText",emailMeaasgeData!!.content)
+            contactMapList.put("originalText","")
             contactMapList.put("aesKey","")
            return contactMapList
         }

@@ -712,6 +712,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     }
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setCancelText(getString(R.string.no))
+                .setConfirmText(getString(R.string.yes))
                 .setContentText(getString(R.string.Send_attachments))
                 .setConfirmClickListener {
                     var intent = Intent(this, EmailSendActivity::class.java)

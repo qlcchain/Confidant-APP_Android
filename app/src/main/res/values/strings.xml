@@ -750,5 +750,7 @@
     <string name="NeedAccount">Need Account</string>
     <string name="NeedPassword">Need Password</string>
     <string name="Downloading">Downloading</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 
 </resources>

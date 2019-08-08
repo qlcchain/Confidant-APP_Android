@@ -185,6 +185,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var attachListEntity =  arrayListOf<EmailAttachEntity>()
     var isSendCheck = false
     var toAdressEditLastContent = ""
+    var ccAdressEditLastContent = ""
+    var bccAdressEditLastContent = ""
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
         if(jCheckmailUkeyRsp.params.retCode == 0)
@@ -238,6 +240,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         menu = intent.getStringExtra("menu")
         initUI()
         initClickListener()
+        sendCheck(false)
     }
 
     /**
@@ -247,19 +250,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if (methodContext.method == null) {
             switch()
         }
-        var user = users[0].copy()
-        /*(toAdressEdit.text as SpannableStringBuilder)
-                .append(methodContext.newSpannable(user))
-                .append(",123@qq.com")*/
-
-        user = users[1].copy()
-        /*(toAdressEdit.text as SpannableStringBuilder)
-                .append(methodContext.newSpannable(user))
-                .append(",")
-        user = users[2].copy()
-        (toAdressEdit.text as SpannableStringBuilder)
-                .append(methodContext.newSpannable(user))
-                .append(",")*/
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 5
         var aa = toAdressEdit!!.getText()
@@ -290,17 +280,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                 }else{
                     allSpan(toAdressEdit)
-                    if(toAdressEdit.text.toString()!="")
-                    {
-                        if(toAdressEditLastContent != toAdressEdit.text.toString())
-                        {
-                            sendCheck(false)
-                        }
-                    }else{
-                        lockTips.visibility = View.GONE
-                    }
-
-                    toAdressEditLastContent = toAdressEdit.text.toString()
+                    sendCheck(false)
                 }
             }
         });
@@ -311,6 +291,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                 }else{
                     allSpan(ccAdressEdit)
+                    sendCheck(false)
                 }
             }
         });
@@ -321,6 +302,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                 }else{
                     allSpan(bccAdressEdit)
+                    sendCheck(false)
+                    bccAdressEditLastContent = bccAdressEdit.text.toString()
                 }
             }
         });
@@ -683,6 +666,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 R.id.deleteBtn -> {
                     emaiAttachAdapter!!.remove(position)
                     emaiAttachAdapter!!.notifyDataSetChanged();
+                    if( emaiAttachAdapter!!.itemCount > 1)
+                    {
+                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                    }else{
+                        addSubject.text = ""
+                    }
                 }
                 R.id.iv_add -> {
                     hideSoftKeyboard()
@@ -747,10 +736,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         isSendCheck = flag
         var toAdress = getEditText(toAdressEdit)
-
         toAdress = toAdress.replace(",,","")
         var toAdressArr = toAdress.split(",");
-        if(toAdress== "")
+        if(flag== true && toAdress== "")
         {
             toast(R.string.The_recipient_cant_be_empty)
             return
@@ -771,13 +759,52 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
-        toAdressBase64 = toAdressBase64.substring(0,toAdressBase64.length -1)
+        if(toAdressBase64.length >0)
+        {
+            toAdressBase64 = toAdressBase64.substring(0,toAdressBase64.length -1)
+        }
+
+        var toAdressBase64CC = ""
         var ccAdress = getEditText(ccAdressEdit)
         ccAdress = ccAdress.replace(",,","")
+        var ccAdressArr = ccAdress.split(",");
+        for (item in ccAdressArr)
+        {
+            if(item != "")
+            {
+                var temp = item.trim()
+                temp = temp.toLowerCase()
+                toAdressBase64CC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+            }
+        }
+        if(toAdressBase64CC.length >0)
+        {
+            toAdressBase64CC = toAdressBase64CC.substring(0,toAdressBase64CC.length -1)
+        }
+        var toAdressBase64BCC = ""
         var bccAdress = getEditText(bccAdressEdit)
-        ccAdress.replace(",,","")
-
-        var checkmailUkey = CheckmailUkey(toAdressArr.size,toAdressBase64)
+        bccAdress.replace(",,","")
+        var bccAdressArr = bccAdress.split(",");
+        for (item in bccAdressArr)
+        {
+            if(item != "")
+            {
+                var temp = item.trim()
+                temp = temp.toLowerCase()
+                toAdressBase64BCC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+            }
+        }
+        if(toAdressBase64BCC.length >0)
+        {
+            toAdressBase64BCC = toAdressBase64BCC.substring(0,toAdressBase64BCC.length -1)
+        }
+        var addressBase64 = toAdressBase64 +toAdressBase64CC +toAdressBase64BCC
+        if(addressBase64 == "")
+        {
+            lockTips.visibility = View.GONE
+            return
+        }
+        var checkmailUkey = CheckmailUkey(toAdressArr.size,addressBase64)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
     }
     /**
@@ -1597,6 +1624,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emailAttachEntity.isCanDelete = true
                     emaiAttachAdapter!!.addData(0,emailAttachEntity)
                     emaiAttachAdapter!!.notifyDataSetChanged();
+                    if( emaiAttachAdapter!!.itemCount > 1)
+                    {
+                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                    }else{
+                        addSubject.text = ""
+                    }
                 }
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 KLog.i("选照片或者视频返回。。。")
@@ -1616,6 +1649,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                     }
                     emaiAttachAdapter!!.notifyDataSetChanged();
+                    if( emaiAttachAdapter!!.itemCount > 1)
+                    {
+                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                    }else{
+                        addSubject.text = ""
+                    }
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }
@@ -1633,6 +1672,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/")+1,file.path.length)
                             emailAttachEntity.isCanDelete = true
                             emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                            emaiAttachAdapter!!.notifyDataSetChanged();
+                            if( emaiAttachAdapter!!.itemCount > 1)
+                            {
+                                addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                            }else{
+                                addSubject.text = ""
+                            }
                         }
                     }
                 } else {
@@ -1660,6 +1706,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         }
                         i++;
                     }
+                    sendCheck(false)
                 }
             } else if (requestCode == REQUEST_CODE_CC) {
                 ccAdressEdit.requestFocus()
@@ -1682,6 +1729,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         }
                         i++;
                     }
+                    sendCheck(false)
                 }
             } else if (requestCode == REQUEST_CODE_BCC) {
                 bccAdressEdit.requestFocus()
@@ -1704,6 +1752,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         }
                         i++;
                     }
+                    sendCheck(false)
                 }
             }
 
@@ -1756,6 +1805,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setCancelText(getString(R.string.no))
+                .setConfirmText(getString(R.string.yes))
                 .setContentText(getString(R.string.Save_it_in_the_draft_box))
                 .setConfirmClickListener {
                     sendEmail(false)

@@ -43,7 +43,7 @@ open class BaseData() {
             {
                 if(BuildConfig.DEBUG)
                 {
-                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                    //throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
                 }
             }
         }
@@ -76,7 +76,7 @@ open class BaseData() {
             {
                 if(BuildConfig.DEBUG)
                 {
-                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                    //throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
                 }
             }
         }
@@ -103,7 +103,7 @@ open class BaseData() {
             {
                 if(BuildConfig.DEBUG)
                 {
-                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                    //throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
                 }
             }
         }
@@ -136,7 +136,7 @@ open class BaseData() {
             {
                 if(BuildConfig.DEBUG)
                 {
-                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                    //throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
                 }
             }
         }

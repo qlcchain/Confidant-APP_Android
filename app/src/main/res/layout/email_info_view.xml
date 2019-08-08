@@ -88,7 +88,7 @@
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/x70"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
                     android:id="@+id/inboxTitle"
@@ -96,10 +96,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/x30"
                     android:layout_marginTop="@dimen/x20"
-                    android:singleLine="true"
+                    android:singleLine="false"
+                    android:inputType="textMultiLine"
                     android:textStyle="bold"
-                    android:ellipsize="end"
-                    android:maxEms="15"
+                    android:layout_marginRight="@dimen/x140"
                     android:text="信用管家消费提醒信用管家消费提醒"
                     android:textColor="@color/infoTitle"
                     android:textSize="19sp" />
