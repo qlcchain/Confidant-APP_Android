@@ -460,8 +460,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 }
                 ConstantValue.currentEmailConfigEntity!!.sendMenu->
                 {
-                    menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Star),getString(R.string.Delete))
-                    iconArray = arrayListOf<String>("sheet_mark",starIcon,"statusbar_delete")
+                    menuArray = arrayListOf<String>(getString(R.string.Star),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>(starIcon,"statusbar_delete")
                 }
                 ConstantValue.currentEmailConfigEntity!!.garbageMenu->
                 {
@@ -533,7 +533,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                         "" -> {
 
                         }
-                        "Move_to" -> {
+                        "Move to" -> {
                             showMovePop()
                         }
                         "Delete" -> {
@@ -643,68 +643,68 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             URLText = "<html><body style ='font-size:25px;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
-       /* try {
-            if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
-            {
+        /* try {
+             if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+             {
 
-                var miContentSoucreBgeinIndex= 0
-                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
-                if(miContentSoucreEndIndex == -1)
-                {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
-                }
-                var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
-                if(beginIndex == -1)
-                {
-                    beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
-                }
-                var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-                var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
-                var endIndex = confidantkeyBefore.indexOf("'></span>")
-                var confidantkey = confidantkeyBefore.substring(14,endIndex)
+                 var miContentSoucreBgeinIndex= 0
+                 var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+                 if(miContentSoucreEndIndex == -1)
+                 {
+                     miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+                 }
+                 var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
+                 if(beginIndex == -1)
+                 {
+                     beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+                 }
+                 var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+                 var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
+                 var endIndex = confidantkeyBefore.indexOf("'></span>")
+                 var confidantkey = confidantkeyBefore.substring(14,endIndex)
 
-                var confidantkeyArr = listOf<String>()
-                var accountMi = ""
-                var shareMiKey = ""
-                var account =  String(RxEncodeTool.base64Decode(accountMi))
-                if(confidantkey!!.contains("##"))
-                {
-                    var confidantkeyList = confidantkey.split("##")
-                    for(item in confidantkeyList)
-                    {
-                        confidantkeyArr = item.split("&&")
-                        accountMi = confidantkeyArr.get(0)
-                        shareMiKey = confidantkeyArr.get(1)
-                        account =  String(RxEncodeTool.base64Decode(accountMi))
-                        if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
-                        {
-                            break;
-                        }
-                    }
+                 var confidantkeyArr = listOf<String>()
+                 var accountMi = ""
+                 var shareMiKey = ""
+                 var account =  String(RxEncodeTool.base64Decode(accountMi))
+                 if(confidantkey!!.contains("##"))
+                 {
+                     var confidantkeyList = confidantkey.split("##")
+                     for(item in confidantkeyList)
+                     {
+                         confidantkeyArr = item.split("&&")
+                         accountMi = confidantkeyArr.get(0)
+                         shareMiKey = confidantkeyArr.get(1)
+                         account =  String(RxEncodeTool.base64Decode(accountMi))
+                         if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
+                         {
+                             break;
+                         }
+                     }
 
-                }else{
-                    confidantkeyArr = confidantkey.split("&&")
-                    accountMi = confidantkeyArr.get(0)
-                    shareMiKey = confidantkeyArr.get(1)
-                }
+                 }else{
+                     confidantkeyArr = confidantkey.split("&&")
+                     accountMi = confidantkeyArr.get(0)
+                     shareMiKey = confidantkeyArr.get(1)
+                 }
 
 
-                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-                var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-                val sourceContent = String(miContent)
+                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                 val sourceContent = String(miContent)
 
-                emailMeaasgeData!!.content = sourceContent;
-                URLText = "<html><body>"+sourceContent+"</body></html>";
-                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-            }else{
-                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-            }
-        }catch (e:Exception)
-        {
-            e.printStackTrace();
-            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-        }*/
+                 emailMeaasgeData!!.content = sourceContent;
+                 URLText = "<html><body>"+sourceContent+"</body></html>";
+                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+             }else{
+                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+             }
+         }catch (e:Exception)
+         {
+             e.printStackTrace();
+             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+         }*/
 
 
 
@@ -845,44 +845,43 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var menuArray = arrayListOf<String>()
         var iconArray = arrayListOf<String>()
 
-        var fistMenu = ""
-        var secondMenu = ""
         when(menu)
         {
             ConstantValue.currentEmailConfigEntity!!.inboxMenu->
             {
                 menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
                 iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
-                fistMenu = ConstantValue.currentEmailConfigEntity!!.garbageMenu
-                secondMenu = ConstantValue.currentEmailConfigEntity!!.deleteMenu
             }
             ConstantValue.currentEmailConfigEntity!!.garbageMenu->
             {
                 menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
                 iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
-                fistMenu = ConstantValue.currentEmailConfigEntity!!.inboxMenu
-                secondMenu = ConstantValue.currentEmailConfigEntity!!.deleteMenu
             }
             ConstantValue.currentEmailConfigEntity!!.deleteMenu->
             {
                 menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
                 iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
-                fistMenu = ConstantValue.currentEmailConfigEntity!!.inboxMenu
-                secondMenu = ConstantValue.currentEmailConfigEntity!!.garbageMenu
             }
         }
         PopWindowUtil.showPopMoveMenuWindow(this@EmailInfoActivity, moreMenu,title,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
             override fun onSelect(position: Int, obj: Any) {
                 KLog.i("" + position)
-                when (position) {
-                    0 -> {
+                var data = obj as FileOpreateType
+                when (data.name) {
+                    "Inbox" -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(fistMenu,2)
+                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.inboxMenu,2)
                     }
-                    1 -> {
+                    "Spam" -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(secondMenu,2)
+                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.garbageMenu,2)
                     }
+                    "Trash" -> {
+                        showProgressDialog(getString(R.string.waiting))
+                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                    }
+
+
                 }
             }
 
