@@ -549,7 +549,6 @@ class EmailCore {
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         for (Message message : list){
-            pmm = new PraseMimeMessage((MimeMessage)message);
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
@@ -722,9 +721,6 @@ class EmailCore {
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         for (Message message : list){
-            pmm = new PraseMimeMessage((MimeMessage)message);
-            MimeMessage ooo = (MimeMessage)message;
-
             uuid = folder.getUID(message) +"";
             try {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
@@ -735,6 +731,7 @@ class EmailCore {
                 {
 
                 }
+
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
