@@ -840,6 +840,7 @@ class EmailCore {
                         getMailTextContent2(message, contentTemp,true);
                     } else
                         getMailTextContent2(message,contentTemp, false);
+                    StringBuffer contentTemp2 = new StringBuffer(30);
                     content = contentTemp.toString();
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
@@ -1660,7 +1661,7 @@ class EmailCore {
     public static void getMailTextContent2(Part part, StringBuffer content, boolean plainFlag) throws MessagingException, IOException {
         //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
         boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
-        if (part.isMimeType("text/html") && !isContainTextAttach && plainFlag == false) {
+        if (part.isMimeType("text/*") && !isContainTextAttach && plainFlag == false) {
             content.append(MimeUtility.decodeText(part.getContent().toString()));
         } else if(part.isMimeType("text/plain") && !isContainTextAttach && plainFlag){
             content.append(part.getContent().toString());

@@ -189,8 +189,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var bccAdressEditLastContent = ""
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
-        runOnUiThread {
-            closeProgressDialog()
+        if(isSendCheck)
+        {
+            runOnUiThread {
+                closeProgressDialog()
+            }
         }
         if(jCheckmailUkeyRsp.params.retCode == 0)
         {
@@ -843,8 +846,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             lockTips.visibility = View.GONE
             return
         }
-        runOnUiThread {
-            showProgressDialog(getString(R.string.waiting))
+        if(isSendCheck)
+        {
+            runOnUiThread {
+                showProgressDialog(getString(R.string.waiting))
+            }
         }
         var checkmailUkey = CheckmailUkey(toAdressArr.size,addressBase64)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
