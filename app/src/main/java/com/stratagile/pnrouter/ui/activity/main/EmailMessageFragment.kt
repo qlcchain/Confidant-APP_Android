@@ -122,24 +122,39 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                  refreshLayout.finishRefresh()
                  refreshLayout.resetNoMoreData()//setNoMoreData(false);
              }, 2000)*/
+            var account= AppConfig.instance.emailConfig().account
+            if(account != null && account != "")
+            {
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                pullNewMessageList(0L)
+            }else{
+                refreshLayout.finishRefresh()
+                refreshLayout.resetNoMoreData()
+            }
 
-            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
-            pullNewMessageList(0L)
 
         }
         refreshLayout.setOnLoadMoreListener { refreshLayout ->
-            refreshLayout.layout.postDelayed({
-                /*if (mAdapter.getItemCount() > 30) {
+            var account= AppConfig.instance.emailConfig().account
+            if(account != null && account != "")
+            {
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
+            }else{
+                refreshLayout.finishLoadMore()
+            }
+           /* refreshLayout.layout.postDelayed({
+
+                *//*if (mAdapter.getItemCount() > 30) {
                     Toast.makeText(AppConfig.instance, "数据全部加载完毕", Toast.LENGTH_SHORT).show()
                     refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
                 } else {
                     pullMoreMessageList()
                     refreshLayout.finishLoadMore()
-                }*/
+                }*//*
 
-            }, 2000)
-            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
-            pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
+            }, 2000)*/
+
 
         }
 

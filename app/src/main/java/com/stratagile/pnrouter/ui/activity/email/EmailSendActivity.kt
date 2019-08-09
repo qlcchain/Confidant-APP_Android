@@ -447,12 +447,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             false
         }
         toAddress.setBackSpaceLisetener(backspaceListener)*/
-        var URLText = "<html><body style ='font-size:25px;'>"+emailMessageEntity!!.content+"</body></html>";
+        var URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.content+"</body></html>";
         if(emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText != "")
         {
-            URLText = "<html><body style ='font-size:25px;'>"+emailMessageEntity!!.originalText+"</body></html>";
+            URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.originalText+"</body></html>";
         }
-        val webSettings = webView.getSettings()
+       /* val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
         }
@@ -486,7 +486,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
 
         webView.setSaveEnabled(true)
-        webView.setKeepScreenOn(true)
+        webView.setKeepScreenOn(true)*/
 
 
         webView.webChromeClient = object : WebChromeClient() {

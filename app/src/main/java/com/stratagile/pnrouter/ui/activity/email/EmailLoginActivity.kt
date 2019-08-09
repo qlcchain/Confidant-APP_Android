@@ -46,6 +46,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     @Inject
     internal lateinit var mPresenter: EmailLoginPresenter
     var emailType: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
+    var account =""
+    var password =""
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
         if(jSaveEmailConfRsp.params.retCode == 0)
@@ -95,8 +97,10 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             //配置发件服务器
-            var account = account_editText.getText().toString().trim()
-            var password = password_editText.getText().toString().trim()
+            account = account_editText.getText().toString().trim()
+            password = password_editText.getText().toString().trim()
+            account = account.trim().toLowerCase()
+            password = password.trim()
             if(account.equals(""))
             {
                 toast(R.string.NeedAccount)
@@ -143,8 +147,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
      */
     private fun login(progressDialog: ProgressDialog) {
 
-        var account = account_editText.getText().toString().trim()
-        var password = password_editText.getText().toString().trim()
         AppConfig.instance.emailConfig()
                 .setAccount(account)
                 .setPassword(password)
@@ -180,7 +182,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     }
     private fun sycDataCountIMAP()
     {
-        var account =  account_editText.getText().toString()
         var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
         var hasVerify = false
         var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
@@ -288,7 +289,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                                     if(messageList.size >0)
                                     {
                                         var emailMessage = messageList.get(0)
-                                        var account =  account_editText.getText().toString()
                                         var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
                                         var EmailMessage = false
                                         if(emailConfigEntityList.size > 0)

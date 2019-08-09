@@ -545,11 +545,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
             })
         }
-        val webSettings = webView.getSettings()
+       /* val webSettings = webView.getSettings()
+        webSettings.setTextZoom(120);*/
+        /*val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
         }
-        //webSettings.setTextZoom(120);
+        webSettings.setTextZoom(120);
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
         } else {
@@ -578,7 +580,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
 
         webView.setSaveEnabled(true)
-        webView.setKeepScreenOn(true)
+        webView.setKeepScreenOn(true)*/
 
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -638,10 +640,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         Log.i("URLText",emailMeaasgeData!!.content)
         if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
         {
-            URLText = "<html><body style ='font-size:25px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
+            URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }else{
-            URLText = "<html><body style ='font-size:25px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+            URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
         /* try {
