@@ -192,11 +192,16 @@ class EmailCore {
             properties.put(MAIL_IMAPS_fetchsize,"1048576");
             properties.put("mail.imap.connectionpoolsize","10");
             properties.put("mail.imaps.connectionpoolsize","10");
+            properties.put("mail.imap.appendbuffersize",Integer.toString(POOL_TIMEOUT));
 
         }
         properties.put("mail.imaps.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
         properties.put("mail.imap.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
         properties.put("mail.smtp.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
+
+        properties.put("mail.smtp.timeout", Integer.toString(READ_TIMEOUT));
+
+        properties.put("mail.smtp.writetimeout", Integer.toString(WRITE_TIMEOUT));
         // 构建授权信息，用于进行SMTP进行身份验证
         Authenticator authenticator = new Authenticator() {
             @Override

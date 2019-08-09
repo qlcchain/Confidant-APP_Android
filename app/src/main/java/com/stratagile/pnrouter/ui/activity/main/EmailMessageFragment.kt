@@ -778,17 +778,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             try{
                 sourceContent = String(miContent)
                 contactMapList.put("originalText",sourceContent + endStr)
+                contactMapList.put("aesKey",aesKey)
             }catch (e:Exception)
             {
                 contactMapList.put("originalText","")
-            }
-            if(sourceContent != "")
-            {
-                contactMapList.put("aesKey",aesKey)
-            }else{
                 contactMapList.put("aesKey","")
             }
-
             return contactMapList
         }else{
             contactMapList.put("originalText","")
