@@ -257,7 +257,7 @@
                     android:id="@+id/from"
                     android:layout_width="match_parent"
                     android:background="@color/white"
-                    android:layout_height="@dimen/x73"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
                     <RelativeLayout
@@ -265,7 +265,7 @@
                         android:layout_width="match_parent"
                         android:layout_marginLeft="@dimen/x20"
                         android:layout_centerVertical="true"
-                        android:layout_height="@dimen/x92"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true">
 
                         <TextView
@@ -294,8 +294,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignLeft="@id/fromName_From"
-                            android:singleLine="true"
-                            android:ellipsize="end"
+                             android:ellipsize="end"
                             android:text="team@reddlenews.com"
                             android:textColor="@color/c_2A292B"
                             android:layout_toRightOf="@id/detail_from_From"

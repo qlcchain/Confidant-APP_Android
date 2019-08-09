@@ -6,14 +6,15 @@ xmlns:tools="http://schemas.android.com/tools"
 android:id="@+id/typeTitle"
 android:layout_width="match_parent"
 android:background="@color/white"
-android:layout_height="@dimen/x73"
+android:layout_height="wrap_content"
 android:gravity="center_vertical">
 
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_marginLeft="@dimen/x20"
     android:layout_centerVertical="true"
-    android:layout_height="@dimen/x92"
+    android:minHeight="@dimen/x92"
+    android:layout_height="wrap_content"
     android:layout_alignParentLeft="true">
 
     <TextView
@@ -42,7 +43,6 @@ android:gravity="center_vertical">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/name"
-        android:singleLine="true"
         android:ellipsize="end"
         android:text="user@example.com"
         android:textColor="@color/c_2A292B"
