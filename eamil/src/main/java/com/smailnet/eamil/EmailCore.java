@@ -41,6 +41,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +74,7 @@ import javax.activation.DataSource;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
+import javax.net.ssl.SSLSocketFactory;
 
 import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
 import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
@@ -168,7 +170,7 @@ class EmailCore {
             properties.put(MAIL_SMTP_SOCKETFACTORY_PORT, smtpPort);
             properties.put(MAIL_SMTP_POST, smtpPort);
             properties.put(MAIL_SMTP_HOST, smtpHost);
-            properties.put(MAIL_SMTP_AUTH, true);
+            properties.put(MAIL_SMTP_AUTH, "true");
         }
         if (ConfigCheckUtil.getResult(popHost, popPort)) {
             properties.put(MAIL_POP3_SOCKETFACTORY_CLASS, sslSocketFactory);
@@ -176,7 +178,7 @@ class EmailCore {
             properties.put(MAIL_POP3_SOCKETFACTORY_PORT, popPort);
             properties.put(MAIL_POP3_POST, popPort);
             properties.put(MAIL_POP3_HOST, popHost);
-            properties.put(MAIL_POP3_AUTH, true);
+            properties.put(MAIL_POP3_AUTH, "true");
         }
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
             properties.put(MAIL_IMAP_SOCKETFACTORY_CLASS, sslSocketFactory);
@@ -184,7 +186,7 @@ class EmailCore {
             properties.put(MAIL_IMAP_SOCKETFACTORY_PORT, imapPort);
             properties.put(MAIL_IMAP_POST, imapPort);
             properties.put(MAIL_IMAP_HOST, imapHost);
-            properties.put(MAIL_IMAP_AUTH, true);
+            properties.put(MAIL_IMAP_AUTH, "true");
             properties.put(MAIL_MIME_BASE64_IGNOREERRORS, "true");
             properties.put(MAIL_IMAP_PARTISLFETCH, "false");
             properties.put(MAIL_IMAPS_PARTISLFETCH, "false");
@@ -195,6 +197,9 @@ class EmailCore {
             properties.put("mail.imap.appendbuffersize",Integer.toString(POOL_TIMEOUT));
 
         }
+        properties.put("mail.smtp.ssl.trust", "*");
+        properties.put("mail.imap.ssl.trust", "*");
+        properties.put("mail.imaps.ssl.trust", "*");
         properties.put("mail.imaps.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
         properties.put("mail.imap.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
         properties.put("mail.smtp.connectiontimeout", Integer.toString(CONNECT_TIMEOUT));
@@ -202,6 +207,8 @@ class EmailCore {
         properties.put("mail.smtp.timeout", Integer.toString(READ_TIMEOUT));
 
         properties.put("mail.smtp.writetimeout", Integer.toString(WRITE_TIMEOUT));
+
+
         // 构建授权信息，用于进行SMTP进行身份验证
         Authenticator authenticator = new Authenticator() {
             @Override
@@ -212,8 +219,8 @@ class EmailCore {
                 return new PasswordAuthentication(userName, password);
             }
         };
-        //session = Session.getDefaultInstance(properties,authenticator);
-        session = Session.getInstance(properties);
+        session = Session.getDefaultInstance(properties,authenticator);
+        //session = Session.getInstance(properties);
     }
 
     /**

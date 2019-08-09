@@ -720,9 +720,9 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         {
 
             var endStr = ""
-            if(emailMeaasgeData!!.content.contains("MyConfidantBegin"))
+            if(emailMeaasgeData!!.content.contains("myconfidantbegin"))
             {
-                endStr =  "<div MyConfidantBegin=''>"+
+                endStr =  "<div myconfidantbegin=''>"+
                         "<br />"+
                         " <br />"+
                         " <br />"+

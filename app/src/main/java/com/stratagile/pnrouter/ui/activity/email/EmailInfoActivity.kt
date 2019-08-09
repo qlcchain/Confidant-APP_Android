@@ -1,13 +1,16 @@
 package com.stratagile.pnrouter.ui.activity.email
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.webkit.*
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
@@ -545,42 +548,51 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
             })
         }
-       /* val webSettings = webView.getSettings()
-        webSettings.setTextZoom(120);*/
-        /*val webSettings = webView.getSettings()
-        if (Build.VERSION.SDK_INT >= 19) {
-            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+        var needOp = false
+        if( emailMeaasgeData!!.content != null && emailMeaasgeData!!.content.contains("<img"))
+        {
+            needOp = true
         }
-        webSettings.setTextZoom(120);
-        if (Build.VERSION.SDK_INT >= 19) {
-            webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
-        } else {
-            webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+        if(emailMeaasgeData!!.originalText!= null && emailMeaasgeData!!.originalText.contains("<img"))
+        {
+            needOp = true;
         }
+        if(needOp)
+        {
+            val webSettings = webView.getSettings()
+            if (Build.VERSION.SDK_INT >= 19) {
+                webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+            }
+            if (Build.VERSION.SDK_INT >= 19) {
+                webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
+            } else {
+                webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
-        }
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
-        webView.setLayerType(View.LAYER_TYPE_NONE, null);
-        webSettings.javaScriptEnabled = true // 设置支持javascript脚本
-        webSettings.setTextSize(WebSettings.TextSize.LARGEST)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
+            }
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
+            webView.setLayerType(View.LAYER_TYPE_NONE, null);
+            webSettings.javaScriptEnabled = true // 设置支持javascript脚本
+            //webSettings.setTextSize(WebSettings.TextSize.LARGEST)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
-        webSettings.setSupportZoom(true)// 设置可以支持缩放
-        webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
+            webSettings.setSupportZoom(true)// 设置可以支持缩放
+            webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
 
-        webSettings.displayZoomControls = false//隐藏缩放工具
-        webSettings.useWideViewPort = true// 扩大比例的缩放
+            webSettings.displayZoomControls = false//隐藏缩放工具
+            webSettings.useWideViewPort = true// 扩大比例的缩放
 
-        webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
-        webSettings.loadWithOverviewMode = true
+            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
+            webSettings.loadWithOverviewMode = true
 
-        webSettings.databaseEnabled = true//
-        webSettings.savePassword = true//保存密码
-        webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
+            /* webSettings.databaseEnabled = true//
+             webSettings.savePassword = true//保存密码
+             webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
 
-        webView.setSaveEnabled(true)
-        webView.setKeepScreenOn(true)*/
+             webView.setSaveEnabled(true)
+             webView.setKeepScreenOn(true)*/
+        }
 
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -635,6 +647,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 KLog.i("ddddddd")
                 super.onReceivedError(view, request, error)
             }
+
         }
         var URLText = "";
         Log.i("URLText",emailMeaasgeData!!.content)
@@ -918,5 +931,59 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    fun loadJS(){
+        webView.loadUrl("javascript:(function(){"
+                //将DIV元素中的外边距和内边距设置为零，防止网页左右有空隙
+                + " var divs = document.getElementsByTagName(\"div\");"
+                + " for(var j=0;j<divs.length;j++){"
+                + "   divs[j].style.margin=\"0px\";"
+                + "   divs[j].style.padding=\"0px\";"
+                + "   divs[j].style.width=document.body.clientWidth-10;"
+                + " }"
 
+                + " var imgs = document.getElementsByTagName(\"img\"); "
+                + "   for(var i=0;i<imgs.length;i++)  "
+                + "       {"
+                //过滤掉GIF图片，防止过度放大后，GIF失真
+                + "    var vkeyWords=/.gif$/;"
+                + "        if(!vkeyWords.test(imgs[i].src)){"
+                + "         var hRatio="+getScreenWidthPX()+"/objs[i].width;"
+                + "         objs[i].height= objs[i].height*hRatio;"//通过缩放比例来设置图片的高度
+                + "         objs[i].width="+getScreenWidthPX()+";"//设置图片的宽度
+                + "        }"
+                +    "}"
+                +   "})()");
+    }
+     /**
+     * WebView Setting
+     */
+     fun initWebSettings(){
+        var webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+//        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+    }
+    /**
+     * 获取屏幕的宽度（单位：像素PX）
+     * @return
+     */
+    fun getScreenWidthPX(): Int{
+        var wm =  this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        var dm = DisplayMetrics();
+        if (wm != null && wm.getDefaultDisplay() != null){
+            wm.getDefaultDisplay().getMetrics(dm);
+            return px2dip(dm.widthPixels.toFloat());
+        }else {
+            return 0;
+        }
+    }
+    /**
+     * 像素转DP
+     * @param pxValue
+     * @return
+     */
+    fun px2dip(pxValue: Float): Int {
+        val scale = this.resources.displayMetrics.density
+        return (pxValue / scale + 0.5f).toInt()
+    }
 }

@@ -80,8 +80,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             {
                 "1"->
                 {
-                    account_editText.setText("emaildev@qlink.mobi")
-                    password_editText.setText("Qlcchain@123")
+                    account_editText.setText("zhipeng.hu@qlink.mobi")
+                    password_editText.setText("HUzhi0826")
                 }
                 "2"->
                 {
@@ -90,7 +90,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "3"->
                 {
-
+                    account_editText.setText("qlink.mobi@gmail.com")
+                    password_editText.setText("Qlink.mobi1234")
                 }
             }
         }

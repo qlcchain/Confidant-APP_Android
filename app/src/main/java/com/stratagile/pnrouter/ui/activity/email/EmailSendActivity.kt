@@ -189,6 +189,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var bccAdressEditLastContent = ""
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
         if(jCheckmailUkeyRsp.params.retCode == 0)
         {
             var data = jCheckmailUkeyRsp.params.payload
@@ -452,41 +455,51 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.originalText+"</body></html>";
         }
-       /* val webSettings = webView.getSettings()
-        if (Build.VERSION.SDK_INT >= 19) {
-            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+        var needOp = false
+        if( emailMessageEntity!!.content != null && emailMessageEntity!!.content.contains("<img"))
+        {
+            needOp = true
         }
-        //webSettings.setTextZoom(120);
-        if (Build.VERSION.SDK_INT >= 19) {
-            webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
-        } else {
-            webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+        if(emailMessageEntity!!.originalText!= null && emailMessageEntity!!.originalText.contains("<img"))
+        {
+            needOp = true;
         }
+        if(needOp)
+        {
+            val webSettings = webView.getSettings()
+            if (Build.VERSION.SDK_INT >= 19) {
+                webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+            }
+            if (Build.VERSION.SDK_INT >= 19) {
+                webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
+            } else {
+                webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
-        }
-        webView.setLayerType(View.LAYER_TYPE_NONE, null);
-        re_main_editor.setLayerType(View.LAYER_TYPE_NONE, null);
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
-        webSettings.javaScriptEnabled = true // 设置支持javascript脚本
-        webSettings.setTextSize(WebSettings.TextSize.LARGEST)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
+            }
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
+            webView.setLayerType(View.LAYER_TYPE_NONE, null);
+            webSettings.javaScriptEnabled = true // 设置支持javascript脚本
+            //webSettings.setTextSize(WebSettings.TextSize.LARGEST)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
-        webSettings.setSupportZoom(true)// 设置可以支持缩放
-        webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
+            webSettings.setSupportZoom(true)// 设置可以支持缩放
+            webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
 
-        webSettings.displayZoomControls = false//隐藏缩放工具
-        webSettings.useWideViewPort = true// 扩大比例的缩放
+            webSettings.displayZoomControls = false//隐藏缩放工具
+            webSettings.useWideViewPort = true// 扩大比例的缩放
 
-        webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
-        webSettings.loadWithOverviewMode = true
+            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
+            webSettings.loadWithOverviewMode = true
 
-        webSettings.databaseEnabled = true//
-        webSettings.savePassword = true//保存密码
-        webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
+            /* webSettings.databaseEnabled = true//
+             webSettings.savePassword = true//保存密码
+             webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
 
-        webView.setSaveEnabled(true)
-        webView.setKeepScreenOn(true)*/
+             webView.setSaveEnabled(true)
+             webView.setKeepScreenOn(true)*/
+        }
 
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -764,6 +777,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
+                var isEmail = StringUitl.isEmail(temp)
+                if(!isEmail)
+                {
+                    toast(temp +" "+ getString(R.string.Some_addresses_are_illegal))
+                    return;
+                }
                 toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -782,6 +801,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
+                var isEmail = StringUitl.isEmail(temp)
+                if(!isEmail)
+                {
+                    toast(temp +" " + getString(R.string.Some_addresses_are_illegal))
+                    return;
+                }
                 toAdressBase64CC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -799,6 +824,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
+                var isEmail = StringUitl.isEmail(temp)
+                if(!isEmail)
+                {
+                    toast(temp + getString(R.string.Some_addresses_are_illegal))
+                    return;
+                }
                 toAdressBase64BCC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -811,6 +842,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             lockTips.visibility = View.GONE
             return
+        }
+        runOnUiThread {
+            showProgressDialog(getString(R.string.waiting))
         }
         var checkmailUkey = CheckmailUkey(toAdressArr.size,addressBase64)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
@@ -848,9 +882,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
         var needTipsShow = true;
-        if(contentHtml.contains("MyConfidantBegin"))
+        if(contentHtml.contains("myconfidantbegin"))
         {
-            needTipsShow = false
+            var endIndex = contentHtml.indexOf("<div myconfidantbegin=")
+            if(endIndex > 0)
+            {
+                contentHtml = contentHtml.substring(0,endIndex)
+            }
         }
         if(contactMapList.size >0)
         {
@@ -878,7 +916,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
         }
-        var endStr =  "<div MyConfidantBegin=''>"+
+        var endStr =  "<div myconfidantbegin=''>"+
                 "<br />"+
                 " <br />"+
                 " <br />"+

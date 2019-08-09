@@ -752,5 +752,6 @@
     <string name="Downloading">Downloading</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="Some_addresses_are_illegal">is illegal</string>
 
 </resources>

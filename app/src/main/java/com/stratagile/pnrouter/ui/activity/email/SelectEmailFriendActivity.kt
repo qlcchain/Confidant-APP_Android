@@ -100,7 +100,7 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
     }*/
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.nextBtn) {
-            var count =  lv_contact.childCount  -1
+            var count =  lv_contact.count  -1
             var selectAdressStr = ""
             var nameAdressStr = ""
             for (position in 0..count)
