@@ -185,10 +185,9 @@
                     android:layout_marginLeft="@dimen/x20"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
-                    android:imeOptions="actionDone"
-                    android:inputType="textMultiLine"
                     android:background="@null"
                     />
                 <com.hyphenate.easeui.widget.ATEmailEditText

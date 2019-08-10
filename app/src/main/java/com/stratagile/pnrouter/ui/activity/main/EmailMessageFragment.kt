@@ -515,6 +515,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 var emailContactsEntity= EmailContactsEntity();
                                                 emailContactsEntity.name = name
                                                 emailContactsEntity.account = account
+                                                emailContactsEntity.createTime = System.currentTimeMillis()
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
                                             }
 
@@ -687,6 +688,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 var emailContactsEntity= EmailContactsEntity();
                                                 emailContactsEntity.name = name
                                                 emailContactsEntity.account = account
+                                                emailContactsEntity.createTime = System.currentTimeMillis()
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
                                             }
 

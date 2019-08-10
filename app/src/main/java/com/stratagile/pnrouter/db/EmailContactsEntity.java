@@ -17,7 +17,7 @@ public class EmailContactsEntity implements Parcelable{
     private String account;
     private String name;
     private boolean choose;
-
+    private long createTime;
 
 
     public EmailContactsEntity() {
@@ -33,14 +33,16 @@ public class EmailContactsEntity implements Parcelable{
         account = in.readString();
         name = in.readString();
         choose = in.readByte() != 0;
+        createTime = in.readLong();
     }
 
-    @Generated(hash = 1550112172)
-    public EmailContactsEntity(Long id, String account, String name, boolean choose) {
+    @Generated(hash = 702815365)
+    public EmailContactsEntity(Long id, String account, String name, boolean choose, long createTime) {
         this.id = id;
         this.account = account;
         this.name = name;
         this.choose = choose;
+        this.createTime = createTime;
     }
 
     public static final Creator<EmailContactsEntity> CREATOR = new Creator<EmailContactsEntity>() {
@@ -87,6 +89,14 @@ public class EmailContactsEntity implements Parcelable{
         this.choose = choose;
     }
 
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -103,6 +113,7 @@ public class EmailContactsEntity implements Parcelable{
         dest.writeString(account);
         dest.writeString(name);
         dest.writeByte((byte) (choose ? 1 : 0));
+        dest.writeLong(createTime);
     }
 
     public boolean getChoose() {

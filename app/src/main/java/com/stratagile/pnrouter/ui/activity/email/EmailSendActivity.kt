@@ -313,6 +313,81 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
             }
         });
+        //根据输入框输入值的改变来过滤搜索
+        /*toAdressEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                var lineCount = toAdressEdit.lineCount
+                toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            }
+        })*/
+        //根据输入框输入值的改变来过滤搜索
+        /*ccAdressEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                var lineCount = ccAdressEdit.lineCount
+                ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            }
+        })
+        //根据输入框输入值的改变来过滤搜索
+        bccAdressEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                var lineCount = bccAdressEdit.lineCount
+                bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            }
+        })*/
+        /*toAddress.setOnClickListener(this)
+        toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+             KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
+
+             // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
+             if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                 if (event.action == KeyEvent.ACTION_DOWN) {
+                     ctrlPress = true
+                 } else if (event.action == KeyEvent.ACTION_UP) {
+                     ctrlPress = false
+                 }
+             }
+             onKeyDel = true
+             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
+                      ATEmailEditText.KeyDownHelper(toAddress.getText())
+                  } else false
+         })
+        toAddress.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+            EMLog.d("key", "keyCode:" + event.keyCode + " action" + event.action + " ctrl:" + ctrlPress)
+            if (actionId == EditorInfo.IME_ACTION_SEND || event.keyCode == KeyEvent.KEYCODE_ENTER &&
+                    event.action == KeyEvent.ACTION_DOWN &&
+                    ctrlPress == true) {
+                val s = toAddress.getText().toString().trim({ it <= ' ' })
+                toAddress.setText("")
+                //listener.onSendBtnClicked(s, "")
+                true
+            } else {
+                false
+            }
+        })*/
         initAttachUI()
     }
     private fun allSpan(editText: EditText)
@@ -391,56 +466,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val selectionStart = 0
         val spans = toAdressEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         var dd = ""
-        //根据输入框输入值的改变来过滤搜索
-        /*toAdressEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                var content = s.toString()
-                if(imputOld != content && content.lastIndexOf(",") == content.length -1)
-                {
-                    imputOld = content
-                    //allSpan(toAdressEdit)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable) {
-
-            }
-        })*/
-        /*toAddress.setOnClickListener(this)
-        toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-             KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
-
-             // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
-             if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
-                 if (event.action == KeyEvent.ACTION_DOWN) {
-                     ctrlPress = true
-                 } else if (event.action == KeyEvent.ACTION_UP) {
-                     ctrlPress = false
-                 }
-             }
-             onKeyDel = true
-             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                      ATEmailEditText.KeyDownHelper(toAddress.getText())
-                  } else false
-         })
-        toAddress.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
-            EMLog.d("key", "keyCode:" + event.keyCode + " action" + event.action + " ctrl:" + ctrlPress)
-            if (actionId == EditorInfo.IME_ACTION_SEND || event.keyCode == KeyEvent.KEYCODE_ENTER &&
-                    event.action == KeyEvent.ACTION_DOWN &&
-                    ctrlPress == true) {
-                val s = toAddress.getText().toString().trim({ it <= ' ' })
-                toAddress.setText("")
-                //listener.onSendBtnClicked(s, "")
-                true
-            } else {
-                false
-            }
-        })
-        var backspaceListener: TInputConnection.BackspaceListener = TInputConnection.BackspaceListener {
+        /*var backspaceListener: TInputConnection.BackspaceListener = TInputConnection.BackspaceListener {
             val editable = toAddress.getText()
 
             if (editable!!.length == 0) {
@@ -459,7 +486,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.originalText+"</body></html>";
         }
         var needOp = false
-        if( emailMessageEntity!!.content != null && emailMessageEntity!!.content.contains("<img"))
+        if( emailMessageEntity !!.content != null && emailMessageEntity!!.content.contains("<img"))
         {
             needOp = true
         }
@@ -958,6 +985,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailContactsEntity= EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
+                    emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
                 }
             }
@@ -977,6 +1005,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailContactsEntity= EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
+                    emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
                 }
             }
@@ -996,6 +1025,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailContactsEntity= EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
+                    emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
                 }
             }
