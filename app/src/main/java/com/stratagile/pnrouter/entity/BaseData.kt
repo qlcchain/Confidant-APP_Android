@@ -721,9 +721,59 @@ data class CheckQlcNode(var Action : String = "CheckQlcNode")
  * (2)	响应（APP->Router）
  */
 data class SaveEmailConf(var Version:Int ,var Type:Int,var User :String,var Config :String,var Userkey :String,var Action : String = "SaveEmailConf")
+/**
+ * 89.	用户拉取邮箱配置
+ * (2)	响应（APP->Router）
+ */
+data class PullEmailConf(var Type:Int,var Action : String = "PullEmailConf")
 
+/**
+ * 90.	用户删除邮箱配置
+ * (2)	响应（APP->Router）
+ */
+data class DelEmailConf(var Type:Int,var User :String,var Action : String = "DelEmailConf")
+/**
+ * 91.	用户设置邮箱签名
+ * (2)	响应（APP->Router）
+ */
+data class SetEmailSign(var Type:Int,var User :String,var Sign :String,var Action : String = "SetEmailSign")
+/**
+ * 92.	用户拉取邮件列表
+ * (2)	响应（APP->Router）
+ */
+data class PullMailList(var Type:Int,var User :String,var StartId :Int,var Num :Int,var Action : String = "PullMailList")
+/**
+ * 93.	用户备份邮件到节点上
+ * (2)	响应（APP->Router）
+ */
+data class BakupEmail(var Type:Int,var FileId :Int,var Uuid :Int,var Uuid :Int,var FileSize :Int,var FileMd5 :String,var User :String,var UserKey :String,var MailInfo :String,var Action : String = "BakupEmail")
+/**
+ * 94.	用户删除节点上备份邮件
+ * (2)	响应（APP->Router）
+ */
+data class DelEmail(var Type:Int ,var MailId :Int,var Action : String = "DelEmail")
+/**
+ * 95.	用户邮件标签设置
+ * (2)	响应（APP->Router）
+ */
+data class SetEmailLabel(var Type:Int ,var MailId :Int,var Action:Int ,var Status :Int,var Action : String = "SetEmailLabel")
+/**
+ * 96.	管理员设置用户磁盘限额
+ * (2)	响应（APP->Router）
+ */
+data class SetCapactiy(var UserId:String ,var Capacity :Int,var Action : String = "SetCapactiy")
+/**
+ * 97.	管理员获取用户磁盘限额
+ * (2)	响应（APP->Router）
+ */
+data class GetCapactiy(var UserId :String,var Action : String = "GetCapactiy")
 /**
  * 98.	邮件加密时用户根据邮箱名查询目标公钥
  * (2)	响应（APP->Router）
  */
 data class CheckmailUkey(var Unum:Int ,var Users :String,var Action : String = "CheckmailUkey")
+/**
+ * 99.	用户查询自己账户下备份的邮件数量
+ * (2)	响应（APP->Router）
+ */
+data class BakMailsNum(var User :String,var Action : String = "BakMailsNum")
