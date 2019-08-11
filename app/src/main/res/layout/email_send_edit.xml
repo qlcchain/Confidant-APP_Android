@@ -246,6 +246,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
+                    android:padding="@dimen/x15"
                     android:drawableLeft="@mipmap/tabbar_add"
                     android:textSize="16sp"/>
             </LinearLayout>
@@ -277,6 +278,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
+                    android:padding="@dimen/x15"
                     android:drawableLeft="@mipmap/tabbar_add"
                     android:textSize="16sp"/>
             </LinearLayout>

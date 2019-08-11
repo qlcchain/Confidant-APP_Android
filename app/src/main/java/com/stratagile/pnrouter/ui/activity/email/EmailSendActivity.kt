@@ -314,7 +314,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         });
         //根据输入框输入值的改变来过滤搜索
-        /*toAdressEdit.addTextChangedListener(object : TextWatcher {
+        toAdressEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
             }
@@ -327,9 +327,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var lineCount = toAdressEdit.lineCount
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }
-        })*/
+        })
         //根据输入框输入值的改变来过滤搜索
-        /*ccAdressEdit.addTextChangedListener(object : TextWatcher {
+        ccAdressEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
             }
@@ -357,7 +357,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var lineCount = bccAdressEdit.lineCount
                 bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }
-        })*/
+        })
         /*toAddress.setOnClickListener(this)
         toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
              KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
