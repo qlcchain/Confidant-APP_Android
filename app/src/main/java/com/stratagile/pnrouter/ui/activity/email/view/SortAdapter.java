@@ -71,8 +71,13 @@ public class SortAdapter extends BaseAdapter implements SectionIndexer {
         int section = getSectionForPosition(position);
 
         if (position == getPositionForSection(section)) {
-            viewHolder.tvLetter.setVisibility(View.VISIBLE);
-            viewHolder.tvLetter.setText(mContent.getSortLetters());
+            if(mContent.getSortLetters().equals("%"))
+            {
+                viewHolder.tvLetter.setVisibility(View.GONE);
+            }else{
+                viewHolder.tvLetter.setVisibility(View.VISIBLE);
+                viewHolder.tvLetter.setText(mContent.getSortLetters());
+            }
         } else {
             viewHolder.tvLetter.setVisibility(View.GONE);
         }

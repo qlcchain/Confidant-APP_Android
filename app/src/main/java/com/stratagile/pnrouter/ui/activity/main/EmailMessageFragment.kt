@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +30,12 @@ import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
 import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import kotlinx.android.synthetic.main.email_search_bar.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -42,6 +46,7 @@ import javax.inject.Inject
  */
 
 class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
+
 
     @Inject
     lateinit internal var mPresenter: EmailMessagePresenter
@@ -161,6 +166,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         //触发自动刷新
         //refreshLayout.autoRefresh()
         EventBus.getDefault().register(this)
+        initQuerData()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMessage(changEmailMessage: ChangEmailMessage) {
@@ -804,6 +810,30 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     override fun initDataFromLocal() {
 
     }
+    fun initQuerData() {
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+                if (localMessageList== null || localMessageList.size > 0)
+                {
+                    var localMessageListData = arrayListOf<EmailMessageEntity>()
+                    for (item in localMessageList)
+                    {
+                        localMessageListData.add(item);
+                    }
+                    fiter(s.toString(), localMessageListData)
+                }
+
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -812,5 +842,29 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     override fun closeProgressDialog() {
         if(progressDialog!= null)
             progressDialog.hide()
+    }
+    fun fiter(key: String, emailMessageList: ArrayList<EmailMessageEntity>) {
+        var contactListTemp: ArrayList<EmailMessageEntity> = arrayListOf<EmailMessageEntity>()
+        for (i in emailMessageList) {
+            var content = ""
+            var aa = i.originalText
+            if(aa != null && aa != "")
+            {
+                content = aa;
+            }else{
+                content = i.content
+            }
+            if (i.from.toLowerCase().contains(key) || content.toLowerCase().contains(key)) {
+                contactListTemp.add(i)
+            }
+        }
+        if(contactListTemp.size > 0)
+        {
+            emaiMessageChooseAdapter!!.setNewData(contactListTemp);
+        }else{
+            emaiMessageChooseAdapter!!.setNewData(emailMessageList);
+        }
+        //updateAdapterData(contactListTemp)
+//        contactAdapter!!.setNewData(contactListTemp)
     }
 }

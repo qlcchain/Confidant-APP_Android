@@ -18,6 +18,7 @@ public class EmailContactsEntity implements Parcelable{
     private String name;
     private boolean choose;
     private long createTime;
+    private boolean recentFlag = false;
 
 
     public EmailContactsEntity() {
@@ -34,15 +35,18 @@ public class EmailContactsEntity implements Parcelable{
         name = in.readString();
         choose = in.readByte() != 0;
         createTime = in.readLong();
+        recentFlag = in.readByte() != 0;
     }
 
-    @Generated(hash = 702815365)
-    public EmailContactsEntity(Long id, String account, String name, boolean choose, long createTime) {
+    @Generated(hash = 1093262090)
+    public EmailContactsEntity(Long id, String account, String name, boolean choose, long createTime,
+            boolean recentFlag) {
         this.id = id;
         this.account = account;
         this.name = name;
         this.choose = choose;
         this.createTime = createTime;
+        this.recentFlag = recentFlag;
     }
 
     public static final Creator<EmailContactsEntity> CREATOR = new Creator<EmailContactsEntity>() {
@@ -97,6 +101,14 @@ public class EmailContactsEntity implements Parcelable{
         this.createTime = createTime;
     }
 
+    public boolean isRecentFlag() {
+        return recentFlag;
+    }
+
+    public void setRecentFlag(boolean recentFlag) {
+        this.recentFlag = recentFlag;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -114,9 +126,14 @@ public class EmailContactsEntity implements Parcelable{
         dest.writeString(name);
         dest.writeByte((byte) (choose ? 1 : 0));
         dest.writeLong(createTime);
+        dest.writeByte((byte) (recentFlag ? 1 : 0));
     }
 
     public boolean getChoose() {
         return this.choose;
+    }
+
+    public boolean getRecentFlag() {
+        return this.recentFlag;
     }
 }

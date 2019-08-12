@@ -29,6 +29,7 @@ import java.util.*
 import javax.inject.Inject;
 import android.text.method.Touch.onTouchEvent
 import android.view.*
+import com.stratagile.pnrouter.db.EmailContactsEntityDao
 import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 
 
@@ -121,13 +122,26 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
         return super.onOptionsItemSelected(item)
     }
     private fun setAdapter() {
-        var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
+        var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.notEq("")).orderDesc(EmailContactsEntityDao.Properties.CreateTime).list()
+        var i = 0;
+        var endIndex = 10;
+        if(endIndex > emailContactsList.size)
+        {
+            endIndex = emailContactsList.size
+        }
         for (item in emailContactsList)
         {
             if(oldAdress != null && oldAdress.contains(item.account))
             {
-                item.choose = true;
+                item.isChoose = true;
             }
+            if(i < endIndex)
+            {
+                item.recentFlag = true;
+            }else{
+                item.recentFlag = false;
+            }
+            i ++;
         }
         SourceDateList = filledData(emailContactsList)
         Collections.sort(SourceDateList, PinyinComparator())
@@ -211,17 +225,23 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
             val sortModel = ContactSortModel()
             sortModel.setName(date[i].name)
             sortModel.setAccount(date[i].account)
-            sortModel.isChoose = date[i].choose
+            sortModel.isChoose = date[i].isChoose
             val pinyin = PinyinUtils.getPingYin(date[i].name)
             val sortString = pinyin.substring(0, 1).toUpperCase()
-            if (sortString.matches("[A-Z]".toRegex())) {
-                sortModel.setSortLetters(sortString.toUpperCase())
-                if (!indexString.contains(sortString)) {
-                    indexString.add(sortString)
-                }
+            if(date[i].recentFlag)
+            {
+                sortModel.setSortLetters("%")
             }else{
-                sortModel.setSortLetters("A")
+                if (sortString.matches("[A-Z]".toRegex())) {
+                    sortModel.setSortLetters(sortString.toUpperCase())
+                    if (!indexString.contains(sortString)) {
+                        indexString.add(sortString)
+                    }
+                }else{
+                    sortModel.setSortLetters("A")
+                }
             }
+
             mSortList.add(sortModel)
         }
         Collections.sort(indexString)

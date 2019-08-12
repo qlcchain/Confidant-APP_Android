@@ -987,6 +987,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }else{
+                    var emailContactsEntity = localEmailContacts.get(0)
+                    emailContactsEntity.createTime = System.currentTimeMillis()
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
                 }
             }
 
@@ -1007,6 +1011,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }else{
+                    var emailContactsEntity = localEmailContacts.get(0)
+                    emailContactsEntity.createTime = System.currentTimeMillis()
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
                 }
             }
 
@@ -1027,6 +1035,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
+                }else{
+                    var emailContactsEntity = localEmailContacts.get(0)
+                    emailContactsEntity.createTime = System.currentTimeMillis()
+                    AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
                 }
             }
 

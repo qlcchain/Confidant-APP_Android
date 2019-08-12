@@ -27,6 +27,7 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property Choose = new Property(3, boolean.class, "choose", false, "CHOOSE");
         public final static Property CreateTime = new Property(4, long.class, "createTime", false, "CREATE_TIME");
+        public final static Property RecentFlag = new Property(5, boolean.class, "recentFlag", false, "RECENT_FLAG");
     }
 
 
@@ -46,7 +47,8 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
                 "\"ACCOUNT\" TEXT," + // 1: account
                 "\"NAME\" TEXT," + // 2: name
                 "\"CHOOSE\" INTEGER NOT NULL ," + // 3: choose
-                "\"CREATE_TIME\" INTEGER NOT NULL );"); // 4: createTime
+                "\"CREATE_TIME\" INTEGER NOT NULL ," + // 4: createTime
+                "\"RECENT_FLAG\" INTEGER NOT NULL );"); // 5: recentFlag
     }
 
     /** Drops the underlying database table. */
@@ -75,6 +77,7 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
         }
         stmt.bindLong(4, entity.getChoose() ? 1L: 0L);
         stmt.bindLong(5, entity.getCreateTime());
+        stmt.bindLong(6, entity.getRecentFlag() ? 1L: 0L);
     }
 
     @Override
@@ -97,6 +100,7 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
         }
         stmt.bindLong(4, entity.getChoose() ? 1L: 0L);
         stmt.bindLong(5, entity.getCreateTime());
+        stmt.bindLong(6, entity.getRecentFlag() ? 1L: 0L);
     }
 
     @Override
@@ -111,7 +115,8 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // account
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.getShort(offset + 3) != 0, // choose
-            cursor.getLong(offset + 4) // createTime
+            cursor.getLong(offset + 4), // createTime
+            cursor.getShort(offset + 5) != 0 // recentFlag
         );
         return entity;
     }
@@ -123,6 +128,7 @@ public class EmailContactsEntityDao extends AbstractDao<EmailContactsEntity, Lon
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setChoose(cursor.getShort(offset + 3) != 0);
         entity.setCreateTime(cursor.getLong(offset + 4));
+        entity.setRecentFlag(cursor.getShort(offset + 5) != 0);
      }
     
     @Override
