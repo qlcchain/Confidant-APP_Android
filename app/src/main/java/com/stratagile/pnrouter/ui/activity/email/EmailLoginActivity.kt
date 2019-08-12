@@ -78,7 +78,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             when(emailType)
             {
-                
+
             }
         }
         title.text = getString(R.string.NewAccount)
