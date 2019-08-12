@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.*
@@ -75,6 +76,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var emailConfigEntityChoose:EmailConfigEntity? = null
     var emailConfigEntityChooseList= mutableListOf<EmailConfigEntity>()
     internal var previewImages: MutableList<LocalMedia> = ArrayList()
+    var isScaleInit = false
+    var newScaleInit = 0f
+    var webViewScroll = false;
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -85,9 +89,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     }
 
     override fun initData() {
+        isScaleInit = false
+        webViewScroll = false
         initPicPlug()
         previewImages = ArrayList()
-
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
@@ -638,6 +643,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             }
 
         }
+        webView.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                webView.requestDisallowInterceptTouchEvent(webViewScroll)
+                return false
+            }
+        })
         webView.webViewClient = object  : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 //view.loadUrl(url)
@@ -649,6 +660,23 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 return true
             }
 
+            override fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float) {
+                var saleOld = oldScale
+                var sscaleNew = newScale
+                if(!isScaleInit)
+                {
+                    newScaleInit = newScale
+                    isScaleInit = true
+                }
+                if(newScaleInit == newScale)
+                {
+                    webViewScroll = false
+                }else{
+                    webViewScroll = true
+                }
+                Log.i("onScaleChanged",saleOld.toString()+"##"+sscaleNew.toString())
+                super.onScaleChanged(view, oldScale, newScale)
+            }
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
                 if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
                         || error.getPrimaryError() == SslError.SSL_EXPIRED
