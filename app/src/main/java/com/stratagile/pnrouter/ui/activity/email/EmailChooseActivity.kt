@@ -65,6 +65,19 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
             startActivity(Intent)
             finish()
         }
+        wangyi.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.163.com")
+                    .setSmtpPort(465)
+                    .setPopHost("pop.163.com")
+                    .setPopPort(995)
+                    .setImapHost("imap.163.com")
+                    .setImapPort(993)
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emailType","3")
+            startActivity(Intent)
+            finish()
+        }
         gmail.setOnClickListener {
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.gmail.com")
@@ -74,7 +87,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setImapHost("imap.gmail.com")
                     .setImapPort(993)
             var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emailType","3")
+            Intent.putExtra("emailType","4")
             startActivity(Intent)
             finish()
         }

@@ -321,6 +321,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
             fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
+        }else{
+            fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("@"))
+            fromAdress = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.length)
         }
         var toName = ""
         var toAdress = ""
@@ -328,6 +331,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         {
             toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
             toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
+        }else{
+            toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("@"))
+            toAdress = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.length)
         }
         title_info.text = fromName
         avatar_info.setText(fromName)
@@ -358,8 +364,16 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             var ccList  = cc.split(",")
             for(ccItem in ccList)
             {
-                var ccName = ccItem.substring(0,ccItem.indexOf("<"))
-                var ccAdress = ccItem.substring(ccItem.indexOf("<"),ccItem.length)
+                var ccName = ""
+                var ccAdress = ""
+                if(ccItem.indexOf("<") > -1)
+                {
+                    ccName = ccItem.substring(0,ccItem.indexOf("<"))
+                    ccAdress = ccItem.substring(ccItem.indexOf("<"),ccItem.length)
+                }else{
+                    ccName = ccItem.substring(0,ccItem.indexOf("@"))
+                    ccAdress = ccItem.substring(0,ccItem.length)
+                }
                 emailConfigEntityList.add(EmailInfoData("Cc",ccName,ccAdress))
             }
         }
@@ -368,8 +382,16 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             var bccList  =bcc.split(",")
             for(bccItem in bccList)
             {
-                var ccName = bccItem.substring(0,bccItem.indexOf("<"))
-                var ccAdress = bccItem.substring(bccItem.indexOf("<"),bccItem.length)
+                var ccName = ""
+                var ccAdress = ""
+                if(bccItem.indexOf("<") > -1)
+                {
+                    ccName = bccItem.substring(0,bccItem.indexOf("<"))
+                    ccAdress = bccItem.substring(bccItem.indexOf("<"),bccItem.length)
+                }else{
+                    ccName = bccItem.substring(0,bccItem.indexOf("@"))
+                    ccAdress = bccItem.substring(0,bccItem.length)
+                }
                 emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
             }
         }
@@ -955,10 +977,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 +    "}"
                 +   "})()");
     }
-     /**
+    /**
      * WebView Setting
      */
-     fun initWebSettings(){
+    fun initWebSettings(){
         var webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 //        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);

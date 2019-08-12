@@ -422,17 +422,37 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
     fun initBaseUI(emailMessageEntity:EmailMessageEntity)
     {
-        var fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
-        var fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
-        var subjectText = emailMessageEntity.subject
-        if(foward == 0)
+        var fromName = ""
+        var fromAdress = ""
+        if(emailMessageEntity!!.from.indexOf("<") >=0)
         {
             fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
             fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
+        }else{
+            fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("@"))
+            fromAdress = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.length)
+        }
+        var subjectText = emailMessageEntity.subject
+        if(foward == 0)
+        {
+            if(emailMessageEntity!!.from.indexOf("<") >=0)
+            {
+                fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
+                fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
+            }else{
+                fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("@"))
+                fromAdress = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.length)
+            }
         }else if(foward == 3)
         {
-            fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("<"))
-            fromAdress = emailMessageEntity!!.to.substring(emailMessageEntity!!.to.indexOf("<")+1,emailMessageEntity!!.to.length-1)
+            if(emailMessageEntity!!.to.indexOf("<") >=0)
+            {
+                fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("<"))
+                fromAdress = emailMessageEntity!!.to.substring(emailMessageEntity!!.to.indexOf("<")+1,emailMessageEntity!!.to.length-1)
+            }else{
+                fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("@"))
+                fromAdress = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.length)
+            }
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(fromAdress)).list()
         if(localEmailContacts.size != 0)
@@ -440,9 +460,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var localEmailContactsItem = localEmailContacts.get(0)
             fromName = localEmailContactsItem.name
         }
-        avatar_info.setText(fromName)
-        title_info.setText(fromName)
-        draft_info.setText(fromAdress)
+        avatar_info.setText(fromName.trim())
+        title_info.setText(fromName.trim())
+        draft_info.setText(fromAdress.trim())
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
         if(foward == 0 || foward == 3)

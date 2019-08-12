@@ -78,21 +78,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             when(emailType)
             {
-                "1"->
-                {
-                    account_editText.setText("emaildev@qlink.mobi")
-                    password_editText.setText("Qlcchain@123")
-                }
-                "2"->
-                {
-                    account_editText.setText("283619512@qq.com")
-                    password_editText.setText("kpagrlcmliolbjii")
-                }
-                "3"->
-                {
-                    /* account_editText.setText("kuangzihui1989@gmail.com")
-                     password_editText.setText("applela19890712")*/
-                }
+                
             }
         }
         title.text = getString(R.string.NewAccount)
@@ -260,14 +246,21 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.inboxMenu = "INBOX"
                     emailConfigEntity.nodeMenu = "node"
                     emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "草稿箱"
+                    emailConfigEntity.sendMenu = "已发送"
+                    emailConfigEntity.garbageMenu = "垃圾邮件"
+                    emailConfigEntity.deleteMenu = "已删除"
+                }
+                "4"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
                     emailConfigEntity.drafMenu = "Drafts"
                     emailConfigEntity.sendMenu = "Sent Messages"
                     emailConfigEntity.garbageMenu = "Junk"
                     emailConfigEntity.deleteMenu = "Deleted Messages"
-                }
-                "4"->
-                {
-
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

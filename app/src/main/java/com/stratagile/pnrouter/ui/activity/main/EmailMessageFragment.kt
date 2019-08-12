@@ -491,8 +491,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                                 eamilMessage.date = item.date
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
-                                                name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
-                                                account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                                if(eamilMessage.from.indexOf("<") >= 0)
+                                                {
+                                                    name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
+                                                    account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                                }else{
+                                                    name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("@"))
+                                                    account= eamilMessage.from.substring(0,eamilMessage.from.length)
+                                                }
+
                                             }else{
                                                 continue
                                             }
@@ -666,8 +673,15 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                 eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                                 eamilMessage.date = item.date
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
-                                                name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
-                                                account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                                if(eamilMessage.from.indexOf("<") >= 0)
+                                                {
+                                                    name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("<"))
+                                                    account= eamilMessage.from.substring(eamilMessage.from.indexOf("<")+1,eamilMessage.from.length -1)
+                                                }else{
+                                                    name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("@"))
+                                                    account= eamilMessage.from.substring(0,eamilMessage.from.length)
+                                                }
+
                                             }else{
                                                 continue
                                             }

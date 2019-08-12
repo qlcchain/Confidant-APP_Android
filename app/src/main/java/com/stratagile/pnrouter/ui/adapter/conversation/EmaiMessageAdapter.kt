@@ -42,10 +42,16 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
                 var localEmailContactsItem = localEmailContacts.get(0)
                 formName = localEmailContactsItem.name
             }else{
-                formName = from.substring(0,from.indexOf("<"))
+                if(from.indexOf("<") >=0)
+                {
+                    formName = from.substring(0,from.indexOf("<"))
+                }else{
+                    formName = from.substring(0,from.indexOf("@"))
+                }
+
             }
         }else{
-            if(from.indexOf("<") >0)
+            if(from.indexOf("<") >=0)
             {
                 formName = from.substring(0,from.indexOf("<"))
             }
