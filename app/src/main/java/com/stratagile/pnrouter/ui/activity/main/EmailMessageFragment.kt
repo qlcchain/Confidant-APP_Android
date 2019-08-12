@@ -858,13 +858,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                 contactListTemp.add(i)
             }
         }
-        if(contactListTemp.size > 0)
+        if(key != "")
         {
             emaiMessageChooseAdapter!!.setNewData(contactListTemp);
         }else{
             emaiMessageChooseAdapter!!.setNewData(emailMessageList);
         }
-        //updateAdapterData(contactListTemp)
-//        contactAdapter!!.setNewData(contactListTemp)
     }
 }

@@ -657,7 +657,7 @@ class EmailCore {
                 try {
                     //getMailTextContent(message, contentTemp);
                     String contentType = message.getContentType();
-                    if (contentType.startsWith("text/plain")) {
+                    if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
                         getMailTextContent2(message,contentTemp, false);
@@ -997,7 +997,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    if (contentType.startsWith("text/plain")) {
+                    if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
                         getMailTextContent2(message,contentTemp, false);
@@ -1145,7 +1145,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    if (contentType.startsWith("text/plain")) {
+                    if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
                         getMailTextContent2(message,contentTemp, false);
