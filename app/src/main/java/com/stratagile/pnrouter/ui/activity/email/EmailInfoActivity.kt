@@ -87,6 +87,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     override fun initData() {
         initPicPlug()
         previewImages = ArrayList()
+
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
