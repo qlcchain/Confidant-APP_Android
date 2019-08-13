@@ -54,6 +54,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     var name = "name"
     var menu = "INBOX"
     var isChangeMenu = false
+    var from = ""
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
@@ -76,6 +77,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        from = arguments!!.getString("from","")
         var account = AppConfig.instance.emailConfig().account
         var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
         if(account != null)
@@ -167,6 +169,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         //refreshLayout.autoRefresh()
         EventBus.getDefault().register(this)
         initQuerData()
+        if(from != null && from !="")
+        {
+            shouUI(true)
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMessage(changEmailMessage: ChangEmailMessage) {
@@ -856,6 +862,23 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     override fun closeProgressDialog() {
         if(progressDialog!= null)
             progressDialog.hide()
+    }
+
+    fun shouUI(flag: Boolean) {
+        searchParent.visibility = if (flag) View.VISIBLE else View.GONE
+        if(flag)
+        {
+            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
+            if (localMessageList== null || localMessageList.size > 0)
+            {
+                var localMessageListData = arrayListOf<EmailMessageEntity>()
+                for (item in localMessageList)
+                {
+                    localMessageListData.add(item);
+                }
+                fiter(query.text.toString(), localMessageListData)
+            }
+        }
     }
     fun fiter(key: String, emailMessageList: ArrayList<EmailMessageEntity>) {
         var contactListTemp: ArrayList<EmailMessageEntity> = arrayListOf<EmailMessageEntity>()

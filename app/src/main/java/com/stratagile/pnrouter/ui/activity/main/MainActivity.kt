@@ -2834,6 +2834,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         rootTitleParent.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         ivNewGroup.visibility = View.VISIBLE
+        searchBtn.visibility = View.VISIBLE
     }
 
     fun setToFile() {
@@ -2846,6 +2847,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         rootTitleParent.visibility = View.GONE
         fileLook.visibility = View.VISIBLE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
     }
 
     fun setToContact() {
@@ -2858,6 +2860,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         rootTitleParent.visibility = View.GONE
         fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
         //contactFragment?.updata()
     }
 
@@ -2871,6 +2874,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         emailLook.visibility = View.GONE
         rootTitleParent.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
     }
 
     override fun initView() {
@@ -3210,6 +3214,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
             /* var list = arrayListOf<GroupEntity>()
              startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)*/
+        }
+        searchBtn.setOnClickListener {
+            startActivityForResult(Intent(this, SearchActivity::class.java), add_activity)
         }
         fileLook.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))

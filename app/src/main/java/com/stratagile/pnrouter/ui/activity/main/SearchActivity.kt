@@ -7,6 +7,7 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSearchComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SearchContract
@@ -27,7 +28,7 @@ class SearchActivity : BaseActivity(), SearchContract.View {
 
     @Inject
     internal lateinit var mPresenter: SearchPresenter
-    private var chatAndEmailFragment:ChatAndEmailFragment? = null
+    private var chatAndEmailFragment:ChatAndEmailSearchFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +36,13 @@ class SearchActivity : BaseActivity(), SearchContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_search)
-        chatAndEmailFragment = ChatAndEmailFragment()
+        chatAndEmailFragment = ChatAndEmailSearchFragment()
+        val args = Bundle()
+        args.putString("from", ConstantValue.chooseFragMentMenu)
+        chatAndEmailFragment!!.arguments = args
     }
     override fun initData() {
+        title.text = getString(R.string.search)
         viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when (position) {
@@ -49,7 +54,7 @@ class SearchActivity : BaseActivity(), SearchContract.View {
             }
 
             override fun getCount(): Int {
-                return 4
+                return 1
             }
         }
     }

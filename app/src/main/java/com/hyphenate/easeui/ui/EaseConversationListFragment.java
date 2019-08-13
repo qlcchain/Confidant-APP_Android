@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -67,13 +68,15 @@ import java.util.Map;
  */
 public class EaseConversationListFragment extends EaseBaseFragment {
     private final static int MSG_REFRESH = 2;
+    private final static int showSearch = 3;
     protected EditText query;
     protected ImageButton clearSearch;
+    protected RelativeLayout searchParent;
     protected boolean hidden;
     protected List<UnReadEMMessage> conversationList = new ArrayList<UnReadEMMessage>();
     protected EaseConversationList conversationListView;
     protected FrameLayout errorItemContainer;
-
+    protected String from = "";
     protected boolean isConflict;
 
     protected EMConversationListener convListener = new EMConversationListener() {
@@ -127,12 +130,17 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
     @Override
     protected void initView() {
+        if (getArguments() != null) {
+            from = getArguments().getString("from","");
+        }
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         conversationListView = (EaseConversationList) getView().findViewById(R.id.list);
         query = (EditText) getView().findViewById(R.id.query);
         // button to clear content in search bar
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
+        searchParent = (RelativeLayout) getView().findViewById(R.id.searchParent);
+
     }
 
     @Override
@@ -275,6 +283,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                 return false;
             }
         });
+        if(from!= null && !from.equals(""))
+        {
+            shouUI(true);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -322,6 +334,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                         conversationListView.refresh();
                     break;
                 }
+                case showSearch:
+                {
+                    shouUI(true);
+                    break;
+                }
                 default:
                     break;
             }
@@ -352,7 +369,28 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             handler.sendEmptyMessage(MSG_REFRESH);
         }
     }
-
+    public void shouUIMSG(boolean flag)
+    {
+        if (!handler.hasMessages(showSearch)) {
+            handler.sendEmptyMessage(showSearch);
+        }
+    }
+    public void shouUI(boolean flag)
+    {
+        if(searchParent != null)
+        {
+            searchParent.setVisibility(flag ? View.VISIBLE :View.GONE);
+        }
+        if(flag)
+        {
+            String key= query.getText().toString();
+            if(key == null  || key.equals(""))
+            {
+                key = "a";
+            }
+            //conversationListView.filter(key);
+        }
+    }
     public int removeFriend() {
         conversationList.clear();
         List<UnReadEMMessage> list = loadLocalConversationList();
