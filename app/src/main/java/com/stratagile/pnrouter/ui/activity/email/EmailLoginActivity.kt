@@ -86,35 +86,15 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
        }
         if(settings == 1)
         {
+            account_editText.setText(accountOld)
             account_editText.isEnabled = false
         }else{
+            account_editText.setText("")
             account_editText.isEnabled = true
         }
         if(BuildConfig.DEBUG)
         {
-            when(emailType)
-            {
-                "1"->
-                {
-                    account_editText.setText("emaildev@qlink.mobi")
-                    password_editText.setText("Qlcchain@123")
-                }
-                "2"->
-                {
-                    account_editText.setText("283619512@qq.com")
-                    password_editText.setText("kpagrlcmliolbjii")
-                }
-                "3"->
-                {
-                     account_editText.setText("bitcoin108@163.com")
-                     password_editText.setText("lang108")
-                }
-                "4"->
-                {
-                    /* account_editText.setText("kuangzihui1989@gmail.com")
-                     password_editText.setText("applela19890712")*/
-                }
-            }
+
         }
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {

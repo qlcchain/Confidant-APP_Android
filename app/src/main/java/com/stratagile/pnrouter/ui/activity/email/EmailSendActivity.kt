@@ -1139,7 +1139,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             attachList = attachList.substring(0,attachList.length -1)
         }
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
-        var name = toAdress.substring(1,toAdress.indexOf("@"))
+        var name = toAdress.substring(0,toAdress.indexOf("@"))
         if(AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "")
         {
             name = AppConfig.instance.emailConfig().name;

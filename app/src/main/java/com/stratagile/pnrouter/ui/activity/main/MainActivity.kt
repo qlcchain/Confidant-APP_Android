@@ -3250,7 +3250,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerClosed(arg0: View) {
-
+                var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                if(emailConfigEntityChoose.size > 0)
+                {
+                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                    AppConfig.instance.emailConfig()
+                            .setSmtpHost(emailConfigEntity.smtpHost)
+                            .setSmtpPort(emailConfigEntity.smtpPort)
+                            .setPopHost(emailConfigEntity.popHost)
+                            .setPopPort(emailConfigEntity.popPort)
+                            .setImapHost(emailConfigEntity.imapHost)
+                            .setImapPort(emailConfigEntity.imapPort)
+                            .setAccount(emailConfigEntity.account)
+                            .setPassword(emailConfigEntity.password)
+                            .setName(emailConfigEntity.name)
+                            .setEmailType(emailConfigEntity.emailType)
+                    ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                }
                 EventBus.getDefault().post(OnDrawerOpened())
                 //Log.i("zhangshuli", "colse")
             }

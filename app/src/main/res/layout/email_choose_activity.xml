@@ -35,7 +35,6 @@
         android:layout_height="@dimen/x1" />
     <com.stratagile.pnrouter.entity.MenuItemView
         android:id="@+id/wangyi"
-        android:paddingLeft="@dimen/x10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_menu_item"

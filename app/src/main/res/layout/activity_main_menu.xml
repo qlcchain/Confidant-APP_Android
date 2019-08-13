@@ -66,7 +66,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:text="@string/edit"
-                android:textStyle="bold"
                 android:textColor="@color/textColor"
                 android:textSize="16sp" />
         </RelativeLayout>
