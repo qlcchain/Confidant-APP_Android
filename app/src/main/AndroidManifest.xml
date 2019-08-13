@@ -326,6 +326,9 @@
             android:name=".ui.activity.email.EmailInfoActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.email.EmailEditActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.email.SelectEmailFriendActivity"
             android:screenOrientation="portrait" />
         <activity

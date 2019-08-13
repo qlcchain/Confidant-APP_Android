@@ -45,9 +45,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
 
     @Inject
     internal lateinit var mPresenter: EmailLoginPresenter
+    var emailTypeOld: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
+    var accountOld =""
+    var passwordOld =""
     var emailType: String? = null       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
     var account =""
     var password =""
+    var settings = 0;
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
         if(jSaveEmailConfRsp.params.retCode == 0)
@@ -73,12 +77,43 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
-
+        emailTypeOld = intent.getStringExtra("emailType")
+        accountOld = AppConfig.instance.emailConfig().account
+        passwordOld = AppConfig.instance.emailConfig().password
+       if(intent.hasExtra("settings"))
+       {
+           settings = intent.getIntExtra("settings",0)
+       }
+        if(settings == 1)
+        {
+            account_editText.isEnabled = false
+        }else{
+            account_editText.isEnabled = true
+        }
         if(BuildConfig.DEBUG)
         {
             when(emailType)
             {
-
+                "1"->
+                {
+                    account_editText.setText("emaildev@qlink.mobi")
+                    password_editText.setText("Qlcchain@123")
+                }
+                "2"->
+                {
+                    account_editText.setText("283619512@qq.com")
+                    password_editText.setText("kpagrlcmliolbjii")
+                }
+                "3"->
+                {
+                     account_editText.setText("bitcoin108@163.com")
+                     password_editText.setText("lang108")
+                }
+                "4"->
+                {
+                    /* account_editText.setText("kuangzihui1989@gmail.com")
+                     password_editText.setText("applela19890712")*/
+                }
             }
         }
         title.text = getString(R.string.NewAccount)
@@ -137,16 +172,24 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         AppConfig.instance.emailConfig()
                 .setAccount(account)
                 .setPassword(password)
+                .setEmailType(emailType)
 
         val emailExamine = EmailExamine(AppConfig.instance.emailConfig())
         emailExamine.connectServer(this, object : GetConnectCallback {
             override fun loginSuccess() {
                 //progressDialog.dismiss()
                 //showProgressDialog(getString(R.string.waiting))
-                var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
-                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-                var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                if(settings == 1)
+                {
+                    toast(R.string.success)
+                    finish()
+                }else{
+                    var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+                    var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                    var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                }
+
                 //sycDataCountIMAP()
                 /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
                  finish()*/
@@ -158,6 +201,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     closeProgressDialog()
                     //toast(R.string.Over_configure)
                 }
+                AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
                 Islands.ordinaryDialog(this@EmailLoginActivity)
                         .setText(null, getString(R.string.fail)+errorMsg)
                         .setButton( getString(R.string.close), null, null)

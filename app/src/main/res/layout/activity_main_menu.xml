@@ -54,6 +54,22 @@
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="10sp" />
         </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/editBtn"
+                android:layout_marginTop="@dimen/x20"
+                android:layout_marginRight="@dimen/x20"
+                android:padding="@dimen/x20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="@string/edit"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+        </RelativeLayout>
 
 
     </LinearLayout>
