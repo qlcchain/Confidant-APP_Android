@@ -23,6 +23,7 @@ public class EmailConfigEntity implements Parcelable{
     private String popHost;         //POP的Host
     private String imapHost;        //IMAP的Host
     private String account;         //邮箱帐号
+    private String name;            //用户昵称
     private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
     private String password;        //邮箱密码
     private int totalCount;        //Inbox消息总数
@@ -91,6 +92,7 @@ public class EmailConfigEntity implements Parcelable{
         popHost = in.readString();
         imapHost = in.readString();
         account = in.readString();
+        name = in.readString();
         emailType = in.readString();
         password = in.readString();
         totalCount = in.readInt();
@@ -146,18 +148,18 @@ public class EmailConfigEntity implements Parcelable{
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
-    @Generated(hash = 1818281174)
+    @Generated(hash = 564695810)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
-            String popHost, String imapHost, String account, String emailType, String password,
-            int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount, int starTotalCount,
-            int starunReadCount, int drafTotalCount, int drafUnReadCount, int sendTotalCount,
-            int sendunReadCount, int garbageCount, int garbageUnReadCount, int deleteTotalCount,
-            int deleteUnReadCount, String inboxMenu, String nodeMenu, String starMenu, String drafMenu,
-            String sendMenu, String garbageMenu, String deleteMenu, Boolean inboxMenuRefresh,
-            Boolean nodeMenuRefresh, Boolean starMenuRefresh, Boolean drafMenuRefresh,
-            Boolean sendMenuRefresh, Boolean garbageMenuRefresh, Boolean deleteMenuRefresh,
-            long inboxMaxMessageId, long inboxMinMessageId, long nodeMaxMessageId,
-            long starMaxMessageId, long drafMaxMessageId, long sendMaxMessageId,
+            String popHost, String imapHost, String account, String name, String emailType,
+            String password, int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount,
+            int starTotalCount, int starunReadCount, int drafTotalCount, int drafUnReadCount,
+            int sendTotalCount, int sendunReadCount, int garbageCount, int garbageUnReadCount,
+            int deleteTotalCount, int deleteUnReadCount, String inboxMenu, String nodeMenu,
+            String starMenu, String drafMenu, String sendMenu, String garbageMenu, String deleteMenu,
+            Boolean inboxMenuRefresh, Boolean nodeMenuRefresh, Boolean starMenuRefresh,
+            Boolean drafMenuRefresh, Boolean sendMenuRefresh, Boolean garbageMenuRefresh,
+            Boolean deleteMenuRefresh, long inboxMaxMessageId, long inboxMinMessageId,
+            long nodeMaxMessageId, long starMaxMessageId, long drafMaxMessageId, long sendMaxMessageId,
             long garbageMaxMessageId, long deleteMaxMessageId, long nodeMinMessageId,
             long starMinMessageId, long drafMinMessageId, long sendMinMessageId,
             long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose) {
@@ -169,6 +171,7 @@ public class EmailConfigEntity implements Parcelable{
         this.popHost = popHost;
         this.imapHost = imapHost;
         this.account = account;
+        this.name = name;
         this.emailType = emailType;
         this.password = password;
         this.totalCount = totalCount;
@@ -290,6 +293,14 @@ public class EmailConfigEntity implements Parcelable{
 
     public void setAccount(String account) {
         this.account = account;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmailType() {
@@ -652,28 +663,11 @@ public class EmailConfigEntity implements Parcelable{
         isChoose = choose;
     }
 
-    /**
-     * Describe the kinds of special objects contained in this Parcelable
-     * instance's marshaled representation. For example, if the object will
-     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
-     * the return value of this method must include the
-     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
-     *
-     * @return a bitmask indicating the set of special object types marshaled
-     * by this Parcelable object instance.
-     */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         if (id == null) {
@@ -689,6 +683,7 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(popHost);
         dest.writeString(imapHost);
         dest.writeString(account);
+        dest.writeString(name);
         dest.writeString(emailType);
         dest.writeString(password);
         dest.writeInt(totalCount);

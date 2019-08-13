@@ -76,6 +76,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
+import com.stratagile.pnrouter.ui.activity.email.EmailEditActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailSendActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
@@ -3228,6 +3229,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }*/
         }
+        editBtn.setOnClickListener {
+            startActivity(Intent(this, EmailEditActivity::class.java))
+        }
         mDrawer.setDrawerListener(object : DrawerLayout.DrawerListener {
            override fun onDrawerStateChanged(arg0: Int) {
 
@@ -3671,6 +3675,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0)
         {
+            editBtn.visibility = View.VISIBLE
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
             AppConfig.instance.emailConfig()
                     .setSmtpHost(emailConfigEntity.smtpHost)
@@ -3681,9 +3686,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setImapPort(emailConfigEntity.imapPort)
                     .setAccount(emailConfigEntity.account)
                     .setPassword(emailConfigEntity.password)
+                    .setName(emailConfigEntity.name)
+                    .setEmailType(emailConfigEntity.emailType)
             Inbox.setCount(emailConfigEntity.unReadCount)
             spam.setCount(emailConfigEntity.garbageCount)
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+        }else{
+            editBtn.visibility = View.GONE
         }
         if(fragmentMenu == "Circle")
         {
@@ -3736,6 +3745,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             .setImapPort(emailConfigEntity.imapPort)
                             .setAccount(emailConfigEntity.account)
                             .setPassword(emailConfigEntity.password)
+                            .setName(emailConfigEntity.name)
+                            .setEmailType(emailConfigEntity.emailType)
                 }
                 EventBus.getDefault().post(ChooseEmailConfig())
                 /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {

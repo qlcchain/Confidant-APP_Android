@@ -124,7 +124,7 @@
                     android:layout_width="@dimen/x60"
                     android:padding="@dimen/x10"
                     android:layout_height="@dimen/x60"
-                    android:src="@mipmap/statusbar_plus"
+                    android:src="@mipmap/icon_add_friend"
                     android:visibility="visible" />
 
                 <ImageView

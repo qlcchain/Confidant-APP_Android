@@ -30,51 +30,52 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property PopHost = new Property(5, String.class, "popHost", false, "POP_HOST");
         public final static Property ImapHost = new Property(6, String.class, "imapHost", false, "IMAP_HOST");
         public final static Property Account = new Property(7, String.class, "account", false, "ACCOUNT");
-        public final static Property EmailType = new Property(8, String.class, "emailType", false, "EMAIL_TYPE");
-        public final static Property Password = new Property(9, String.class, "password", false, "PASSWORD");
-        public final static Property TotalCount = new Property(10, int.class, "totalCount", false, "TOTAL_COUNT");
-        public final static Property UnReadCount = new Property(11, int.class, "unReadCount", false, "UN_READ_COUNT");
-        public final static Property NodeTotalCount = new Property(12, int.class, "nodeTotalCount", false, "NODE_TOTAL_COUNT");
-        public final static Property NodeUReadCount = new Property(13, int.class, "nodeUReadCount", false, "NODE_UREAD_COUNT");
-        public final static Property StarTotalCount = new Property(14, int.class, "starTotalCount", false, "STAR_TOTAL_COUNT");
-        public final static Property StarunReadCount = new Property(15, int.class, "starunReadCount", false, "STARUN_READ_COUNT");
-        public final static Property DrafTotalCount = new Property(16, int.class, "drafTotalCount", false, "DRAF_TOTAL_COUNT");
-        public final static Property DrafUnReadCount = new Property(17, int.class, "drafUnReadCount", false, "DRAF_UN_READ_COUNT");
-        public final static Property SendTotalCount = new Property(18, int.class, "sendTotalCount", false, "SEND_TOTAL_COUNT");
-        public final static Property SendunReadCount = new Property(19, int.class, "sendunReadCount", false, "SENDUN_READ_COUNT");
-        public final static Property GarbageCount = new Property(20, int.class, "garbageCount", false, "GARBAGE_COUNT");
-        public final static Property GarbageUnReadCount = new Property(21, int.class, "garbageUnReadCount", false, "GARBAGE_UN_READ_COUNT");
-        public final static Property DeleteTotalCount = new Property(22, int.class, "deleteTotalCount", false, "DELETE_TOTAL_COUNT");
-        public final static Property DeleteUnReadCount = new Property(23, int.class, "deleteUnReadCount", false, "DELETE_UN_READ_COUNT");
-        public final static Property InboxMenu = new Property(24, String.class, "inboxMenu", false, "INBOX_MENU");
-        public final static Property NodeMenu = new Property(25, String.class, "nodeMenu", false, "NODE_MENU");
-        public final static Property StarMenu = new Property(26, String.class, "starMenu", false, "STAR_MENU");
-        public final static Property DrafMenu = new Property(27, String.class, "drafMenu", false, "DRAF_MENU");
-        public final static Property SendMenu = new Property(28, String.class, "sendMenu", false, "SEND_MENU");
-        public final static Property GarbageMenu = new Property(29, String.class, "garbageMenu", false, "GARBAGE_MENU");
-        public final static Property DeleteMenu = new Property(30, String.class, "deleteMenu", false, "DELETE_MENU");
-        public final static Property InboxMenuRefresh = new Property(31, Boolean.class, "inboxMenuRefresh", false, "INBOX_MENU_REFRESH");
-        public final static Property NodeMenuRefresh = new Property(32, Boolean.class, "nodeMenuRefresh", false, "NODE_MENU_REFRESH");
-        public final static Property StarMenuRefresh = new Property(33, Boolean.class, "starMenuRefresh", false, "STAR_MENU_REFRESH");
-        public final static Property DrafMenuRefresh = new Property(34, Boolean.class, "drafMenuRefresh", false, "DRAF_MENU_REFRESH");
-        public final static Property SendMenuRefresh = new Property(35, Boolean.class, "sendMenuRefresh", false, "SEND_MENU_REFRESH");
-        public final static Property GarbageMenuRefresh = new Property(36, Boolean.class, "garbageMenuRefresh", false, "GARBAGE_MENU_REFRESH");
-        public final static Property DeleteMenuRefresh = new Property(37, Boolean.class, "deleteMenuRefresh", false, "DELETE_MENU_REFRESH");
-        public final static Property InboxMaxMessageId = new Property(38, long.class, "inboxMaxMessageId", false, "INBOX_MAX_MESSAGE_ID");
-        public final static Property InboxMinMessageId = new Property(39, long.class, "inboxMinMessageId", false, "INBOX_MIN_MESSAGE_ID");
-        public final static Property NodeMaxMessageId = new Property(40, long.class, "nodeMaxMessageId", false, "NODE_MAX_MESSAGE_ID");
-        public final static Property StarMaxMessageId = new Property(41, long.class, "starMaxMessageId", false, "STAR_MAX_MESSAGE_ID");
-        public final static Property DrafMaxMessageId = new Property(42, long.class, "drafMaxMessageId", false, "DRAF_MAX_MESSAGE_ID");
-        public final static Property SendMaxMessageId = new Property(43, long.class, "sendMaxMessageId", false, "SEND_MAX_MESSAGE_ID");
-        public final static Property GarbageMaxMessageId = new Property(44, long.class, "garbageMaxMessageId", false, "GARBAGE_MAX_MESSAGE_ID");
-        public final static Property DeleteMaxMessageId = new Property(45, long.class, "deleteMaxMessageId", false, "DELETE_MAX_MESSAGE_ID");
-        public final static Property NodeMinMessageId = new Property(46, long.class, "nodeMinMessageId", false, "NODE_MIN_MESSAGE_ID");
-        public final static Property StarMinMessageId = new Property(47, long.class, "starMinMessageId", false, "STAR_MIN_MESSAGE_ID");
-        public final static Property DrafMinMessageId = new Property(48, long.class, "drafMinMessageId", false, "DRAF_MIN_MESSAGE_ID");
-        public final static Property SendMinMessageId = new Property(49, long.class, "sendMinMessageId", false, "SEND_MIN_MESSAGE_ID");
-        public final static Property GarbageMinMessageId = new Property(50, long.class, "garbageMinMessageId", false, "GARBAGE_MIN_MESSAGE_ID");
-        public final static Property DeleteMinMessageId = new Property(51, long.class, "deleteMinMessageId", false, "DELETE_MIN_MESSAGE_ID");
-        public final static Property IsChoose = new Property(52, Boolean.class, "isChoose", false, "IS_CHOOSE");
+        public final static Property Name = new Property(8, String.class, "name", false, "NAME");
+        public final static Property EmailType = new Property(9, String.class, "emailType", false, "EMAIL_TYPE");
+        public final static Property Password = new Property(10, String.class, "password", false, "PASSWORD");
+        public final static Property TotalCount = new Property(11, int.class, "totalCount", false, "TOTAL_COUNT");
+        public final static Property UnReadCount = new Property(12, int.class, "unReadCount", false, "UN_READ_COUNT");
+        public final static Property NodeTotalCount = new Property(13, int.class, "nodeTotalCount", false, "NODE_TOTAL_COUNT");
+        public final static Property NodeUReadCount = new Property(14, int.class, "nodeUReadCount", false, "NODE_UREAD_COUNT");
+        public final static Property StarTotalCount = new Property(15, int.class, "starTotalCount", false, "STAR_TOTAL_COUNT");
+        public final static Property StarunReadCount = new Property(16, int.class, "starunReadCount", false, "STARUN_READ_COUNT");
+        public final static Property DrafTotalCount = new Property(17, int.class, "drafTotalCount", false, "DRAF_TOTAL_COUNT");
+        public final static Property DrafUnReadCount = new Property(18, int.class, "drafUnReadCount", false, "DRAF_UN_READ_COUNT");
+        public final static Property SendTotalCount = new Property(19, int.class, "sendTotalCount", false, "SEND_TOTAL_COUNT");
+        public final static Property SendunReadCount = new Property(20, int.class, "sendunReadCount", false, "SENDUN_READ_COUNT");
+        public final static Property GarbageCount = new Property(21, int.class, "garbageCount", false, "GARBAGE_COUNT");
+        public final static Property GarbageUnReadCount = new Property(22, int.class, "garbageUnReadCount", false, "GARBAGE_UN_READ_COUNT");
+        public final static Property DeleteTotalCount = new Property(23, int.class, "deleteTotalCount", false, "DELETE_TOTAL_COUNT");
+        public final static Property DeleteUnReadCount = new Property(24, int.class, "deleteUnReadCount", false, "DELETE_UN_READ_COUNT");
+        public final static Property InboxMenu = new Property(25, String.class, "inboxMenu", false, "INBOX_MENU");
+        public final static Property NodeMenu = new Property(26, String.class, "nodeMenu", false, "NODE_MENU");
+        public final static Property StarMenu = new Property(27, String.class, "starMenu", false, "STAR_MENU");
+        public final static Property DrafMenu = new Property(28, String.class, "drafMenu", false, "DRAF_MENU");
+        public final static Property SendMenu = new Property(29, String.class, "sendMenu", false, "SEND_MENU");
+        public final static Property GarbageMenu = new Property(30, String.class, "garbageMenu", false, "GARBAGE_MENU");
+        public final static Property DeleteMenu = new Property(31, String.class, "deleteMenu", false, "DELETE_MENU");
+        public final static Property InboxMenuRefresh = new Property(32, Boolean.class, "inboxMenuRefresh", false, "INBOX_MENU_REFRESH");
+        public final static Property NodeMenuRefresh = new Property(33, Boolean.class, "nodeMenuRefresh", false, "NODE_MENU_REFRESH");
+        public final static Property StarMenuRefresh = new Property(34, Boolean.class, "starMenuRefresh", false, "STAR_MENU_REFRESH");
+        public final static Property DrafMenuRefresh = new Property(35, Boolean.class, "drafMenuRefresh", false, "DRAF_MENU_REFRESH");
+        public final static Property SendMenuRefresh = new Property(36, Boolean.class, "sendMenuRefresh", false, "SEND_MENU_REFRESH");
+        public final static Property GarbageMenuRefresh = new Property(37, Boolean.class, "garbageMenuRefresh", false, "GARBAGE_MENU_REFRESH");
+        public final static Property DeleteMenuRefresh = new Property(38, Boolean.class, "deleteMenuRefresh", false, "DELETE_MENU_REFRESH");
+        public final static Property InboxMaxMessageId = new Property(39, long.class, "inboxMaxMessageId", false, "INBOX_MAX_MESSAGE_ID");
+        public final static Property InboxMinMessageId = new Property(40, long.class, "inboxMinMessageId", false, "INBOX_MIN_MESSAGE_ID");
+        public final static Property NodeMaxMessageId = new Property(41, long.class, "nodeMaxMessageId", false, "NODE_MAX_MESSAGE_ID");
+        public final static Property StarMaxMessageId = new Property(42, long.class, "starMaxMessageId", false, "STAR_MAX_MESSAGE_ID");
+        public final static Property DrafMaxMessageId = new Property(43, long.class, "drafMaxMessageId", false, "DRAF_MAX_MESSAGE_ID");
+        public final static Property SendMaxMessageId = new Property(44, long.class, "sendMaxMessageId", false, "SEND_MAX_MESSAGE_ID");
+        public final static Property GarbageMaxMessageId = new Property(45, long.class, "garbageMaxMessageId", false, "GARBAGE_MAX_MESSAGE_ID");
+        public final static Property DeleteMaxMessageId = new Property(46, long.class, "deleteMaxMessageId", false, "DELETE_MAX_MESSAGE_ID");
+        public final static Property NodeMinMessageId = new Property(47, long.class, "nodeMinMessageId", false, "NODE_MIN_MESSAGE_ID");
+        public final static Property StarMinMessageId = new Property(48, long.class, "starMinMessageId", false, "STAR_MIN_MESSAGE_ID");
+        public final static Property DrafMinMessageId = new Property(49, long.class, "drafMinMessageId", false, "DRAF_MIN_MESSAGE_ID");
+        public final static Property SendMinMessageId = new Property(50, long.class, "sendMinMessageId", false, "SEND_MIN_MESSAGE_ID");
+        public final static Property GarbageMinMessageId = new Property(51, long.class, "garbageMinMessageId", false, "GARBAGE_MIN_MESSAGE_ID");
+        public final static Property DeleteMinMessageId = new Property(52, long.class, "deleteMinMessageId", false, "DELETE_MIN_MESSAGE_ID");
+        public final static Property IsChoose = new Property(53, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -98,51 +99,52 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"POP_HOST\" TEXT," + // 5: popHost
                 "\"IMAP_HOST\" TEXT," + // 6: imapHost
                 "\"ACCOUNT\" TEXT," + // 7: account
-                "\"EMAIL_TYPE\" TEXT," + // 8: emailType
-                "\"PASSWORD\" TEXT," + // 9: password
-                "\"TOTAL_COUNT\" INTEGER NOT NULL ," + // 10: totalCount
-                "\"UN_READ_COUNT\" INTEGER NOT NULL ," + // 11: unReadCount
-                "\"NODE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 12: nodeTotalCount
-                "\"NODE_UREAD_COUNT\" INTEGER NOT NULL ," + // 13: nodeUReadCount
-                "\"STAR_TOTAL_COUNT\" INTEGER NOT NULL ," + // 14: starTotalCount
-                "\"STARUN_READ_COUNT\" INTEGER NOT NULL ," + // 15: starunReadCount
-                "\"DRAF_TOTAL_COUNT\" INTEGER NOT NULL ," + // 16: drafTotalCount
-                "\"DRAF_UN_READ_COUNT\" INTEGER NOT NULL ," + // 17: drafUnReadCount
-                "\"SEND_TOTAL_COUNT\" INTEGER NOT NULL ," + // 18: sendTotalCount
-                "\"SENDUN_READ_COUNT\" INTEGER NOT NULL ," + // 19: sendunReadCount
-                "\"GARBAGE_COUNT\" INTEGER NOT NULL ," + // 20: garbageCount
-                "\"GARBAGE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 21: garbageUnReadCount
-                "\"DELETE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 22: deleteTotalCount
-                "\"DELETE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 23: deleteUnReadCount
-                "\"INBOX_MENU\" TEXT," + // 24: inboxMenu
-                "\"NODE_MENU\" TEXT," + // 25: nodeMenu
-                "\"STAR_MENU\" TEXT," + // 26: starMenu
-                "\"DRAF_MENU\" TEXT," + // 27: drafMenu
-                "\"SEND_MENU\" TEXT," + // 28: sendMenu
-                "\"GARBAGE_MENU\" TEXT," + // 29: garbageMenu
-                "\"DELETE_MENU\" TEXT," + // 30: deleteMenu
-                "\"INBOX_MENU_REFRESH\" INTEGER," + // 31: inboxMenuRefresh
-                "\"NODE_MENU_REFRESH\" INTEGER," + // 32: nodeMenuRefresh
-                "\"STAR_MENU_REFRESH\" INTEGER," + // 33: starMenuRefresh
-                "\"DRAF_MENU_REFRESH\" INTEGER," + // 34: drafMenuRefresh
-                "\"SEND_MENU_REFRESH\" INTEGER," + // 35: sendMenuRefresh
-                "\"GARBAGE_MENU_REFRESH\" INTEGER," + // 36: garbageMenuRefresh
-                "\"DELETE_MENU_REFRESH\" INTEGER," + // 37: deleteMenuRefresh
-                "\"INBOX_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 38: inboxMaxMessageId
-                "\"INBOX_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 39: inboxMinMessageId
-                "\"NODE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 40: nodeMaxMessageId
-                "\"STAR_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 41: starMaxMessageId
-                "\"DRAF_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 42: drafMaxMessageId
-                "\"SEND_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 43: sendMaxMessageId
-                "\"GARBAGE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 44: garbageMaxMessageId
-                "\"DELETE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 45: deleteMaxMessageId
-                "\"NODE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 46: nodeMinMessageId
-                "\"STAR_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 47: starMinMessageId
-                "\"DRAF_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 48: drafMinMessageId
-                "\"SEND_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 49: sendMinMessageId
-                "\"GARBAGE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 50: garbageMinMessageId
-                "\"DELETE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 51: deleteMinMessageId
-                "\"IS_CHOOSE\" INTEGER);"); // 52: isChoose
+                "\"NAME\" TEXT," + // 8: name
+                "\"EMAIL_TYPE\" TEXT," + // 9: emailType
+                "\"PASSWORD\" TEXT," + // 10: password
+                "\"TOTAL_COUNT\" INTEGER NOT NULL ," + // 11: totalCount
+                "\"UN_READ_COUNT\" INTEGER NOT NULL ," + // 12: unReadCount
+                "\"NODE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 13: nodeTotalCount
+                "\"NODE_UREAD_COUNT\" INTEGER NOT NULL ," + // 14: nodeUReadCount
+                "\"STAR_TOTAL_COUNT\" INTEGER NOT NULL ," + // 15: starTotalCount
+                "\"STARUN_READ_COUNT\" INTEGER NOT NULL ," + // 16: starunReadCount
+                "\"DRAF_TOTAL_COUNT\" INTEGER NOT NULL ," + // 17: drafTotalCount
+                "\"DRAF_UN_READ_COUNT\" INTEGER NOT NULL ," + // 18: drafUnReadCount
+                "\"SEND_TOTAL_COUNT\" INTEGER NOT NULL ," + // 19: sendTotalCount
+                "\"SENDUN_READ_COUNT\" INTEGER NOT NULL ," + // 20: sendunReadCount
+                "\"GARBAGE_COUNT\" INTEGER NOT NULL ," + // 21: garbageCount
+                "\"GARBAGE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 22: garbageUnReadCount
+                "\"DELETE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 23: deleteTotalCount
+                "\"DELETE_UN_READ_COUNT\" INTEGER NOT NULL ," + // 24: deleteUnReadCount
+                "\"INBOX_MENU\" TEXT," + // 25: inboxMenu
+                "\"NODE_MENU\" TEXT," + // 26: nodeMenu
+                "\"STAR_MENU\" TEXT," + // 27: starMenu
+                "\"DRAF_MENU\" TEXT," + // 28: drafMenu
+                "\"SEND_MENU\" TEXT," + // 29: sendMenu
+                "\"GARBAGE_MENU\" TEXT," + // 30: garbageMenu
+                "\"DELETE_MENU\" TEXT," + // 31: deleteMenu
+                "\"INBOX_MENU_REFRESH\" INTEGER," + // 32: inboxMenuRefresh
+                "\"NODE_MENU_REFRESH\" INTEGER," + // 33: nodeMenuRefresh
+                "\"STAR_MENU_REFRESH\" INTEGER," + // 34: starMenuRefresh
+                "\"DRAF_MENU_REFRESH\" INTEGER," + // 35: drafMenuRefresh
+                "\"SEND_MENU_REFRESH\" INTEGER," + // 36: sendMenuRefresh
+                "\"GARBAGE_MENU_REFRESH\" INTEGER," + // 37: garbageMenuRefresh
+                "\"DELETE_MENU_REFRESH\" INTEGER," + // 38: deleteMenuRefresh
+                "\"INBOX_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 39: inboxMaxMessageId
+                "\"INBOX_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 40: inboxMinMessageId
+                "\"NODE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 41: nodeMaxMessageId
+                "\"STAR_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 42: starMaxMessageId
+                "\"DRAF_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 43: drafMaxMessageId
+                "\"SEND_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 44: sendMaxMessageId
+                "\"GARBAGE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 45: garbageMaxMessageId
+                "\"DELETE_MAX_MESSAGE_ID\" INTEGER NOT NULL ," + // 46: deleteMaxMessageId
+                "\"NODE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 47: nodeMinMessageId
+                "\"STAR_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 48: starMinMessageId
+                "\"DRAF_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 49: drafMinMessageId
+                "\"SEND_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 50: sendMinMessageId
+                "\"GARBAGE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 51: garbageMinMessageId
+                "\"DELETE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 52: deleteMinMessageId
+                "\"IS_CHOOSE\" INTEGER);"); // 53: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -183,117 +185,122 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             stmt.bindString(8, account);
         }
  
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(9, name);
+        }
+ 
         String emailType = entity.getEmailType();
         if (emailType != null) {
-            stmt.bindString(9, emailType);
+            stmt.bindString(10, emailType);
         }
  
         String password = entity.getPassword();
         if (password != null) {
-            stmt.bindString(10, password);
+            stmt.bindString(11, password);
         }
-        stmt.bindLong(11, entity.getTotalCount());
-        stmt.bindLong(12, entity.getUnReadCount());
-        stmt.bindLong(13, entity.getNodeTotalCount());
-        stmt.bindLong(14, entity.getNodeUReadCount());
-        stmt.bindLong(15, entity.getStarTotalCount());
-        stmt.bindLong(16, entity.getStarunReadCount());
-        stmt.bindLong(17, entity.getDrafTotalCount());
-        stmt.bindLong(18, entity.getDrafUnReadCount());
-        stmt.bindLong(19, entity.getSendTotalCount());
-        stmt.bindLong(20, entity.getSendunReadCount());
-        stmt.bindLong(21, entity.getGarbageCount());
-        stmt.bindLong(22, entity.getGarbageUnReadCount());
-        stmt.bindLong(23, entity.getDeleteTotalCount());
-        stmt.bindLong(24, entity.getDeleteUnReadCount());
+        stmt.bindLong(12, entity.getTotalCount());
+        stmt.bindLong(13, entity.getUnReadCount());
+        stmt.bindLong(14, entity.getNodeTotalCount());
+        stmt.bindLong(15, entity.getNodeUReadCount());
+        stmt.bindLong(16, entity.getStarTotalCount());
+        stmt.bindLong(17, entity.getStarunReadCount());
+        stmt.bindLong(18, entity.getDrafTotalCount());
+        stmt.bindLong(19, entity.getDrafUnReadCount());
+        stmt.bindLong(20, entity.getSendTotalCount());
+        stmt.bindLong(21, entity.getSendunReadCount());
+        stmt.bindLong(22, entity.getGarbageCount());
+        stmt.bindLong(23, entity.getGarbageUnReadCount());
+        stmt.bindLong(24, entity.getDeleteTotalCount());
+        stmt.bindLong(25, entity.getDeleteUnReadCount());
  
         String inboxMenu = entity.getInboxMenu();
         if (inboxMenu != null) {
-            stmt.bindString(25, inboxMenu);
+            stmt.bindString(26, inboxMenu);
         }
  
         String nodeMenu = entity.getNodeMenu();
         if (nodeMenu != null) {
-            stmt.bindString(26, nodeMenu);
+            stmt.bindString(27, nodeMenu);
         }
  
         String starMenu = entity.getStarMenu();
         if (starMenu != null) {
-            stmt.bindString(27, starMenu);
+            stmt.bindString(28, starMenu);
         }
  
         String drafMenu = entity.getDrafMenu();
         if (drafMenu != null) {
-            stmt.bindString(28, drafMenu);
+            stmt.bindString(29, drafMenu);
         }
  
         String sendMenu = entity.getSendMenu();
         if (sendMenu != null) {
-            stmt.bindString(29, sendMenu);
+            stmt.bindString(30, sendMenu);
         }
  
         String garbageMenu = entity.getGarbageMenu();
         if (garbageMenu != null) {
-            stmt.bindString(30, garbageMenu);
+            stmt.bindString(31, garbageMenu);
         }
  
         String deleteMenu = entity.getDeleteMenu();
         if (deleteMenu != null) {
-            stmt.bindString(31, deleteMenu);
+            stmt.bindString(32, deleteMenu);
         }
  
         Boolean inboxMenuRefresh = entity.getInboxMenuRefresh();
         if (inboxMenuRefresh != null) {
-            stmt.bindLong(32, inboxMenuRefresh ? 1L: 0L);
+            stmt.bindLong(33, inboxMenuRefresh ? 1L: 0L);
         }
  
         Boolean nodeMenuRefresh = entity.getNodeMenuRefresh();
         if (nodeMenuRefresh != null) {
-            stmt.bindLong(33, nodeMenuRefresh ? 1L: 0L);
+            stmt.bindLong(34, nodeMenuRefresh ? 1L: 0L);
         }
  
         Boolean starMenuRefresh = entity.getStarMenuRefresh();
         if (starMenuRefresh != null) {
-            stmt.bindLong(34, starMenuRefresh ? 1L: 0L);
+            stmt.bindLong(35, starMenuRefresh ? 1L: 0L);
         }
  
         Boolean drafMenuRefresh = entity.getDrafMenuRefresh();
         if (drafMenuRefresh != null) {
-            stmt.bindLong(35, drafMenuRefresh ? 1L: 0L);
+            stmt.bindLong(36, drafMenuRefresh ? 1L: 0L);
         }
  
         Boolean sendMenuRefresh = entity.getSendMenuRefresh();
         if (sendMenuRefresh != null) {
-            stmt.bindLong(36, sendMenuRefresh ? 1L: 0L);
+            stmt.bindLong(37, sendMenuRefresh ? 1L: 0L);
         }
  
         Boolean garbageMenuRefresh = entity.getGarbageMenuRefresh();
         if (garbageMenuRefresh != null) {
-            stmt.bindLong(37, garbageMenuRefresh ? 1L: 0L);
+            stmt.bindLong(38, garbageMenuRefresh ? 1L: 0L);
         }
  
         Boolean deleteMenuRefresh = entity.getDeleteMenuRefresh();
         if (deleteMenuRefresh != null) {
-            stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
+            stmt.bindLong(39, deleteMenuRefresh ? 1L: 0L);
         }
-        stmt.bindLong(39, entity.getInboxMaxMessageId());
-        stmt.bindLong(40, entity.getInboxMinMessageId());
-        stmt.bindLong(41, entity.getNodeMaxMessageId());
-        stmt.bindLong(42, entity.getStarMaxMessageId());
-        stmt.bindLong(43, entity.getDrafMaxMessageId());
-        stmt.bindLong(44, entity.getSendMaxMessageId());
-        stmt.bindLong(45, entity.getGarbageMaxMessageId());
-        stmt.bindLong(46, entity.getDeleteMaxMessageId());
-        stmt.bindLong(47, entity.getNodeMinMessageId());
-        stmt.bindLong(48, entity.getStarMinMessageId());
-        stmt.bindLong(49, entity.getDrafMinMessageId());
-        stmt.bindLong(50, entity.getSendMinMessageId());
-        stmt.bindLong(51, entity.getGarbageMinMessageId());
-        stmt.bindLong(52, entity.getDeleteMinMessageId());
+        stmt.bindLong(40, entity.getInboxMaxMessageId());
+        stmt.bindLong(41, entity.getInboxMinMessageId());
+        stmt.bindLong(42, entity.getNodeMaxMessageId());
+        stmt.bindLong(43, entity.getStarMaxMessageId());
+        stmt.bindLong(44, entity.getDrafMaxMessageId());
+        stmt.bindLong(45, entity.getSendMaxMessageId());
+        stmt.bindLong(46, entity.getGarbageMaxMessageId());
+        stmt.bindLong(47, entity.getDeleteMaxMessageId());
+        stmt.bindLong(48, entity.getNodeMinMessageId());
+        stmt.bindLong(49, entity.getStarMinMessageId());
+        stmt.bindLong(50, entity.getDrafMinMessageId());
+        stmt.bindLong(51, entity.getSendMinMessageId());
+        stmt.bindLong(52, entity.getGarbageMinMessageId());
+        stmt.bindLong(53, entity.getDeleteMinMessageId());
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(53, isChoose ? 1L: 0L);
+            stmt.bindLong(54, isChoose ? 1L: 0L);
         }
     }
 
@@ -329,117 +336,122 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             stmt.bindString(8, account);
         }
  
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(9, name);
+        }
+ 
         String emailType = entity.getEmailType();
         if (emailType != null) {
-            stmt.bindString(9, emailType);
+            stmt.bindString(10, emailType);
         }
  
         String password = entity.getPassword();
         if (password != null) {
-            stmt.bindString(10, password);
+            stmt.bindString(11, password);
         }
-        stmt.bindLong(11, entity.getTotalCount());
-        stmt.bindLong(12, entity.getUnReadCount());
-        stmt.bindLong(13, entity.getNodeTotalCount());
-        stmt.bindLong(14, entity.getNodeUReadCount());
-        stmt.bindLong(15, entity.getStarTotalCount());
-        stmt.bindLong(16, entity.getStarunReadCount());
-        stmt.bindLong(17, entity.getDrafTotalCount());
-        stmt.bindLong(18, entity.getDrafUnReadCount());
-        stmt.bindLong(19, entity.getSendTotalCount());
-        stmt.bindLong(20, entity.getSendunReadCount());
-        stmt.bindLong(21, entity.getGarbageCount());
-        stmt.bindLong(22, entity.getGarbageUnReadCount());
-        stmt.bindLong(23, entity.getDeleteTotalCount());
-        stmt.bindLong(24, entity.getDeleteUnReadCount());
+        stmt.bindLong(12, entity.getTotalCount());
+        stmt.bindLong(13, entity.getUnReadCount());
+        stmt.bindLong(14, entity.getNodeTotalCount());
+        stmt.bindLong(15, entity.getNodeUReadCount());
+        stmt.bindLong(16, entity.getStarTotalCount());
+        stmt.bindLong(17, entity.getStarunReadCount());
+        stmt.bindLong(18, entity.getDrafTotalCount());
+        stmt.bindLong(19, entity.getDrafUnReadCount());
+        stmt.bindLong(20, entity.getSendTotalCount());
+        stmt.bindLong(21, entity.getSendunReadCount());
+        stmt.bindLong(22, entity.getGarbageCount());
+        stmt.bindLong(23, entity.getGarbageUnReadCount());
+        stmt.bindLong(24, entity.getDeleteTotalCount());
+        stmt.bindLong(25, entity.getDeleteUnReadCount());
  
         String inboxMenu = entity.getInboxMenu();
         if (inboxMenu != null) {
-            stmt.bindString(25, inboxMenu);
+            stmt.bindString(26, inboxMenu);
         }
  
         String nodeMenu = entity.getNodeMenu();
         if (nodeMenu != null) {
-            stmt.bindString(26, nodeMenu);
+            stmt.bindString(27, nodeMenu);
         }
  
         String starMenu = entity.getStarMenu();
         if (starMenu != null) {
-            stmt.bindString(27, starMenu);
+            stmt.bindString(28, starMenu);
         }
  
         String drafMenu = entity.getDrafMenu();
         if (drafMenu != null) {
-            stmt.bindString(28, drafMenu);
+            stmt.bindString(29, drafMenu);
         }
  
         String sendMenu = entity.getSendMenu();
         if (sendMenu != null) {
-            stmt.bindString(29, sendMenu);
+            stmt.bindString(30, sendMenu);
         }
  
         String garbageMenu = entity.getGarbageMenu();
         if (garbageMenu != null) {
-            stmt.bindString(30, garbageMenu);
+            stmt.bindString(31, garbageMenu);
         }
  
         String deleteMenu = entity.getDeleteMenu();
         if (deleteMenu != null) {
-            stmt.bindString(31, deleteMenu);
+            stmt.bindString(32, deleteMenu);
         }
  
         Boolean inboxMenuRefresh = entity.getInboxMenuRefresh();
         if (inboxMenuRefresh != null) {
-            stmt.bindLong(32, inboxMenuRefresh ? 1L: 0L);
+            stmt.bindLong(33, inboxMenuRefresh ? 1L: 0L);
         }
  
         Boolean nodeMenuRefresh = entity.getNodeMenuRefresh();
         if (nodeMenuRefresh != null) {
-            stmt.bindLong(33, nodeMenuRefresh ? 1L: 0L);
+            stmt.bindLong(34, nodeMenuRefresh ? 1L: 0L);
         }
  
         Boolean starMenuRefresh = entity.getStarMenuRefresh();
         if (starMenuRefresh != null) {
-            stmt.bindLong(34, starMenuRefresh ? 1L: 0L);
+            stmt.bindLong(35, starMenuRefresh ? 1L: 0L);
         }
  
         Boolean drafMenuRefresh = entity.getDrafMenuRefresh();
         if (drafMenuRefresh != null) {
-            stmt.bindLong(35, drafMenuRefresh ? 1L: 0L);
+            stmt.bindLong(36, drafMenuRefresh ? 1L: 0L);
         }
  
         Boolean sendMenuRefresh = entity.getSendMenuRefresh();
         if (sendMenuRefresh != null) {
-            stmt.bindLong(36, sendMenuRefresh ? 1L: 0L);
+            stmt.bindLong(37, sendMenuRefresh ? 1L: 0L);
         }
  
         Boolean garbageMenuRefresh = entity.getGarbageMenuRefresh();
         if (garbageMenuRefresh != null) {
-            stmt.bindLong(37, garbageMenuRefresh ? 1L: 0L);
+            stmt.bindLong(38, garbageMenuRefresh ? 1L: 0L);
         }
  
         Boolean deleteMenuRefresh = entity.getDeleteMenuRefresh();
         if (deleteMenuRefresh != null) {
-            stmt.bindLong(38, deleteMenuRefresh ? 1L: 0L);
+            stmt.bindLong(39, deleteMenuRefresh ? 1L: 0L);
         }
-        stmt.bindLong(39, entity.getInboxMaxMessageId());
-        stmt.bindLong(40, entity.getInboxMinMessageId());
-        stmt.bindLong(41, entity.getNodeMaxMessageId());
-        stmt.bindLong(42, entity.getStarMaxMessageId());
-        stmt.bindLong(43, entity.getDrafMaxMessageId());
-        stmt.bindLong(44, entity.getSendMaxMessageId());
-        stmt.bindLong(45, entity.getGarbageMaxMessageId());
-        stmt.bindLong(46, entity.getDeleteMaxMessageId());
-        stmt.bindLong(47, entity.getNodeMinMessageId());
-        stmt.bindLong(48, entity.getStarMinMessageId());
-        stmt.bindLong(49, entity.getDrafMinMessageId());
-        stmt.bindLong(50, entity.getSendMinMessageId());
-        stmt.bindLong(51, entity.getGarbageMinMessageId());
-        stmt.bindLong(52, entity.getDeleteMinMessageId());
+        stmt.bindLong(40, entity.getInboxMaxMessageId());
+        stmt.bindLong(41, entity.getInboxMinMessageId());
+        stmt.bindLong(42, entity.getNodeMaxMessageId());
+        stmt.bindLong(43, entity.getStarMaxMessageId());
+        stmt.bindLong(44, entity.getDrafMaxMessageId());
+        stmt.bindLong(45, entity.getSendMaxMessageId());
+        stmt.bindLong(46, entity.getGarbageMaxMessageId());
+        stmt.bindLong(47, entity.getDeleteMaxMessageId());
+        stmt.bindLong(48, entity.getNodeMinMessageId());
+        stmt.bindLong(49, entity.getStarMinMessageId());
+        stmt.bindLong(50, entity.getDrafMinMessageId());
+        stmt.bindLong(51, entity.getSendMinMessageId());
+        stmt.bindLong(52, entity.getGarbageMinMessageId());
+        stmt.bindLong(53, entity.getDeleteMinMessageId());
  
         Boolean isChoose = entity.getIsChoose();
         if (isChoose != null) {
-            stmt.bindLong(53, isChoose ? 1L: 0L);
+            stmt.bindLong(54, isChoose ? 1L: 0L);
         }
     }
 
@@ -459,51 +471,52 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // popHost
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // imapHost
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // account
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // emailType
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // password
-            cursor.getInt(offset + 10), // totalCount
-            cursor.getInt(offset + 11), // unReadCount
-            cursor.getInt(offset + 12), // nodeTotalCount
-            cursor.getInt(offset + 13), // nodeUReadCount
-            cursor.getInt(offset + 14), // starTotalCount
-            cursor.getInt(offset + 15), // starunReadCount
-            cursor.getInt(offset + 16), // drafTotalCount
-            cursor.getInt(offset + 17), // drafUnReadCount
-            cursor.getInt(offset + 18), // sendTotalCount
-            cursor.getInt(offset + 19), // sendunReadCount
-            cursor.getInt(offset + 20), // garbageCount
-            cursor.getInt(offset + 21), // garbageUnReadCount
-            cursor.getInt(offset + 22), // deleteTotalCount
-            cursor.getInt(offset + 23), // deleteUnReadCount
-            cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24), // inboxMenu
-            cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25), // nodeMenu
-            cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26), // starMenu
-            cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27), // drafMenu
-            cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // sendMenu
-            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // garbageMenu
-            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // deleteMenu
-            cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0, // inboxMenuRefresh
-            cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0, // nodeMenuRefresh
-            cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0, // starMenuRefresh
-            cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0, // drafMenuRefresh
-            cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0, // sendMenuRefresh
-            cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0, // garbageMenuRefresh
-            cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0, // deleteMenuRefresh
-            cursor.getLong(offset + 38), // inboxMaxMessageId
-            cursor.getLong(offset + 39), // inboxMinMessageId
-            cursor.getLong(offset + 40), // nodeMaxMessageId
-            cursor.getLong(offset + 41), // starMaxMessageId
-            cursor.getLong(offset + 42), // drafMaxMessageId
-            cursor.getLong(offset + 43), // sendMaxMessageId
-            cursor.getLong(offset + 44), // garbageMaxMessageId
-            cursor.getLong(offset + 45), // deleteMaxMessageId
-            cursor.getLong(offset + 46), // nodeMinMessageId
-            cursor.getLong(offset + 47), // starMinMessageId
-            cursor.getLong(offset + 48), // drafMinMessageId
-            cursor.getLong(offset + 49), // sendMinMessageId
-            cursor.getLong(offset + 50), // garbageMinMessageId
-            cursor.getLong(offset + 51), // deleteMinMessageId
-            cursor.isNull(offset + 52) ? null : cursor.getShort(offset + 52) != 0 // isChoose
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // name
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // emailType
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // password
+            cursor.getInt(offset + 11), // totalCount
+            cursor.getInt(offset + 12), // unReadCount
+            cursor.getInt(offset + 13), // nodeTotalCount
+            cursor.getInt(offset + 14), // nodeUReadCount
+            cursor.getInt(offset + 15), // starTotalCount
+            cursor.getInt(offset + 16), // starunReadCount
+            cursor.getInt(offset + 17), // drafTotalCount
+            cursor.getInt(offset + 18), // drafUnReadCount
+            cursor.getInt(offset + 19), // sendTotalCount
+            cursor.getInt(offset + 20), // sendunReadCount
+            cursor.getInt(offset + 21), // garbageCount
+            cursor.getInt(offset + 22), // garbageUnReadCount
+            cursor.getInt(offset + 23), // deleteTotalCount
+            cursor.getInt(offset + 24), // deleteUnReadCount
+            cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25), // inboxMenu
+            cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26), // nodeMenu
+            cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27), // starMenu
+            cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // drafMenu
+            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // sendMenu
+            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // garbageMenu
+            cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31), // deleteMenu
+            cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0, // inboxMenuRefresh
+            cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0, // nodeMenuRefresh
+            cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0, // starMenuRefresh
+            cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0, // drafMenuRefresh
+            cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0, // sendMenuRefresh
+            cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0, // garbageMenuRefresh
+            cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0, // deleteMenuRefresh
+            cursor.getLong(offset + 39), // inboxMaxMessageId
+            cursor.getLong(offset + 40), // inboxMinMessageId
+            cursor.getLong(offset + 41), // nodeMaxMessageId
+            cursor.getLong(offset + 42), // starMaxMessageId
+            cursor.getLong(offset + 43), // drafMaxMessageId
+            cursor.getLong(offset + 44), // sendMaxMessageId
+            cursor.getLong(offset + 45), // garbageMaxMessageId
+            cursor.getLong(offset + 46), // deleteMaxMessageId
+            cursor.getLong(offset + 47), // nodeMinMessageId
+            cursor.getLong(offset + 48), // starMinMessageId
+            cursor.getLong(offset + 49), // drafMinMessageId
+            cursor.getLong(offset + 50), // sendMinMessageId
+            cursor.getLong(offset + 51), // garbageMinMessageId
+            cursor.getLong(offset + 52), // deleteMinMessageId
+            cursor.isNull(offset + 53) ? null : cursor.getShort(offset + 53) != 0 // isChoose
         );
         return entity;
     }
@@ -518,51 +531,52 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setPopHost(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setImapHost(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setAccount(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setEmailType(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setPassword(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setTotalCount(cursor.getInt(offset + 10));
-        entity.setUnReadCount(cursor.getInt(offset + 11));
-        entity.setNodeTotalCount(cursor.getInt(offset + 12));
-        entity.setNodeUReadCount(cursor.getInt(offset + 13));
-        entity.setStarTotalCount(cursor.getInt(offset + 14));
-        entity.setStarunReadCount(cursor.getInt(offset + 15));
-        entity.setDrafTotalCount(cursor.getInt(offset + 16));
-        entity.setDrafUnReadCount(cursor.getInt(offset + 17));
-        entity.setSendTotalCount(cursor.getInt(offset + 18));
-        entity.setSendunReadCount(cursor.getInt(offset + 19));
-        entity.setGarbageCount(cursor.getInt(offset + 20));
-        entity.setGarbageUnReadCount(cursor.getInt(offset + 21));
-        entity.setDeleteTotalCount(cursor.getInt(offset + 22));
-        entity.setDeleteUnReadCount(cursor.getInt(offset + 23));
-        entity.setInboxMenu(cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24));
-        entity.setNodeMenu(cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25));
-        entity.setStarMenu(cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26));
-        entity.setDrafMenu(cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27));
-        entity.setSendMenu(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
-        entity.setGarbageMenu(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
-        entity.setDeleteMenu(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
-        entity.setInboxMenuRefresh(cursor.isNull(offset + 31) ? null : cursor.getShort(offset + 31) != 0);
-        entity.setNodeMenuRefresh(cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0);
-        entity.setStarMenuRefresh(cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0);
-        entity.setDrafMenuRefresh(cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0);
-        entity.setSendMenuRefresh(cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0);
-        entity.setGarbageMenuRefresh(cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0);
-        entity.setDeleteMenuRefresh(cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0);
-        entity.setInboxMaxMessageId(cursor.getLong(offset + 38));
-        entity.setInboxMinMessageId(cursor.getLong(offset + 39));
-        entity.setNodeMaxMessageId(cursor.getLong(offset + 40));
-        entity.setStarMaxMessageId(cursor.getLong(offset + 41));
-        entity.setDrafMaxMessageId(cursor.getLong(offset + 42));
-        entity.setSendMaxMessageId(cursor.getLong(offset + 43));
-        entity.setGarbageMaxMessageId(cursor.getLong(offset + 44));
-        entity.setDeleteMaxMessageId(cursor.getLong(offset + 45));
-        entity.setNodeMinMessageId(cursor.getLong(offset + 46));
-        entity.setStarMinMessageId(cursor.getLong(offset + 47));
-        entity.setDrafMinMessageId(cursor.getLong(offset + 48));
-        entity.setSendMinMessageId(cursor.getLong(offset + 49));
-        entity.setGarbageMinMessageId(cursor.getLong(offset + 50));
-        entity.setDeleteMinMessageId(cursor.getLong(offset + 51));
-        entity.setIsChoose(cursor.isNull(offset + 52) ? null : cursor.getShort(offset + 52) != 0);
+        entity.setName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setEmailType(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setPassword(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setTotalCount(cursor.getInt(offset + 11));
+        entity.setUnReadCount(cursor.getInt(offset + 12));
+        entity.setNodeTotalCount(cursor.getInt(offset + 13));
+        entity.setNodeUReadCount(cursor.getInt(offset + 14));
+        entity.setStarTotalCount(cursor.getInt(offset + 15));
+        entity.setStarunReadCount(cursor.getInt(offset + 16));
+        entity.setDrafTotalCount(cursor.getInt(offset + 17));
+        entity.setDrafUnReadCount(cursor.getInt(offset + 18));
+        entity.setSendTotalCount(cursor.getInt(offset + 19));
+        entity.setSendunReadCount(cursor.getInt(offset + 20));
+        entity.setGarbageCount(cursor.getInt(offset + 21));
+        entity.setGarbageUnReadCount(cursor.getInt(offset + 22));
+        entity.setDeleteTotalCount(cursor.getInt(offset + 23));
+        entity.setDeleteUnReadCount(cursor.getInt(offset + 24));
+        entity.setInboxMenu(cursor.isNull(offset + 25) ? null : cursor.getString(offset + 25));
+        entity.setNodeMenu(cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26));
+        entity.setStarMenu(cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27));
+        entity.setDrafMenu(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
+        entity.setSendMenu(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
+        entity.setGarbageMenu(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
+        entity.setDeleteMenu(cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31));
+        entity.setInboxMenuRefresh(cursor.isNull(offset + 32) ? null : cursor.getShort(offset + 32) != 0);
+        entity.setNodeMenuRefresh(cursor.isNull(offset + 33) ? null : cursor.getShort(offset + 33) != 0);
+        entity.setStarMenuRefresh(cursor.isNull(offset + 34) ? null : cursor.getShort(offset + 34) != 0);
+        entity.setDrafMenuRefresh(cursor.isNull(offset + 35) ? null : cursor.getShort(offset + 35) != 0);
+        entity.setSendMenuRefresh(cursor.isNull(offset + 36) ? null : cursor.getShort(offset + 36) != 0);
+        entity.setGarbageMenuRefresh(cursor.isNull(offset + 37) ? null : cursor.getShort(offset + 37) != 0);
+        entity.setDeleteMenuRefresh(cursor.isNull(offset + 38) ? null : cursor.getShort(offset + 38) != 0);
+        entity.setInboxMaxMessageId(cursor.getLong(offset + 39));
+        entity.setInboxMinMessageId(cursor.getLong(offset + 40));
+        entity.setNodeMaxMessageId(cursor.getLong(offset + 41));
+        entity.setStarMaxMessageId(cursor.getLong(offset + 42));
+        entity.setDrafMaxMessageId(cursor.getLong(offset + 43));
+        entity.setSendMaxMessageId(cursor.getLong(offset + 44));
+        entity.setGarbageMaxMessageId(cursor.getLong(offset + 45));
+        entity.setDeleteMaxMessageId(cursor.getLong(offset + 46));
+        entity.setNodeMinMessageId(cursor.getLong(offset + 47));
+        entity.setStarMinMessageId(cursor.getLong(offset + 48));
+        entity.setDrafMinMessageId(cursor.getLong(offset + 49));
+        entity.setSendMinMessageId(cursor.getLong(offset + 50));
+        entity.setGarbageMinMessageId(cursor.getLong(offset + 51));
+        entity.setDeleteMinMessageId(cursor.getLong(offset + 52));
+        entity.setIsChoose(cursor.isNull(offset + 53) ? null : cursor.getShort(offset + 53) != 0);
      }
     
     @Override

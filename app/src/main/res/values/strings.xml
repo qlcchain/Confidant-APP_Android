@@ -754,5 +754,9 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="Some_addresses_are_illegal">is illegal</string>
+    <string name="edit">Edit</string>
+    <string name="AccountTips">Account</string>
+    <string name="EmailSettings">Email Settings</string>
+    <string name="Confirm_to_delete_the_accout">Confirm to delete the accout?</string>
 
 </resources>

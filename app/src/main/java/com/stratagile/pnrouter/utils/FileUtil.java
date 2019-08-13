@@ -1638,4 +1638,26 @@ public class FileUtil {
         }
         EventBus.getDefault().post(recentFile);
     }
+    public static void writeStr_to_txt(String path,String content) throws IOException{
+
+        File F=new File(path);
+        //如果文件不存在,就动态创建文件
+        if(!F.exists()){
+            F.createNewFile();
+        }
+        FileWriter fw=null;
+        try {
+            //设置为:True,表示写入的时候追加数据
+            fw=new FileWriter(F);
+            //回车并换行
+            fw.write(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(fw!=null){
+                fw.close();
+            }
+        }
+
+    }
 }

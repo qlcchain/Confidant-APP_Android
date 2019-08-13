@@ -36,6 +36,7 @@ public class EmailConfig {
     private String imapHost;        //IMAP的Host
     private String account;         //邮箱帐号
     private String password;        //邮箱密码
+    private String name;            //昵称
 
     public String getEmailType() {
         return emailType;
@@ -117,5 +118,12 @@ public class EmailConfig {
         return password;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public EmailConfig setName(String name) {
+        this.name = name;
+        return this;
+    }
 }
