@@ -97,17 +97,8 @@ import java.io.Serializable
  * @date 2019/07/25 11:21:29
  */
 
-class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback, ViewTreeObserver.OnGlobalLayoutListener{
-    override fun onGlobalLayout() {
-        var lineCount = toAdressEdit.lineCount
-        toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
-        lineCount = subject.lineCount
-        subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
-        lineCount = ccAdressEdit.lineCount
-        ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
-        lineCount = bccAdressEdit.lineCount
-        bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
-    }
+class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback{
+
 
 
     @Inject
@@ -487,9 +478,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var localEmailContactsItem = localEmailContacts.get(0)
             fromName = localEmailContactsItem.name
         }
+        fromName = fromName.replace("\"","")
+        fromName = fromName.replace("\"","")
         avatar_info.setText(fromName.trim())
         if(emailMessageEntity!!.to.contains(","))
         {
+
             title_info.setText(fromName.trim()+"...")
             draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
         }else{
@@ -525,8 +519,80 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             .append(",")
                 }
             }
-            var lineCount = toAdressEdit.lineCount
-            toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            toAdressEdit.post(Runnable {
+                var lineCount = toAdressEdit.lineCount
+                toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
+
+        }
+        if(foward == 3)
+        {
+            var fromAdressListCC = emailMessageEntity!!.cc.split(",")
+            for (item in fromAdressListCC)
+            {
+                if(item != "")
+                {
+                    var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
+                    drawable.setBounds(0, 0, 48, 48);
+                    showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
+                    ccParent.visibility = View.VISIBLE
+                    bccParent.visibility = View.VISIBLE
+                    var fromNameTemp = ""
+                    var fromAdressTemp = ""
+                    if(item.indexOf("<") >=0)
+                    {
+                        fromNameTemp = item.substring(0,item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                    }else{
+                        fromNameTemp = item.substring(0,item.indexOf("@"))
+                        fromAdressTemp = item.substring(0,item.length)
+                    }
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    var user = User(fromAdressTemp,fromNameTemp)
+                    (ccAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(",")
+                }
+            }
+            ccAdressEdit.post(Runnable {
+                var lineCount = ccAdressEdit.lineCount
+                ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
+            var fromAdressListBCC = emailMessageEntity!!.cc.split(",")
+            for (item in fromAdressListBCC)
+            {
+                if(item != "")
+                {
+                    var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
+                    drawable.setBounds(0, 0, 48, 48);
+                    showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
+                    ccParent.visibility = View.VISIBLE
+                    bccParent.visibility = View.VISIBLE
+                    var fromNameTemp = ""
+                    var fromAdressTemp = ""
+                    if(item.indexOf("<") >=0)
+                    {
+                        fromNameTemp = item.substring(0,item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                    }else{
+                        fromNameTemp = item.substring(0,item.indexOf("@"))
+                        fromAdressTemp = item.substring(0,item.length)
+                    }
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    var user = User(fromAdressTemp,fromNameTemp)
+                    (bccAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(",")
+                }
+            }
+            bccAdressEdit.post(Runnable {
+                var lineCount = ccAdressEdit.lineCount
+                bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
         }
         if(subjectText != null)
         {
@@ -536,8 +602,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }else{
                 subject.setText(subjectText)
             }
-            var lineCount = subject.lineCount
-            subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            subject.post(Runnable {
+                var lineCount = subject.lineCount
+                subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
+
         }
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
@@ -1060,6 +1129,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     return
                 }
                 var name  = item.substring(0,item.indexOf("@"))
+                name = name.replace("\"","")
+                name = name.replace("\"","")
                 var account=item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
@@ -1084,6 +1155,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             if(item != "")
             {
                 var name  = item.substring(0,item.indexOf("@"))
+                name = name.replace("\"","")
+                name = name.replace("\"","")
                 var account=item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
@@ -1108,6 +1181,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             if(item != "")
             {
                 var name  = item.substring(0,item.indexOf("@"))
+                name = name.replace("\"","")
+                name = name.replace("\"","")
                 var account=item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()

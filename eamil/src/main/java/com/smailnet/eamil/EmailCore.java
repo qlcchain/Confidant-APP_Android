@@ -1679,7 +1679,7 @@ class EmailCore {
     }
     public static String getHtmlText(String htmlStr)
     {
-        String regFormat = "\\s*|\t|\r|\n";
+        String regFormat = "\\t|\r|\n";
         String regTag = "<[^>]*>";
         String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;"," ");
         return text;

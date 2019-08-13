@@ -58,6 +58,8 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         }
 
         var title = helper.getView<TextView>(R.id.title)
+        formName = formName.replace("\"","")
+        formName = formName.replace("\"","")
         title.setText(formName)
         var subject = helper.getView<TextView>(R.id.subject)
         subject.setText(item.subject)
@@ -65,14 +67,14 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         if(item.originalText != null && item.originalText != "")
         {
             var originalTextCun = StringUitl.StripHT(item.originalText)
-            var originalTextCunNew = originalTextCun
+            /*var originalTextCunNew = originalTextCun
             var endIndex = originalTextCunNew.indexOf(" ")
             if(endIndex < 0)
             {
                 endIndex = originalTextCunNew.length
             }
-            originalTextCunNew =  originalTextCunNew.substring(0,endIndex)
-            message.setText(originalTextCunNew)
+            originalTextCunNew =  originalTextCunNew.substring(0,endIndex)*/
+            message.setText(originalTextCun)
         }else{
             message.setText(item.contentText)
         }

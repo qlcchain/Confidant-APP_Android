@@ -513,7 +513,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                     name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("@"))
                                                     account= eamilMessage.from.substring(0,eamilMessage.from.length)
                                                 }
-
+                                                name = name.replace("\"","")
+                                                name = name.replace("\"","")
                                             }else{
                                                 continue
                                             }
@@ -695,7 +696,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                                     name  = eamilMessage.from.substring(0,eamilMessage.from.indexOf("@"))
                                                     account= eamilMessage.from.substring(0,eamilMessage.from.length)
                                                 }
-
+                                                name = name.replace("\"","")
+                                                name = name.replace("\"","")
                                             }else{
                                                 continue
                                             }
