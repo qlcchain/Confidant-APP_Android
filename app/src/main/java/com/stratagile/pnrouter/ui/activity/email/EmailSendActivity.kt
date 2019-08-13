@@ -346,7 +346,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if(content.length > 0)
                 {
                     var endStr = content.substring(content.length -1,content.length)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "."|| endStr == "?"|| endStr == "？")
+                    var result = StringUitl.checkBiaoD(endStr)
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
                     {
                         toAdressEdit.text.replace(content.length -1,content.length,",")
                     }
@@ -367,6 +368,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
             override fun afterTextChanged(s: Editable) {
+                var content = s.toString()
+                if(content.length > 0)
+                {
+                    var endStr = content.substring(content.length -1,content.length)
+                    var result = StringUitl.checkBiaoD(endStr)
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
+                    {
+                        ccAdressEdit.text.replace(content.length -1,content.length,",")
+                    }
+                }
                 var lineCount = ccAdressEdit.lineCount
                 ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }
@@ -382,6 +393,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
             override fun afterTextChanged(s: Editable) {
+                var content = s.toString()
+                if(content.length > 0)
+                {
+                    var endStr = content.substring(content.length -1,content.length)
+                    var result = StringUitl.checkBiaoD(endStr)
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
+                    {
+                        bccAdressEdit.text.replace(content.length -1,content.length,",")
+                    }
+                }
                 var lineCount = bccAdressEdit.lineCount
                 bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }

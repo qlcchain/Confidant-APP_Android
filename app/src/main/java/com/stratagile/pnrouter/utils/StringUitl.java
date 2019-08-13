@@ -937,4 +937,24 @@ public class StringUitl {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
+    /**
+     * 该函数判断一个字符串是否包含标点符号（中文英文标点符号）。
+     * 原理是原字符串做一次清洗，清洗掉所有标点符号。
+     * 此时，如果原字符串包含标点符号，那么清洗后的长度和原字符串长度不同。返回true。
+     * 如果原字符串未包含标点符号，则清洗后长度不变。返回false。
+     * @param s
+     * @return
+     */
+    public static boolean checkBiaoD(String s) {
+        boolean b = false;
+
+        String tmp = s;
+        tmp = tmp.replaceAll("\\p{P}", "");
+        if (s.length() != tmp.length()) {
+            b = true;
+        }
+
+        return b;
+
+    }
 }
