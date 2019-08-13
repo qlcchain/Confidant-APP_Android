@@ -1681,7 +1681,7 @@ class EmailCore {
     {
         String regFormat = "\\s*|\t|\r|\n";
         String regTag = "<[^>]*>";
-        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;","");
+        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;"," ");
         return text;
     }
     /**

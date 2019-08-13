@@ -62,6 +62,7 @@ import javax.inject.Inject
 import com.stratagile.pnrouter.method.*
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.view.ViewTreeObserver
 import android.webkit.*
 import android.widget.EditText
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
@@ -96,7 +97,18 @@ import java.io.Serializable
  * @date 2019/07/25 11:21:29
  */
 
-class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback{
+class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback, ViewTreeObserver.OnGlobalLayoutListener{
+    override fun onGlobalLayout() {
+        var lineCount = toAdressEdit.lineCount
+        toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+        lineCount = subject.lineCount
+        subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+        lineCount = ccAdressEdit.lineCount
+        ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+        lineCount = bccAdressEdit.lineCount
+        bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+    }
+
 
     @Inject
     internal lateinit var mPresenter: EmailSendPresenter
@@ -314,6 +326,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         });
         //根据输入框输入值的改变来过滤搜索
+        subject.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                var lineCount = subject.lineCount
+                subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            }
+        })
+        //根据输入框输入值的改变来过滤搜索
         toAdressEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
@@ -461,16 +488,45 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             fromName = localEmailContactsItem.name
         }
         avatar_info.setText(fromName.trim())
-        title_info.setText(fromName.trim())
-        draft_info.setText(fromAdress.trim())
+        if(emailMessageEntity!!.to.contains(","))
+        {
+            title_info.setText(fromName.trim()+"...")
+            draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
+        }else{
+            title_info.setText(fromName.trim())
+            draft_info.setText(fromAdress.trim())
+        }
+
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
         if(foward == 0 || foward == 3)
         {
-            var user = User(fromAdress,fromName)
-            (toAdressEdit.text as SpannableStringBuilder)
-                    .append(methodContext.newSpannable(user))
-                    .append(",")
+            var fromAdressList = emailMessageEntity!!.to.split(",")
+            for (item in fromAdressList)
+            {
+                if(item != "")
+                {
+                    var fromNameTemp = ""
+                    var fromAdressTemp = ""
+                    if(item.indexOf("<") >=0)
+                    {
+                        fromNameTemp = item.substring(0,item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                    }else{
+                        fromNameTemp = item.substring(0,item.indexOf("@"))
+                        fromAdressTemp = item.substring(0,item.length)
+                    }
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    var user = User(fromAdressTemp,fromNameTemp)
+                    (toAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(",")
+                }
+            }
+            var lineCount = toAdressEdit.lineCount
+            toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
         }
         if(subjectText != null)
         {
@@ -480,7 +536,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }else{
                 subject.setText(subjectText)
             }
-
+            var lineCount = subject.lineCount
+            subject.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
         }
         val selectionEnd = toAdressEdit.length()
         val selectionStart = 0
@@ -608,7 +665,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         if(foward == 3)
         {
-            re_main_editor.setHtml(emailMessageEntity!!.content)
+            if(emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText!= "")
+            {
+                re_main_editor.setHtml(emailMessageEntity!!.originalText)
+            }else{
+                re_main_editor.setHtml(emailMessageEntity!!.content)
+            }
+
         }else{
             try {
                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
@@ -1264,6 +1327,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var id = span!!.id
             if(id != null)
             {
+                id.replace("\"","")
+                id.replace("\"","")
                 id = id.trim()
             }
             if (span != null && id != null && id!= "") {

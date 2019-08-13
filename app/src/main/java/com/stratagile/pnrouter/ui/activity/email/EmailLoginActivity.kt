@@ -78,12 +78,16 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
         emailTypeOld = intent.getStringExtra("emailType")
-        accountOld = AppConfig.instance.emailConfig().account
-        passwordOld = AppConfig.instance.emailConfig().password
+        if(AppConfig.instance.emailConfig().account != null)
+        {
+            accountOld = AppConfig.instance.emailConfig().account
+            passwordOld = AppConfig.instance.emailConfig().password
+        }
        if(intent.hasExtra("settings"))
        {
            settings = intent.getIntExtra("settings",0)
        }
+
         if(settings == 1)
         {
             account_editText.setText(accountOld)
@@ -94,7 +98,29 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         }
         if(BuildConfig.DEBUG)
         {
-
+            when(emailType)
+            {
+                "1"->
+                {
+                    account_editText.setText("emaildev@qlink.mobi")
+                    password_editText.setText("Qlcchain@123")
+                }
+                "2"->
+                {
+                    account_editText.setText("283619512@qq.com")
+                    password_editText.setText("kpagrlcmliolbjii")
+                }
+                "3"->
+                {
+                    account_editText.setText("bitcoin108@163.com")
+                    password_editText.setText("lang108")
+                }
+                "4"->
+                {
+                    /* account_editText.setText("kuangzihui1989@gmail.com")
+                     password_editText.setText("applela19890712")*/
+                }
+            }
         }
         title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
