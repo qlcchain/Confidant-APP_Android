@@ -284,7 +284,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/x110"
-                            android:singleLine="true"
                             android:ellipsize="end"
                             android:text="Abby Moran"
                             android:textColor="@color/c_2A292B"

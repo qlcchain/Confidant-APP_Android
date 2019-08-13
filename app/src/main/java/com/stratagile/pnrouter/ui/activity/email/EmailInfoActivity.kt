@@ -332,14 +332,39 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         var toName = ""
         var toAdress = ""
-        if(emailMeaasgeData!!.to.indexOf("<") >-1)
+        if(emailMeaasgeData!!.to.contains(","))
         {
-            toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
-            toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
+            var toList = emailMeaasgeData!!.to.split(",")
+            for(item in toList)
+            {
+                if(item.indexOf("<") >-1)
+                {
+                    toName += item.substring(0,item.indexOf("<"))+","
+                    toAdress += item.substring(item.indexOf("<"),item.length)+","
+                }else{
+                    toName += item.substring(0,item.indexOf("@"))+","
+                    toAdress += item.substring(0,item.length)+","
+                }
+            }
+            if(toName.contains(","))
+            {
+                toName.substring(0,toName.lastIndex -1)
+            }
+            if(toAdress.contains(","))
+            {
+                toAdress.substring(0,toAdress.lastIndex -1)
+            }
         }else{
-            toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("@"))
-            toAdress = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.length)
+            if(emailMeaasgeData!!.to.indexOf("<") >-1)
+            {
+                toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
+                toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
+            }else{
+                toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("@"))
+                toAdress = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.length)
+            }
         }
+
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)

@@ -35,21 +35,53 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         if(from.contains(item.account))
         {
             from = item.to;
-            account = from.substring(from.indexOf("<") +1,from.length - 1)
-            var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
-            if(localEmailContacts.size != 0)
+            if(from.contains(","))
             {
-                var localEmailContactsItem = localEmailContacts.get(0)
-                formName = localEmailContactsItem.name
-            }else{
-                if(from.indexOf("<") >=0)
-                {
-                    formName = from.substring(0,from.indexOf("<"))
-                }else{
-                    formName = from.substring(0,from.indexOf("@"))
-                }
+                var formList = from.split(",")
+                for(item in formList){
 
+                    account += item.substring(item.indexOf("<") +1,item.length - 1) +","
+                    var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(item)).list()
+                    if(localEmailContacts.size != 0)
+                    {
+                        var localEmailContactsItem = localEmailContacts.get(0)
+                        formName += localEmailContactsItem.name +","
+                    }else{
+                        if(from.indexOf("<") >=0)
+                        {
+                            formName += item.substring(0,item.indexOf("<")) +","
+                        }else{
+                            formName += item.substring(0,item.indexOf("@")) +","
+                        }
+
+                    }
+                }
+                if(account.contains(","))
+                {
+                    account = account.substring(0,account.lastIndexOf(","))
+                }
+                if(formName.contains(","))
+                {
+                    formName = formName.substring(0,formName.lastIndexOf(","))
+                }
+            }else{
+                account = from.substring(from.indexOf("<") +1,from.length - 1)
+                var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                if(localEmailContacts.size != 0)
+                {
+                    var localEmailContactsItem = localEmailContacts.get(0)
+                    formName = localEmailContactsItem.name
+                }else{
+                    if(from.indexOf("<") >=0)
+                    {
+                        formName = from.substring(0,from.indexOf("<"))
+                    }else{
+                        formName = from.substring(0,from.indexOf("@"))
+                    }
+
+                }
             }
+
         }else{
             if(from.indexOf("<") >=0)
             {

@@ -342,6 +342,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
             override fun afterTextChanged(s: Editable) {
+                var content = s.toString()
+                if(content.length > 0)
+                {
+                    var endStr = content.substring(content.length -1,content.length)
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "."|| endStr == "?"|| endStr == "？")
+                    {
+                        toAdressEdit.text.replace(content.length -1,content.length,",")
+                    }
+                }
+
                 var lineCount = toAdressEdit.lineCount
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }
