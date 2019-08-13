@@ -42,7 +42,13 @@ class SearchActivity : BaseActivity(), SearchContract.View {
         chatAndEmailFragment!!.arguments = args
     }
     override fun initData() {
-        title.text = getString(R.string.search)
+        if(ConstantValue.chooseFragMentMenu == "Circle")
+        {
+            title.text = getString(R.string.searchMessage)
+        }else{
+            title.text = getString(R.string.searchEmail)
+        }
+
         viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when (position) {

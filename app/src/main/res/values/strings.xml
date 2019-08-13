@@ -758,5 +758,7 @@
     <string name="AccountTips">Account</string>
     <string name="EmailSettings">Email Settings</string>
     <string name="Confirm_to_delete_the_accout">Confirm to delete the accout?</string>
+    <string name="searchMessage">Search Message</string>
+    <string name="searchEmail">Search Email</string>
 
 </resources>
