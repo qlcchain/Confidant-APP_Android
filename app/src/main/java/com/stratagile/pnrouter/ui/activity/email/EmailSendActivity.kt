@@ -553,7 +553,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var user = User(fromAdressTemp,fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(",")
+                            .append(";")
                 }
             }
             toAdressEdit.post(Runnable {
