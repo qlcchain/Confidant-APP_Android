@@ -559,7 +559,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
 
                                     override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()
-
+                                        runOnUiThread {
+                                            toast(R.string.fail)
+                                            closeProgressDialog()
+                                            refreshLayout.finishLoadMore()
+                                        }
                                     }
                                 },menu,minUUID,5,maxUUID)
                     }
@@ -739,7 +743,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                     }
                                     override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()
-
+                                        runOnUiThread {
+                                            toast(R.string.fail)
+                                            closeProgressDialog()
+                                            refreshLayout.finishLoadMore()
+                                        }
                                     }
                                 },menu,beginIndex,7,lastTotalCount)
                     }

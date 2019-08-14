@@ -23,7 +23,7 @@ public class ConstUtli {
 
     public static final String SMTP = "smtp";
     public static final String POP3 = "pop3";
-    public static final String IMAP = "imap";
+    public static final String IMAP = "imaps";
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
     public static final String MAIL_POP3_HOST = "mail.pop3.host";
     public static final String MAIL_IMAP_HOST = "mail.imap.host";

@@ -524,9 +524,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
-        if(foward == 0 || foward == 3)
+        if(foward == 0)
         {
-            var fromAdressList = emailMessageEntity!!.to.split(",")
+            var fromAdressList = emailMessageEntity!!.from.split(",")
             for (item in fromAdressList)
             {
                 if(item != "")
@@ -558,6 +558,34 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         if(foward == 3)
         {
+            var fromAdressList = emailMessageEntity!!.to.split(",")
+            for (item in fromAdressList)
+            {
+                if(item != "")
+                {
+                    var fromNameTemp = ""
+                    var fromAdressTemp = ""
+                    if(item.indexOf("<") >=0)
+                    {
+                        fromNameTemp = item.substring(0,item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                    }else{
+                        fromNameTemp = item.substring(0,item.indexOf("@"))
+                        fromAdressTemp = item.substring(0,item.length)
+                    }
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    var user = User(fromAdressTemp,fromNameTemp)
+                    (toAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(",")
+                }
+            }
+            toAdressEdit.post(Runnable {
+                var lineCount = toAdressEdit.lineCount
+                toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
             var fromAdressListCC = emailMessageEntity!!.cc.split(",")
             for (item in fromAdressListCC)
             {
@@ -591,7 +619,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var lineCount = ccAdressEdit.lineCount
                 ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
-            var fromAdressListBCC = emailMessageEntity!!.cc.split(",")
+            var fromAdressListBCC = emailMessageEntity!!.bcc.split(",")
             for (item in fromAdressListBCC)
             {
                 if(item != "")

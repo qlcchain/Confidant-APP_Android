@@ -100,26 +100,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             when(emailType)
             {
-                "1"->
-                {
-                    account_editText.setText("emaildev@qlink.mobi")
-                    password_editText.setText("Qlcchain@123")
-                }
-                "2"->
-                {
-                    account_editText.setText("283619512@qq.com")
-                    password_editText.setText("kpagrlcmliolbjii")
-                }
-                "3"->
-                {
-                    account_editText.setText("bitcoin108@163.com")
-                    password_editText.setText("lang108")
-                }
-                "4"->
-                {
-                    /* account_editText.setText("kuangzihui1989@gmail.com")
-                     password_editText.setText("applela19890712")*/
-                }
+
             }
         }
         title.text = getString(R.string.NewAccount)
@@ -307,10 +288,10 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.inboxMenu = "INBOX"
                     emailConfigEntity.nodeMenu = "node"
                     emailConfigEntity.starMenu = "star"
-                    emailConfigEntity.drafMenu = "Drafts"
-                    emailConfigEntity.sendMenu = "Sent Messages"
-                    emailConfigEntity.garbageMenu = "Junk"
-                    emailConfigEntity.deleteMenu = "Deleted Messages"
+                    emailConfigEntity.drafMenu = "[Gmail]/草稿"
+                    emailConfigEntity.sendMenu = "[Gmail]/已发邮件"
+                    emailConfigEntity.garbageMenu = "[Gmail]/垃圾邮件"
+                    emailConfigEntity.deleteMenu = "[Gmail]/已删除邮件"
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

@@ -760,5 +760,6 @@
     <string name="Confirm_to_delete_the_accout">Confirm to delete the accout?</string>
     <string name="searchMessage">Search Message</string>
     <string name="searchEmail">Search Email</string>
+    <string name="Developing">Developing</string>
 
 </resources>

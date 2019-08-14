@@ -379,6 +379,10 @@ class AppConfig : MultiDexApplication() {
     fun emailConfig(): EmailConfig {
         return emailConfig!!
     }
+    fun initEmailConfig()
+    {
+        emailConfig = EmailConfig()
+    }
     fun  deleteEmailData()
     {
         this.mDaoMaster!!.newSession().emailContactsEntityDao.deleteAll()

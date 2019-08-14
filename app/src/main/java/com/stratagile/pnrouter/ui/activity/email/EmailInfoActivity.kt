@@ -23,6 +23,7 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
+import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
@@ -446,7 +447,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         backMenu.setOnClickListener {
 
-
+            toast(R.string.Developing)
         }
         deleteMenu.setOnClickListener {
             showProgressDialog(getString(R.string.waiting))
@@ -586,8 +587,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                         }
                                     },menu,msgId,8,!starFlag,"")
                         }
-                        "" -> {
+                        "Node back up" -> {
 
+                            toast(R.string.Developing)
                         }
                         "Move to" -> {
                             showMovePop()

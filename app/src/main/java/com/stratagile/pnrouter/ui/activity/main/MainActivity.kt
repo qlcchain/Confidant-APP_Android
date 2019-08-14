@@ -54,6 +54,7 @@ import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.EmailConfig
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -2375,8 +2376,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddEmailConfig(changeEmailConfig: ChangeEmailConfig) {
-         initLeftSubMenuName()
-         initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftSubMenuName()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
@@ -3716,6 +3717,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
         }else{
             editBtn.visibility = View.GONE
+            AppConfig.instance.initEmailConfig()
         }
         if(fragmentMenu == "Circle")
         {
