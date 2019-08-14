@@ -761,5 +761,7 @@
     <string name="searchMessage">Search Message</string>
     <string name="searchEmail">Search Email</string>
     <string name="Developing">Developing</string>
+    <string name="Waiting_for_attachments">Waiting for attachments</string>
+    <string name="Compression_failure">Compression failure</string>
 
 </resources>

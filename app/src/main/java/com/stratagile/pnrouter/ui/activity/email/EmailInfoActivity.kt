@@ -6,6 +6,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.widget.GridLayoutManager
 import android.util.DisplayMetrics
 import android.util.Log
@@ -29,6 +30,7 @@ import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -80,6 +82,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var isScaleInit = false
     var newScaleInit = 0f
     var webViewScroll = false;
+    var contentHtml = "";
+    var zipSavePath =""
+    var zipSavePathTemp =""
+    var zipFileSoucePath:MutableList<String> = ArrayList()
+    var task: ZipCompressTask? = null
+    var needWaitAttach =false
+    var fileKey = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -94,9 +103,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         webViewScroll = false
         initPicPlug()
         previewImages = ArrayList()
+        zipFileSoucePath = ArrayList()
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
+        zipSavePathTemp = emailMeaasgeData!!.account+"_"+ menu + "_"+ emailMeaasgeData!!.msgId
         msgId = emailMeaasgeData!!.msgId
         var to = emailMeaasgeData!!.to
         var cc = emailMeaasgeData!!.cc
@@ -171,12 +182,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             var i = 0;
             for (attach in attachList)
             {
-                var file = File(save_dir+attach.account+"_"+attach.name)
+                var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+
+                var file = File(savePath)
                 if(!file.exists())
                 {
                     isDownload = false
+                    needWaitAttach = true
                 }
-                attach.localPath = save_dir+attach.account+"_"+attach.name
+                attach.localPath = savePath
                 AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
                 var fileName =  attach.name
@@ -223,6 +237,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                                 //tipDialog.dismiss()
                                 loadingBar.visibility = View.GONE
                                 loadingTips.visibility = View.GONE
+                                needWaitAttach = false
                                 runOnUiThread {
                                     attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                                     emaiAttachAdapter = EmaiAttachAdapter(attachList)
@@ -447,7 +462,44 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         backMenu.setOnClickListener {
 
-            toast(R.string.Developing)
+            if(BuildConfig.DEBUG)
+            {
+                zipFileSoucePath = ArrayList()
+                if(needWaitAttach)
+                {
+                    toast(R.string.Waiting_for_attachments)
+                    return@setOnClickListener
+                }
+                fileKey = RxEncryptTool.generateAESKey()
+                var base58files_dir =  PathUtils.getInstance().tempPath.toString() + "/"
+                var  path = PathUtils.generateEmailMessagePath("temp")+"htmlContent.txt";
+                var  result = FileUtil.writeStr_to_txt(path,contentHtml)
+                if(result)
+                {
+                    var miPath = base58files_dir +"htmlContent.txt";
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(path, miPath, fileKey.substring(0, 16))
+                    zipFileSoucePath.add(miPath)
+                }
+                var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+
+
+                for (attach in attachList) {
+                    var fromPath = save_dir + attach.account + "_" + attach.msgId + "_" + attach.name
+                    var fileSouceName = attach.account+"_"+attach.msgId+"_"+attach.name
+                    var base58Name = Base58.encode(fileSouceName.toByteArray())
+                    var miPath = base58files_dir + base58Name
+
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(fromPath, miPath, fileKey.substring(0, 16))
+                    zipFileSoucePath.add(miPath)
+                }
+                zipSavePath = PathUtils.generateEmailMessagePath("temp")+"htmlContent.zip";
+                task = ZipCompressTask(zipFileSoucePath!!, zipSavePath, this, false, handlerZip!!)
+                task!!.execute()
+            }else{
+                toast(R.string.Developing)
+            }
+
         }
         deleteMenu.setOnClickListener {
             showProgressDialog(getString(R.string.waiting))
@@ -732,9 +784,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
         {
             URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
+            contentHtml = URLText
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }else{
             URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+            contentHtml = URLText
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
         /* try {
@@ -803,6 +857,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
 
 
+    }
+    internal var handlerZip: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+
+                    toast(R.string.Compression_failure)
+                }
+                0x56 -> {
+                    var zipSavePathaa = zipSavePath
+                }
+            }//goMain();
+            //goMain();
+        }
     }
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)

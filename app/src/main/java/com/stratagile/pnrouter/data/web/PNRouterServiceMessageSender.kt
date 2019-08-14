@@ -1024,6 +1024,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 "png", "jpg", "jpeg","webp" -> action = 1
                 "amr" -> action = 2
                 "mp4" -> action = 4
+                "zip" -> action = 7
                 else -> action = 5
             }
             val sendFileData = SendFileData()

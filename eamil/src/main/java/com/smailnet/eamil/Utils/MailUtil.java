@@ -207,12 +207,13 @@ public class MailUtil {
                 InputStream inputStream = mailAttachment.getInputStream();
                 if(aesKey !=null && !aesKey.equals(""))
                 {
+
                     InputStream newInput = null;
                     byte[] fileBufferMi =  InputStreamTOByte(inputStream);
                     byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     newInput = byteTOInputStream(miFile);
 
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName())));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
                     int len;
                     byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = newInput.read(bytes)) != -1) {
@@ -223,7 +224,7 @@ public class MailUtil {
                     newInput.close();
                     outputStream.close();
                 }else{
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+mailAttachment.getName())));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
                     int len;
                     byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = inputStream.read(bytes)) != -1) {

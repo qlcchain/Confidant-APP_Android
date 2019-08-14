@@ -1638,7 +1638,7 @@ public class FileUtil {
         }
         EventBus.getDefault().post(recentFile);
     }
-    public static void writeStr_to_txt(String path,String content) throws IOException{
+    public static boolean writeStr_to_txt(String path,String content) throws IOException{
 
         File F=new File(path);
         //如果文件不存在,就动态创建文件
@@ -1651,6 +1651,7 @@ public class FileUtil {
             fw=new FileWriter(F);
             //回车并换行
             fw.write(content);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }finally{
@@ -1658,6 +1659,6 @@ public class FileUtil {
                 fw.close();
             }
         }
-
+        return false;
     }
 }

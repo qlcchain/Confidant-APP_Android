@@ -25,6 +25,7 @@ public class PathUtils {
     private File videoPath = null;
     private File filePath;
     private File tempPath = null;
+    private File emailPath = null;
 
     private PathUtils() {
     }
@@ -53,6 +54,11 @@ public class PathUtils {
         if(!this.tempPath.exists()) {
             this.tempPath.mkdirs();
         }
+        this.emailPath = generateEmailPath(var1, var2, var3);
+        if(!this.emailPath.exists()) {
+            this.emailPath.mkdirs();
+        }
+
         this.historyPath = generateHistoryPath(var1, var2, var3);
         if(!this.historyPath.exists()) {
             this.historyPath.mkdirs();
@@ -124,6 +130,25 @@ public class PathUtils {
         }
 
         return new File(var3);
+    }
+    private static File generateEmailPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/email/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/email/";
+        }
+
+        return new File(var3);
+    }
+    public static String generateEmailMessagePath(String name) {
+        String var3 = null;
+        var3 = pathPrefix + "/email/"+name+"/";
+        File newFile = new File(var3);
+        if(!newFile.exists()) {
+            newFile.mkdirs();
+        }
+        return var3;
     }
     private static File generateVoicePath(String var0, String var1, Context var2) {
         String var3 = null;
