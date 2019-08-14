@@ -187,6 +187,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var menu:String= "INBOX"
     var attachListEntity =  arrayListOf<EmailAttachEntity>()
     var isSendCheck = false
+    var positionIndex = 0;
     var toAdressEditLastContent = ""
     var ccAdressEditLastContent = ""
     var bccAdressEditLastContent = ""
@@ -247,6 +248,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         foward = intent.getIntExtra("foward",0)
         attach = intent.getIntExtra("attach",0)
         menu = intent.getStringExtra("menu")
+        positionIndex = intent.getIntExtra("positionIndex",0)
         initUI()
         initClickListener()
         sendCheck(false)
@@ -1376,7 +1378,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     emailConfigEntityChoose.sendMenuRefresh = true
                                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                 }
-                                EventBus.getDefault().post(SendEmailSuccess())
+                                EventBus.getDefault().post(SendEmailSuccess(positionIndex))
                                 Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
                                 finish()
                             }

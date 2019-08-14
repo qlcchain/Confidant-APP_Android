@@ -255,6 +255,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                     }
                 }
             }
+        }else if(name == "Drafts")
+        {
+            var emailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(sendEmailSuccess.positon)
+            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(emailMeaasgeData)
+            emaiMessageChooseAdapter!!.remove(sendEmailSuccess.positon)
+            emaiMessageChooseAdapter!!.notifyDataSetChanged()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
