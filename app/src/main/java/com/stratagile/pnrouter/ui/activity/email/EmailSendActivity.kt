@@ -347,9 +347,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 {
                     var endStr = content.substring(content.length -1,content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
                     {
-                        toAdressEdit.text.replace(content.length -1,content.length,",")
+                        toAdressEdit.text.replace(content.length -1,content.length,";")
                     }
                 }
 
@@ -373,9 +373,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 {
                     var endStr = content.substring(content.length -1,content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
                     {
-                        ccAdressEdit.text.replace(content.length -1,content.length,",")
+                        ccAdressEdit.text.replace(content.length -1,content.length,";")
                     }
                 }
                 var lineCount = ccAdressEdit.lineCount
@@ -398,9 +398,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 {
                     var endStr = content.substring(content.length -1,content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == ";" || endStr == "?"|| endStr == "？")
+                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
                     {
-                        bccAdressEdit.text.replace(content.length -1,content.length,",")
+                        bccAdressEdit.text.replace(content.length -1,content.length,";")
                     }
                 }
                 var lineCount = bccAdressEdit.lineCount
@@ -442,7 +442,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private fun allSpan(editText: EditText)
     {
 
-        var textStrList = editText.text.split(",")
+        var textStrList = editText.text.split(";")
         var i = 0
         for(str in textStrList)
         {
@@ -516,7 +516,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
 
             title_info.setText(fromName.trim()+"...")
-            draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
+            if(fromAdress.indexOf(",") > -1)
+            {
+                draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
+            }else{
+                draft_info.setText(fromAdress.trim()+"...")
+            }
+
         }else{
             title_info.setText(fromName.trim())
             draft_info.setText(fromAdress.trim())
@@ -579,7 +585,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var user = User(fromAdressTemp,fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(",")
+                            .append(";")
                 }
             }
             toAdressEdit.post(Runnable {
@@ -612,7 +618,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var user = User(fromAdressTemp,fromNameTemp)
                     (ccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(",")
+                            .append(";")
                 }
             }
             ccAdressEdit.post(Runnable {
@@ -645,7 +651,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var user = User(fromAdressTemp,fromNameTemp)
                     (bccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(",")
+                            .append(";")
                 }
             }
             bccAdressEdit.post(Runnable {
@@ -2024,7 +2030,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             var user = User(adress,name)
                             (toAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
-                                    .append(",")
+                                    .append(";")
                         }
                         i++;
                     }
@@ -2047,7 +2053,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             var user = User(adress,name)
                             (ccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
-                                    .append(",")
+                                    .append(";")
                         }
                         i++;
                     }
@@ -2070,7 +2076,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             var user = User(adress,name)
                             (bccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
-                                    .append(",")
+                                    .append(";")
                         }
                         i++;
                     }
