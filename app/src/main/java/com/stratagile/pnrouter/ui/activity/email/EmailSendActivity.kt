@@ -1353,6 +1353,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             runOnUiThread {
                 showProgressDialog(getString(R.string.Sending))
             }
+            var drafts = ""
+            if(foward == 3)
+            {
+                drafts = ConstantValue.currentEmailConfigEntity!!.drafMenu
+            }
             emailSendClient
                     .setTo(toAdress)                //收件人的邮箱地址
                     .setCc(ccAdress)
@@ -1386,7 +1391,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     .setButton(getString(R.string.close), null, null)
                                     .click().show()
                         }
-                    },ConstantValue.currentEmailConfigEntity!!.sendMenu)
+                    },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,emailMeaasgeInfoData!!.msgId)
 
         }else{
             runOnUiThread {
@@ -1849,7 +1854,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var re_main_editorStr = re_main_editor.html
             if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
             {
-                showDialog()
+                if(foward != 3)
+                {
+                    showDialog()
+                }else{
+                    finish()
+                }
             }else{
                 finish()
             }
@@ -2123,7 +2133,14 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var re_main_editorStr = re_main_editor.html
             if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
             {
-                showDialog()
+                if(foward != 3)
+                {
+                    showDialog()
+                }else{
+
+                    finish()
+                }
+
             }else{
                 finish()
             }

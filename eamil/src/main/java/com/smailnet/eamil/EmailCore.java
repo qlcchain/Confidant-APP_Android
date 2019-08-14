@@ -1326,6 +1326,32 @@ class EmailCore {
         return false;
     }
     /**
+     * 使用IMAP协议保存已发送或者草稿箱
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean imapDeleteDrsftsMail(String uid, String toMenu) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        imapStore.connect(imapHost, account, password);
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
+        folder.open(Folder.READ_WRITE);
+        try {
+            Message message= folder.getMessageByUID(Long.valueOf(uid));
+            message.setFlag(Flags.Flag.DELETED,true);
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+            if(folder!=null && folder.isOpen()){
+                folder.close(false);
+            }
+            imapStore.close();
+        }
+        return false;
+    }
+    /**
      *
      * @param host
      * @throws UnknownHostException

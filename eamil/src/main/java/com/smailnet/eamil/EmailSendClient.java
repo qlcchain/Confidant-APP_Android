@@ -158,7 +158,7 @@ public class EmailSendClient {
      * @param getSendCallback
      * @return
      */
-    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu){
+    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu,final String draftsMenu,final String draftsUUID){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -169,6 +169,10 @@ public class EmailSendClient {
                     getSendCallback.sendSuccess();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu,"send");
+                        if(draftsMenu != null && !draftsMenu.equals(""))
+                        {
+                            Operator.Core(emailConfig).imapDeleteDrsftsMail(draftsUUID,draftsMenu);
+                        }
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

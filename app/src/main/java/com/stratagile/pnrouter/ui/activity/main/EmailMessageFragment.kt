@@ -59,6 +59,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
         menu = changEmailMenu.menu
+        if(menu == "star")
+        {
+            refreshLayout.isEnabled = false
+        }else {
+            refreshLayout.isEnabled = true
+        }
         /*var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.Date).list()
         if(localMessageList == null || localMessageList.size ==0)
         {
@@ -562,7 +568,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         runOnUiThread {
                                             toast(R.string.fail)
                                             closeProgressDialog()
-                                            refreshLayout.finishLoadMore()
+                                            refreshLayout.finishRefresh()
+                                            refreshLayout.resetNoMoreData()
                                         }
                                     }
                                 },menu,minUUID,5,maxUUID)
@@ -787,6 +794,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             if(beginIndex == -1)
             {
                 beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+            }
+            if(miContentSoucreEndIndex < 0)
+            {
+                miContentSoucreEndIndex = 0;
             }
             var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
             var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)

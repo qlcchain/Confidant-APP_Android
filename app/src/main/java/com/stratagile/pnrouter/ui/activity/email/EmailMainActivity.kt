@@ -177,7 +177,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                                 .setButton(getString(R.string.close), null, null)
                                 .click().show()
                     }
-                },"")
+                },"","","")
     }
 
     fun getRealPathFromURI(contentUri: Uri): String? {
