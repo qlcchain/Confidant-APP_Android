@@ -196,6 +196,33 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendChatMessage(true,false)
         }
     }
+    fun sendEmailFileMsg(message: SendFileInfo){
+
+        Log.i("sendEmailFileMsg", "添加")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        if(fileHashMap.get(userId) == null)
+        {
+            fileHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
+        }else{
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
+        }
+        toSendChatFileMessage.offer(message)
+
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
+        if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }
+        if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
+        {
+            if(!ConstantValue.currentRouterId.equals(""))
+            {
+                sendChatFileMessage(true,false)
+            }
+
+        }
+
+    }
     fun sendFileMsg(message: SendFileInfo){
 
         Log.i("senderFile", "添加")

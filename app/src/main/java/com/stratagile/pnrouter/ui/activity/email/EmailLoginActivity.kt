@@ -100,7 +100,21 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             when(emailType)
             {
-
+                "1"->
+                {
+                    account_editText.setText("emaildev@qlink.mobi")
+                    password_editText.setText("Qlcchain@123")
+                }
+                "2"->
+                {
+                    account_editText.setText("283619512@qq.com")
+                    password_editText.setText("kpagrlcmliolbjii")
+                }
+                "3"->
+                {
+                    /* account_editText.setText("kuangzihui1989@gmail.com")
+                     password_editText.setText("applela19890712")*/
+                }
             }
         }
         title.text = getString(R.string.NewAccount)
