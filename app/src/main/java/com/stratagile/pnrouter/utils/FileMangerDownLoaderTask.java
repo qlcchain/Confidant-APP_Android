@@ -249,6 +249,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			mOutputStream.close();
 		} catch (IOException e) {
+			bytesCopied = -1;
 			DeleteUtils.deleteFile(mFile.getPath());
 			DeleteUtils.deleteFile(outPath +FileNameOld);
 			e.printStackTrace();
