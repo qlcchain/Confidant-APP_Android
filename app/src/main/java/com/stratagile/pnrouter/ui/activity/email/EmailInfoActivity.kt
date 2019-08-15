@@ -95,6 +95,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var needWaitAttach =false
     var fileAESKey = ""
     var mailInfo = EmailInfo()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -204,138 +205,152 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         attachListParent.visibility =View.GONE
         loadingBar.visibility = View.GONE
         loadingTips.visibility = View.GONE
-
-        if(attachCount > 0)
+        if(menu != "node")
         {
-            attachListParent.visibility =View.VISIBLE
-            val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-            var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-
-            var isDownload = true
-            var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
-            var i = 0;
-            for (attach in attachList)
+            if(attachCount > 0)
             {
-                var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+                attachListParent.visibility =View.VISIBLE
 
-                var file = File(savePath)
-                if(!file.exists())
+                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+                var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                var isDownload = true
+                var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+                var i = 0;
+                for (attach in attachList)
                 {
-                    isDownload = false
-                    needWaitAttach = true
+                    var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+
+                    var file = File(savePath)
+                    if(!file.exists())
+                    {
+                        isDownload = false
+                        needWaitAttach = true
+                    }
+                    attach.localPath = savePath
+                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+
+                    var fileName =  attach.name
+                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        val localMedia = LocalMedia()
+                        localMedia.isCompressed = false
+                        localMedia.duration = 0
+                        localMedia.height = 100
+                        localMedia.width = 100
+                        localMedia.isChecked = false
+                        localMedia.isCut = false
+                        localMedia.mimeType = 0
+                        localMedia.num = 0
+                        localMedia.path = attach.localPath
+                        localMedia.pictureType = "image/jpeg"
+                        localMedia.setPosition(i)
+                        localMedia.sortIndex = i
+                        previewImages.add(localMedia)
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                    }
+
+                    i++
+                    /*var inputStream = ByteArrayInputStream(accach.data);
+                    var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
+                    listAccath.add(mailAttachment)*/
                 }
-                attach.localPath = savePath
-                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+                //MailUtil.saveFile(listAccath)
+                /*  val tipDialog: QMUITipDialog
+                  tipDialog = QMUITipDialog.Builder(AppConfig.instance)
+                          .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                          .setTipWord("正在加载")
+                          .create()*/
+                if(!isDownload)
+                {
+                    loadingBar.visibility = View.VISIBLE
+                    loadingTips.visibility = View.VISIBLE
+                    //showProgressDialog(getString(R.string.Attachmentdownloading))
+                    /*tipDialog.show()*/
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
-                var fileName =  attach.name
-                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                    val localMedia = LocalMedia()
-                    localMedia.isCompressed = false
-                    localMedia.duration = 0
-                    localMedia.height = 100
-                    localMedia.width = 100
-                    localMedia.isChecked = false
-                    localMedia.isCut = false
-                    localMedia.mimeType = 0
-                    localMedia.num = 0
-                    localMedia.path = attach.localPath
-                    localMedia.pictureType = "image/jpeg"
-                    localMedia.setPosition(i)
-                    localMedia.sortIndex = i
-                    previewImages.add(localMedia)
-                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
-                }
+                    emailReceiveClient
+                            .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
+                                override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                    //tipDialog.dismiss()
+                                    loadingBar.visibility = View.GONE
+                                    loadingTips.visibility = View.GONE
+                                    needWaitAttach = false
+                                    runOnUiThread {
+                                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                                        emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                                        emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
-                i++
-                /*var inputStream = ByteArrayInputStream(accach.data);
-                var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
-                listAccath.add(mailAttachment)*/
-            }
-            //MailUtil.saveFile(listAccath)
-            /*  val tipDialog: QMUITipDialog
-              tipDialog = QMUITipDialog.Builder(AppConfig.instance)
-                      .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
-                      .setTipWord("正在加载")
-                      .create()*/
-            if(!isDownload)
-            {
-                loadingBar.visibility = View.VISIBLE
-                loadingTips.visibility = View.VISIBLE
-                //showProgressDialog(getString(R.string.Attachmentdownloading))
-                /*tipDialog.show()*/
-                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-
-                emailReceiveClient
-                        .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
-                            override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                //tipDialog.dismiss()
-                                loadingBar.visibility = View.GONE
-                                loadingTips.visibility = View.GONE
-                                needWaitAttach = false
-                                runOnUiThread {
-                                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-                                    emaiAttachAdapter = EmaiAttachAdapter(attachList)
-                                    emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-
-                                        true
-                                    }
-                                    recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
-                                    recyclerViewAttach.adapter = emaiAttachAdapter
-                                    emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                                        var emaiAttach = emaiAttachAdapter!!.getItem(position)
-                                        var fileName = emaiAttach!!.name
-                                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                                            showImagList(position)
-                                        }else if(fileName.contains("mp4"))
-                                        {
-                                            val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
-                                            intent.putExtra("path", emaiAttach.localPath)
-                                            startActivity(intent)
-                                        }else{
-                                            OpenFileUtil.getInstance(AppConfig.instance)
-                                            val intent = OpenFileUtil.openFile(emaiAttach.localPath)
-                                            startActivity(intent)
+                                            true
+                                        }
+                                        recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                                        recyclerViewAttach.adapter = emaiAttachAdapter
+                                        emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                                            var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                                            var fileName = emaiAttach!!.name
+                                            if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                showImagList(position)
+                                            }else if(fileName.contains("mp4"))
+                                            {
+                                                val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                                intent.putExtra("path", emaiAttach.localPath)
+                                                startActivity(intent)
+                                            }else{
+                                                OpenFileUtil.getInstance(AppConfig.instance)
+                                                val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                                                startActivity(intent)
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            override fun gainFailure(errorMsg: String) {
-                                //tipDialog.dismiss()
-                                //closeProgressDialog()
-                                loadingBar.visibility = View.GONE
-                                loadingTips.visibility = View.GONE
-                                Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
-                            }
-                        },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
-            }else{
-                attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-                emaiAttachAdapter = EmaiAttachAdapter(attachList)
-                emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+                                override fun gainFailure(errorMsg: String) {
+                                    //tipDialog.dismiss()
+                                    //closeProgressDialog()
+                                    loadingBar.visibility = View.GONE
+                                    loadingTips.visibility = View.GONE
+                                    Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                }
+                            },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                }else{
+                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                    emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                    emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
-                    true
-                }
-                recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
-                recyclerViewAttach.adapter = emaiAttachAdapter
-                emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                    var emaiAttach = emaiAttachAdapter!!.getItem(position)
-                    var fileName = emaiAttach!!.name
-                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                        showImagList(position)
-                    }else if(fileName.contains("mp4"))
-                    {
-                        val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
-                        intent.putExtra("path", emaiAttach.localPath)
-                        startActivity(intent)
-                    }else{
-                        OpenFileUtil.getInstance(AppConfig.instance)
-                        val intent = OpenFileUtil.openFile(emaiAttach.localPath)
-                        startActivity(intent)
+                        true
+                    }
+                    recyclerViewAttach.setLayoutManager(GridLayoutManager(this, 2));
+                    recyclerViewAttach.adapter = emaiAttachAdapter
+                    emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                        var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                        var fileName = emaiAttach!!.name
+                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                            showImagList(position)
+                        }else if(fileName.contains("mp4"))
+                        {
+                            val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                            intent.putExtra("path", emaiAttach.localPath)
+                            startActivity(intent)
+                        }else{
+                            OpenFileUtil.getInstance(AppConfig.instance)
+                            val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                            startActivity(intent)
+                        }
                     }
                 }
+
+
             }
-
-
+        }else{
+            if(attachCount > 0) {
+                attachListParent.visibility = View.VISIBLE
+            }
+            var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + emailMeaasgeData!!.emailAttachPath
+            var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+            var fileSavePath =   PathUtils.generateEmailMessagePath(folderName)
+            var fileName = "htmlContent.zip"
+            var fileNameBase58 = Base58.encode(fileName.toByteArray())
+            FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, emailMeaasgeData!!.msgId.toInt(), handler, "","3")
         }
+
 
         var titleStr = intent.getStringExtra("title")
 
@@ -464,6 +479,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName = toItem.substring(0,toItem.indexOf("@"))
                     toAdress = toItem.substring(0,toItem.length)
                 }
+                emailConfigEntityList.add(EmailInfoData("To",toName,toAdress))
                 var emailContact = EmailContact(toName,toAdress)
                 emailContactList.add(emailContact)
             }
@@ -975,6 +991,23 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     var zipSavePathaa = zipSavePath
                     val msgID = (System.currentTimeMillis() / 1000).toInt()
                     FileMangerUtil.sendEmailFile(zipSavePath,msgID, false)
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+
+                }
+                0x55 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+
                 }
             }//goMain();
             //goMain();

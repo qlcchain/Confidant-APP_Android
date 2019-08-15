@@ -572,7 +572,14 @@ val credentialsProvider: CredentialsProvider, private
                     val JPullMailListRsp = gson.fromJson(text, JPullMailListRsp::class.java)
                     pullMailListCallback?.PullMailListBack(JPullMailListRsp)
                 }
-
+                "DelEmailConf" -> {
+                    val JDelEmailConfRsp = gson.fromJson(text, JDelEmailConfRsp::class.java)
+                    delEmailConfCallback?.DelEmailConfBack(JDelEmailConfRsp)
+                }
+                "DelEmail" -> {
+                    val JDelEmailRsp = gson.fromJson(text, JDelEmailRsp::class.java)
+                    dlEmailCallback?.DelEmailBack(JDelEmailRsp)
+                }
             }
         }
 
@@ -655,6 +662,10 @@ val credentialsProvider: CredentialsProvider, private
     var bakupEmailCallback:BakupEmailCallback? = null
 
     var pullMailListCallback:PullMailListCallback? = null
+
+    var delEmailConfCallback:DelEmailConfCallback? = null
+
+    var dlEmailCallback:DelEmailCallback? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1034,6 +1045,12 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface PullMailListCallback {
         fun PullMailListBack(JPullMailListRsp: JPullMailListRsp)
+    }
+    interface DelEmailConfCallback {
+        fun DelEmailConfBack(JDelEmailConfRsp: JDelEmailConfRsp)
+    }
+    interface DelEmailCallback {
+        fun DelEmailBack(JDelEmailRsp: JDelEmailRsp)
     }
 }
 

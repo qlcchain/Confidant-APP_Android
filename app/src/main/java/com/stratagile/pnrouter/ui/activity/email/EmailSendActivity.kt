@@ -163,6 +163,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private val methodContextBcc = MethodContext()
     var contactMapList = HashMap<String, String>()
     internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
+    var replayAll = true
     private val users = arrayListOf(
             User("1", "激浊扬清"),
             User("2", "清风引佩下瑶台"),
@@ -513,23 +514,31 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         fromName = fromName.replace("\"","")
         fromName = fromName.replace("\"","")
-        avatar_info.setText(fromName.trim())
+
         if(emailMessageEntity!!.to.contains(","))
         {
 
-            title_info.setText(fromName.trim()+"...")
-            if(fromAdress.indexOf(",") > -1)
+            //title_info.setText(fromName.trim()+"...")
+           /* if(fromAdress.indexOf(",") > -1)
             {
                 draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
             }else{
                 draft_info.setText(fromAdress.trim()+"...")
-            }
+            }*/
 
         }else{
-            title_info.setText(fromName.trim())
-            draft_info.setText(fromAdress.trim())
+            //title_info.setText(fromName.trim())
+            //draft_info.setText(fromAdress.trim())
         }
-
+        var myAccount = AppConfig.instance.emailConfig().account
+        var myname = myAccount.substring(0,myAccount.indexOf("@"))
+        if(AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "")
+        {
+            myname = AppConfig.instance.emailConfig().name
+        }
+        title_info.setText(myname)
+        draft_info.setText(myAccount)
+        avatar_info.setText(myname.trim())
         //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
         if(foward == 0)
@@ -562,6 +571,71 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var lineCount = toAdressEdit.lineCount
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
+            if(replayAll)
+            {
+                var fromAdressList = emailMessageEntity!!.to.split(",")
+                for (item in fromAdressList)
+                {
+                    var toAdress = getEditText(toAdressEdit)
+                    if(item != "" && !item.contains(myAccount) && !toAdress.contains(item))
+                    {
+                        var fromNameTemp = ""
+                        var fromAdressTemp = ""
+                        if(item.indexOf("<") >=0)
+                        {
+                            fromNameTemp = item.substring(0,item.indexOf("<"))
+                            fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                        }else{
+                            fromNameTemp = item.substring(0,item.indexOf("@"))
+                            fromAdressTemp = item.substring(0,item.length)
+                        }
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        var user = User(fromAdressTemp,fromNameTemp)
+                        (toAdressEdit.text as SpannableStringBuilder)
+                                .append(methodContext.newSpannable(user))
+                                .append(";")
+                    }
+                }
+                toAdressEdit.post(Runnable {
+                    var lineCount = toAdressEdit.lineCount
+                    toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+                })
+                var fromAdressListCC = emailMessageEntity!!.cc.split(",")
+                for (item in fromAdressListCC)
+                {
+                    if(item != "" && !item.contains(myAccount))
+                    {
+                        var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
+                        drawable.setBounds(0, 0, 48, 48);
+                        showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
+                        ccParent.visibility = View.VISIBLE
+                        bccParent.visibility = View.VISIBLE
+                        var fromNameTemp = ""
+                        var fromAdressTemp = ""
+                        if(item.indexOf("<") >=0)
+                        {
+                            fromNameTemp = item.substring(0,item.indexOf("<"))
+                            fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                        }else{
+                            fromNameTemp = item.substring(0,item.indexOf("@"))
+                            fromAdressTemp = item.substring(0,item.length)
+                        }
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        fromNameTemp= fromNameTemp.replace("\"","")
+                        var user = User(fromAdressTemp,fromNameTemp)
+                        (ccAdressEdit.text as SpannableStringBuilder)
+                                .append(methodContext.newSpannable(user))
+                                .append(";")
+                    }
+                }
+                ccAdressEdit.post(Runnable {
+                    var lineCount = ccAdressEdit.lineCount
+                    ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+                })
+            }
 
         }
         if(foward == 3)
@@ -1344,7 +1418,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             attachList = attachList.substring(0,attachList.length -1)
         }
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
-        var name = toAdress.substring(0,toAdress.indexOf("@"))
+        var myAccount = AppConfig.instance.emailConfig().account
+        var name = myAccount.substring(0,myAccount.indexOf("@"))
         if(AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "")
         {
             name = AppConfig.instance.emailConfig().name;

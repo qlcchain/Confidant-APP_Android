@@ -59,10 +59,18 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             runOnUiThread {
                 sycDataCountIMAP()
             }
-        }else{
+        }else if(jSaveEmailConfRsp.params.retCode == 1)
+        {
+            AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
             runOnUiThread {
                 //sycDataCountIMAP()
                 toast(R.string.Over_configure)
+            }
+        }else{
+            AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
+            runOnUiThread {
+                //sycDataCountIMAP()
+                toast(R.string.The_mailbox_has_been_configured)
             }
         }
     }

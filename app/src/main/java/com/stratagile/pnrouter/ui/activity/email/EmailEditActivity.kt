@@ -4,18 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.toast
 import com.smailnet.eamil.EmailConfig
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailConfigEntity
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.ChangeRemarksReq
+import com.stratagile.pnrouter.entity.DelEmailConf
+import com.stratagile.pnrouter.entity.JDelEmailConfRsp
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailEditComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailEditContract
@@ -40,7 +44,21 @@ import javax.inject.Inject;
  * @date 2019/08/13 09:58:11
  */
 
-class EmailEditActivity : BaseActivity(), EmailEditContract.View {
+class EmailEditActivity : BaseActivity(), EmailEditContract.View , PNRouterServiceMessageReceiver.DelEmailConfCallback{
+    override fun DelEmailConfBack(jDelEmailConfRsp: JDelEmailConfRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jDelEmailConfRsp.params.retCode == 0)
+        {
+            deleteLoaclData()
+        }else{
+            runOnUiThread {
+                toast(R.string.fail)
+            }
+        }
+
+    }
 
     @Inject
     internal lateinit var mPresenter: EmailEditPresenter
@@ -54,6 +72,7 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View {
         setContentView(R.layout.activity_email_detail)
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver!!.delEmailConfCallback = this
         currentChooseConfig =  AppConfig.instance.emailConfig()
         emailAccount.text = currentChooseConfig!!.account
         accountName = currentChooseConfig!!.account.substring(0,currentChooseConfig!!.account.indexOf("@"))
@@ -71,32 +90,15 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View {
             SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                     .setContentText(getString(R.string.Confirm_to_delete_the_accout))
                     .setConfirmClickListener {
-                        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                        if(emailConfigEntityChoose.size > 0)
-                        {
-                            var emailConfigEntityChooseTemp = emailConfigEntityChoose.get(0)
-                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.delete(emailConfigEntityChooseTemp)
+                        runOnUiThread {
+                            showProgressDialog(getString(R.string.waiting))
                         }
-                        var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.Account.eq(currentChooseConfig!!.account)).list()
-                        for (item in attachList)
-                        {
-                            AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.delete(item)
-                        }
-                        var localEmailMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(currentChooseConfig!!.account)).list()
-                        for (item in localEmailMessageList)
-                        {
-                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
-                        }
-                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-                        for (item in emailConfigEntityList)
-                        {
-                            item.choose = true;
-                            ConstantValue.currentEmailConfigEntity = item;
-                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(item)
-                            break;
-                        }
-                        EventBus.getDefault().post(ChangeEmailConfig())
-                        finish()
+                        var type = AppConfig.instance.emailConfig().emailType.toInt()
+                        var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                        var saveEmailConf = DelEmailConf(type,accountBase64)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+
+
                     }
                     .show()
         }
@@ -131,6 +133,35 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View {
         }
     }
 
+    fun deleteLoaclData()
+    {
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0)
+        {
+            var emailConfigEntityChooseTemp = emailConfigEntityChoose.get(0)
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.delete(emailConfigEntityChooseTemp)
+        }
+        var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.Account.eq(currentChooseConfig!!.account)).list()
+        for (item in attachList)
+        {
+            AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.delete(item)
+        }
+        var localEmailMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(currentChooseConfig!!.account)).list()
+        for (item in localEmailMessageList)
+        {
+            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+        }
+        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        for (item in emailConfigEntityList)
+        {
+            item.choose = true;
+            ConstantValue.currentEmailConfigEntity = item;
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(item)
+            break;
+        }
+        EventBus.getDefault().post(ChangeEmailConfig())
+        finish()
+    }
     override fun setupActivityComponent() {
         DaggerEmailEditComponent
                 .builder()
@@ -150,5 +181,8 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver!!.delEmailConfCallback = null
+        super.onDestroy()
+    }
 }

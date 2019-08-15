@@ -145,6 +145,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     eamilMessage.contentText= mainInfo.content
                     eamilMessage.originalText = ""
                     eamilMessage.aesKey  = aesKey
+                    eamilMessage.emailAttachPath = item.emailPath
                     eamilMessage.date = DateUtil.getDateToString(mainInfo.revDate.toLong(),"yyyy-MM-dd HH:mm:ss");
                     emailMessageEntityList.add(eamilMessage)
                 }catch (e:Exception)
