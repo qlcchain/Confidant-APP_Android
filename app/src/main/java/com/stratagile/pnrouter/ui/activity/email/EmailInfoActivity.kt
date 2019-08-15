@@ -136,6 +136,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
+        if(menu == "node")
+        {
+            moreMenu.visibility = View.GONE
+            backMenu.visibility =  View.GONE
+        }else{
+            moreMenu.visibility = View.VISIBLE
+            backMenu.visibility =  View.VISIBLE
+        }
         zipSavePathTemp = emailMeaasgeData!!.account+"_"+ menu + "_"+ emailMeaasgeData!!.msgId
         msgId = emailMeaasgeData!!.msgId
         var to = emailMeaasgeData!!.to
@@ -583,7 +591,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         deleteMenu.setOnClickListener {
             showProgressDialog(getString(R.string.waiting))
-            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+            if(menu == "node")
+            {
+
+            }else{
+                deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+            }
+
         }
         tvRefuse.setOnClickListener {
             var intent = Intent(this, EmailSendActivity::class.java)

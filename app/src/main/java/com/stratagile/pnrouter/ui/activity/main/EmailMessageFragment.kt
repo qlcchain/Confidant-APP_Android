@@ -71,50 +71,62 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     var gson = GsonUtil.getIntGson()
                     var mainInfo =  gson.fromJson(sourceContent, EmailInfo::class.java)
                     var toUserJosnStr = mainInfo.toUserJosn
-                    var toUserJosn = gson.fromJson<ArrayList<EmailContact>>(toUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
-
-                    }.type)
-                    //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
                     var toStr = ""
-                    for (user in toUserJosn)
+                    if(toUserJosnStr != null)
                     {
-                        toStr += user.userName +" "+user.userAddress +","
+                        var toUserJosn = gson.fromJson<ArrayList<EmailContact>>(toUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
+
+                        }.type)
+                        //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
+
+                        for (user in toUserJosn)
+                        {
+                            toStr += user.userName +" "+user.userAddress +","
+                        }
+                        if(toStr!= "")
+                        {
+                            toStr = toStr.substring(0,toStr.length -1)
+                        }
                     }
-                    if(toStr!= "")
-                    {
-                        toStr = toStr.substring(0,toStr.length -1)
-                    }
 
-
-                    var ccUserJosnStr = mainInfo.toUserJosn
-                    var ccUserJosn = gson.fromJson<ArrayList<EmailContact>>(ccUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
-
-                    }.type)
-                    //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
+                    var ccUserJosnStr = mainInfo.ccUserJosn
                     var ccStr = ""
-                    for (user in ccUserJosn)
-                    {
-                        ccStr += user.userName +" "+user.userAddress +","
-                    }
-                    if(ccStr!= "")
-                    {
-                        ccStr = ccStr.substring(0,ccStr.length -1)
+                    if(ccUserJosnStr != null) {
+
+                        var ccUserJosn = gson.fromJson<ArrayList<EmailContact>>(ccUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
+
+                        }.type)
+                        //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
+
+                        for (user in ccUserJosn)
+                        {
+                            ccStr += user.userName +" "+user.userAddress +","
+                        }
+                        if(ccStr!= "")
+                        {
+                            ccStr = ccStr.substring(0,ccStr.length -1)
+                        }
                     }
 
-                    var bccUserJosnStr = mainInfo.toUserJosn
-                    var bccUserJosn = gson.fromJson<ArrayList<EmailContact>>(bccUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
-
-                    }.type)
-                    //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
                     var bccStr = ""
-                    for (user in bccUserJosn)
+                    var bccUserJosnStr = mainInfo.bccUserJosn
+                    if(bccUserJosnStr != null)
                     {
-                        bccStr += user.userName +" "+user.userAddress +","
+                        var bccUserJosn = gson.fromJson<ArrayList<EmailContact>>(bccUserJosnStr, object : TypeToken<ArrayList<EmailContact>>() {
+
+                        }.type)
+                        //283619512 <283619512@qq.com>,emaildev <emaildev@qlink.mobi>
+
+                        for (user in bccUserJosn)
+                        {
+                            bccStr += user.userName +" "+user.userAddress +","
+                        }
+                        if(bccStr!= "")
+                        {
+                            bccStr = bccStr.substring(0,bccStr.length -1)
+                        }
                     }
-                    if(bccStr!= "")
-                    {
-                        bccStr = bccStr.substring(0,bccStr.length -1)
-                    }
+
                     var eamilMessage = EmailMessageEntity()
                     eamilMessage.account = AppConfig.instance.emailConfig().account
                     eamilMessage.msgId = item.id.toString()
@@ -156,6 +168,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     var menu = "INBOX"
     var isChangeMenu = false
     var from = ""
+    var nodeStartId = 0;
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
@@ -220,9 +233,13 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 intent.putExtra("positionIndex", position)
                 startActivity(intent)
             }
-            emailMeaasgeData!!.setIsSeen(true)
-            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
-            emaiMessageChooseAdapter!!.notifyItemChanged(position)
+            if(name != "Nodebackedup")
+            {
+                emailMeaasgeData!!.setIsSeen(true)
+                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                emaiMessageChooseAdapter!!.notifyItemChanged(position)
+            }
+
         }
         /* refreshLayout.setOnRefreshListener {
              pullMoreMessageList()
@@ -267,7 +284,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 {
                     if(menu == "node")
                     {
-
+                        refreshLayout.finishLoadMore()
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
                         pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
@@ -383,6 +400,14 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         runOnUiThread {
             emaiMessageChooseAdapter!!.setNewData(localMessageList);
         }
+        if(menu == "node")
+        {
+            refreshLayout.resetNoMoreData()
+
+        }else
+        {
+            refreshLayout.setNoMoreData(false)
+        }
         if(menu.equals("star"))
         {
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.IsStar.eq(true)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
@@ -394,7 +419,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             showProgressDialog()
             var type = AppConfig.instance.emailConfig().emailType.toInt()
             var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-            var pullMailList = PullMailList(type ,accountBase64,0, 10)
+            var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))
               return;
         }else if(menu.equals("star")|| menu.equals("")){
