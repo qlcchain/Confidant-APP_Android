@@ -7,22 +7,27 @@ import java.io.Serializable;
  */
 
 public class EmailContact implements Serializable {
-    private int userName;
-    private int userAddress;
+    private String userName;
+    private String userAddress;
 
-    public int getUserName() {
+    public EmailContact(String userName, String userAddress) {
+        this.userName = userName;
+        this.userAddress = userAddress;
+    }
+
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(int userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public int getUserAddress() {
+    public String getUserAddress() {
         return userAddress;
     }
 
-    public void setUserAddress(int userAddress) {
+    public void setUserAddress(String userAddress) {
         this.userAddress = userAddress;
     }
 }

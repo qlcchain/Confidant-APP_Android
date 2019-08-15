@@ -568,7 +568,10 @@ val credentialsProvider: CredentialsProvider, private
                     val JBakupEmailRsp = gson.fromJson(text, JBakupEmailRsp::class.java)
                     bakupEmailCallback?.BakupEmailBack(JBakupEmailRsp)
                 }
-
+                "PullMailList" -> {
+                    val JPullMailListRsp = gson.fromJson(text, JPullMailListRsp::class.java)
+                    pullMailListCallback?.PullMailListBack(JPullMailListRsp)
+                }
 
             }
         }
@@ -650,6 +653,8 @@ val credentialsProvider: CredentialsProvider, private
     var checkmailUkeyCallback: CheckmailUkeyCallback? = null
 
     var bakupEmailCallback:BakupEmailCallback? = null
+
+    var pullMailListCallback:PullMailListCallback? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1026,6 +1031,9 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakupEmailCallback {
         fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp)
+    }
+    interface PullMailListCallback {
+        fun PullMailListBack(JPullMailListRsp: JPullMailListRsp)
     }
 }
 

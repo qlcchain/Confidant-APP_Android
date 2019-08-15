@@ -61,8 +61,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             }
         }else{
             runOnUiThread {
-                sycDataCountIMAP()
-                //toast(R.string.Over_configure)
+                //sycDataCountIMAP()
+                toast(R.string.Over_configure)
             }
         }
     }

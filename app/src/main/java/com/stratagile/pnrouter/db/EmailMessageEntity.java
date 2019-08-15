@@ -35,7 +35,7 @@ public class EmailMessageEntity implements Parcelable{
     private String originalText;//如果有，说明是解密出来的，否则直接用content
     private String aesKey;
     private long messageTotalCount;
-
+    private String emailAttachPath;
     
     public EmailMessageEntity() {
 
@@ -68,14 +68,15 @@ public class EmailMessageEntity implements Parcelable{
         originalText = in.readString();
         aesKey = in.readString();
         messageTotalCount = in.readLong();
+        emailAttachPath = in.readString();
     }
 
-    @Generated(hash = 2112183960)
+    @Generated(hash = 1053770347)
     public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
             String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar,
             String priority, boolean isReplySign, long size, boolean isContainerAttachment,
             int attachmentCount, String content, String contentText, String originalText, String aesKey,
-            long messageTotalCount) {
+            long messageTotalCount, String emailAttachPath) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
@@ -98,9 +99,8 @@ public class EmailMessageEntity implements Parcelable{
         this.originalText = originalText;
         this.aesKey = aesKey;
         this.messageTotalCount = messageTotalCount;
+        this.emailAttachPath = emailAttachPath;
     }
-
-  
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
         @Override
@@ -290,6 +290,14 @@ public class EmailMessageEntity implements Parcelable{
         this.messageTotalCount = messageTotalCount;
     }
 
+    public String getEmailAttachPath() {
+        return emailAttachPath;
+    }
+
+    public void setEmailAttachPath(String emailAttachPath) {
+        this.emailAttachPath = emailAttachPath;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -324,6 +332,7 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeString(originalText);
         dest.writeString(aesKey);
         dest.writeLong(messageTotalCount);
+        dest.writeString(emailAttachPath);
     }
 
     public boolean getIsSeen() {

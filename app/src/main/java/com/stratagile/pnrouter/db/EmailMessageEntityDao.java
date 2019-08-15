@@ -44,6 +44,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         public final static Property OriginalText = new Property(19, String.class, "originalText", false, "ORIGINAL_TEXT");
         public final static Property AesKey = new Property(20, String.class, "aesKey", false, "AES_KEY");
         public final static Property MessageTotalCount = new Property(21, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
+        public final static Property EmailAttachPath = new Property(22, String.class, "emailAttachPath", false, "EMAIL_ATTACH_PATH");
     }
 
 
@@ -80,7 +81,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
                 "\"CONTENT_TEXT\" TEXT," + // 18: contentText
                 "\"ORIGINAL_TEXT\" TEXT," + // 19: originalText
                 "\"AES_KEY\" TEXT," + // 20: aesKey
-                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL );"); // 21: messageTotalCount
+                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 21: messageTotalCount
+                "\"EMAIL_ATTACH_PATH\" TEXT);"); // 22: emailAttachPath
     }
 
     /** Drops the underlying database table. */
@@ -174,6 +176,11 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             stmt.bindString(21, aesKey);
         }
         stmt.bindLong(22, entity.getMessageTotalCount());
+ 
+        String emailAttachPath = entity.getEmailAttachPath();
+        if (emailAttachPath != null) {
+            stmt.bindString(23, emailAttachPath);
+        }
     }
 
     @Override
@@ -261,6 +268,11 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             stmt.bindString(21, aesKey);
         }
         stmt.bindLong(22, entity.getMessageTotalCount());
+ 
+        String emailAttachPath = entity.getEmailAttachPath();
+        if (emailAttachPath != null) {
+            stmt.bindString(23, emailAttachPath);
+        }
     }
 
     @Override
@@ -292,7 +304,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // contentText
             cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19), // originalText
             cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // aesKey
-            cursor.getLong(offset + 21) // messageTotalCount
+            cursor.getLong(offset + 21), // messageTotalCount
+            cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22) // emailAttachPath
         );
         return entity;
     }
@@ -321,6 +334,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         entity.setOriginalText(cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19));
         entity.setAesKey(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
         entity.setMessageTotalCount(cursor.getLong(offset + 21));
+        entity.setEmailAttachPath(cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22));
      }
     
     @Override

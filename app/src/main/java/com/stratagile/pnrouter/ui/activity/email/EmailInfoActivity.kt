@@ -427,17 +427,46 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         {
             draft_info.text = getString(R.string.From_me)
             detail_from_From.text = getString(R.string.To)
-
             fromName_From.text = toName
             fromEmailAdress_From.text = toAdress
+
         }else{
             draft_info.text = getString(R.string.To_me)
             detail_from_From.text = getString(R.string.From)
             fromName_From.text = fromName
             fromEmailAdress_From.text = fromAdress
         }
+        mailInfo.fromName = fromName
+        mailInfo.fromEmailBox = fromAdress
         var emailConfigEntityList = ArrayList<EmailInfoData>()
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
+        var emailContactList = mutableListOf<EmailContact>()
+        if(to!= null && to != "" )
+        {
+            var toList  = to.split(",")
+            for(toItem in toList)
+            {
+                var toName = ""
+                var toAdress = ""
+                if(toItem.indexOf("<") > -1)
+                {
+                    toName = toItem.substring(0,toItem.indexOf("<"))
+                    toAdress = toItem.substring(toItem.indexOf("<"),toItem.length)
+                }else{
+                    toName = toItem.substring(0,toItem.indexOf("@"))
+                    toAdress = toItem.substring(0,toItem.length)
+                }
+                var emailContact = EmailContact(toName,toAdress)
+                emailContactList.add(emailContact)
+            }
+            if(emailContactList.size > 0)
+            {
+                mailInfo.toUserJosn = emailContactList.baseDataToJson()
+            }else{
+                mailInfo.toUserJosn = ""
+            }
+        }
+        emailContactList = mutableListOf<EmailContact>()
         if(cc!= null && cc != "" )
         {
             var ccList  = cc.split(",")
@@ -454,8 +483,17 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccAdress = ccItem.substring(0,ccItem.length)
                 }
                 emailConfigEntityList.add(EmailInfoData("Cc",ccName,ccAdress))
+                var emailContact = EmailContact(ccName,ccAdress)
+                emailContactList.add(emailContact)
+            }
+            if(emailContactList.size > 0)
+            {
+                mailInfo.ccUserJosn = emailContactList.baseDataToJson()
+            }else{
+                mailInfo.ccUserJosn = ""
             }
         }
+        emailContactList = mutableListOf<EmailContact>()
         if(bcc!= null && bcc != "" )
         {
             var bccList  =bcc.split(",")
@@ -472,6 +510,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccAdress = bccItem.substring(0,bccItem.length)
                 }
                 emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
+                var emailContact = EmailContact(ccName,ccAdress)
+                emailContactList.add(emailContact)
+            }
+            if(emailContactList.size > 0)
+            {
+                mailInfo.bccUserJosn = emailContactList.baseDataToJson()
+            }else{
+                mailInfo.bccUserJosn = ""
             }
         }
         emaiInfoAdapter = EmaiInfoAdapter(emailConfigEntityList)
@@ -936,11 +982,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             var type = AppConfig.instance.emailConfig().emailType.toInt()
             var fileSize = file.length().toInt()
             var fileMD5 = FileUtil.getFileMD5(file);
-            var uuid = ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+            var uuid = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
             var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
             mailInfo.dsKey = pulicSignKey
             mailInfo.flags = 1;
-            var saveEmailConf = BakupEmail(type,msgId,fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,"")
+            var mailInfoJson = mailInfo.baseDataToJson()
+            val contentBuffer = mailInfoJson.toByteArray()
+            var fileKey16 = fileAESKey.substring(0,16)
+            var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+            var saveEmailConf = BakupEmail(type,msgId,fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
         }
     }
