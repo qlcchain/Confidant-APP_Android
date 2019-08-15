@@ -746,7 +746,7 @@ data class PullMailList(var Type:Int,var User :String,var StartId :Int,var Num :
  * 93.	用户备份邮件到节点上
  * (2)	响应（APP->Router）
  */
-data class BakupEmail(var Type:Int,var FileId :Int,var Uuid :Int,var FileSize :Int,var FileMd5 :String,var User :String,var UserKey :String,var MailInfo :String,var Action : String = "BakupEmail")
+data class BakupEmail(var Type:Int,var FileId :Int,var FileSize :Int,var FileMd5 :String,var User :String,var Uuid :String,var UserKey :String,var MailInfo :String,var Action : String = "BakupEmail")
 /**
  * 94.	用户删除节点上备份邮件
  * (2)	响应（APP->Router）

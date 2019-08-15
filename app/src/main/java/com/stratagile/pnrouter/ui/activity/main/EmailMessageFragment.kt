@@ -796,18 +796,51 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             {
                 miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
             }
+            if(miContentSoucreEndIndex == -1)
+            {
+                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantkey=")
+            }
+            if(miContentSoucreEndIndex == -1)
+            {
+                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantKey=")
+            }
             var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
             if(beginIndex == -1)
             {
                 beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+            }
+            if(beginIndex == -1)
+            {
+                beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey=\"")
+            }
+            if(beginIndex == -1)
+            {
+                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey=\"")
+            }
+            if(beginIndex < 0)
+            {
+                beginIndex = 0;
             }
             if(miContentSoucreEndIndex < 0)
             {
                 miContentSoucreEndIndex = 0;
             }
             var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
+            var endIndexd = emailMeaasgeData!!.content.length
+            if(endIndexd < beginIndex)
+            {
+                endIndexd = beginIndex
+            }
+            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,endIndexd)
             var endIndex = confidantkeyBefore.indexOf("'></span>")
+            if(endIndex < 0)
+            {
+                endIndex = confidantkeyBefore.indexOf("\"></span>")
+            }
+            if(endIndex < 14)
+            {
+                endIndex = 14
+            }
             var confidantkey = confidantkeyBefore.substring(14,endIndex)
 
             var confidantkeyArr = listOf<String>()
@@ -819,7 +852,13 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                 var confidantkeyList = confidantkey.split("##")
                 for(item in confidantkeyList)
                 {
-                    confidantkeyArr = item.split("&&")
+                    if(item.contains("&&"))
+                    {
+                        confidantkeyArr = item.split("&&")
+                    }else{
+                        confidantkeyArr = item.split("&amp;&amp;")
+                    }
+
                     accountMi = confidantkeyArr.get(0)
                     shareMiKey = confidantkeyArr.get(1)
                     account =  String(RxEncodeTool.base64Decode(accountMi))
@@ -830,7 +869,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                 }
 
             }else{
-                confidantkeyArr = confidantkey.split("&&")
+                if(confidantkey.contains("&&"))
+                {
+                    confidantkeyArr = confidantkey.split("&&")
+                }else{
+                    confidantkeyArr = confidantkey.split("&amp;&amp;")
+                }
                 accountMi = confidantkeyArr.get(0)
                 shareMiKey = confidantkeyArr.get(1)
             }

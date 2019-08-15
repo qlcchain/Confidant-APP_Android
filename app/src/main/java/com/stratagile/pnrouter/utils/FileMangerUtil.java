@@ -1176,7 +1176,7 @@ public class FileMangerUtil {
                     }
 //                    fileName = fileNamePre + fileNameEnd;
                     fileName = Base58.getBase58NameWithOrginName(fileNamePre, fileNameEnd);
-                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
                     if(!msgId.equals(""))
                     {
                         uuid = msgId;

@@ -3292,6 +3292,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
             rootTitle.text = getString(R.string.Inbox)
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3308,6 +3309,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         nodebackedup.setOnClickListener {
             rootTitle.text = getString(R.string.Node_back_up)
             ConstantValue.chooseEmailMenu = 1;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3323,6 +3325,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         starred.setOnClickListener {
             rootTitle.text = getString(R.string.Starred)
             ConstantValue.chooseEmailMenu = 2;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -3338,6 +3341,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         drafts.setOnClickListener {
             rootTitle.text = getString(R.string.Drafts)
             ConstantValue.chooseEmailMenu = 3;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3353,6 +3357,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         sent.setOnClickListener {
             rootTitle.text = getString(R.string.Sent)
             ConstantValue.chooseEmailMenu = 4;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3368,6 +3373,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         spam.setOnClickListener {
             rootTitle.text = getString(R.string.Spam)
             ConstantValue.chooseEmailMenu = 5;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3383,6 +3389,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
             rootTitle.text = getString(R.string.Trash)
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))

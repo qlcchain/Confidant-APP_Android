@@ -35,13 +35,12 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailConfigEntity
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
-import com.stratagile.pnrouter.entity.BakupEmail
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.EmailInfoData
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ChangEmailMessage
 import com.stratagile.pnrouter.entity.events.ChangEmailStar
 import com.stratagile.pnrouter.entity.events.FileStatus
@@ -71,7 +70,8 @@ import javax.inject.Inject
  * @date 2019/07/15 15:18:54
  */
 
-class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
+class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServiceMessageReceiver.BakupEmailCallback{
+
 
     @Inject
     internal lateinit var mPresenter: EmailInfoPresenter
@@ -93,17 +93,40 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     var zipFileSoucePath:MutableList<String> = ArrayList()
     var task: ZipCompressTask? = null
     var needWaitAttach =false
-    var fileKey = ""
+    var fileAESKey = ""
+    var mailInfo = EmailInfo()
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
     }
+    override fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp) {
 
+       if(jBakupEmailRsp.params.retCode == 0)
+       {
+          runOnUiThread {
+              closeProgressDialog()
+              toast(R.string.success)
+          }
+
+       }else if(jBakupEmailRsp.params.retCode == 1)
+        {
+           runOnUiThread {
+               closeProgressDialog()
+               toast(R.string.It_already_exists)
+           }
+       }else{
+           runOnUiThread {
+               closeProgressDialog()
+               toast(R.string.fail)
+           }
+       }
+    }
     override fun initView() {
         setContentView(R.layout.email_info_view)
     }
 
     override fun initData() {
+        AppConfig.instance.messageReceiver!!.bakupEmailCallback = this
         EventBus.getDefault().register(this)
         isScaleInit = false
         webViewScroll = false
@@ -119,6 +142,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
         var attachCount = emailMeaasgeData!!.attachmentCount
+        mailInfo.attchCount = attachCount
+        mailInfo.subTitle = emailMeaasgeData!!.subject
         emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChooseList.size > 0)
         {
@@ -177,6 +202,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         attachListParent.visibility =View.GONE
         loadingBar.visibility = View.GONE
         loadingTips.visibility = View.GONE
+
         if(attachCount > 0)
         {
             attachListParent.visibility =View.VISIBLE
@@ -390,6 +416,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
+        mailInfo.revDate = (DateUtil.getDate(emailMeaasgeData!!.date).time / 1000).toInt()
         fromName_Time.text = emailMeaasgeData!!.date
         attach_info.setOnClickListener {
             if(attach_info.text == getString(R.string.details))
@@ -476,14 +503,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                     toast(R.string.Waiting_for_attachments)
                     return@setOnClickListener
                 }
-                fileKey = RxEncryptTool.generateAESKey()
+                showProgressDialog(getString(R.string.waiting))
+                fileAESKey = RxEncryptTool.generateAESKey()
                 var base58files_dir =  PathUtils.getInstance().tempPath.toString() + "/"
                 var  path = PathUtils.generateEmailMessagePath("temp")+"htmlContent.txt";
                 var  result = FileUtil.writeStr_to_txt(path,contentHtml)
                 if(result)
                 {
                     var miPath = base58files_dir +"htmlContent.txt";
-                    val code = FileUtil.copySdcardToxFileAndEncrypt(path, miPath, fileKey.substring(0, 16))
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(path, miPath, fileAESKey.substring(0, 16))
                     zipFileSoucePath.add(miPath)
                 }
                 var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
@@ -496,7 +524,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                     var base58Name = Base58.encode(fileSouceName.toByteArray())
                     var miPath = base58files_dir + base58Name
 
-                    val code = FileUtil.copySdcardToxFileAndEncrypt(fromPath, miPath, fileKey.substring(0, 16))
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(fromPath, miPath, fileAESKey.substring(0, 16))
                     zipFileSoucePath.add(miPath)
                 }
                 zipSavePath = PathUtils.generateEmailMessagePath("temp")+"htmlContent.zip";
@@ -789,10 +817,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         Log.i("URLText",emailMeaasgeData!!.content)
         if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
         {
+            var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
+            if(originalTextCun.length > 50)
+            {
+                originalTextCun = originalTextCun.substring(0,50)
+            }
+            mailInfo.content = originalTextCun
             URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
             contentHtml = URLText
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }else{
+            var contentText =  emailMeaasgeData!!.contentText
+            if(contentText.length > 50)
+            {
+                contentText = contentText.substring(0,50)
+            }
+            mailInfo.content = contentText
             URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
             contentHtml = URLText
             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
@@ -889,14 +929,19 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         } else if (fileStatus.result == 3) {
             toast(R.string.Files_0M)
         }else {
-           /* var file = File(zipSavePath)
 
+            var file = File(zipSavePath)
             var msgId = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("__")+2,fileStatus.fileKey.length).toInt()
-            var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
             var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+            var type = AppConfig.instance.emailConfig().emailType.toInt()
             var fileSize = file.length().toInt()
-            var saveEmailConf = BakupEmail(AppConfig.instance.emailConfig().emailType,msgId,fileSize,accountBase64 ,"", pulicSignKey)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))*/
+            var fileMD5 = FileUtil.getFileMD5(file);
+            var uuid = ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+            var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
+            mailInfo.dsKey = pulicSignKey
+            mailInfo.flags = 1;
+            var saveEmailConf = BakupEmail(type,msgId,fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,"")
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
         }
     }
     fun showDialog() {
@@ -1160,6 +1205,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         return (pxValue / scale + 0.5f).toInt()
     }
     override fun onDestroy() {
+        AppConfig.instance.messageReceiver!!.bakupEmailCallback = null
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

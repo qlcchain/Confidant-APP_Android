@@ -32,7 +32,8 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var formName = ""
         var  from = item.from;
         var account = ""
-        if(from.contains(item.account))
+        var menu = item.menu
+        if(menu.contains("Sent") || menu.contains("已发") || menu.contains("Drafts")|| menu.contains("草稿"))
         {
             from = item.to;
             if(from.contains(","))
@@ -87,6 +88,8 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             if(from.indexOf("<") >=0)
             {
                 formName = from.substring(0,from.indexOf("<"))
+            }else{
+                formName = from.substring(0,from.indexOf("@"))
             }
         }
 
