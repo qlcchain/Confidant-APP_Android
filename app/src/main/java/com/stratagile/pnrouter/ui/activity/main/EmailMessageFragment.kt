@@ -837,14 +837,6 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
             var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
             var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
             val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-            var test = "TvKX6DPZcdOY+p3ejB+ByA=="
-            var miContentSoucreBase2 = RxEncodeTool.base64Decode(test)
-            val miContent2 = AESCipher.aesDecryptBytes(miContentSoucreBase2, aesKey.toByteArray())
-            if(miContent2 != null)
-            {
-                var test3 =  String(miContent2)
-
-            }
             var sourceContent = ""
             try{
                 sourceContent = String(miContent)

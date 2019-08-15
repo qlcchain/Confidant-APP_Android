@@ -39,9 +39,12 @@ import com.stratagile.pnrouter.db.EmailAttachEntityDao
 import com.stratagile.pnrouter.db.EmailConfigEntity
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntity
+import com.stratagile.pnrouter.entity.BakupEmail
+import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.EmailInfoData
 import com.stratagile.pnrouter.entity.events.ChangEmailMessage
 import com.stratagile.pnrouter.entity.events.ChangEmailStar
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
@@ -54,6 +57,8 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.email_info_view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.Serializable
 import java.util.*
@@ -99,6 +104,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     }
 
     override fun initData() {
+        EventBus.getDefault().register(this)
         isScaleInit = false
         webViewScroll = false
         initPicPlug()
@@ -867,9 +873,30 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 }
                 0x56 -> {
                     var zipSavePathaa = zipSavePath
+                    val msgID = (System.currentTimeMillis() / 1000).toInt()
+                    FileMangerUtil.sendEmailFile(zipSavePath,msgID, false)
                 }
             }//goMain();
             //goMain();
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.Download_failed)
+        }else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
+        }else {
+           /* var file = File(zipSavePath)
+
+            var msgId = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("__")+2,fileStatus.fileKey.length).toInt()
+            var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+            var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+            var fileSize = file.length().toInt()
+            var saveEmailConf = BakupEmail(AppConfig.instance.emailConfig().emailType,msgId,fileSize,accountBase64 ,"", pulicSignKey)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))*/
         }
     }
     fun showDialog() {
@@ -1131,5 +1158,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
     fun px2dip(pxValue: Float): Int {
         val scale = this.resources.displayMetrics.density
         return (pxValue / scale + 0.5f).toInt()
+    }
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

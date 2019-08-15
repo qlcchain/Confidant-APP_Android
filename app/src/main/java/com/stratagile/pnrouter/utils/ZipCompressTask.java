@@ -91,7 +91,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
 		//super.onPreExecute();
-		try {
+		/*try {
 			if(mDialog!=null){
 				mDialog.setTitle("打包中……");
 				mDialog.setMessage("");
@@ -111,7 +111,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 		}catch (Exception e)
 		{
 
-		}
+		}*/
 
 	}
 	@Override

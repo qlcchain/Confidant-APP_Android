@@ -5,12 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x45">
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
         <include
             android:id="@+id/include"
-            layout="@layout/ease_search_bar"
+            layout="@layout/ease_searchfile_bar"
             android:layout_width="0px"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
@@ -19,14 +20,12 @@
             android:id="@+id/sort"
             android:layout_width="wrap_content"
             android:src="@mipmap/sort"
-            android:layout_alignParentRight="true"
-            android:paddingTop="@dimen/x10"
-            android:paddingRight="@dimen/x11"
+            android:paddingRight="@dimen/x31"
             android:background="@color/white"
             android:scaleType="center"
             android:layout_height="match_parent" />
 
-    </RelativeLayout>
+    </LinearLayout>
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
