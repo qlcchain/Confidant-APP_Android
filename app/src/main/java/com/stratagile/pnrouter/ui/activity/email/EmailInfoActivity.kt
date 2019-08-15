@@ -150,14 +150,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
         }
         var account = AppConfig.instance.emailConfig().account
-        if(to.contains(account))
-        {
-            draft_info.text = getString(R.string.To_me)
-            detail_from_From.text = getString(R.string.From)
-        }else{
-            draft_info.text = getString(R.string.From_me)
-            detail_from_From.text = getString(R.string.To)
-        }
+
+
         if(emailMeaasgeData!!.content!= "" && emailMeaasgeData!!.content.contains("confidantkey"))
         {
             lockTips.visibility = View.VISIBLE
@@ -428,13 +422,19 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 details.visibility = View.GONE
             }
         }
-        if(to.contains(account))
+        var menuFrom = emailMeaasgeData!!.menu
+        if(menuFrom.contains("Sent") || menuFrom.contains("已发") || menuFrom.contains("Drafts")|| menuFrom.contains("草稿"))
         {
-            fromName_From.text = fromName
-            fromEmailAdress_From.text = fromAdress
-        }else{
+            draft_info.text = getString(R.string.From_me)
+            detail_from_From.text = getString(R.string.To)
+
             fromName_From.text = toName
             fromEmailAdress_From.text = toAdress
+        }else{
+            draft_info.text = getString(R.string.To_me)
+            detail_from_From.text = getString(R.string.From)
+            fromName_From.text = fromName
+            fromEmailAdress_From.text = fromAdress
         }
         var emailConfigEntityList = ArrayList<EmailInfoData>()
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
