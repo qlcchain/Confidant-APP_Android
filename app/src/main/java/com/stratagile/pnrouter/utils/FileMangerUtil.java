@@ -570,7 +570,7 @@ public class FileMangerUtil {
             }
             sendFileData.setPorperty(porperty);
             byte[] ver = new byte[1];
-            Arrays.fill(ver,(byte) 0);
+            Arrays.fill(ver,(byte) 1);
             sendFileData.setVer(ver);
             sendFileData.setContent(content);
             byte[] sendData = sendFileData.toByteArray();
@@ -1368,14 +1368,14 @@ public class FileMangerUtil {
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                               /* if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                 {
                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                     DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                 }else{
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                }*/
+                                }
                                 sendFileKeyByteMap.put(uuid+"","zip");
                                 sendFileMyKeyByteMap.put(uuid+"",SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid+"",DstKey);

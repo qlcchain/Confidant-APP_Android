@@ -25,6 +25,7 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.toast
+import com.pawegio.kandroid.v
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
@@ -464,6 +465,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         var emailConfigEntityList = ArrayList<EmailInfoData>()
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         var emailContactList = mutableListOf<EmailContact>()
+        var toNameStr = ""
+        var toAdressStr = ""
         if(to!= null && to != "" )
         {
             var toList  = to.split(",")
@@ -479,9 +482,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName = toItem.substring(0,toItem.indexOf("@"))
                     toAdress = toItem.substring(0,toItem.length)
                 }
+                if(toName != "")
+                {
+                    toNameStr += toName+","
+                    toAdressStr += toAdress+","
+                }
                 emailConfigEntityList.add(EmailInfoData("To",toName,toAdress))
                 var emailContact = EmailContact(toName,toAdress)
                 emailContactList.add(emailContact)
+            }
+            if(toNameStr != "")
+            {
+                toNameStr = toNameStr.substring(0,toNameStr.length -1)
+                toAdressStr = toAdressStr.substring(0,toAdressStr.length -1)
+                toRoot.visibility = View.VISIBLE
+                fromName_to.text = toNameStr;
+                fromEmailAdress_to.text = toAdressStr;
             }
             if(emailContactList.size > 0)
             {
@@ -491,6 +507,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
         }
         emailContactList = mutableListOf<EmailContact>()
+        toNameStr = ""
+        toAdressStr = ""
         if(cc!= null && cc != "" )
         {
             var ccList  = cc.split(",")
@@ -506,9 +524,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = ccItem.substring(0,ccItem.indexOf("@"))
                     ccAdress = ccItem.substring(0,ccItem.length)
                 }
+                if(ccName != "")
+                {
+                    toNameStr += ccName+","
+                    toAdressStr += ccAdress+","
+                }
                 emailConfigEntityList.add(EmailInfoData("Cc",ccName,ccAdress))
                 var emailContact = EmailContact(ccName,ccAdress)
                 emailContactList.add(emailContact)
+            }
+            if(toNameStr != "")
+            {
+                toNameStr = toNameStr.substring(0,toNameStr.length -1)
+                toAdressStr = toAdressStr.substring(0,toAdressStr.length -1)
+                ccRoot.visibility = View.VISIBLE
+                fromName_cc.text = toNameStr;
+                fromEmailAdress_cc.text = toAdressStr;
             }
             if(emailContactList.size > 0)
             {
@@ -518,6 +549,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
         }
         emailContactList = mutableListOf<EmailContact>()
+        toNameStr = ""
+        toAdressStr = ""
         if(bcc!= null && bcc != "" )
         {
             var bccList  =bcc.split(",")
@@ -533,9 +566,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = bccItem.substring(0,bccItem.indexOf("@"))
                     ccAdress = bccItem.substring(0,bccItem.length)
                 }
+                if(bccItem != "")
+                {
+                    toNameStr += ccName+","
+                    toAdressStr += ccAdress+","
+                }
                 emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
                 var emailContact = EmailContact(ccName,ccAdress)
                 emailContactList.add(emailContact)
+            }
+            if(toNameStr != "")
+            {
+                toNameStr = toNameStr.substring(0,toNameStr.length -1)
+                toAdressStr = toAdressStr.substring(0,toAdressStr.length -1)
+                bccRoot.visibility = View.VISIBLE
+                fromName_bcc.text = toNameStr;
+                fromEmailAdress_bcc.text = toAdressStr;
             }
             if(emailContactList.size > 0)
             {
@@ -549,7 +595,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
             true
         }
-        recyclerViewleft.adapter = emaiInfoAdapter
+        //recyclerViewleft.adapter = emaiInfoAdapter
         emaiInfoAdapter!!.setOnItemClickListener { adapter, view, position ->
             /* var intent = Intent(activity!!, ConversationActivity::class.java)
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)

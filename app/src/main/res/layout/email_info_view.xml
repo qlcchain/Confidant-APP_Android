@@ -303,7 +303,159 @@
 
                     </RelativeLayout>
                 </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/toRoot"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/toParent"
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true">
+
+                        <TextView
+                            android:id="@+id/detail_from_to"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x20"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:text="@string/To"
+                            android:textColor="@color/contentColor"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/fromName_to"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x110"
+                            android:ellipsize="end"
+                            android:text="Abby Moran"
+                            android:textColor="@color/c_2A292B"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/fromEmailAdress_to"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/fromName_to"
+                            android:ellipsize="end"
+                            android:text="team@reddlenews.com"
+                            android:textColor="@color/c_2A292B"
+                            android:layout_toRightOf="@id/detail_from_to"
+                            android:layout_below="@+id/fromName_to"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/ccRoot"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/ccParent"
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true">
+
+                        <TextView
+                            android:id="@+id/detail_from_cc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x20"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:text="@string/Cc"
+                            android:textColor="@color/contentColor"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/fromName_cc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x110"
+                            android:ellipsize="end"
+                            android:text="Abby Moran"
+                            android:textColor="@color/c_2A292B"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/fromEmailAdress_cc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/fromName_cc"
+                            android:ellipsize="end"
+                            android:text="team@reddlenews.com"
+                            android:textColor="@color/c_2A292B"
+                            android:layout_toRightOf="@id/detail_from_cc"
+                            android:layout_below="@+id/fromName_cc"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/bccRoot"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/bccParent"
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true">
+
+                        <TextView
+                            android:id="@+id/detail_from_bcc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x20"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:text="@string/Bcc"
+                            android:textColor="@color/contentColor"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/fromName_bcc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/x110"
+                            android:ellipsize="end"
+                            android:text="Abby Moran"
+                            android:textColor="@color/c_2A292B"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/fromEmailAdress_bcc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/fromName_bcc"
+                            android:ellipsize="end"
+                            android:text="team@reddlenews.com"
+                            android:textColor="@color/c_2A292B"
+                            android:layout_toRightOf="@id/detail_from_bcc"
+                            android:layout_below="@+id/fromName_bcc"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+
                 <android.support.v4.widget.NestedScrollView
+                    android:visibility="gone"
                     android:id="@+id/recyclerViewleftParent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">

@@ -1082,6 +1082,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var toAdress = getEditText(toAdressEdit)
         toAdress = toAdress.replace(",,","")
         var toAdressArr = toAdress.split(",");
+        var num = 0
         if(flag== true && toAdress== "")
         {
             toast(R.string.The_recipient_cant_be_empty)
@@ -1106,6 +1107,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     toast(temp +" "+ getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
+                num ++;
                 toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -1130,6 +1132,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     toast(temp +" " + getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
+                num ++;
                 toAdressBase64CC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -1153,6 +1156,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     toast(temp + getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
+                num ++;
                 toAdressBase64BCC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
             }
         }
@@ -1160,7 +1164,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             toAdressBase64BCC = toAdressBase64BCC.substring(0,toAdressBase64BCC.length -1)
         }
-        var addressBase64 = toAdressBase64 +toAdressBase64CC +toAdressBase64BCC
+        var addressBase64 = toAdressBase64
+        if(toAdressBase64CC != "")
+        {
+            addressBase64 += ","+toAdressBase64CC
+        }
+        if(toAdressBase64BCC != "")
+        {
+            addressBase64 += ","+toAdressBase64BCC
+        }
         if(addressBase64 == "")
         {
             lockTips.visibility = View.GONE
@@ -1172,7 +1184,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 showProgressDialog(getString(R.string.waiting))
             }
         }
-        var checkmailUkey = CheckmailUkey(toAdressArr.size,addressBase64)
+        var checkmailUkey = CheckmailUkey(num,addressBase64)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
     }
     /**
