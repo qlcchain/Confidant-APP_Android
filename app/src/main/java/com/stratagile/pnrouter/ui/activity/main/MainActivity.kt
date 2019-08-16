@@ -3262,9 +3262,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
-                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-                var bakMailsNum = BakMailsNum(accountBase64)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+                if(AppConfig.instance.emailConfig().account != null)
+                {
+                    var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                    var bakMailsNum = BakMailsNum(accountBase64)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+                }
+
                 //Log.i("zhangshuli", "open")
             }
 
