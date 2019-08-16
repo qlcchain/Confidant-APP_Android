@@ -22,7 +22,7 @@
                 android:id="@+id/tvDelete"
                 android:layout_width="match_parent"
                 android:gravity="center"
-                android:text="@string/delete_email"
+                android:text="@string/delete_conversation"
                 android:layout_marginLeft="@dimen/dp_30"
                 android:layout_marginRight="@dimen/dp_30"
                 android:textColor="@color/color_333"

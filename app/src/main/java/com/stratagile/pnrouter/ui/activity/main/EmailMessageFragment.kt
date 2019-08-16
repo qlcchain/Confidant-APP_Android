@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,17 +9,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import com.google.gson.reflect.TypeToken
+import com.hyphenate.chat.EMMessage
+import com.noober.menu.FloatMenu
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetReceiveCallback
+import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.smailnet.eamil.Utils.TimeUtil
 import com.smailnet.islands.Islands
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
@@ -33,6 +41,7 @@ import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
 import kotlinx.android.synthetic.main.email_search_bar.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
@@ -187,6 +196,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     var nodeStartId = 0;
     var nodeUpandDown = "up";
     var lastPayload : JPullMailListRsp.ParamsBean.PayloadBean? = null
+    var emailConfigEntityChooseList= mutableListOf<EmailConfigEntity>()
+    var emailConfigEntityChoose:EmailConfigEntity? = null
+    var deleteEmailMeaasgeData:EmailMessageEntity? = null
+    var positionDeleteIndex = 0;
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
@@ -223,7 +236,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         AppConfig.instance.messageReceiver!!.pullMailListCallback = this
-
+        emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChooseList.size > 0)
+        {
+            emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+        }
         from = arguments!!.getString("from","")
         var account = AppConfig.instance.emailConfig().account
         var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
@@ -233,9 +250,28 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }
         emaiMessageChooseAdapter = EmaiMessageAdapter(emailMessageEntityList)
         emaiMessageChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-            /* val floatMenu = FloatMenu(activity)
-             floatMenu.items("菜单1", "菜单2", "菜单3")
-             floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+            if(name == "Drafts")
+            {
+                deleteEmailMeaasgeData =  emaiMessageChooseAdapter!!.getItem(position)
+                positionDeleteIndex = position
+                val commonDialog = CommonDialog(activity)
+                val view1 = activity!!.layoutInflater.inflate(R.layout.dialog_conversation_layout, null, false)
+                commonDialog.setView(view1)
+                commonDialog.show()
+                val tvDelete = view1.findViewById<TextView>(R.id.tvDelete)
+                tvDelete.setOnClickListener {
+                    showProgressDialog(AppConfig.instance.resources.getString(R.string.waiting))
+                    deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                    commonDialog.cancel()
+                }
+            }
+
+            /*   val floatMenu = FloatMenu(activity)
+              floatMenu.inflate(R.menu.popup_menu_voice)
+               var left = view.left
+               var top = view.top
+               var point = Point(left,top)
+               floatMenu.show(point,0,0)*/
             true
         }
         recyclerView.adapter = emaiMessageChooseAdapter
@@ -371,6 +407,62 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         if(from != null && from !="")
         {
             shouUI(true)
+        }
+    }
+    fun deleteAndMoveEmailSend(menuTo:String,flag:Int)
+    {
+        /*tipDialog.show()*/
+        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+        emailReceiveClient
+                .imapMarkEmail(activity, object : MarkCallback {
+                    override fun gainSuccess(result: Boolean) {
+                        //tipDialog.dismiss()
+                        closeProgressDialog()
+                        if(result)
+                        {
+                            deleteEmail()
+                        }else{
+                            Toast.makeText(activity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    override fun gainFailure(errorMsg: String) {
+                        //tipDialog.dismiss()
+                        closeProgressDialog()
+                        Toast.makeText(activity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                    }
+                },menu,deleteEmailMeaasgeData!!.msgId,flag,true,menuTo)
+    }
+    fun deleteEmail()
+    {
+        AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(deleteEmailMeaasgeData)
+        EventBus.getDefault().post(ChangEmailMessage(positionDeleteIndex,1))
+        if(emailConfigEntityChoose != null)
+        {
+            when(menu)
+            {
+                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+                {
+                    emailConfigEntityChoose!!.totalCount -= 1
+
+                }
+                ConstantValue.currentEmailConfigEntity!!.drafMenu->
+                {
+                    emailConfigEntityChoose!!.drafTotalCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.sendMenu->
+                {
+                    emailConfigEntityChoose!!.sendTotalCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+                {
+                    emailConfigEntityChoose!!.garbageCount -= 1
+                }
+                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+                {
+                    emailConfigEntityChoose!!.deleteTotalCount -= 1
+                }
+            }
+            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update( emailConfigEntityChoose)
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1129,7 +1221,17 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     override fun showProgressDialog() {
         progressDialog.show()
     }
+    fun showProgressDialog(text: String) {
+        try {
+            KLog.i("弹窗：showProgressDialog_"+text)
+            progressDialog.setDialogText(text)
+            progressDialog.show()
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
 
+    }
     override fun closeProgressDialog() {
         if(progressDialog!= null)
             progressDialog.hide()

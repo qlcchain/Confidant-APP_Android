@@ -768,4 +768,6 @@
     <string name="Download_failure">Download failure</string>
     <string name="Failure_of_decompression">Failure of decompression</string>
 
+    <string name="delete_email">Delete email</string>
+
 </resources>

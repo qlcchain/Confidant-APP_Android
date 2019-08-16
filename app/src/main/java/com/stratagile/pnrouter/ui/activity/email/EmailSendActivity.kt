@@ -23,9 +23,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
 import com.hyphenate.easeui.model.EaseCompat
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
@@ -64,7 +61,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.view.ViewTreeObserver
 import android.webkit.*
-import android.widget.EditText
+import android.widget.*
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.luck.picture.lib.PicturePreviewActivity
@@ -79,6 +76,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.entity.events.SendEmailSuccess
+import com.stratagile.pnrouter.ui.activity.email.view.SemicolonTokenizer
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -165,6 +163,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
     var replayAll = true
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
+    var dataTips = arrayListOf<String>()
 
     private val users = arrayListOf(
             User("1", "激浊扬清"),
@@ -246,6 +245,22 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     }
     override fun initData() {
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
+        var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.notEq("")).orderDesc(EmailContactsEntityDao.Properties.CreateTime).list()
+        for (item in emailContactsList)
+        {
+            dataTips.add(item.account)
+        }
+        var adapter = ArrayAdapter<String>(this@EmailSendActivity, android.R.layout.simple_dropdown_item_1line, dataTips)
+        toAdressEdit!!.setAdapter(adapter)
+        toAdressEdit!!.setTokenizer(SemicolonTokenizer(';'))
+
+        var adaptercc = ArrayAdapter<String>(this@EmailSendActivity, android.R.layout.simple_dropdown_item_1line, dataTips)
+        ccAdressEdit!!.setAdapter(adaptercc)
+        ccAdressEdit!!.setTokenizer(SemicolonTokenizer(';'))
+
+        var adapterbcc = ArrayAdapter<String>(this@EmailSendActivity, android.R.layout.simple_dropdown_item_1line, dataTips)
+        bccAdressEdit!!.setAdapter(adapterbcc)
+        bccAdressEdit!!.setTokenizer(SemicolonTokenizer(';'))
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
         flag = intent.getIntExtra("flag",0)
         foward = intent.getIntExtra("foward",0)
@@ -290,6 +305,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 sentTitle.visibility = View.VISIBLE
             }
 
+        }
+        toAdressEdit.setOnItemClickListener { parent, view, position, id ->
+
+            var content = parent.getItemAtPosition(position).toString()
+            var aa = "";
         }
         toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
             override fun onFocusChange( v:View,  hasFocus:Boolean) {
@@ -2293,4 +2313,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = null
         super.onDestroy()
     }
+
+
 }

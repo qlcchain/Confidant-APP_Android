@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/To"
                     android:textSize="16sp"/>
-                <AutoCompleteTextView
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/toAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -189,6 +189,7 @@
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
                     android:paddingRight="@dimen/x10"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <com.hyphenate.easeui.widget.ATEmailEditText
@@ -231,7 +232,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/Cc"
                     android:textSize="16sp"/>
-                <AutoCompleteTextView
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/ccAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -240,6 +241,7 @@
                     android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <TextView
@@ -263,7 +265,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/Bcc"
                     android:textSize="16sp"/>
-                <AutoCompleteTextView
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/bccAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -272,6 +274,7 @@
                     android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <TextView
