@@ -1728,6 +1728,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         //文本输入框监听事件
         re_main_editor.setOnTextChangeListener(object : RichEditor.OnTextChangeListener {
             override fun onTextChange(text: String) {
+                re_main_editor.setEditorFontColor(Color.BLACK)
                 Log.d("re_main_editor", "html文本：$text")
             }
         })
