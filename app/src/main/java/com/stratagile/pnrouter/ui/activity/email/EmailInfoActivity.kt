@@ -245,9 +245,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 attachListParent.visibility =View.VISIBLE
 
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-                var   attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                var addMenu = false
+                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                 if(attachList.size == 0)
                 {
+                    addMenu = true
                     attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                 }
                 var isDownload = true
@@ -256,7 +258,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 for (attach in attachList)
                 {
                     var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
-
+                    if(addMenu)
+                    {
+                        savePath = save_dir+attach.account+"_"+emailMeaasgeData!!.menu+"_"+attach.msgId+"_"+attach.name
+                    }
                     var file = File(savePath)
                     if(!file.exists())
                     {

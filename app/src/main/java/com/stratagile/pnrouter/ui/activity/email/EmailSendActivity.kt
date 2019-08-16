@@ -931,9 +931,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if(attach > 0 && attachCount > 0)
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+            var addMenu = false
             var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
             if(attachListData.size == 0)
             {
+                addMenu = true
                 attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
             }
             if(attachListData.size > 0)
@@ -944,6 +946,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 for (attach in attachListData)
                 {
                     var file = File(save_dir+attach.account+"_"+attach.msgId+"_"+attach.name)
+                    if(addMenu)
+                    {
+                        file = File(save_dir+attach.account+"_"+emailMeaasgeInfoData!!.menu+"_"+attach.msgId+"_"+attach.name)
+                     }
                     if(!file.exists())
                     {
                         isDownload = false

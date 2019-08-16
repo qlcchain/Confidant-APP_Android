@@ -224,7 +224,7 @@ public class MailUtil {
                     newInput.close();
                     outputStream.close();
                 }else{
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+menu+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
                     int len;
                     byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = inputStream.read(bytes)) != -1) {
