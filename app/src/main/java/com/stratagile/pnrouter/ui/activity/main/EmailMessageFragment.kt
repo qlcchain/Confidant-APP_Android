@@ -685,7 +685,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 {
                                                     var eamilAttach = EmailAttachEntity()
                                                     eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                    eamilAttach.msgId = item.id
+                                                    eamilAttach.msgId = menu+"_"+item.id
                                                     eamilAttach.name = attachItem.name
                                                     eamilAttach.data = attachItem.byt
                                                     eamilAttach.hasData = true
@@ -873,7 +873,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 {
                                                     var eamilAttach = EmailAttachEntity()
                                                     eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                    eamilAttach.msgId = item.id
+                                                    eamilAttach.msgId = menu+"_"+item.id
                                                     eamilAttach.name = attachItem.name
                                                     eamilAttach.data = attachItem.byt
                                                     eamilAttach.hasData = true

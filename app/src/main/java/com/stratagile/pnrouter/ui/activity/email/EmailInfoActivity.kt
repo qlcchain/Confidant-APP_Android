@@ -94,6 +94,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var needWaitAttach =false
     var fileAESKey = ""
     var mailInfo = EmailInfo()
+    var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -212,7 +213,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
                 var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-
+                if(attachList.size == 0)
+                {
+                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                }
                 var isDownload = true
                 var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
                 var i = 0;
@@ -276,6 +280,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                     needWaitAttach = false
                                     runOnUiThread {
                                         attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                                        if(attachList.size == 0)
+                                        {
+                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                        }
                                         emaiAttachAdapter = EmaiAttachAdapter(attachList)
                                         emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
@@ -311,6 +319,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                             },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
                 }else{
                     attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                    if(attachList.size == 0)
+                    {
+                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                    }
                     emaiAttachAdapter = EmaiAttachAdapter(attachList)
                     emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 
@@ -342,12 +354,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             if(attachCount > 0) {
                 attachListParent.visibility = View.VISIBLE
             }
-            var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + emailMeaasgeData!!.emailAttachPath
-            var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
-            var fileSavePath =   PathUtils.generateEmailMessagePath(folderName)
-            var fileName = "htmlContent.zip"
-            var fileNameBase58 = Base58.encode(fileName.toByteArray())
-            FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, emailMeaasgeData!!.msgId.toInt(), handlerDownLoad, "","3")
+            var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+            var fileSoucePath =   PathUtils.generateEmailMessagePath(folderName) +"/htmlContent.txt"
+            var txtFile = File(fileSoucePath)
+            if(txtFile.exists())
+            {
+                updateUIByLocalZipData()
+            }else{
+                var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
+                var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + emailMeaasgeData!!.emailAttachPath
+                var fileSavePath =   PathUtils.generateEmailMessagePath(folderName)
+                var fileName = "htmlContent.zip"
+                var fileNameBase58 = Base58.encode(fileName.toByteArray())
+                FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, emailMeaasgeData!!.msgId.toInt(), handlerDownLoad, "","3")
+            }
+
+
         }
 
 
@@ -629,6 +651,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     zipFileSoucePath.add(miPath)
                 }
                 var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                if(attachList.size == 0)
+                {
+                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                }
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
 
 
@@ -935,27 +961,30 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         var URLText = "";
         Log.i("URLText",emailMeaasgeData!!.content)
-        if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+        if(menu != "node")
         {
-            var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
-            if(originalTextCun.length > 50)
+            if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
             {
-                originalTextCun = originalTextCun.substring(0,50)
+                var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
+                if(originalTextCun.length > 50)
+                {
+                    originalTextCun = originalTextCun.substring(0,50)
+                }
+                mailInfo.content = originalTextCun
+                URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
+                contentHtml = URLText
+                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+            }else{
+                var contentText =  emailMeaasgeData!!.contentText
+                if(contentText.length > 50)
+                {
+                    contentText = contentText.substring(0,50)
+                }
+                mailInfo.content = contentText
+                URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+                contentHtml = URLText
+                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
             }
-            mailInfo.content = originalTextCun
-            URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
-            contentHtml = URLText
-            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-        }else{
-            var contentText =  emailMeaasgeData!!.contentText
-            if(contentText.length > 50)
-            {
-                contentText = contentText.substring(0,50)
-            }
-            mailInfo.content = contentText
-            URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
-            contentHtml = URLText
-            webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
         }
         /* try {
              if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
@@ -1076,98 +1105,185 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 0x56 -> {
                     var zipSavePathaa = zipSavePath
                     val msgID = (System.currentTimeMillis() / 1000).toInt()
-                    var folderNewName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
-                    var fileSavePath =   PathUtils.generateEmailMessagePath(folderNewName)
+                    updateUIByZipData()
 
-                    var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
-                    var fileSoucePath =   PathUtils.generateEmailMessagePath(folderName)
-                    var folderFile = File(fileSoucePath)
-                    var subFile = folderFile.listFiles()
-                    var contentPath = ""
-                    var attachListEntity =  arrayListOf<EmailAttachEntity>()
-                    var picIndex = 0
-                    for(file in subFile)
-                    {
-                        var name = file.name
-                        var path = file.path
-                        if(name != "htmlContent.txt")
-                        {
-                            name = String(Base58.decode(name));
-                        }
-                        var newFile = fileSavePath+"/"+name
-                        val result = FileUtil.copyTempFiletoFileAndDecrypt(path, newFile, emailMeaasgeData!!.aesKey)
-                        if(result == 1)
-                        {
-                            if(name == "htmlContent.txt")
-                            {
-                                contentPath = newFile;
-                            }else{
-                                var emailAttachEntity = EmailAttachEntity()
-                                emailAttachEntity.isHasData = true
-                                emailAttachEntity.localPath = newFile
-                                emailAttachEntity.name = name
-                                emailAttachEntity.isCanDelete = false
-                                attachListEntity.add(emailAttachEntity)
-
-                               if (name.contains("jpg") || name.contains("JPG")  || name.contains("png")) {
-                                    val localMedia = LocalMedia()
-                                    localMedia.isCompressed = false
-                                    localMedia.duration = 0
-                                    localMedia.height = 100
-                                    localMedia.width = 100
-                                    localMedia.isChecked = false
-                                    localMedia.isCut = false
-                                    localMedia.mimeType = 0
-                                    localMedia.num = 0
-                                    localMedia.path = newFile
-                                    localMedia.pictureType = "image/jpeg"
-                                    localMedia.setPosition(picIndex)
-                                    localMedia.sortIndex = picIndex
-                                    previewImages.add(localMedia)
-                                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
-                                   picIndex ++;
-                                }
-                            }
-                        }
-                    }
-                    if(contentPath != "")
-                    {
-                        var contentPathFile = File(contentPath)
-                        var contentHtml = FileUtil.readTxtFile(contentPathFile);
-                        webView.loadDataWithBaseURL(null,contentHtml,"text/html","utf-8",null);
-                    }
-                    if(attachListEntity.size >0)
-                    {
-                        runOnUiThread {
-                            emaiAttachAdapter = EmaiAttachAdapter(attachListEntity)
-                            emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-
-                                true
-                            }
-                            recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
-                            recyclerViewAttach.adapter = emaiAttachAdapter
-                            emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                                var emaiAttach = emaiAttachAdapter!!.getItem(position)
-                                var fileName = emaiAttach!!.name
-                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                                    showImagList(position)
-                                }else if(fileName.contains("mp4"))
-                                {
-                                    val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
-                                    intent.putExtra("path", emaiAttach.localPath)
-                                    startActivity(intent)
-                                }else{
-                                    OpenFileUtil.getInstance(AppConfig.instance)
-                                    val intent = OpenFileUtil.openFile(emaiAttach.localPath)
-                                    startActivity(intent)
-                                }
-                            }
-                        }
-                    }
 
                 }
             }//goMain();
             //goMain();
+        }
+    }
+    fun updateUIByLocalZipData()
+    {
+        var folderNewName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+        var fileSavePath =   PathUtils.generateEmailMessagePath(folderNewName)
+        var folderFile = File(fileSavePath)
+        var subFile = folderFile.listFiles()
+        var contentPath = ""
+        var attachListEntity =  arrayListOf<EmailAttachEntity>()
+        var picIndex = 0
+        for(file in subFile)
+        {
+            var name = file.name
+            var path = file.path
+            if(name == "htmlContent.txt")
+            {
+                contentPath = path;
+            }else{
+                var emailAttachEntity = EmailAttachEntity()
+                emailAttachEntity.isHasData = true
+                emailAttachEntity.localPath = path
+                emailAttachEntity.name = name
+                emailAttachEntity.isCanDelete = false
+                attachListEntity.add(emailAttachEntity)
+
+                if (name.contains("jpg") || name.contains("JPG")  || name.contains("png")) {
+                    val localMedia = LocalMedia()
+                    localMedia.isCompressed = false
+                    localMedia.duration = 0
+                    localMedia.height = 100
+                    localMedia.width = 100
+                    localMedia.isChecked = false
+                    localMedia.isCut = false
+                    localMedia.mimeType = 0
+                    localMedia.num = 0
+                    localMedia.path = path
+                    localMedia.pictureType = "image/jpeg"
+                    localMedia.setPosition(picIndex)
+                    localMedia.sortIndex = picIndex
+                    previewImages.add(localMedia)
+                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                    picIndex ++;
+                }
+            }
+        }
+        if(contentPath != "")
+        {
+            var contentPathFile = File(contentPath)
+            var contentHtml = FileUtil.readTxtFile(contentPathFile);
+            emailMeaasgeData!!.content = contentHtml
+            webView.loadDataWithBaseURL(null,contentHtml,"text/html","utf-8",null);
+        }
+        if(attachListEntity.size >0)
+        {
+            attachListEntityNode = attachListEntity
+            runOnUiThread {
+                emaiAttachAdapter = EmaiAttachAdapter(attachListEntity)
+                emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                    true
+                }
+                recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                recyclerViewAttach.adapter = emaiAttachAdapter
+                emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                    var fileName = emaiAttach!!.name
+                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        showImagList(position)
+                    }else if(fileName.contains("mp4"))
+                    {
+                        val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                        intent.putExtra("path", emaiAttach.localPath)
+                        startActivity(intent)
+                    }else{
+                        OpenFileUtil.getInstance(AppConfig.instance)
+                        val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+    }
+    fun updateUIByZipData()
+    {
+        var folderNewName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+        var fileSavePath =   PathUtils.generateEmailMessagePath(folderNewName)
+        var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
+        var fileSoucePath =   PathUtils.generateEmailMessagePath(folderName)
+        var folderFile = File(fileSoucePath)
+        var subFile = folderFile.listFiles()
+        var contentPath = ""
+        var attachListEntity =  arrayListOf<EmailAttachEntity>()
+        var picIndex = 0
+        for(file in subFile)
+        {
+            var name = file.name
+            var path = file.path
+            if(name != "htmlContent.txt")
+            {
+                name = String(Base58.decode(name));
+            }
+            var newFile = fileSavePath+"/"+name
+            val result = FileUtil.copyTempFiletoFileAndDecrypt(path, newFile, emailMeaasgeData!!.aesKey)
+            if(result == 1)
+            {
+                if(name == "htmlContent.txt")
+                {
+                    contentPath = newFile;
+                }else{
+                    var emailAttachEntity = EmailAttachEntity()
+                    emailAttachEntity.isHasData = true
+                    emailAttachEntity.localPath = newFile
+                    emailAttachEntity.name = name
+                    emailAttachEntity.isCanDelete = false
+                    attachListEntity.add(emailAttachEntity)
+
+                    if (name.contains("jpg") || name.contains("JPG")  || name.contains("png")) {
+                        val localMedia = LocalMedia()
+                        localMedia.isCompressed = false
+                        localMedia.duration = 0
+                        localMedia.height = 100
+                        localMedia.width = 100
+                        localMedia.isChecked = false
+                        localMedia.isCut = false
+                        localMedia.mimeType = 0
+                        localMedia.num = 0
+                        localMedia.path = newFile
+                        localMedia.pictureType = "image/jpeg"
+                        localMedia.setPosition(picIndex)
+                        localMedia.sortIndex = picIndex
+                        previewImages.add(localMedia)
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                        picIndex ++;
+                    }
+                }
+            }
+        }
+        if(contentPath != "")
+        {
+            var contentPathFile = File(contentPath)
+            var contentHtml = FileUtil.readTxtFile(contentPathFile);
+            emailMeaasgeData!!.content = contentHtml
+            webView.loadDataWithBaseURL(null,contentHtml,"text/html","utf-8",null);
+        }
+        if(attachListEntity.size >0)
+        {
+            attachListEntityNode = attachListEntity
+            runOnUiThread {
+                emaiAttachAdapter = EmaiAttachAdapter(attachListEntity)
+                emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                    true
+                }
+                recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                recyclerViewAttach.adapter = emaiAttachAdapter
+                emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                    var fileName = emaiAttach!!.name
+                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        showImagList(position)
+                    }else if(fileName.contains("mp4"))
+                    {
+                        val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                        intent.putExtra("path", emaiAttach.localPath)
+                        startActivity(intent)
+                    }else{
+                        OpenFileUtil.getInstance(AppConfig.instance)
+                        val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                        startActivity(intent)
+                    }
+                }
+            }
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1209,6 +1325,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     intent.putExtra("foward",1)
                     intent.putExtra("attach",1)
                     intent.putExtra("menu",menu)
+                    intent.putExtra("attachListEntityNode",attachListEntityNode)
+
                     intent.putExtra("emailMeaasgeInfoData", emailMeaasgeData)
                     startActivity(intent)
                 }.setCancelClickListener {

@@ -164,6 +164,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var contactMapList = HashMap<String, String>()
     internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
     var replayAll = true
+    var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
+
     private val users = arrayListOf(
             User("1", "激浊扬清"),
             User("2", "清风引佩下瑶台"),
@@ -250,6 +252,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         attach = intent.getIntExtra("attach",0)
         menu = intent.getStringExtra("menu")
         positionIndex = intent.getIntExtra("positionIndex",0)
+        if(intent.hasExtra("attachListEntityNode"))
+        {
+            attachListEntityNode =  intent.getParcelableArrayListExtra("attachListEntityNode")
+        }
         initUI()
         initClickListener()
         sendCheck(false)
@@ -906,80 +912,101 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
-
-            var isDownload = true
-            var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
-            var i = 0;
-            for (attach in attachListData)
+            if(attachListData.size == 0)
             {
-                var file = File(save_dir+attach.account+"_"+attach.name)
-                if(!file.exists())
-                {
-                    isDownload = false
-                }
-                attach.localPath = save_dir+attach.account+"_"+attach.name
-                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
-
-                var fileName =  attach.name
-                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                    val localMedia = LocalMedia()
-                    localMedia.isCompressed = false
-                    localMedia.duration = 0
-                    localMedia.height = 100
-                    localMedia.width = 100
-                    localMedia.isChecked = false
-                    localMedia.isCut = false
-                    localMedia.mimeType = 0
-                    localMedia.num = 0
-                    localMedia.path = attach.localPath
-                    localMedia.pictureType = "image/jpeg"
-                    localMedia.setPosition(i)
-                    localMedia.sortIndex = i
-                    previewImages.add(localMedia)
-                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
-                }
-
-                i++
-
+                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
             }
-            if(!isDownload)
+            if(attachListData.size > 0)
             {
-                showProgressDialog(getString(R.string.Attachmentdownloading))
-                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                var isDownload = true
+                var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+                var i = 0;
+                for (attach in attachListData)
+                {
+                    var file = File(save_dir+attach.account+"_"+attach.msgId+"_"+attach.name)
+                    if(!file.exists())
+                    {
+                        isDownload = false
+                    }
+                    attach.localPath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
-                emailReceiveClient
-                        .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
-                            override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                //tipDialog.dismiss()
-                                closeProgressDialog()
-                                runOnUiThread {
-                                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
-                                    for (item in attachListData)
-                                    {
-                                        item.isHasData = true
-                                        item.isCanDelete = true
+                    var fileName =  attach.name
+                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        val localMedia = LocalMedia()
+                        localMedia.isCompressed = false
+                        localMedia.duration = 0
+                        localMedia.height = 100
+                        localMedia.width = 100
+                        localMedia.isChecked = false
+                        localMedia.isCut = false
+                        localMedia.mimeType = 0
+                        localMedia.num = 0
+                        localMedia.path = attach.localPath
+                        localMedia.pictureType = "image/jpeg"
+                        localMedia.setPosition(i)
+                        localMedia.sortIndex = i
+                        previewImages.add(localMedia)
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                    }
+
+                    i++
+
+                }
+                if(!isDownload)
+                {
+                    showProgressDialog(getString(R.string.Attachmentdownloading))
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+
+                    emailReceiveClient
+                            .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
+                                override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                    //tipDialog.dismiss()
+                                    closeProgressDialog()
+                                    runOnUiThread {
+                                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                        if(attachListData.size == 0)
+                                        {
+                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                                        }
+                                        for (item in attachListData)
+                                        {
+                                            item.isHasData = true
+                                            item.isCanDelete = true
+                                        }
+                                        attachListEntity.addAll(attachListData)
+                                        updataAttachUI()
                                     }
-                                    attachListEntity.addAll(attachListData)
-                                    updataAttachUI()
                                 }
-                            }
-                            override fun gainFailure(errorMsg: String) {
-                                //tipDialog.dismiss()
-                                closeProgressDialog()
-                                Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
-                            }
-                        },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
+                                override fun gainFailure(errorMsg: String) {
+                                    //tipDialog.dismiss()
+                                    closeProgressDialog()
+                                    Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                }
+                            },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
+                }else{
+                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                    if(attachListData.size == 0)
+                    {
+                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                    }
+                    for (item in attachListData)
+                    {
+                        item.isHasData = true
+                        item.isCanDelete = true
+                    }
+                    attachListEntity.addAll(attachListData)
+                    updataAttachUI()
+                }
             }else{
-                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
-                for (item in attachListData)
+                for (item in attachListEntityNode)
                 {
                     item.isHasData = true
                     item.isCanDelete = true
                 }
-                attachListEntity.addAll(attachListData)
+                attachListEntity.addAll(attachListEntityNode)
                 updataAttachUI()
             }
-
 
         }else{
             updataAttachUI()
