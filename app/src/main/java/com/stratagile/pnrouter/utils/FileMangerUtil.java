@@ -358,20 +358,23 @@ public class FileMangerUtil {
                                 {
                                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"","",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
 
-                                    int sended = SegSeqResult - 1;
-                                    if(sended < 0 )
-                                        sended = 0;
-                                    KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
-                                    UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgId);
-                                    if(!localUpLoadFile.isStop().equals("1"))
+                                    if(!fileKey.equals("") && !fileKey.equals("zip"))//头像不用加密
                                     {
-                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
-                                        MyFile myRouter = new MyFile();
-                                        myRouter.setType(0);
-                                        myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                                        myRouter.setUpLoadFile(uploadFile);
-                                        LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                                        EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
+                                        int sended = SegSeqResult - 1;
+                                        if(sended < 0 )
+                                            sended = 0;
+                                        KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
+                                        UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgId);
+                                        if(!localUpLoadFile.isStop().equals("1"))
+                                        {
+                                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
+                                            MyFile myRouter = new MyFile();
+                                            myRouter.setType(0);
+                                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                                            myRouter.setUpLoadFile(uploadFile);
+                                            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                                            EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
+                                        }
                                     }
                                 }else{
                                     sendFileLeftByteMap.remove(msgId);

@@ -395,6 +395,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             {
                 updateUIByLocalZipData()
             }else{
+                showProgressDialog(getString(R.string.waiting))
                 var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
                 var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + emailMeaasgeData!!.emailAttachPath
                 var fileSavePath =   PathUtils.generateEmailMessagePath(folderName)
@@ -1260,6 +1261,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     fun updateUIByZipData()
     {
+        closeProgressDialog()
         var folderNewName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
         var fileSavePath =   PathUtils.generateEmailMessagePath(folderNewName)
         var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId+"_downzip"
