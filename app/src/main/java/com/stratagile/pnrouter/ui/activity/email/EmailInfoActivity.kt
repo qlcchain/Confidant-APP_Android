@@ -669,14 +669,24 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
         }
         deleteMenu.setOnClickListener {
-            showProgressDialog(getString(R.string.waiting))
-            if(menu == "node")
-            {
-                var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
-            }else{
-                deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
-            }
+            SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                    .setCancelText(getString(R.string.no))
+                    .setConfirmText(getString(R.string.yes))
+                    .setContentText(getString(R.string.Send_attachments))
+                    .setConfirmClickListener {
+                        showProgressDialog(getString(R.string.waiting))
+                        if(menu == "node")
+                        {
+                            var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
+                        }else{
+                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                        }
+                    }.setCancelClickListener {
+
+                    }
+                    .show()
+
 
         }
         tvRefuse.setOnClickListener {
@@ -814,15 +824,29 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                     },menu,msgId,8,!starFlag,"")
                         }
                         "Node back up" -> {
-
                             doBackUp()
                         }
                         "Move to" -> {
                             showMovePop()
                         }
                         "Delete" -> {
-                            showProgressDialog(getString(R.string.waiting))
-                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                              SweetAlertDialog(AppConfig.instance, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setCancelText(getString(R.string.no))
+                                    .setConfirmText(getString(R.string.yes))
+                                    .setContentText(getString(R.string.Send_attachments))
+                                    .setConfirmClickListener {
+                                        showProgressDialog(getString(R.string.waiting))
+                                        if(menu == "node")
+                                        {
+                                            var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
+                                        }else{
+                                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                                        }
+                                    }.setCancelClickListener {
+
+                                    }
+                                    .show()
                         }
                     }
                 }

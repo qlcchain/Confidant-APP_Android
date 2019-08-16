@@ -129,7 +129,15 @@ import kotlin.collections.ArrayList
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
-class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
+class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener, PNRouterServiceMessageReceiver.BakMailsNumCallback {
+    override fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp) {
+        if(JBakMailsNumRsp.params.retCode == 0)
+        {
+            nodebackedup.setCount(JBakMailsNumRsp.params.num)
+        }
+
+    }
+
     private lateinit var standaloneCoroutine : Job
     var routerId = ""
     var userSn = ""
@@ -3044,6 +3052,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         FileMangerDownloadUtils.init()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
+            AppConfig.instance.messageReceiver!!.bakMailsNumCallback = this
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -3253,7 +3262,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
-
+                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var bakMailsNum = BakMailsNum(accountBase64)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
                 //Log.i("zhangshuli", "open")
             }
 
@@ -3721,6 +3732,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setEmailType(emailConfigEntity.emailType)
             Inbox.setCount(emailConfigEntity.unReadCount)
             spam.setCount(emailConfigEntity.garbageCount)
+
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
         }else{
             editBtn.visibility = View.GONE

@@ -223,6 +223,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         AppConfig.instance.messageReceiver!!.pullMailListCallback = this
+
         from = arguments!!.getString("from","")
         var account = AppConfig.instance.emailConfig().account
         var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
