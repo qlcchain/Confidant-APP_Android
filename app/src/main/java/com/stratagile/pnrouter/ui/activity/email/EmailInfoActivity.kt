@@ -120,6 +120,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var mailInfo = EmailInfo()
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
     var msgID = 0
+    var needOp = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -865,7 +866,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
             })
         }
-        var needOp = false
+        needOp = false
         if( emailMeaasgeData!!.content != null && emailMeaasgeData!!.content.contains("<img"))
         {
             needOp = true
@@ -934,6 +935,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         webView.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View, event: MotionEvent): Boolean {
+                if(!needOp)
+                {
+                    webViewScroll = false
+                }
                 webView.requestDisallowInterceptTouchEvent(webViewScroll)
                 return false
             }
