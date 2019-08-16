@@ -911,10 +911,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if(attach > 0 && attachCount > 0)
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-            var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+            var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
             if(attachListData.size == 0)
             {
-                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
             }
             if(attachListData.size > 0)
             {
@@ -964,10 +964,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     //tipDialog.dismiss()
                                     closeProgressDialog()
                                     runOnUiThread {
-                                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
                                         if(attachListData.size == 0)
                                         {
-                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
                                         }
                                         for (item in attachListData)
                                         {
@@ -985,10 +986,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 }
                             },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
                 }else{
-                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
                     if(attachListData.size == 0)
                     {
-                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
                     }
                     for (item in attachListData)
                     {

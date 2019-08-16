@@ -2,14 +2,13 @@ package com.stratagile.pnrouter.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JDelEmailRsp extends BaseEntity {
+public class JBakMailsCheckRsp extends BaseEntity {
 
 
     /**
-     * timestamp : 1565939189
-     * params : {"Action":"DelEmail","RetCode":0,"ToId":"EC650274E91737D8DECACBA619E8AF83008F738390DE66B9270FB609E76D0F6C5F3E2B3D1BB6","MailId":31}
+     * timestamp : 1565938471
+     * params : {"Action":"BakMailsCheck","RetCode":0,"ToId":"EC650274E91737D8DECACBA619E8AF83008F738390DE66B9270FB609E76D0F6C5F3E2B3D1BB6","Result":1}
      */
-
     private int timestampX;
     private ParamsBean params;
 
@@ -31,16 +30,16 @@ public class JDelEmailRsp extends BaseEntity {
 
     public static class ParamsBean {
         /**
-         * Action : DelEmail
+         * Action : BakMailsCheck
          * RetCode : 0
          * ToId : EC650274E91737D8DECACBA619E8AF83008F738390DE66B9270FB609E76D0F6C5F3E2B3D1BB6
-         * MailId : 31
+         * Result : 1
          */
 
         private String Action;
         private int RetCode;
         private String ToId;
-        private int MailId;
+        private int Result;
 
         public String getAction() {
             return Action;
@@ -66,12 +65,12 @@ public class JDelEmailRsp extends BaseEntity {
             this.ToId = ToId;
         }
 
-        public int getMailId() {
-            return MailId;
+        public int getResult() {
+            return Result;
         }
 
-        public void setMailId(int MailId) {
-            this.MailId = MailId;
+        public void setResult(int Result) {
+            this.Result = Result;
         }
     }
 }

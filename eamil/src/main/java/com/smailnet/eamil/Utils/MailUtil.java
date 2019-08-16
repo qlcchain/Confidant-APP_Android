@@ -201,7 +201,7 @@ public class MailUtil {
         return null;
     }
 
-    public static void saveFile(List<MailAttachment> list, String savaPath,String aesKey) throws IOException {
+    public static void saveFile(List<MailAttachment> list, String savaPath,String aesKey,String menu) throws IOException {
         for (MailAttachment mailAttachment : list) {
             try{
                 InputStream inputStream = mailAttachment.getInputStream();
@@ -213,7 +213,7 @@ public class MailUtil {
                     byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     newInput = byteTOInputStream(miFile);
 
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
+                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+menu+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));
                     int len;
                     byte[] bytes = new byte[ATTACHMENT_BUFFER_SIZE];
                     while ((len = newInput.read(bytes)) != -1) {

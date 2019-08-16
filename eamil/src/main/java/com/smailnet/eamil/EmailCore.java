@@ -1217,7 +1217,7 @@ class EmailCore {
             //pmm.setAttachPath(file.toString()+"/");
             System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path,aesKey);
+            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
             System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
            /* try {
                 pmm.saveAttachMent((Part)message);

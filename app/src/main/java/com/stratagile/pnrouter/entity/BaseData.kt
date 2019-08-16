@@ -777,3 +777,9 @@ data class CheckmailUkey(var Unum:Int ,var Users :String,var Action : String = "
  * (2)	响应（APP->Router）
  */
 data class BakMailsNum(var User :String,var Action : String = "BakMailsNum")
+
+/**
+ * 99.	用户查询自己账户下备份的邮件数量
+ * (2)	响应（APP->Router）
+ */
+data class BakMailsCheck(var User :String,var Uuid :String,var Action : String = "BakMailsCheck")

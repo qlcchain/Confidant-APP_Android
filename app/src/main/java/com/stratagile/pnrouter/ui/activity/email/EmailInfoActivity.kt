@@ -68,11 +68,35 @@ import javax.inject.Inject
  * @date 2019/07/15 15:18:54
  */
 
-class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServiceMessageReceiver.BakupEmailCallback{
+class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServiceMessageReceiver.BakupEmailCallback,PNRouterServiceMessageReceiver.BakMailsCheckCallback,PNRouterServiceMessageReceiver.DelEmailCallback{
+    override fun DelEmailBack(JDelEmailRsp: JDelEmailRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(JDelEmailRsp.params.retCode == 0)
+        {
+            EventBus.getDefault().post(ChangEmailMessage(positionIndex,1))
+            runOnUiThread {
+                finish()
+            }
+        }else{
+
+            toast(R.string.fail)
+        }
+
+    }
+
+    override fun BakMailsCheckBack(JBakMailsCheckRsp: JBakMailsCheckRsp) {
+        if(JBakMailsCheckRsp.params.retCode == 0)
+        {
+            isBackEd = JBakMailsCheckRsp.params.result
+        }
+    }
 
 
     @Inject
     internal lateinit var mPresenter: EmailInfoPresenter
+    var isBackEd = 0
     var emailMeaasgeData:EmailMessageEntity? = null
     var positionIndex = 0;
     var menu:String= "INBOX"
@@ -95,6 +119,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var fileAESKey = ""
     var mailInfo = EmailInfo()
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
+    var msgID = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -128,6 +153,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
     override fun initData() {
         AppConfig.instance.messageReceiver!!.bakupEmailCallback = this
+        AppConfig.instance.messageReceiver!!.bakMailsCheckCallback = this
+        AppConfig.instance.messageReceiver!!.dlEmailCallback = this
         EventBus.getDefault().register(this)
         isScaleInit = false
         webViewScroll = false
@@ -135,6 +162,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         previewImages = ArrayList()
         zipFileSoucePath = ArrayList()
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
+
+
+        var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+        var uuid = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+        var saveEmailConf = BakMailsCheck(accountBase64,uuid)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
         positionIndex = intent.getIntExtra("positionIndex",0)
         menu = intent.getStringExtra("menu")
         if(menu == "node")
@@ -212,10 +245,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 attachListParent.visibility =View.VISIBLE
 
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-                var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                var   attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                 if(attachList.size == 0)
                 {
-                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                 }
                 var isDownload = true
                 var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
@@ -279,10 +312,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                     loadingTips.visibility = View.GONE
                                     needWaitAttach = false
                                     runOnUiThread {
-                                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                                         if(attachList.size == 0)
                                         {
-                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
                                         }
                                         emaiAttachAdapter = EmaiAttachAdapter(attachList)
                                         emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
@@ -318,10 +352,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                 }
                             },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
                 }else{
-                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                     if(attachList.size == 0)
                     {
-                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
                     }
                     emaiAttachAdapter = EmaiAttachAdapter(attachList)
                     emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
@@ -631,55 +665,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         backMenu.setOnClickListener {
 
-            if(BuildConfig.DEBUG)
-            {
-                zipFileSoucePath = ArrayList()
-                if(needWaitAttach)
-                {
-                    toast(R.string.Waiting_for_attachments)
-                    return@setOnClickListener
-                }
-                showProgressDialog(getString(R.string.waiting))
-                fileAESKey = RxEncryptTool.generateAESKey()
-                var base58files_dir =  PathUtils.getInstance().tempPath.toString() + "/"
-                var  path = PathUtils.generateEmailMessagePath("temp")+"htmlContent.txt";
-                var  result = FileUtil.writeStr_to_txt(path,contentHtml)
-                if(result)
-                {
-                    var miPath = base58files_dir +"htmlContent.txt";
-                    val code = FileUtil.copySdcardToxFileAndEncrypt(path, miPath, fileAESKey.substring(0, 16))
-                    zipFileSoucePath.add(miPath)
-                }
-                var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-                if(attachList.size == 0)
-                {
-                    attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
-                }
-                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-
-
-                for (attach in attachList) {
-                    var fromPath = save_dir + attach.account + "_" + attach.msgId + "_" + attach.name
-                    var fileSouceName = attach.account+"_"+attach.msgId+"_"+attach.name
-                    var base58Name = Base58.encode(fileSouceName.toByteArray())
-                    var miPath = base58files_dir + base58Name
-
-                    val code = FileUtil.copySdcardToxFileAndEncrypt(fromPath, miPath, fileAESKey.substring(0, 16))
-                    zipFileSoucePath.add(miPath)
-                }
-                zipSavePath = PathUtils.generateEmailMessagePath("temp")+"htmlContent.zip";
-                zipCompressTask = ZipCompressTask(zipFileSoucePath!!, zipSavePath, this, false, handlerCompressZip!!)
-                zipCompressTask!!.execute()
-            }else{
-                toast(R.string.Developing)
-            }
+            doBackUp()
 
         }
         deleteMenu.setOnClickListener {
             showProgressDialog(getString(R.string.waiting))
             if(menu == "node")
             {
-
+                var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
             }else{
                 deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
             }
@@ -821,7 +815,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                         }
                         "Node back up" -> {
 
-                            toast(R.string.Developing)
+                            doBackUp()
                         }
                         "Move to" -> {
                             showMovePop()
@@ -1053,6 +1047,52 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
 
     }
+    fun doBackUp()
+    {
+        if(isBackEd == 1)
+        {
+            toast(R.string.It_already_exists)
+            return
+        }
+        zipFileSoucePath = ArrayList()
+        if(needWaitAttach)
+        {
+            toast(R.string.Waiting_for_attachments)
+            return
+        }
+        showProgressDialog(getString(R.string.waiting))
+        fileAESKey = RxEncryptTool.generateAESKey()
+        var base58files_dir =  PathUtils.getInstance().tempPath.toString() + "/"
+        var  path = PathUtils.generateEmailMessagePath("temp")+"htmlContent.txt";
+        var  result = FileUtil.writeStr_to_txt(path,contentHtml)
+        if(result)
+        {
+            var miPath = base58files_dir +"htmlContent.txt";
+            val code = FileUtil.copySdcardToxFileAndEncrypt(path, miPath, fileAESKey.substring(0, 16))
+            zipFileSoucePath.add(miPath)
+        }
+        var  attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+        if(attachList.size == 0)
+        {
+            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+        }
+        val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+
+
+        for (attach in attachList) {
+            var fromPath = save_dir + attach.account + "_" + attach.msgId + "_" + attach.name
+            var fileSouceName = attach.account+"_"+attach.msgId+"_"+attach.name
+            var base58Name = Base58.encode(fileSouceName.toByteArray())
+            var miPath = base58files_dir + base58Name
+
+            val code = FileUtil.copySdcardToxFileAndEncrypt(fromPath, miPath, fileAESKey.substring(0, 16))
+            zipFileSoucePath.add(miPath)
+        }
+        zipSavePath = PathUtils.generateEmailMessagePath("temp")+"htmlContent.zip";
+        zipCompressTask = ZipCompressTask(zipFileSoucePath!!, zipSavePath, this, false, handlerCompressZip!!)
+        zipCompressTask!!.execute()
+    }
     internal var handlerCompressZip: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -1062,7 +1102,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 }
                 0x56 -> {
                     var zipSavePathaa = zipSavePath
-                    val msgID = (System.currentTimeMillis() / 1000).toInt()
+                    msgID = (System.currentTimeMillis() / 1000).toInt()
                     FileMangerUtil.sendEmailFile(zipSavePath,msgID, false)
                 }
             }//goMain();
@@ -1296,8 +1336,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             toast(R.string.Files_0M)
         }else {
 
+            var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
             var file = File(zipSavePath)
-            var msgId = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("__")+2,fileStatus.fileKey.length).toInt()
             var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
             var type = AppConfig.instance.emailConfig().emailType.toInt()
             var fileSize = file.length().toInt()
@@ -1310,7 +1350,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             val contentBuffer = mailInfoJson.toByteArray()
             var fileKey16 = fileAESKey.substring(0,16)
             var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
-            var saveEmailConf = BakupEmail(type,msgId,fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
+            var saveEmailConf = BakupEmail(type,fileID.toInt(),fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
         }
     }
@@ -1578,6 +1618,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     override fun onDestroy() {
         AppConfig.instance.messageReceiver!!.bakupEmailCallback = null
+        AppConfig.instance.messageReceiver!!.bakMailsCheckCallback = null
+        AppConfig.instance.messageReceiver!!.dlEmailCallback = null
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

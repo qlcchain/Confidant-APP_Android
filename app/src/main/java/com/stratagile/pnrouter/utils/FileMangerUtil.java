@@ -408,7 +408,7 @@ public class FileMangerUtil {
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                     myRouter.setUpLoadFile(uploadFile);
                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                    EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,0));
+                    EventBus.getDefault().post(new FileStatus(fileName+"##"+FileIdResult+"__"+msgId,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,0));
 
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
@@ -1339,7 +1339,7 @@ public class FileMangerUtil {
 //                    fileName = fileNamePre + fileNameEnd;
                     //fileName = Base58.encode(fileName.getBytes());
                     int uuid = msgId;
-                    int uuidTox = (int)(System.currentTimeMillis()/1000);
+                    int uuidTox = msgId;
                     if(isHas)
                     {
                         if(file.length()> 1024 * 1024 * 100)

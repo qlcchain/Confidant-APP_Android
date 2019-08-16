@@ -580,6 +580,14 @@ val credentialsProvider: CredentialsProvider, private
                     val JDelEmailRsp = gson.fromJson(text, JDelEmailRsp::class.java)
                     dlEmailCallback?.DelEmailBack(JDelEmailRsp)
                 }
+                "BakMailsNum" -> {
+                    val JBakMailsNumRsp = gson.fromJson(text, JBakMailsNumRsp::class.java)
+                    bakMailsNumCallback?.BakMailsNumBack(JBakMailsNumRsp)
+                }
+                "BakMailsCheck" -> {
+                    val JBakMailsCheckRsp = gson.fromJson(text, JBakMailsCheckRsp::class.java)
+                    bakMailsCheckCallback?.BakMailsCheckBack(JBakMailsCheckRsp)
+                }
             }
         }
 
@@ -666,6 +674,10 @@ val credentialsProvider: CredentialsProvider, private
     var delEmailConfCallback:DelEmailConfCallback? = null
 
     var dlEmailCallback:DelEmailCallback? = null
+
+    var bakMailsNumCallback:BakMailsNumCallback?= null
+
+    var bakMailsCheckCallback: BakMailsCheckCallback? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1051,6 +1063,12 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface DelEmailCallback {
         fun DelEmailBack(JDelEmailRsp: JDelEmailRsp)
+    }
+    interface BakMailsNumCallback {
+        fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp)
+    }
+    interface BakMailsCheckCallback {
+        fun BakMailsCheckBack(JBakMailsCheckRsp: JBakMailsCheckRsp)
     }
 }
 

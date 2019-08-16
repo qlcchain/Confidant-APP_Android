@@ -53,11 +53,25 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
         runOnUiThread {
             closeProgressDialog()
+
+            if(nodeUpandDown == "up")
+            {
+                refreshLayout.finishRefresh()
+                refreshLayout.resetNoMoreData()
+            }else if(nodeUpandDown == "down")
+            {
+                refreshLayout.finishLoadMore()
+            }
+
         }
         if(JPullMailListRsp.params.retCode == 0)
         {
             var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
             var dataList = JPullMailListRsp.params.payload
+            if(dataList.size != 0)
+            {
+                lastPayload = JPullMailListRsp.params.payload.last()
+            }
             for (item in dataList)
             {
                 var userKey = item.userkey
@@ -146,15 +160,16 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     eamilMessage.originalText = ""
                     eamilMessage.aesKey  = aesKey
                     eamilMessage.emailAttachPath = item.emailPath
-                    eamilMessage.date = DateUtil.getDateToString(mainInfo.revDate.toLong(),"yyyy-MM-dd HH:mm:ss");
+                    eamilMessage.date = DateUtil.getDateToString((mainInfo.revDate *1000).toLong(),"yyyy-MM-dd HH:mm:ss");
                     emailMessageEntityList.add(eamilMessage)
                 }catch (e:Exception)
                 {
-                   e.printStackTrace()
+                    e.printStackTrace()
                 }
             }
             runOnUiThread {
-                emaiMessageChooseAdapter!!.setNewData(emailMessageEntityList);
+                emaiMessageChooseAdapter!!.addData(emailMessageEntityList);
+                emaiMessageChooseAdapter!!.setNewData(emaiMessageChooseAdapter!!.data)
             }
         }else{
 
@@ -170,15 +185,24 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     var isChangeMenu = false
     var from = ""
     var nodeStartId = 0;
+    var nodeUpandDown = "up";
+    var lastPayload : JPullMailListRsp.ParamsBean.PayloadBean? = null
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
         menu = changEmailMenu.menu
         if(menu == "star")
         {
-            refreshLayout.isEnabled = false
+            if(refreshLayout != null)
+            {
+                refreshLayout.isEnabled = false
+            }
+
         }else {
-            refreshLayout.isEnabled = true
+            if(refreshLayout != null)
+            {
+                refreshLayout.isEnabled = true
+            }
         }
         /*var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
         if(localMessageList == null || localMessageList.size ==0)
@@ -249,9 +273,17 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
          }*/
         if(from != null && from !="")
         {
-            refreshLayout.isEnabled = false
+            if(refreshLayout != null)
+            {
+                refreshLayout.isEnabled = false
+            }
+
         }else{
-            refreshLayout.isEnabled = true
+            if(refreshLayout != null)
+            {
+                refreshLayout.isEnabled = true
+            }
+
             refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
             refreshLayout.setOnRefreshListener { refreshLayout ->
                 /* refreshLayout.layout.postDelayed({
@@ -266,7 +298,17 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 {
                     if(menu == "node")
                     {
-
+                        nodeUpandDown = "up";
+                        if(lastPayload == null)
+                        {
+                            nodeStartId = 0;
+                        }else{
+                            nodeStartId = lastPayload!!.id
+                        }
+                        var type = AppConfig.instance.emailConfig().emailType.toInt()
+                        var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                        var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
                         pullNewMessageList(0L)
@@ -285,7 +327,17 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 {
                     if(menu == "node")
                     {
-                        refreshLayout.finishLoadMore()
+                        nodeUpandDown = "down";
+                        if(lastPayload == null)
+                        {
+                            nodeStartId = 0;
+                        }else{
+                            nodeStartId = lastPayload!!.id
+                        }
+                        var type = AppConfig.instance.emailConfig().emailType.toInt()
+                        var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                        var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
                         pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
@@ -401,14 +453,6 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         runOnUiThread {
             emaiMessageChooseAdapter!!.setNewData(localMessageList);
         }
-        if(menu == "node")
-        {
-            refreshLayout.resetNoMoreData()
-
-        }else
-        {
-            refreshLayout.setNoMoreData(false)
-        }
         if(menu.equals("star"))
         {
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.IsStar.eq(true)).orderDesc(EmailMessageEntityDao.Properties.MsgId).list()
@@ -418,11 +462,19 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             return;
         }else if(menu.equals("node")){
             showProgressDialog()
+            /*if(lastPayload == null)
+            {
+                nodeStartId = 0;
+            }else{
+                nodeStartId = lastPayload!!.id
+            }*/
+            nodeUpandDown = ""
+            nodeStartId = 0;
             var type = AppConfig.instance.emailConfig().emailType.toInt()
             var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
             var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))
-              return;
+            return;
         }else if(menu.equals("star")|| menu.equals("")){
             return;
         }
@@ -516,51 +568,51 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
             when(menu)
             {
-               /* emailConfigEntity.inboxMenu->
+                /* emailConfigEntity.inboxMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.totalCount
+                 }
+                 emailConfigEntity.drafMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.drafTotalCount
+                 }
+                 emailConfigEntity.sendMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.sendTotalCount
+                 }
+                 emailConfigEntity.garbageMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.garbageCount
+                 }
+                 emailConfigEntity.deleteMenu->
+                 {
+                     lastTotalCount = emailConfigEntity.deleteTotalCount
+                 }*/
+                emailConfigEntity.inboxMenu->
                 {
-                    lastTotalCount = emailConfigEntity.totalCount
+                    minUUID = emailConfigEntity.inboxMinMessageId
+                    maxUUID = emailConfigEntity.inboxMaxMessageId
                 }
                 emailConfigEntity.drafMenu->
                 {
-                    lastTotalCount = emailConfigEntity.drafTotalCount
+                    minUUID = emailConfigEntity.drafMinMessageId
+                    maxUUID = emailConfigEntity.drafMaxMessageId
                 }
                 emailConfigEntity.sendMenu->
                 {
-                    lastTotalCount = emailConfigEntity.sendTotalCount
+                    minUUID = emailConfigEntity.sendMinMessageId
+                    maxUUID = emailConfigEntity.sendMaxMessageId
                 }
                 emailConfigEntity.garbageMenu->
                 {
-                    lastTotalCount = emailConfigEntity.garbageCount
+                    minUUID = emailConfigEntity.garbageMinMessageId
+                    maxUUID = emailConfigEntity.garbageMaxMessageId
                 }
                 emailConfigEntity.deleteMenu->
                 {
-                    lastTotalCount = emailConfigEntity.deleteTotalCount
-                }*/
-                emailConfigEntity.inboxMenu->
-               {
-                   minUUID = emailConfigEntity.inboxMinMessageId
-                   maxUUID = emailConfigEntity.inboxMaxMessageId
-               }
-               emailConfigEntity.drafMenu->
-               {
-                   minUUID = emailConfigEntity.drafMinMessageId
-                   maxUUID = emailConfigEntity.drafMaxMessageId
-               }
-               emailConfigEntity.sendMenu->
-               {
-                   minUUID = emailConfigEntity.sendMinMessageId
-                   maxUUID = emailConfigEntity.sendMaxMessageId
-               }
-               emailConfigEntity.garbageMenu->
-               {
-                   minUUID = emailConfigEntity.garbageMinMessageId
-                   maxUUID = emailConfigEntity.garbageMaxMessageId
-               }
-               emailConfigEntity.deleteMenu->
-               {
-                   minUUID = emailConfigEntity.deleteMinMessageId
-                   maxUUID = emailConfigEntity.deleteMaxMessageId
-               }
+                    minUUID = emailConfigEntity.deleteMinMessageId
+                    maxUUID = emailConfigEntity.deleteMaxMessageId
+                }
             }
         }
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
@@ -1042,7 +1094,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }else{
             contactMapList.put("originalText","")
             contactMapList.put("aesKey","")
-           return contactMapList
+            return contactMapList
         }
     }
     override fun initDataFromLocal() {
