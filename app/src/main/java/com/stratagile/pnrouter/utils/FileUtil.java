@@ -1241,7 +1241,7 @@ public class FileUtil {
 
     }
     /**
-     * 拷贝下载的临时文件并解密到file文件
+     * 拷贝下载的临时文件并解密到toFile文件
      * @param fromFile
      * @param toFile
      * @return
@@ -1660,5 +1660,21 @@ public class FileUtil {
             }
         }
         return false;
+    }
+    public static String readTxtFile(File file){
+        String content = "";
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            int len=inputStream.available();
+            byte []buffer=new byte[len];
+            inputStream.read(buffer);
+            inputStream.close();
+            content=new String(buffer);
+            return content;
+        }catch (Exception e)
+        {
+
+        }
+        return "";
     }
 }
