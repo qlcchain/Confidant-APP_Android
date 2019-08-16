@@ -542,6 +542,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName = toItem.substring(0,toItem.indexOf("@"))
                     toAdress = toItem.substring(0,toItem.length)
                 }
+               /* toName =toName.replace("\"","")
+                toName =toName.replace("\"","")*/
                 if(toName != "")
                 {
                     toNameStr += toName+","
@@ -584,6 +586,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = ccItem.substring(0,ccItem.indexOf("@"))
                     ccAdress = ccItem.substring(0,ccItem.length)
                 }
+               /* ccName =ccName.replace("\"","")
+                ccName =ccName.replace("\"","")*/
                 if(ccName != "")
                 {
                     toNameStr += ccName+","
@@ -626,7 +630,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = bccItem.substring(0,bccItem.indexOf("@"))
                     ccAdress = bccItem.substring(0,bccItem.length)
                 }
-                if(bccItem != "")
+                /*ccName =ccName.replace("\"","")
+                ccName =ccName.replace("\"","")*/
+                if(ccName != "")
                 {
                     toNameStr += ccName+","
                     toAdressStr += ccAdress+","
@@ -1079,11 +1085,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     fun doBackUp()
     {
-        if(isBackEd == 1)
+       /* if(isBackEd == 1)
         {
             toast(R.string.It_already_exists)
             return
-        }
+        }*/
         zipFileSoucePath = ArrayList()
         if(needWaitAttach)
         {

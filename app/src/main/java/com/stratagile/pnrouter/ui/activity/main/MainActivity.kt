@@ -133,7 +133,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp) {
         if(JBakMailsNumRsp.params.retCode == 0)
         {
-            nodebackedup.setCount(JBakMailsNumRsp.params.num)
+            runOnUiThread {
+                if(nodebackedup != null)
+                {
+                    nodebackedup.setCount(JBakMailsNumRsp.params.num)
+                }
+
+            }
+
         }
 
     }
@@ -3268,7 +3275,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var bakMailsNum = BakMailsNum(accountBase64)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
                 }
-
                 //Log.i("zhangshuli", "open")
             }
 
@@ -3736,7 +3742,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setEmailType(emailConfigEntity.emailType)
             Inbox.setCount(emailConfigEntity.unReadCount)
             spam.setCount(emailConfigEntity.garbageCount)
-
+            if(AppConfig.instance.emailConfig().account != null)
+            {
+                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var bakMailsNum = BakMailsNum(accountBase64)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+            }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
         }else{
             editBtn.visibility = View.GONE

@@ -132,6 +132,15 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
+        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+        for(item in localMessageList)
+        {
+            if(item.timeStamp == null  || item.timeStamp == 0L)
+            {
+                item.timeStamp = DateUtil.getDateTimeStame(item.date)
+                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+            }
+        }
         if(!BuildConfig.DEBUG)
         {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

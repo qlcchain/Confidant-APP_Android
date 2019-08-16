@@ -23,6 +23,7 @@ public class EmailMessageEntity implements Parcelable{
     private String cc;//抄送
     private String bcc;//密送
     private String date;
+    private long timeStamp;//用于排序
     private boolean isSeen;
     private boolean isStar;
     private String priority;
@@ -56,6 +57,7 @@ public class EmailMessageEntity implements Parcelable{
         cc = in.readString();
         bcc = in.readString();
         date = in.readString();
+        timeStamp = in.readLong();
         isSeen = in.readByte() != 0;
         isStar = in.readByte() != 0;
         priority = in.readString();
@@ -71,12 +73,12 @@ public class EmailMessageEntity implements Parcelable{
         emailAttachPath = in.readString();
     }
 
-    @Generated(hash = 1053770347)
+    @Generated(hash = 1005618293)
     public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
-            String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar,
-            String priority, boolean isReplySign, long size, boolean isContainerAttachment,
-            int attachmentCount, String content, String contentText, String originalText, String aesKey,
-            long messageTotalCount, String emailAttachPath) {
+            String from, String to, String cc, String bcc, String date, long timeStamp, boolean isSeen,
+            boolean isStar, String priority, boolean isReplySign, long size,
+            boolean isContainerAttachment, int attachmentCount, String content, String contentText,
+            String originalText, String aesKey, long messageTotalCount, String emailAttachPath) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
@@ -87,6 +89,7 @@ public class EmailMessageEntity implements Parcelable{
         this.cc = cc;
         this.bcc = bcc;
         this.date = date;
+        this.timeStamp = timeStamp;
         this.isSeen = isSeen;
         this.isStar = isStar;
         this.priority = priority;
@@ -192,6 +195,14 @@ public class EmailMessageEntity implements Parcelable{
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public boolean isSeen() {
@@ -320,6 +331,7 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeString(cc);
         dest.writeString(bcc);
         dest.writeString(date);
+        dest.writeLong(timeStamp);
         dest.writeByte((byte) (isSeen ? 1 : 0));
         dest.writeByte((byte) (isStar ? 1 : 0));
         dest.writeString(priority);

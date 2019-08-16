@@ -32,19 +32,20 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         public final static Property Cc = new Property(7, String.class, "cc", false, "CC");
         public final static Property Bcc = new Property(8, String.class, "bcc", false, "BCC");
         public final static Property Date = new Property(9, String.class, "date", false, "DATE");
-        public final static Property IsSeen = new Property(10, boolean.class, "isSeen", false, "IS_SEEN");
-        public final static Property IsStar = new Property(11, boolean.class, "isStar", false, "IS_STAR");
-        public final static Property Priority = new Property(12, String.class, "priority", false, "PRIORITY");
-        public final static Property IsReplySign = new Property(13, boolean.class, "isReplySign", false, "IS_REPLY_SIGN");
-        public final static Property Size = new Property(14, long.class, "size", false, "SIZE");
-        public final static Property IsContainerAttachment = new Property(15, boolean.class, "isContainerAttachment", false, "IS_CONTAINER_ATTACHMENT");
-        public final static Property AttachmentCount = new Property(16, int.class, "attachmentCount", false, "ATTACHMENT_COUNT");
-        public final static Property Content = new Property(17, String.class, "content", false, "CONTENT");
-        public final static Property ContentText = new Property(18, String.class, "contentText", false, "CONTENT_TEXT");
-        public final static Property OriginalText = new Property(19, String.class, "originalText", false, "ORIGINAL_TEXT");
-        public final static Property AesKey = new Property(20, String.class, "aesKey", false, "AES_KEY");
-        public final static Property MessageTotalCount = new Property(21, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
-        public final static Property EmailAttachPath = new Property(22, String.class, "emailAttachPath", false, "EMAIL_ATTACH_PATH");
+        public final static Property TimeStamp = new Property(10, long.class, "timeStamp", false, "TIME_STAMP");
+        public final static Property IsSeen = new Property(11, boolean.class, "isSeen", false, "IS_SEEN");
+        public final static Property IsStar = new Property(12, boolean.class, "isStar", false, "IS_STAR");
+        public final static Property Priority = new Property(13, String.class, "priority", false, "PRIORITY");
+        public final static Property IsReplySign = new Property(14, boolean.class, "isReplySign", false, "IS_REPLY_SIGN");
+        public final static Property Size = new Property(15, long.class, "size", false, "SIZE");
+        public final static Property IsContainerAttachment = new Property(16, boolean.class, "isContainerAttachment", false, "IS_CONTAINER_ATTACHMENT");
+        public final static Property AttachmentCount = new Property(17, int.class, "attachmentCount", false, "ATTACHMENT_COUNT");
+        public final static Property Content = new Property(18, String.class, "content", false, "CONTENT");
+        public final static Property ContentText = new Property(19, String.class, "contentText", false, "CONTENT_TEXT");
+        public final static Property OriginalText = new Property(20, String.class, "originalText", false, "ORIGINAL_TEXT");
+        public final static Property AesKey = new Property(21, String.class, "aesKey", false, "AES_KEY");
+        public final static Property MessageTotalCount = new Property(22, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
+        public final static Property EmailAttachPath = new Property(23, String.class, "emailAttachPath", false, "EMAIL_ATTACH_PATH");
     }
 
 
@@ -70,19 +71,20 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
                 "\"CC\" TEXT," + // 7: cc
                 "\"BCC\" TEXT," + // 8: bcc
                 "\"DATE\" TEXT," + // 9: date
-                "\"IS_SEEN\" INTEGER NOT NULL ," + // 10: isSeen
-                "\"IS_STAR\" INTEGER NOT NULL ," + // 11: isStar
-                "\"PRIORITY\" TEXT," + // 12: priority
-                "\"IS_REPLY_SIGN\" INTEGER NOT NULL ," + // 13: isReplySign
-                "\"SIZE\" INTEGER NOT NULL ," + // 14: size
-                "\"IS_CONTAINER_ATTACHMENT\" INTEGER NOT NULL ," + // 15: isContainerAttachment
-                "\"ATTACHMENT_COUNT\" INTEGER NOT NULL ," + // 16: attachmentCount
-                "\"CONTENT\" TEXT," + // 17: content
-                "\"CONTENT_TEXT\" TEXT," + // 18: contentText
-                "\"ORIGINAL_TEXT\" TEXT," + // 19: originalText
-                "\"AES_KEY\" TEXT," + // 20: aesKey
-                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 21: messageTotalCount
-                "\"EMAIL_ATTACH_PATH\" TEXT);"); // 22: emailAttachPath
+                "\"TIME_STAMP\" INTEGER NOT NULL ," + // 10: timeStamp
+                "\"IS_SEEN\" INTEGER NOT NULL ," + // 11: isSeen
+                "\"IS_STAR\" INTEGER NOT NULL ," + // 12: isStar
+                "\"PRIORITY\" TEXT," + // 13: priority
+                "\"IS_REPLY_SIGN\" INTEGER NOT NULL ," + // 14: isReplySign
+                "\"SIZE\" INTEGER NOT NULL ," + // 15: size
+                "\"IS_CONTAINER_ATTACHMENT\" INTEGER NOT NULL ," + // 16: isContainerAttachment
+                "\"ATTACHMENT_COUNT\" INTEGER NOT NULL ," + // 17: attachmentCount
+                "\"CONTENT\" TEXT," + // 18: content
+                "\"CONTENT_TEXT\" TEXT," + // 19: contentText
+                "\"ORIGINAL_TEXT\" TEXT," + // 20: originalText
+                "\"AES_KEY\" TEXT," + // 21: aesKey
+                "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 22: messageTotalCount
+                "\"EMAIL_ATTACH_PATH\" TEXT);"); // 23: emailAttachPath
     }
 
     /** Drops the underlying database table. */
@@ -144,42 +146,43 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (date != null) {
             stmt.bindString(10, date);
         }
-        stmt.bindLong(11, entity.getIsSeen() ? 1L: 0L);
-        stmt.bindLong(12, entity.getIsStar() ? 1L: 0L);
+        stmt.bindLong(11, entity.getTimeStamp());
+        stmt.bindLong(12, entity.getIsSeen() ? 1L: 0L);
+        stmt.bindLong(13, entity.getIsStar() ? 1L: 0L);
  
         String priority = entity.getPriority();
         if (priority != null) {
-            stmt.bindString(13, priority);
+            stmt.bindString(14, priority);
         }
-        stmt.bindLong(14, entity.getIsReplySign() ? 1L: 0L);
-        stmt.bindLong(15, entity.getSize());
-        stmt.bindLong(16, entity.getIsContainerAttachment() ? 1L: 0L);
-        stmt.bindLong(17, entity.getAttachmentCount());
+        stmt.bindLong(15, entity.getIsReplySign() ? 1L: 0L);
+        stmt.bindLong(16, entity.getSize());
+        stmt.bindLong(17, entity.getIsContainerAttachment() ? 1L: 0L);
+        stmt.bindLong(18, entity.getAttachmentCount());
  
         String content = entity.getContent();
         if (content != null) {
-            stmt.bindString(18, content);
+            stmt.bindString(19, content);
         }
  
         String contentText = entity.getContentText();
         if (contentText != null) {
-            stmt.bindString(19, contentText);
+            stmt.bindString(20, contentText);
         }
  
         String originalText = entity.getOriginalText();
         if (originalText != null) {
-            stmt.bindString(20, originalText);
+            stmt.bindString(21, originalText);
         }
  
         String aesKey = entity.getAesKey();
         if (aesKey != null) {
-            stmt.bindString(21, aesKey);
+            stmt.bindString(22, aesKey);
         }
-        stmt.bindLong(22, entity.getMessageTotalCount());
+        stmt.bindLong(23, entity.getMessageTotalCount());
  
         String emailAttachPath = entity.getEmailAttachPath();
         if (emailAttachPath != null) {
-            stmt.bindString(23, emailAttachPath);
+            stmt.bindString(24, emailAttachPath);
         }
     }
 
@@ -236,42 +239,43 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (date != null) {
             stmt.bindString(10, date);
         }
-        stmt.bindLong(11, entity.getIsSeen() ? 1L: 0L);
-        stmt.bindLong(12, entity.getIsStar() ? 1L: 0L);
+        stmt.bindLong(11, entity.getTimeStamp());
+        stmt.bindLong(12, entity.getIsSeen() ? 1L: 0L);
+        stmt.bindLong(13, entity.getIsStar() ? 1L: 0L);
  
         String priority = entity.getPriority();
         if (priority != null) {
-            stmt.bindString(13, priority);
+            stmt.bindString(14, priority);
         }
-        stmt.bindLong(14, entity.getIsReplySign() ? 1L: 0L);
-        stmt.bindLong(15, entity.getSize());
-        stmt.bindLong(16, entity.getIsContainerAttachment() ? 1L: 0L);
-        stmt.bindLong(17, entity.getAttachmentCount());
+        stmt.bindLong(15, entity.getIsReplySign() ? 1L: 0L);
+        stmt.bindLong(16, entity.getSize());
+        stmt.bindLong(17, entity.getIsContainerAttachment() ? 1L: 0L);
+        stmt.bindLong(18, entity.getAttachmentCount());
  
         String content = entity.getContent();
         if (content != null) {
-            stmt.bindString(18, content);
+            stmt.bindString(19, content);
         }
  
         String contentText = entity.getContentText();
         if (contentText != null) {
-            stmt.bindString(19, contentText);
+            stmt.bindString(20, contentText);
         }
  
         String originalText = entity.getOriginalText();
         if (originalText != null) {
-            stmt.bindString(20, originalText);
+            stmt.bindString(21, originalText);
         }
  
         String aesKey = entity.getAesKey();
         if (aesKey != null) {
-            stmt.bindString(21, aesKey);
+            stmt.bindString(22, aesKey);
         }
-        stmt.bindLong(22, entity.getMessageTotalCount());
+        stmt.bindLong(23, entity.getMessageTotalCount());
  
         String emailAttachPath = entity.getEmailAttachPath();
         if (emailAttachPath != null) {
-            stmt.bindString(23, emailAttachPath);
+            stmt.bindString(24, emailAttachPath);
         }
     }
 
@@ -293,19 +297,20 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // cc
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // bcc
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // date
-            cursor.getShort(offset + 10) != 0, // isSeen
-            cursor.getShort(offset + 11) != 0, // isStar
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // priority
-            cursor.getShort(offset + 13) != 0, // isReplySign
-            cursor.getLong(offset + 14), // size
-            cursor.getShort(offset + 15) != 0, // isContainerAttachment
-            cursor.getInt(offset + 16), // attachmentCount
-            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // content
-            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // contentText
-            cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19), // originalText
-            cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // aesKey
-            cursor.getLong(offset + 21), // messageTotalCount
-            cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22) // emailAttachPath
+            cursor.getLong(offset + 10), // timeStamp
+            cursor.getShort(offset + 11) != 0, // isSeen
+            cursor.getShort(offset + 12) != 0, // isStar
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13), // priority
+            cursor.getShort(offset + 14) != 0, // isReplySign
+            cursor.getLong(offset + 15), // size
+            cursor.getShort(offset + 16) != 0, // isContainerAttachment
+            cursor.getInt(offset + 17), // attachmentCount
+            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // content
+            cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19), // contentText
+            cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // originalText
+            cursor.isNull(offset + 21) ? null : cursor.getString(offset + 21), // aesKey
+            cursor.getLong(offset + 22), // messageTotalCount
+            cursor.isNull(offset + 23) ? null : cursor.getString(offset + 23) // emailAttachPath
         );
         return entity;
     }
@@ -322,19 +327,20 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         entity.setCc(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setBcc(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setDate(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setIsSeen(cursor.getShort(offset + 10) != 0);
-        entity.setIsStar(cursor.getShort(offset + 11) != 0);
-        entity.setPriority(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setIsReplySign(cursor.getShort(offset + 13) != 0);
-        entity.setSize(cursor.getLong(offset + 14));
-        entity.setIsContainerAttachment(cursor.getShort(offset + 15) != 0);
-        entity.setAttachmentCount(cursor.getInt(offset + 16));
-        entity.setContent(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
-        entity.setContentText(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
-        entity.setOriginalText(cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19));
-        entity.setAesKey(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
-        entity.setMessageTotalCount(cursor.getLong(offset + 21));
-        entity.setEmailAttachPath(cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22));
+        entity.setTimeStamp(cursor.getLong(offset + 10));
+        entity.setIsSeen(cursor.getShort(offset + 11) != 0);
+        entity.setIsStar(cursor.getShort(offset + 12) != 0);
+        entity.setPriority(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+        entity.setIsReplySign(cursor.getShort(offset + 14) != 0);
+        entity.setSize(cursor.getLong(offset + 15));
+        entity.setIsContainerAttachment(cursor.getShort(offset + 16) != 0);
+        entity.setAttachmentCount(cursor.getInt(offset + 17));
+        entity.setContent(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
+        entity.setContentText(cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19));
+        entity.setOriginalText(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
+        entity.setAesKey(cursor.isNull(offset + 21) ? null : cursor.getString(offset + 21));
+        entity.setMessageTotalCount(cursor.getLong(offset + 22));
+        entity.setEmailAttachPath(cursor.isNull(offset + 23) ? null : cursor.getString(offset + 23));
      }
     
     @Override

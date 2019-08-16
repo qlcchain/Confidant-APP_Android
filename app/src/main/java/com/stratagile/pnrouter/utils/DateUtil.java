@@ -135,6 +135,26 @@ public class DateUtil {
         }
         return new Date();
     }
+    /**
+     * 时间格式转换方法，格式为 yyyy-MM-dd
+     * @param dateStr
+     * @return
+     */
+    public static Long getDateTimeStame(String dateStr){
+        try
+        {
+            SimpleDateFormat SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (dateStr != null){
+                return SimpleDateFormat.parse(dateStr).getTime();
+            }else {
+                return null;
+            }
+        }catch (Exception e)
+        {
+
+        }
+        return new Date().getTime();
+    }
     public static String getDateToString(long milSecond, String pattern) {
         Date date = new Date(milSecond);
         SimpleDateFormat format = new SimpleDateFormat(pattern);
