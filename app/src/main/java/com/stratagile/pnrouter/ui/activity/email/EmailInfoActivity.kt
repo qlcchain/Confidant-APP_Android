@@ -1090,11 +1090,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     fun doBackUp()
     {
-       /* if(isBackEd == 1)
+        if(isBackEd == 1)
         {
             toast(R.string.It_already_exists)
             return
-        }*/
+        }
         zipFileSoucePath = ArrayList()
         if(needWaitAttach)
         {

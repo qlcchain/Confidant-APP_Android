@@ -808,7 +808,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
                                                 eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                                 eamilMessage.date = item.date
-                                                eamilMessage.timeStamp = DateUtil.getDateTimeStame(item.date)
+                                                eamilMessage.setTimeStamp(DateUtil.getDateTimeStame(item.date))
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
                                                 if(eamilMessage.from.indexOf("<") >= 0)
                                                 {
@@ -997,7 +997,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
                                                 eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
                                                 eamilMessage.date = item.date
-                                                eamilMessage.timeStamp = DateUtil.getDateTimeStame(item.date)
+                                                eamilMessage.setTimeStamp(DateUtil.getDateTimeStame(item.date))
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
                                                 if(eamilMessage.from.indexOf("<") >= 0)
                                                 {

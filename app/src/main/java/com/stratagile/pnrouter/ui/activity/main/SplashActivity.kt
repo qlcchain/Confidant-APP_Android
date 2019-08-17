@@ -137,7 +137,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         {
             if(item.timeStamp == null  || item.timeStamp == 0L)
             {
-                item.timeStamp = DateUtil.getDateTimeStame(item.date)
+                item.setTimeStamp( DateUtil.getDateTimeStame(item.date))
                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
             }
         }
