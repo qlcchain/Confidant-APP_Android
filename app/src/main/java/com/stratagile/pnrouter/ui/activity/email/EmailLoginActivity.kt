@@ -54,6 +54,9 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     var settings = 0;
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
         if(jSaveEmailConfRsp.params.retCode == 0)
         {
             runOnUiThread {
@@ -104,6 +107,29 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             account_editText.setText("")
             account_editText.isEnabled = true
         }
+        when(emailType)
+        {
+            "1"->
+            {
+                emailHelper.setText(getString(R.string.qqCompany_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qqmailbox_n))
+            }
+            "2"->
+            {
+                emailHelper.setText(getString(R.string.qq_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qq_n))
+            }
+            "3"->
+            {
+                emailHelper.setText(getString(R.string.wangyi_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_163_n))
+            }
+            "4"->
+            {
+                emailHelper.setText(getString(R.string.gmail_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_google_n))
+            }
+        }
         if(BuildConfig.DEBUG)
         {
             when(emailType)
@@ -120,8 +146,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "3"->
                 {
-                    /* account_editText.setText("kuangzihui1989@gmail.com")
-                     password_editText.setText("applela19890712")*/
+                    account_editText.setText("bitcoin108@163.com")
+                    password_editText.setText("lang108")
                 }
             }
         }
