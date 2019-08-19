@@ -174,7 +174,7 @@ class EmailCore {
             if(smtpPort.equals("587"))
             {
                 properties.put("mail.smtp.starttls.enable", "true");
-                properties.put("mail.smtp.ssl.enable", "true");
+                properties.put("mail.smtp.ssl.enable", "false");
 
             }
         }
