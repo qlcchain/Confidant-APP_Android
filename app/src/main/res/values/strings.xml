@@ -739,6 +739,7 @@
     <string name="QQ">QQMail</string>
     <string name="wangyi">163Mail</string>
     <string name="Google">Gmail</string>
+    <string name="outlook">Outlook、Hotmail、Live</string>
     <string name="Send_Email">Send Email</string>
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
@@ -818,5 +819,11 @@ Step 2: Allow less secure apps  \n
 4. Open the alert email sent by Google.  \n
 5. Confirm the turn on activity.  \n
 \n
+Then enter your Email address and password to log in.</string>
+    <string name="hotlook_Guides">Step 1: Check that IMAP is turned on \n
+1. On your computer, open Outlook、Hotmail、live. \n
+2. In the top right, click Settings. \n
+3. In the “Start Service” section, select Enable IMAP/SMTP. \n
+4. Click Save Changes. \n
 Then enter your Email address and password to log in.</string>
 </resources>

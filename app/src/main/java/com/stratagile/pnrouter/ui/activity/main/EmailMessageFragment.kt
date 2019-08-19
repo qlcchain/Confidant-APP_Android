@@ -739,47 +739,44 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 refreshLayout.resetNoMoreData()
                                             }
                                         }
-                                        if(messageList.size > 0)
+                                        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                                        if(emailConfigEntityChoose.size > 0)
                                         {
-                                            var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                                            if(emailConfigEntityChoose.size > 0)
+                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                                            when(menu)
                                             {
-                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-                                                when(menu)
+                                                emailConfigEntity.inboxMenu->
                                                 {
-                                                    emailConfigEntity.inboxMenu->
-                                                    {
-                                                        emailConfigEntity.totalCount += messageList.size
-                                                        emailConfigEntity.inboxMaxMessageId = maxUUID
-                                                        emailConfigEntity.inboxMenuRefresh = false
-                                                    }
-                                                    emailConfigEntity.drafMenu->
-                                                    {
-                                                        emailConfigEntity.drafTotalCount += messageList.size
-                                                        emailConfigEntity.drafMaxMessageId = maxUUID
-                                                        emailConfigEntity.drafMenuRefresh = false
-                                                    }
-                                                    emailConfigEntity.sendMenu->
-                                                    {
-                                                        emailConfigEntity.sendTotalCount += messageList.size
-                                                        emailConfigEntity.sendMaxMessageId = maxUUID
-                                                        emailConfigEntity.sendMenuRefresh = false
-                                                    }
-                                                    emailConfigEntity.garbageMenu->
-                                                    {
-                                                        emailConfigEntity.garbageCount += messageList.size
-                                                        emailConfigEntity.garbageMaxMessageId = maxUUID
-                                                        emailConfigEntity.garbageMenuRefresh = false
-                                                    }
-                                                    emailConfigEntity.deleteMenu->
-                                                    {
-                                                        emailConfigEntity.deleteTotalCount += messageList.size
-                                                        emailConfigEntity.deleteMaxMessageId = maxUUID
-                                                        emailConfigEntity.deleteMenuRefresh = false
-                                                    }
+                                                    emailConfigEntity.totalCount += messageList.size
+                                                    emailConfigEntity.inboxMaxMessageId = maxUUID
+                                                    emailConfigEntity.inboxMenuRefresh = false
                                                 }
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                emailConfigEntity.drafMenu->
+                                                {
+                                                    emailConfigEntity.drafTotalCount += messageList.size
+                                                    emailConfigEntity.drafMaxMessageId = maxUUID
+                                                    emailConfigEntity.drafMenuRefresh = false
+                                                }
+                                                emailConfigEntity.sendMenu->
+                                                {
+                                                    emailConfigEntity.sendTotalCount += messageList.size
+                                                    emailConfigEntity.sendMaxMessageId = maxUUID
+                                                    emailConfigEntity.sendMenuRefresh = false
+                                                }
+                                                emailConfigEntity.garbageMenu->
+                                                {
+                                                    emailConfigEntity.garbageCount += messageList.size
+                                                    emailConfigEntity.garbageMaxMessageId = maxUUID
+                                                    emailConfigEntity.garbageMenuRefresh = false
+                                                }
+                                                emailConfigEntity.deleteMenu->
+                                                {
+                                                    emailConfigEntity.deleteTotalCount += messageList.size
+                                                    emailConfigEntity.deleteMaxMessageId = maxUUID
+                                                    emailConfigEntity.deleteMenuRefresh = false
+                                                }
                                             }
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }
                                         var list = messageList;
                                         for (item in messageList)

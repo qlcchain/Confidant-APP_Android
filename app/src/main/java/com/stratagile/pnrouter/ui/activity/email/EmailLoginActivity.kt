@@ -54,9 +54,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     var settings = 0;
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
-        runOnUiThread {
-            closeProgressDialog()
-        }
         if(jSaveEmailConfRsp.params.retCode == 0)
         {
             runOnUiThread {
@@ -66,12 +63,14 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         {
             AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
             runOnUiThread {
+                closeProgressDialog()
                 //sycDataCountIMAP()
                 toast(R.string.Over_configure)
             }
         }else{
             AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
             runOnUiThread {
+                closeProgressDialog()
                 //sycDataCountIMAP()
                 toast(R.string.The_mailbox_has_been_configured)
             }
@@ -129,6 +128,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 emailHelper.setText(getString(R.string.gmail_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_google_n))
             }
+            "5"->
+            {
+                emailHelper.setText(getString(R.string.hotlook_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_outlook_n))
+            }
         }
         if(BuildConfig.DEBUG)
         {
@@ -148,6 +152,16 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 {
                     account_editText.setText("bitcoin108@163.com")
                     password_editText.setText("lang108")
+                }
+                "4"->
+                {
+                    account_editText.setText("bitcoin108@163.com")
+                    password_editText.setText("lang108")
+                }
+                "5"->
+                {
+                    account_editText.setText("zhanglang108@hotmail.com")
+                    password_editText.setText("langlang_108")
                 }
             }
         }
@@ -238,7 +252,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
                 Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, getString(R.string.fail)+errorMsg)
+                        .setText(null, getString(R.string.fail)+":"+errorMsg)
                         .setButton( getString(R.string.close), null, null)
                         .click()
                         .show()
@@ -340,6 +354,17 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.sendMenu = "[Gmail]/已发邮件"
                     emailConfigEntity.garbageMenu = "[Gmail]/垃圾邮件"
                     emailConfigEntity.deleteMenu = "[Gmail]/已删除邮件"
+                }
+                "5"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "Drafts"
+                    emailConfigEntity.sendMenu = "Sent"
+                    emailConfigEntity.garbageMenu = "Junk"
+                    emailConfigEntity.deleteMenu = "Deleted"
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

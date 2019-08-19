@@ -1533,7 +1533,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 closeProgressDialog()
                             }
                             Islands.ordinaryDialog(this@EmailSendActivity)
-                                    .setText(null, getString(R.string.error))
+                                    .setText(null, getString(R.string.error)+":"+errorMsg)
                                     .setButton(getString(R.string.close), null, null)
                                     .click().show()
                         }

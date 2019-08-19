@@ -171,6 +171,12 @@ class EmailCore {
             properties.put(MAIL_SMTP_POST, smtpPort);
             properties.put(MAIL_SMTP_HOST, smtpHost);
             properties.put(MAIL_SMTP_AUTH, "true");
+            if(smtpPort.equals("587"))
+            {
+                properties.put("mail.smtp.starttls.enable", "true");
+                properties.put("mail.smtp.ssl.enable", "true");
+
+            }
         }
         if (ConfigCheckUtil.getResult(popHost, popPort)) {
             properties.put(MAIL_POP3_SOCKETFACTORY_CLASS, sslSocketFactory);
