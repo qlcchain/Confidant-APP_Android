@@ -16,8 +16,10 @@ import com.hyphenate.chat.EMMessage
 import com.noober.menu.FloatMenu
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Callback.GetCountCallback
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.Callback.MarkCallback
+import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
@@ -546,6 +548,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         runOnUiThread {
             emaiMessageChooseAdapter!!.setNewData(localMessageList);
         }
+        getMailUnReadCount()
         if(menu.equals("star"))
         {
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.IsStar.eq(true)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
@@ -617,6 +620,52 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             }
 
         }
+    }
+    fun getMailUnReadCount()
+    {
+        var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
+        Islands.circularProgress(AppConfig.instance)
+                .setCancelable(false)
+                .setMessage(getString(R.string.waiting))
+                .run { progressDialog ->
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                    emailReceiveClient
+                            .imapReceiveAsynCount(activity, object : GetCountCallback {
+                                override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                    progressDialog.dismiss()
+                                    if(messageList.size >0)
+                                    {
+                                        var emailMessage = messageList.get(0)
+                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                        var EmailMessage = false
+                                        if(emailConfigEntityList.size > 0)
+                                        {
+                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                            emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                            emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                            emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                            emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                            emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                            emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                            emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                            emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                            emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                            emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                            emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                            emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                        }
+                                    }
+                                    EventBus.getDefault().post(ChangeEmailConfig())
+                                }
+
+                                override fun gainFailure(errorMsg: String) {
+                                    progressDialog.dismiss()
+                                    //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                }
+                            },menuList)
+                }
     }
     override fun onResume() {
         super.onResume()

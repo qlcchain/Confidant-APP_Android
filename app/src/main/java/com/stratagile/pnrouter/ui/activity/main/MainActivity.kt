@@ -3747,7 +3747,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setName(emailConfigEntity.name)
                     .setEmailType(emailConfigEntity.emailType)
             Inbox.setCount(emailConfigEntity.unReadCount)
-            spam.setCount(emailConfigEntity.garbageCount)
+            spam.setCount(emailConfigEntity.garbageUnReadCount)
             if(AppConfig.instance.emailConfig().account != null)
             {
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))

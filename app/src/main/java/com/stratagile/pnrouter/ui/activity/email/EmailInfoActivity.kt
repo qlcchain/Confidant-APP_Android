@@ -41,6 +41,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ChangEmailMessage
 import com.stratagile.pnrouter.entity.events.ChangEmailStar
+import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
@@ -726,17 +727,51 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         if(menu != "node")
         {
-            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-            emailReceiveClient
-                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                        override fun gainSuccess(result: Boolean) {
+            if(!emailMeaasgeData!!.isSeen())
+            {
+                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                emailReceiveClient
+                        .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                            override fun gainSuccess(result: Boolean) {
 
-                        }
-                        override fun gainFailure(errorMsg: String) {
+                                when(menu)
+                                {
+                                    ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                    {
+                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                        var EmailMessage = false
+                                        if(emailConfigEntityList.size > 0)
+                                        {
+                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                            emailConfigEntity.unReadCount -= 1   //Inbox未读数量
+                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                        }
+                                    }
+                                    ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
+                                    {
+                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                        var EmailMessage = false
+                                        if(emailConfigEntityList.size > 0)
+                                        {
+                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                            emailConfigEntity.garbageCount -= 1   //Inbox未读数量
+                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                        }
+                                    }
 
-                        }
-                    },menu,msgId,32,true,"")
-        }
+                                }
+                            }
+                            override fun gainFailure(errorMsg: String) {
+
+                            }
+                        },menu,msgId,32,true,"")
+            }
+            }
+
         moreMenu.setOnClickListener {
 
             /*list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
@@ -797,7 +832,34 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                             closeProgressDialog()
                                             emailMeaasgeData!!.setIsSeen(false)
                                             AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
-                                            var test = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+                                            when(menu)
+                                            {
+                                                ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                                {
+                                                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                    if(emailConfigEntityList.size > 0)
+                                                    {
+                                                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                        emailConfigEntity.unReadCount += 1   //Inbox未读数量
+                                                        ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                                    }
+                                                }
+                                                ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
+                                                {
+                                                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                    if(emailConfigEntityList.size > 0)
+                                                    {
+                                                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                        emailConfigEntity.garbageCount += 1   //Inbox未读数量
+                                                        ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                                    }
+                                                }
+
+                                            }
                                             EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
                                         }
                                         override fun gainFailure(errorMsg: String) {
