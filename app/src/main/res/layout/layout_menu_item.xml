@@ -22,7 +22,7 @@
         android:text="MyDocumentsMy"
         android:textColor="@color/colorAccent"
         android:ellipsize="end"
-        android:maxEms="14"
+        android:maxEms="10"
         android:singleLine="true"
         android:textSize="16sp"/>
 

@@ -2385,13 +2385,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSortEmailConfig(sortEmailConfig: SortEmailConfig) {
+        initLeftSubMenuName()
+        initLeftMenu(ConstantValue.chooseFragMentMenu,true,true)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onChooseEmailConfig(chooseEmailConfig: ChooseEmailConfig) {
         initLeftSubMenuName()
-        initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftMenu(ConstantValue.chooseFragMentMenu,false,false)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddEmailConfig(changeEmailConfig: ChangeEmailConfig) {
-        initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftMenu(ConstantValue.chooseFragMentMenu,true,true)
         initLeftSubMenuName()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3295,6 +3300,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             .setName(emailConfigEntity.name)
                             .setEmailType(emailConfigEntity.emailType)
                     ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                    EventBus.getDefault().post(SortEmailConfig())
                 }
                 EventBus.getDefault().post(OnDrawerOpened())
                 //Log.i("zhangshuli", "colse")
@@ -3721,7 +3727,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         initEvent()
     }
-    fun initLeftMenu(fragmentMenu:String)
+    fun initLeftMenu(fragmentMenu:String,sort:Boolean,refresh:Boolean)
     {
        
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
@@ -3770,48 +3776,80 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }else{
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x270).toInt())
             }
-            emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
-            emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-                /*val floatMenu = FloatMenu(this)
-                floatMenu.items("菜单1", "菜单2", "菜单3")
-                floatMenu.show((activity!! as BaseActivity).point,0,0)*/
-                true
-            }
-            recyclerViewleft.adapter = emaiConfigChooseAdapter
-            emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-                /* var intent = Intent(activity!!, ConversationActivity::class.java)
-                 intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-                 startActivity(intent)*/
-                var accountData = emaiConfigChooseAdapter!!.getItem(position)
-                var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
-                var hasVerify = false
-                if(emailConfigEntityList.size > 0)
+            if(refresh)
+            {
+                var emailConfigEntityListNew = mutableListOf<EmailConfigEntity>()
+                if(sort)
                 {
-                    var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-                    for (j in localemailConfigEntityList) {
-                        j.choose = false
-                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                    var emailConfigChoose:EmailConfigEntity? = null
+                    for(emailConfig in emailConfigEntityList)
+                    {
+                        if(!emailConfig.choose)
+                        {
+                            emailConfigEntityListNew.add(emailConfig)
+                        }else{
+                            emailConfigChoose = emailConfig
+                        }
                     }
-                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                    emailConfigEntity.choose = true
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                    AppConfig.instance.emailConfig()
-                            .setSmtpHost(emailConfigEntity.smtpHost)
-                            .setSmtpPort(emailConfigEntity.smtpPort)
-                            .setPopHost(emailConfigEntity.popHost)
-                            .setPopPort(emailConfigEntity.popPort)
-                            .setImapHost(emailConfigEntity.imapHost)
-                            .setImapPort(emailConfigEntity.imapPort)
-                            .setAccount(emailConfigEntity.account)
-                            .setPassword(emailConfigEntity.password)
-                            .setName(emailConfigEntity.name)
-                            .setEmailType(emailConfigEntity.emailType)
+                    emailConfigEntityListNew.add(0,emailConfigChoose!!)
+                    emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityListNew)
+                }else{
+                    emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
                 }
-                EventBus.getDefault().post(ChooseEmailConfig())
-                /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-                    mDrawer.closeDrawer(GravityCompat.START)
-                }*/
+                emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+                    /*val floatMenu = FloatMenu(this)
+                    floatMenu.items("菜单1", "菜单2", "菜单3")
+                    floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+                    true
+                }
+                recyclerViewleft.adapter = emaiConfigChooseAdapter
+                emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                     intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                     startActivity(intent)*/
+                    var dataList  = emaiConfigChooseAdapter!!.data
+                    for (item in dataList)
+                    {
+                        item.choose = false
+                    }
+                    var accountData = emaiConfigChooseAdapter!!.getItem(position)
+                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
+                    var hasVerify = false
+                    if(emailConfigEntityList.size > 0)
+                    {
+                        var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+                        for (j in localemailConfigEntityList) {
+                            j.choose = false
+                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                        }
+                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        emailConfigEntity.choose = true
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                        AppConfig.instance.emailConfig()
+                                .setSmtpHost(emailConfigEntity.smtpHost)
+                                .setSmtpPort(emailConfigEntity.smtpPort)
+                                .setPopHost(emailConfigEntity.popHost)
+                                .setPopPort(emailConfigEntity.popPort)
+                                .setImapHost(emailConfigEntity.imapHost)
+                                .setImapPort(emailConfigEntity.imapPort)
+                                .setAccount(emailConfigEntity.account)
+                                .setPassword(emailConfigEntity.password)
+                                .setName(emailConfigEntity.name)
+                                .setEmailType(emailConfigEntity.emailType)
+                    }
+                    accountData.choose = true
+                    emaiConfigChooseAdapter!!.notifyDataSetChanged()
+                    EventBus.getDefault().post(ChooseEmailConfig())
+                    /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                        mDrawer.closeDrawer(GravityCompat.START)
+                    }*/
+                    if(sort)
+                    {
+                        recyclerViewleft!!.scrollToPosition(0)
+                    }
+                }
             }
+
         }
 
     }
@@ -3957,7 +3995,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             initLeftSubMenuName()
         }
 
-        initLeftMenu(menu)
+        initLeftMenu(menu,true,true)
     }
     fun initLeftSubMenuName()
     {
