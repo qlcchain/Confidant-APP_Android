@@ -29,8 +29,6 @@ import com.sun.mail.imap.IMAPStore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -39,9 +37,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +48,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.Authenticator;
@@ -70,11 +66,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.activation.DataSource;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
-import javax.net.ssl.SSLSocketFactory;
 
 import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
 import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
@@ -165,7 +159,7 @@ class EmailCore {
         String sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
         String isFallback = "false";
         if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
-            properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
+
             properties.put(MAIL_SMTP_SOCKETFACTORY_FALLBACK, isFallback);
             properties.put(MAIL_SMTP_SOCKETFACTORY_PORT, smtpPort);
             properties.put(MAIL_SMTP_POST, smtpPort);
@@ -173,9 +167,17 @@ class EmailCore {
             properties.put(MAIL_SMTP_AUTH, "true");
             if(smtpPort.equals("587"))
             {
+                //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.smtp.starttls.enable", "true");
-                properties.put("mail.smtp.ssl.enable", "false");
-
+                //properties.put("mail.smtp.ssl.enable", "false");
+              /*  MailSSLSocketFactory sf = new MailSSLSocketFactory();
+                sf.setTrustAllHosts(true);*/
+               // properties.put("mail.smtp.ssl.checkserveridentity", "false");
+                //properties.put("mail.smtp.ssl.socketFactory", sf);
+            }else{
+                properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
+                //properties.put("mail.smtp.starttls.enable", "false");
+                //properties.put("mail.smtp.ssl.enable", "true");
             }
         }
         if (ConfigCheckUtil.getResult(popHost, popPort)) {
@@ -226,6 +228,7 @@ class EmailCore {
             }
         };
         session = Session.getDefaultInstance(properties,authenticator);
+        session.setDebug(BuildConfig.DEBUG);
         //session = Session.getInstance(properties);
     }
 
@@ -238,9 +241,9 @@ class EmailCore {
         Store store = session.getStore(POP3);
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
 
-       /* if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
+        if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
             transport.connect(smtpHost, account, password);
-        }*/
+        }
         /*if (ConfigCheckUtil.getResult(popHost, popPort)) {
             store.connect(popHost, account, password);
         }*/
