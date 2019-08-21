@@ -140,7 +140,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
         searchParent = (RelativeLayout) getView().findViewById(R.id.searchParent);
-
+        if(searchParent != null)
+        {
+            searchParent.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -381,7 +384,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         {
             searchParent.setVisibility(flag ? View.VISIBLE :View.GONE);
         }
-        if(flag)
+        /*if(flag)
         {
             String key= query.getText().toString();
             if(key == null  || key.equals(""))
@@ -389,7 +392,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                 key = "a";
             }
             //conversationListView.filter(key);
-        }
+        }*/
     }
     public int removeFriend() {
         conversationList.clear();

@@ -124,6 +124,7 @@ object ConstantValue {
         var sendMaxSize = 50000  //发送文字消息的最大字节数 原来是264 * 2，现在是5万
         var chooseEmailMenu = 0;//默认选择收件箱
         var chooseEmailMenuName = "Inbox";//默认选择收件箱
+        var chooseEmailMenuServer = "INBOX";//默认选择收件箱
         var chooseFragMentMenu = "Circle";//默认选择Circle
         var sinaMenu = arrayOf("INBOX","节点","星标邮件","草稿夹","已发送","垃圾邮件","已删除");
         var qqMenu = arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");

@@ -27,7 +27,9 @@ import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.entity.events.OnDrawerOpened
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import kotlinx.android.synthetic.main.activity_privacy.*
@@ -39,6 +41,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import org.greenrobot.eventbus.EventBus
 import java.util.ArrayList
 
 /**
@@ -55,6 +58,7 @@ class ChatAndEmailSearchFragment : BaseFragment(), ChatAndEmailSearchContract.Vi
     private var emailMessageFragment: EmailMessageFragment? = null
     private var conversationListFragment: EaseConversationListFragment? = null
     var from = ""
+    var menu = "INBOX"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //commonNavigator.setAdjustMode(true)
@@ -67,8 +71,10 @@ class ChatAndEmailSearchFragment : BaseFragment(), ChatAndEmailSearchContract.Vi
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
         conversationListFragment?.refresh()
+        conversationListFragment?.shouUI(true)
         emailMessageFragment = EmailMessageFragment()
-
+        emailMessageFragment!!.updateMenu(ConstantValue.chooseEmailMenuServer)
+        EventBus.getDefault().post(OnDrawerOpened())
         var titles = ArrayList<String>()
         if(from == "Circle")
         {
@@ -121,6 +127,10 @@ class ChatAndEmailSearchFragment : BaseFragment(), ChatAndEmailSearchContract.Vi
     override fun onStart() {
         //emailMessageFragment?.shouUI(true)
         super.onStart()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
     override fun setupFragmentComponent() {
         DaggerChatAndEmailSearchComponent

@@ -206,6 +206,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
         menu = changEmailMenu.menu
+        ConstantValue.chooseEmailMenuServer = menu
         if(menu == "star")
         {
             if(refreshLayout != null)
@@ -1323,7 +1324,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             emaiMessageChooseAdapter!!.setNewData(emailMessageList);
         }
     }
-
+    public fun updateMenu(menuName:String)
+    {
+        menu = menuName
+    }
     override fun onDestroy() {
         AppConfig.instance.messageReceiver!!.pullMailListCallback = null
         super.onDestroy()

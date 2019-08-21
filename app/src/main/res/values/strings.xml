@@ -744,7 +744,7 @@
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
     <string name="Send_attachments">Send attachments?</string>
-    <string name="sendfromconfidant">This is an encrypted email, use MyConfidant to decrypt this email.</string>
+    <string name="sendfromconfidant">Sent from MyConfidant, the app for encrypted email.</string>
     <string name="No_mail">No mail</string>
     <string name="Sending">Sending</string>
     <string name="Saving">Saving</string>
