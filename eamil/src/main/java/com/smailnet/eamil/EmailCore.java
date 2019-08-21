@@ -169,6 +169,8 @@ class EmailCore {
             {
                 //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.smtp.starttls.enable", "true");
+               /* properties.setProperty("mail.imaps.auth.plain.disable", "true");
+                properties.setProperty("mail.imaps.auth.ntlm.disable", "true");*/
                 //properties.put("mail.smtp.ssl.enable", "false");
               /*  MailSSLSocketFactory sf = new MailSSLSocketFactory();
                 sf.setTrustAllHosts(true);*/
@@ -483,77 +485,95 @@ class EmailCore {
             int size = folder.getUnreadMessageCount();
             emailData.setUnReadCount(size);
 
-            IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
-            folderDraf.open(Folder.READ_ONLY);
-            int totalDraf = folderDraf.getMessageCount();
-            if(totalDraf > 0)
+            if(!menuList.get(1).equals(""))
             {
-                Message message = folderDraf.getMessage(totalDraf);
-                emailData.setDrafMaxMessageId(folderDraf.getUID(message));
-                emailData.setDrafMinMessageId(folderDraf.getUID(message));
-            }else{
-                emailData.setDrafMaxMessageId(0);
-                emailData.setDrafMinMessageId(0);
+                IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
+                folderDraf.open(Folder.READ_ONLY);
+                int totalDraf = folderDraf.getMessageCount();
+                if(totalDraf > 0)
+                {
+                    Message message = folderDraf.getMessage(totalDraf);
+                    emailData.setDrafMaxMessageId(folderDraf.getUID(message));
+                    emailData.setDrafMinMessageId(folderDraf.getUID(message));
+                }else{
+                    emailData.setDrafMaxMessageId(0);
+                    emailData.setDrafMinMessageId(0);
+                }
+                emailData.setDrafTotalCount(totalDraf);
+                int sizeDraf = folderDraf.getUnreadMessageCount();
+                emailData.setDrafUnReadCount(sizeDraf);
+                folderDraf.close(false);
             }
-            emailData.setDrafTotalCount(totalDraf);
-            int sizeDraf = folderDraf.getUnreadMessageCount();
-            emailData.setDrafUnReadCount(sizeDraf);
-
-            IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
-            folderSend.open(Folder.READ_ONLY);
-            int totalSend = folderSend.getMessageCount();
-
-            if(totalSend > 0)
+            if(!menuList.get(2).equals(""))
             {
-                Message message = folderSend.getMessage(totalSend);
-                emailData.setSendMaxMessageId(folderSend.getUID(message));
-                emailData.setSendMinMessageId(folderSend.getUID(message));
-            }else{
-                emailData.setSendMaxMessageId(0);
-                emailData.setSendMinMessageId(0);
+                IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
+                folderSend.open(Folder.READ_ONLY);
+                int totalSend = folderSend.getMessageCount();
+
+                if(totalSend > 0)
+                {
+                    Message message = folderSend.getMessage(totalSend);
+                    emailData.setSendMaxMessageId(folderSend.getUID(message));
+                    emailData.setSendMinMessageId(folderSend.getUID(message));
+                }else{
+                    emailData.setSendMaxMessageId(0);
+                    emailData.setSendMinMessageId(0);
+                }
+
+                emailData.setSendTotalCount(totalSend);
+                int sizeSend = folderSend.getUnreadMessageCount();
+                emailData.setSendunReadCount(sizeSend);
+                folderSend.close(false);
             }
 
-            emailData.setSendTotalCount(totalSend);
-            int sizeSend = folderSend.getUnreadMessageCount();
-            emailData.setSendunReadCount(sizeSend);
 
-            IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
-            folderGarbage.open(Folder.READ_ONLY);
-            int totalGarbage = folderGarbage.getMessageCount();
 
-            if(totalGarbage > 0)
+            if(!menuList.get(3).equals(""))
             {
-                Message message = folderGarbage.getMessage(totalGarbage);
-                emailData.setGarbageMaxMessageId(folderGarbage.getUID(message));
-                emailData.setGarbageMinMessageId(folderGarbage.getUID(message));
-            }else{
-                emailData.setGarbageMaxMessageId(0);
-                emailData.setGarbageMinMessageId(0);
-            }
-            emailData.setGarbageCount(totalGarbage);
-            int sizeGarbage = folderGarbage.getUnreadMessageCount();
-            emailData.setGarbageUnReadCount(sizeGarbage);
+                IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
+                folderGarbage.open(Folder.READ_ONLY);
+                int totalGarbage = folderGarbage.getMessageCount();
 
-            IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
-            folderDelete.open(Folder.READ_ONLY);
-            int totalDelete = folderDelete.getMessageCount();
-            if(totalDelete > 0)
-            {
-                Message message = folderDelete.getMessage(totalDelete);
-                emailData.setDeleteMaxMessageId(folderDelete.getUID(message));
-                emailData.setDeleteMinMessageId(folderDelete.getUID(message));
-            }else{
-                emailData.setDeleteMaxMessageId(0);
-                emailData.setDeleteMinMessageId(0);
+                if(totalGarbage > 0)
+                {
+                    Message message = folderGarbage.getMessage(totalGarbage);
+                    emailData.setGarbageMaxMessageId(folderGarbage.getUID(message));
+                    emailData.setGarbageMinMessageId(folderGarbage.getUID(message));
+                }else{
+                    emailData.setGarbageMaxMessageId(0);
+                    emailData.setGarbageMinMessageId(0);
+                }
+                emailData.setGarbageCount(totalGarbage);
+                int sizeGarbage = folderGarbage.getUnreadMessageCount();
+                emailData.setGarbageUnReadCount(sizeGarbage);
+                folderGarbage.close(false);
             }
-            emailData.setDeleteTotalCount(totalDelete);
-            int sizeDelete = folderDelete.getUnreadMessageCount();
-            emailData.setDeleteUnReadCount(sizeDelete);
+
+
+            if(!menuList.get(4).equals(""))
+            {
+                IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
+                folderDelete.open(Folder.READ_ONLY);
+                int totalDelete = folderDelete.getMessageCount();
+                if(totalDelete > 0)
+                {
+                    Message message = folderDelete.getMessage(totalDelete);
+                    emailData.setDeleteMaxMessageId(folderDelete.getUID(message));
+                    emailData.setDeleteMinMessageId(folderDelete.getUID(message));
+                }else{
+                    emailData.setDeleteMaxMessageId(0);
+                    emailData.setDeleteMinMessageId(0);
+                }
+                emailData.setDeleteTotalCount(totalDelete);
+                int sizeDelete = folderDelete.getUnreadMessageCount();
+                emailData.setDeleteUnReadCount(sizeDelete);
+                folderDelete.close(false);
+            }
             folder.close(false);
-            folderDraf.close(false);
-            folderSend.close(false);
-            folderGarbage.close(false);
-            folderDelete.close(false);
+
+
+
+
         }catch (Exception e)
         {
             e.printStackTrace();

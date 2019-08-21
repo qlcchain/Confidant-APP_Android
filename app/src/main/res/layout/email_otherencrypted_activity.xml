@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/headmainColor">
+    <RelativeLayout
+        android:id="@+id/noneParent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x80">
+        <TextView
+            android:id="@+id/none"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="None"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:textColor="@color/FF1E1E24"
+            android:layout_marginLeft="@dimen/x40"
+            android:textSize="16sp"
+            />
+        <TextView
+            android:id="@+id/noneChoose"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x15"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:drawableRight="@mipmap/ic_verified"
+            android:drawablePadding="@dimen/x5"
+            android:textColor="@color/timetextColor"
+            android:textSize="14sp" />
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_toRightOf="@id/avatar_container"
+            android:layout_height="@dimen/x2"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/x40"
+            android:background="@color/a1A757380"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/sslParent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x80">
+        <TextView
+            android:id="@+id/ssl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SSL/TLS"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:textColor="@color/FF1E1E24"
+            android:layout_marginLeft="@dimen/x40"
+            android:textSize="16sp"
+            />
+        <TextView
+
+            android:id="@+id/sslChoose"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x15"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:drawableRight="@mipmap/ic_verified"
+            android:drawablePadding="@dimen/x5"
+            android:textColor="@color/timetextColor"
+            android:textSize="14sp" />
+        <View
+
+            android:layout_width="match_parent"
+            android:layout_toRightOf="@id/avatar_container"
+            android:layout_height="@dimen/x2"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/x40"
+            android:background="@color/a1A757380"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/starttlsParent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x80">
+        <TextView
+            android:id="@+id/starttls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="STARTTLS"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:textColor="@color/FF1E1E24"
+            android:layout_marginLeft="@dimen/x40"
+            android:textSize="16sp"
+            />
+        <TextView
+            android:id="@+id/starttlsChoose"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x15"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:drawableRight="@mipmap/ic_verified"
+            android:drawablePadding="@dimen/x5"
+            android:textColor="@color/timetextColor"
+            android:textSize="14sp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_toRightOf="@id/avatar_container"
+            android:layout_height="@dimen/x2"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/x40"
+            android:background="@color/a1A757380"/>
+    </RelativeLayout>
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
+

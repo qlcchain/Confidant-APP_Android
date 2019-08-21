@@ -68,12 +68,24 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 toast(R.string.Over_configure)
             }
         }else{
-            AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
-            runOnUiThread {
-                closeProgressDialog()
-                //sycDataCountIMAP()
-                toast(R.string.The_mailbox_has_been_configured)
+            if(BuildConfig.DEBUG)
+            {
+                sycDataCountIMAP()
+                //AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
+                runOnUiThread {
+                    closeProgressDialog()
+                    //sycDataCountIMAP()
+                    toast(R.string.The_mailbox_has_been_configured)
+                }
+            }else{
+                AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.The_mailbox_has_been_configured)
+
+                }
             }
+
         }
     }
 
@@ -133,6 +145,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 emailHelper.setText(getString(R.string.hotlook_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_outlook_n))
             }
+            "6"->
+            {
+                emailHelper.setText(getString(R.string.icloud_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_icloud_n))
+            }
         }
         if(BuildConfig.DEBUG)
         {
@@ -162,6 +179,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 {
                     account_editText.setText("zhanglang108@hotmail.com")
                     password_editText.setText("langlang_108")
+                }
+                "6"->
+                {
+                    account_editText.setText("kzh1989@icloud.com")
+                    password_editText.setText("ewfj-edtl-ydhs-ehml")
                 }
             }
         }
@@ -365,6 +387,17 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.sendMenu = "Sent"
                     emailConfigEntity.garbageMenu = "Junk"
                     emailConfigEntity.deleteMenu = "Deleted"
+                }
+                "6"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = ""
+                    emailConfigEntity.sendMenu = ""
+                    emailConfigEntity.garbageMenu = ""
+                    emailConfigEntity.deleteMenu = ""
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

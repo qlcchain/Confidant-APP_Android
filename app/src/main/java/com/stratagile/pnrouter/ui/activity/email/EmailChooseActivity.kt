@@ -104,6 +104,25 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
             startActivity(Intent)
             finish()
         }
+        icloud.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.mail.me.com")
+                    .setSmtpPort(587)
+                    .setPopHost("pop.mail.me.com")
+                    .setPopPort(995)
+                    .setImapHost("imap.mail.me.com")
+                    .setImapPort(993)
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emailType","6")
+            startActivity(Intent)
+            finish()
+        }
+        otherEmail.setOnClickListener {
+            var Intent = Intent(this, EmailConfigActivity::class.java)
+            Intent.putExtra("emailType","255")
+            startActivity(Intent)
+            finish()
+        }
     }
 
     override fun setupActivityComponent() {

@@ -65,6 +65,31 @@
         app:itemSrc="@mipmap/email_icon_outlook"
         app:itemText="@string/outlook"/>
     />
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x110"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/icloud"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/email_icon_icloud"
+        app:itemText="@string/iCloud"/>
+    />
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x110"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/otherEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/email_icon_other"
+        app:itemText="@string/otheremail"/>
+    />
 </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

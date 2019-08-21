@@ -327,6 +327,12 @@
             android:name=".ui.activity.email.EmailChooseActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.email.EmailConfigActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.email.EmailConfigEncryptedActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.email.EmailInfoActivity"
             android:screenOrientation="portrait" />
         <activity

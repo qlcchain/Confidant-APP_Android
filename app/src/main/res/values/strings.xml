@@ -826,4 +826,20 @@ Then enter your Email address and password to log in.</string>
 3. In the “Start Service” section, select Enable IMAP/SMTP. \n
 4. Click Save Changes. \n
 Then enter your Email address and password to log in.</string>
+    <string name="icloud_Guides">Step 1: Check that IMAP is turned on \n
+1. On your computer, open Outlook、Hotmail、live. \n
+2. In the top right, click Settings. \n
+3. In the “Start Service” section, select Enable IMAP/SMTP. \n
+4. Click Save Changes. \n
+Then enter your Email address and password to log in.</string>
+    <string name="otheremail">Other (IMAP)</string>
+    <string name="iCloud">iCloud</string>
+    <string name="Incoming_Mail_Server">Incoming Mail Server</string>
+    <string name="Host_Name">Host Name</string>
+    <string name="User_Name">User Name</string>
+    <string name="Port">Port</string>
+    <string name="Type_of_Encrypted_Connections">Type of Encrypted Connections</string>
+    <string name="Outgoing_Mail_Server">Outgoing Mail Server</string>
+    <string name="IMAP_Email_Settings">IMAP Email Settings</string>
+    <string name="Encrypted">Encrypted</string>
 </resources>
