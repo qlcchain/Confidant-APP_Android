@@ -273,11 +273,17 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     //toast(R.string.Over_configure)
                 }
                 AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
-                Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, getString(R.string.fail)+":"+errorMsg)
-                        .setButton( getString(R.string.close), null, null)
-                        .click()
-                        .show()
+                try {
+                    Islands.ordinaryDialog(this@EmailLoginActivity)
+                            .setText(null, getString(R.string.fail)+":"+errorMsg)
+                            .setButton( getString(R.string.close), null, null)
+                            .click()
+                            .show()
+                }catch (e:Exception)
+                {
+
+                }
+
             }
         })
 
