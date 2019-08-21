@@ -91,6 +91,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         if(JBakMailsCheckRsp.params.retCode == 0)
         {
             isBackEd = JBakMailsCheckRsp.params.result
+            runOnUiThread {
+                var drawable = getResources().getDrawable(R.mipmap.statusbar_download_node_backups)
+                drawable.setBounds(0, 0, 72, 72);
+                backMenu.setCompoundDrawables(drawable, null, null,null);
+            }
         }
     }
 

@@ -2818,6 +2818,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setAcked(true);
+                        forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
                         if (isMessageListInited) {

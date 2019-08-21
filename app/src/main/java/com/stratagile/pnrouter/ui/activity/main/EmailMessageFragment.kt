@@ -367,7 +367,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 {
                     if(menu == "node")
                     {
-                        nodeUpandDown = "down";
+                        refreshLayout.finishLoadMore()
+                      /*  nodeUpandDown = "down";
                         if(lastPayload == null)
                         {
                             nodeStartId = 0;
@@ -377,7 +378,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         var type = AppConfig.instance.emailConfig().emailType.toInt()
                         var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                         var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))*/
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
                         pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
