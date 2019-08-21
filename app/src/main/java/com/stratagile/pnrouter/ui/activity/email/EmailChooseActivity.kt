@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.email
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -47,6 +49,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.exmail.qq.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("SSL/TLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","1")
             startActivity(Intent)
@@ -60,6 +64,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.qq.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("SSL/TLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","2")
             startActivity(Intent)
@@ -73,6 +79,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.163.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("SSL/TLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","3")
             startActivity(Intent)
@@ -86,6 +94,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.gmail.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("SSL/TLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","4")
             startActivity(Intent)
@@ -99,10 +109,20 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("outlook.office365.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("STARTTLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","5")
             startActivity(Intent)
             finish()
+        }
+        if (BuildConfig.DEBUG)
+        {
+            icloud.visibility = View.VISIBLE
+            otherEmail.visibility = View.VISIBLE
+        }else{
+            icloud.visibility = View.GONE
+            otherEmail.visibility = View.GONE
         }
         icloud.setOnClickListener {
             AppConfig.instance.emailConfig()
@@ -112,6 +132,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
                     .setPopPort(995)
                     .setImapHost("imap.mail.me.com")
                     .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("STARTTLS")
             var Intent = Intent(this, EmailLoginActivity::class.java)
             Intent.putExtra("emailType","6")
             startActivity(Intent)

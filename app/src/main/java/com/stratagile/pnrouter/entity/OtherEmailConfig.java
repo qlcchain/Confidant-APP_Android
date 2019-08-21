@@ -32,12 +32,12 @@ public class OtherEmailConfig {
     private String name;            //昵称
     private String password;        //邮箱密码
     private int imapPort;           //IMAP端口
-    private String imapEncrypted;
+    private String imapEncrypted;    //加密类型
     private String popHost;         //POP的Host
     private int popPort;            //POP端口
     private String smtpHost;        //SMTP的Host
     private int smtpPort;           //SMTP端口
-    private String smtpEncrypted;
+    private String smtpEncrypted;    //加密类型
     private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
 
 

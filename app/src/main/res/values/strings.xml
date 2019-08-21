@@ -842,4 +842,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Outgoing_Mail_Server">Outgoing Mail Server</string>
     <string name="IMAP_Email_Settings">IMAP Email Settings</string>
     <string name="Encrypted">Encrypted</string>
+    <string name="Some_are_empty"> Some are empty.</string>
+
 </resources>

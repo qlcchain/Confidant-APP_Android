@@ -205,8 +205,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 return@setOnClickListener
             }
             showProgressDialog()
-            Islands
-                    .circularProgress(this)
+            Islands.circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)
                     .run { progressDialog -> login(progressDialog) }
@@ -252,6 +251,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 //showProgressDialog(getString(R.string.waiting))
                 if(settings == 1)
                 {
+                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                    if(emailConfigEntityList.size > 0) {
+                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        emailConfigEntity.password = AppConfig.instance.emailConfig().password
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                    }
                     toast(R.string.success)
                     finish()
                 }else{

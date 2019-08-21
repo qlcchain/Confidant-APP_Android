@@ -37,13 +37,16 @@ public class EmailConfig {
     private String account;         //邮箱帐号
     private String password;        //邮箱密码
     private String name;            //昵称
+    private String imapEncrypted;    //加密类型
+    private String smtpEncrypted;    //加密类型
 
     public String getEmailType() {
         return emailType;
     }
 
-    public void setEmailType(String emailType) {
+    public EmailConfig setEmailType(String emailType) {
         this.emailType = emailType;
+        return this;
     }
 
     public EmailConfig setSmtpHost(String smtpHost){
@@ -124,6 +127,24 @@ public class EmailConfig {
 
     public EmailConfig setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public String getImapEncrypted() {
+        return imapEncrypted;
+    }
+
+    public EmailConfig setImapEncrypted(String imapEncrypted) {
+        this.imapEncrypted = imapEncrypted;
+        return this;
+    }
+
+    public String getSmtpEncrypted() {
+        return smtpEncrypted;
+    }
+
+    public EmailConfig setSmtpEncrypted(String smtpEncrypted) {
+        this.smtpEncrypted = smtpEncrypted;
         return this;
     }
 }

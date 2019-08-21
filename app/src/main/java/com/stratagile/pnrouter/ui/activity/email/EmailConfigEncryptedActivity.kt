@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.email
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -37,18 +38,21 @@ class EmailConfigEncryptedActivity : BaseActivity(), EmailConfigEncryptedContrac
     override fun initData() {
         title.text = getString(R.string.Encrypted)
         noneParent.setOnClickListener {
+            noneChoose.visibility = View.VISIBLE
             var intent = Intent()
             intent.putExtra("encryptedType", "None")
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
         sslParent.setOnClickListener {
+            sslChoose.visibility = View.VISIBLE
             var intent = Intent()
             intent.putExtra("encryptedType", "SSL/TLS")
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
         starttlsParent.setOnClickListener {
+            starttlsChoose.visibility = View.VISIBLE
             var intent = Intent()
             intent.putExtra("encryptedType", "STARTTLS")
             setResult(Activity.RESULT_OK, intent)

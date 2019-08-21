@@ -120,6 +120,9 @@ class EmailCore {
 
     private Message message;
 
+    private String imapEncrypted;    //加密类型
+    private String smtpEncrypted;    //加密类型
+
     private int maxCount = 10;
     private final static int CONNECT_TIMEOUT = 20 * 1000; // milliseconds
     private final static int WRITE_TIMEOUT = 40 * 1000; // milliseconds
@@ -154,6 +157,8 @@ class EmailCore {
         this.imapPort = String.valueOf(emailConfig.getImapPort());
         this.account = emailConfig.getAccount();
         this.password = emailConfig.getPassword();
+        this.imapEncrypted = emailConfig.getImapEncrypted();
+        this.smtpEncrypted = emailConfig.getSmtpEncrypted();
         final Properties properties = new Properties();
 
         String sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
@@ -165,7 +170,7 @@ class EmailCore {
             properties.put(MAIL_SMTP_POST, smtpPort);
             properties.put(MAIL_SMTP_HOST, smtpHost);
             properties.put(MAIL_SMTP_AUTH, "true");
-            if(smtpPort.equals("587"))
+            if(smtpEncrypted.equals("STARTTLS"))
             {
                 //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.smtp.starttls.enable", "true");

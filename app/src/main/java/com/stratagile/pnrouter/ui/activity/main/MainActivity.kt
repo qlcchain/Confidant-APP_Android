@@ -3299,6 +3299,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             .setPassword(emailConfigEntity.password)
                             .setName(emailConfigEntity.name)
                             .setEmailType(emailConfigEntity.emailType)
+                            .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                            .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
                     ConstantValue.currentEmailConfigEntity = emailConfigEntity;
                     EventBus.getDefault().post(SortEmailConfig())
                 }
@@ -3746,6 +3748,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setPassword(emailConfigEntity.password)
                     .setName(emailConfigEntity.name)
                     .setEmailType(emailConfigEntity.emailType)
+                    .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                    .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
             Inbox.setCount(emailConfigEntity.unReadCount)
             spam.setCount(emailConfigEntity.garbageUnReadCount)
             if(AppConfig.instance.emailConfig().account != null)
@@ -3836,6 +3840,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 .setPassword(emailConfigEntity.password)
                                 .setName(emailConfigEntity.name)
                                 .setEmailType(emailConfigEntity.emailType)
+                                .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                                .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
                     }
                     accountData.choose = true
                     emaiConfigChooseAdapter!!.notifyDataSetChanged()

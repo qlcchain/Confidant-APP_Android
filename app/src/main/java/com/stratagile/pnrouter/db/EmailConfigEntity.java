@@ -75,9 +75,13 @@ public class EmailConfigEntity implements Parcelable{
 
     private Boolean isChoose;        //是否默认邮箱
 
+    private String imapEncrypted;    //加密类型
+    private String smtpEncrypted;    //加密类型
+
     public EmailConfigEntity() {
 
     }
+
 
     protected EmailConfigEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -146,9 +150,12 @@ public class EmailConfigEntity implements Parcelable{
         deleteMinMessageId = in.readLong();
         byte tmpIsChoose = in.readByte();
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
+        imapEncrypted = in.readString();
+        smtpEncrypted = in.readString();
     }
 
-    @Generated(hash = 564695810)
+
+    @Generated(hash = 1929677232)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
             String popHost, String imapHost, String account, String name, String emailType,
             String password, int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount,
@@ -162,7 +169,8 @@ public class EmailConfigEntity implements Parcelable{
             long nodeMaxMessageId, long starMaxMessageId, long drafMaxMessageId, long sendMaxMessageId,
             long garbageMaxMessageId, long deleteMaxMessageId, long nodeMinMessageId,
             long starMinMessageId, long drafMinMessageId, long sendMinMessageId,
-            long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose) {
+            long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose, String imapEncrypted,
+            String smtpEncrypted) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -217,6 +225,8 @@ public class EmailConfigEntity implements Parcelable{
         this.garbageMinMessageId = garbageMinMessageId;
         this.deleteMinMessageId = deleteMinMessageId;
         this.isChoose = isChoose;
+        this.imapEncrypted = imapEncrypted;
+        this.smtpEncrypted = smtpEncrypted;
     }
 
     public static final Creator<EmailConfigEntity> CREATOR = new Creator<EmailConfigEntity>() {
@@ -663,6 +673,32 @@ public class EmailConfigEntity implements Parcelable{
         isChoose = choose;
     }
 
+
+
+    public Boolean getIsChoose() {
+        return this.isChoose;
+    }
+
+    public void setIsChoose(Boolean isChoose) {
+        this.isChoose = isChoose;
+    }
+
+    public String getImapEncrypted() {
+        return imapEncrypted;
+    }
+
+    public void setImapEncrypted(String imapEncrypted) {
+        this.imapEncrypted = imapEncrypted;
+    }
+
+    public String getSmtpEncrypted() {
+        return smtpEncrypted;
+    }
+
+    public void setSmtpEncrypted(String smtpEncrypted) {
+        this.smtpEncrypted = smtpEncrypted;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -729,13 +765,7 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeLong(garbageMinMessageId);
         dest.writeLong(deleteMinMessageId);
         dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
-    }
-
-    public Boolean getIsChoose() {
-        return this.isChoose;
-    }
-
-    public void setIsChoose(Boolean isChoose) {
-        this.isChoose = isChoose;
+        dest.writeString(imapEncrypted);
+        dest.writeString(smtpEncrypted);
     }
 }
