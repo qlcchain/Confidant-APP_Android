@@ -136,6 +136,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var adminUserSn:String?  = null
     var hasFinger = false
     var name:Long  = 0;
+    var openNewOnPow = true
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -1049,10 +1050,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 return@setOnClickListener
             }
             isFromScanAdmim = false
-            isFromScan = false
+            if(!openNewOnPow)
+            {
+                isFromScan = false
+            }
             if (NetUtils.isNetworkAvalible(this)) {
                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-                if (routerList.size == 0) {
+                if (routerList.size == 0 && !openNewOnPow) {
                     return@setOnClickListener
                 }
                 if(!WiFiUtil.isNetworkConnected())
@@ -2447,6 +2451,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     {
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if (routerList.size != 0) {
+            openNewOnPow = false
             var hasCheckedRouter = false
             loginBtn.background = resources.getDrawable(R.drawable.btn_white)
             run breaking@ {
@@ -2603,29 +2608,58 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             noRoutergroupLogin.visibility = View.GONE
             scanParentLogin.visibility = View.GONE
         } else {
-            var options = RequestOptions()
-                    .centerCrop()
-                    .transform(GlideCircleTransform())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .priority(Priority.HIGH)
-            Glide.with(this)
-                    .load(R.mipmap.icon_no_circle)
-                    .apply(options)
-                    .into(ivNoCircle)
-            ivNoCircle.visibility = View.VISIBLE
-            joincircle.visibility = View.VISIBLE
-            ivAvatar.visibility = View.GONE
-            tvUserName.visibility = View.VISIBLE
-            username = ConstantValue.localUserName!!
-            tvUserName.text = "Hello\n"+ ConstantValue.localUserName + "\nWelcome back!"
-            routerNameTips.text = "You haven't joined any circle"
-            desc.text = resources.getString(R.string.login_no_router)
-            loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
-            routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
-            routerNameTipsmore.visibility = View.VISIBLE
-            hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.GONE
-            scanParentLogin.visibility = View.GONE
+            if(openNewOnPow)
+            {
+                routerId = "3089876DD8A1A76274A3150FB87F9B24EF0C4C9AF16FAA37BAFE99C955DA2538155D6D0E5998"
+                userSn =  "03F0000100163E04B79700005C6FDFE2"
+                userId = "A470AC000000000000007520C91DBB951062C74EAD7C052B5F5382D4624C381AB31B53F00000"
+                username = ConstantValue.localUserName!!
+                desc.text = getString(R.string.login_has_router)
+                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                tvUserName.text = "Hello\n"+name+"\nWelcome back!"
+                dataFileVersion = 0
+                routerNameTips.setTextColor(resources.getColor(R.color.white))
+                routerNameTips.text = "pow node"
+                ivAvatar.setText("pow node")
+                loginKey.setText("")
+                ivAvatar.visibility = View.VISIBLE
+                tvUserName.visibility = View.VISIBLE
+                ivNoCircle.visibility = View.GONE
+                joincircle.visibility = View.INVISIBLE
+                loginBtn.background = resources.getDrawable(R.drawable.btn_white)
+                routerNameTipsmore.visibility = View.INVISIBLE
+                hasRouterParentLogin.visibility = View.GONE
+                noRoutergroupLogin.visibility = View.GONE
+                scanParentLogin.visibility = View.GONE
+                ConstantValue.currentRouterId = routerId
+                ConstantValue.currentRouterSN = userSn;
+                isFromScan = true
+            }else{
+                var options = RequestOptions()
+                        .centerCrop()
+                        .transform(GlideCircleTransform())
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .priority(Priority.HIGH)
+                Glide.with(this)
+                        .load(R.mipmap.icon_no_circle)
+                        .apply(options)
+                        .into(ivNoCircle)
+                ivNoCircle.visibility = View.VISIBLE
+                joincircle.visibility = View.VISIBLE
+                ivAvatar.visibility = View.GONE
+                tvUserName.visibility = View.VISIBLE
+                username = ConstantValue.localUserName!!
+                tvUserName.text = "Hello\n"+ ConstantValue.localUserName + "\nWelcome back!"
+                routerNameTips.text = "You haven't joined any circle"
+                desc.text = resources.getString(R.string.login_no_router)
+                loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
+                routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
+                routerNameTipsmore.visibility = View.VISIBLE
+                hasRouterParentLogin.visibility = View.GONE
+                noRoutergroupLogin.visibility = View.GONE
+                scanParentLogin.visibility = View.GONE
+            }
+
         }
         if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
         {
