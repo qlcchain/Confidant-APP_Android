@@ -314,6 +314,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false
@@ -334,6 +336,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false

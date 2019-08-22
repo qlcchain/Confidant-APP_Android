@@ -3795,7 +3795,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             emailConfigChoose = emailConfig
                         }
                     }
-                    emailConfigEntityListNew.add(0,emailConfigChoose!!)
+                    if(emailConfigChoose != null)
+                    {
+                        emailConfigEntityListNew.add(0,emailConfigChoose!!)
+                    }
                     emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityListNew)
                 }else{
                     emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)

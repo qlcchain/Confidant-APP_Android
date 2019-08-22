@@ -771,26 +771,26 @@
 
     <string name="delete_email">Delete email</string>
     <string name="Setup_Guides">Setup Guides</string>
-    <string name="qqCompany_Guides">Step 1: Check that IMAP is turned on\n
+    <string name="qqCompany_Guides">Step A: Check that IMAP is turned on\n
 1. On your computer, open QQ Mailbox.\n
 2. In the top right, click Settings.\n
 3. In the “Start Service” section, select Enable\n
 IMAP/SMTP.\n
 4. Click Save Changes.\n
 Then enter your Email address and password to log in.</string>
-    <string name="qq_Guides">Step 1: Check that IMAP is turned on\n
+    <string name="qq_Guides">Step A: Check that IMAP is turned on\n
 1. On your computer, open QQ Mail.\n
 2. In the top right, click Settings.\n
 3. Find POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV.\n
 4. Enable IMAP/SMTP.\n
 \n
-Step 2: Get authorization to log in the third-party Email client\n
+Step B: Get authorization to log in the third-party Email client\n
 1. Generate authorization code.\n
 2. Check the SMS message sent by QQ Mail.\n
 3. Fill in the authorization code.\n
 \n
 Then enter your Email address and password to log in.</string>
-    <string name="wangyi_Guides">Step 1: Check that IMAP is turned on \n
+    <string name="wangyi_Guides">Step A: Check that IMAP is turned on \n
 1. On your computer, open 163 Mail.\n
 2. In the top right, click Settings.\n
 3. Click Settings.\n
@@ -798,13 +798,13 @@ Then enter your Email address and password to log in.</string>
 5. In the POP3/SMTP/IMAP setting section, select Enable IMAP/SMTP.\n
 6. Click Save Changes.\n
 \n
-Step 2: Get authorization to log in the third-party Email client\n
+Step B: Get authorization to log in the third-party Email client\n
 1. Pass security verification. \n
 2. Set up authorization code. \n
 3. Click Confirm. \n
 \n
 Then enter your Email address and password to log in.</string>
-    <string name="gmail_Guides">Step 1: Check that IMAP is turned on \n
+    <string name="gmail_Guides">Step A: Check that IMAP is turned on \n
 1. On your computer, open Gmail. \n
 2. In the top right, click Settings. \n
 3. Click Settings. \n
@@ -812,7 +812,7 @@ Then enter your Email address and password to log in.</string>
 5. In the "IMAP access" section, select Enable IMAP. \n
 6. Click Save Changes. \n
 \n
-Step 2: Allow less secure apps  \n
+Step B: Allow less secure apps  \n
 1. In the top right, click Account.  \n
 2. Click Security in the left bar.  \n
 3. Turn on Less secure app access.  \n
@@ -820,13 +820,13 @@ Step 2: Allow less secure apps  \n
 5. Confirm the turn on activity.  \n
 \n
 Then enter your Email address and password to log in.</string>
-    <string name="hotlook_Guides">Step 1: Check that IMAP is turned on \n
+    <string name="hotlook_Guides">Step A: Check that IMAP is turned on \n
 1. On your computer, open Outlook、Hotmail、live. \n
 2. In the top right, click Settings. \n
 3. In the “Start Service” section, select Enable IMAP/SMTP. \n
 4. Click Save Changes. \n
 Then enter your Email address and password to log in.</string>
-    <string name="icloud_Guides">Step 1: Check that IMAP is turned on \n
+    <string name="icloud_Guides">Step A: Check that IMAP is turned on \n
 1. On your computer, open Outlook、Hotmail、live. \n
 2. In the top right, click Settings. \n
 3. In the “Start Service” section, select Enable IMAP/SMTP. \n

@@ -120,6 +120,22 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
         setContentView(R.layout.email_otherconfig_activity)
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
+        if(BuildConfig.DEBUG)
+        {
+            /*var account = account.text.toString()
+            var hostname = hostname.text.toString()
+            var userName = userName.text.toString()
+            var password = password.text.toString()
+            var inPort = inPort.text.toString()
+            var outhostname = outhostname.text.toString()
+            var outPort = outPort.text.toString()*/
+            account.setText("emaildev@qlink.mobi")
+            password.setText("Qlcchain@123")
+            hostname.setText("imap.exmail.qq.com")
+            userName.setText("ak47")
+            outhostname.setText("smtp.exmail.qq.com")
+        }
         otherEmailConfig  = OtherEmailConfig();
         title.text = getString(R.string.IMAP_Email_Settings)
         inEncrypted.setOnClickListener {
@@ -164,15 +180,15 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                     {
                         "None" ->
                         {
-                            inPort.setText("25")
+                            outPort.setText("25")
                         }
                         "SSL/TLS" ->
                         {
-                            inPort.setText("465")
+                            outPort.setText("465")
                         }
                         "STARTTLS" ->
                         {
-                            inPort.setText("587")
+                            outPort.setText("587")
                         }
                     }
                 }
@@ -224,7 +240,14 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             otherEmailConfig!!.smtpHost = outhostname
             otherEmailConfig!!.smtpPort = outPort.toInt()
             otherEmailConfig!!.emailType = "255"
-
+            if(otherEmailConfig!!.smtpEncrypted == null)
+            {
+                otherEmailConfig!!.smtpEncrypted = "None"
+            }
+            if(otherEmailConfig!!.imapEncrypted == null)
+            {
+                otherEmailConfig!!.imapEncrypted = "None"
+            }
             AppConfig.instance.emailConfig()
                     .setSmtpHost(otherEmailConfig!!.smtpHost )
                     .setSmtpPort( otherEmailConfig!!.smtpPort)
@@ -310,6 +333,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false
@@ -330,6 +355,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false
@@ -507,5 +534,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.saveEmailConfCallback = null
+        super.onDestroy()
+    }
 }

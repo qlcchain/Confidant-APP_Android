@@ -1289,7 +1289,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
     fun shouUI(flag: Boolean) {
         searchParent.visibility = if (flag) View.VISIBLE else View.GONE
-        if(flag)
+        if(flag && AppConfig.instance.emailConfig().account!= null)
         {
             var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
             if (localMessageList== null || localMessageList.size > 0)

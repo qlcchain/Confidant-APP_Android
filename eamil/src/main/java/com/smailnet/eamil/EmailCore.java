@@ -170,7 +170,7 @@ class EmailCore {
             properties.put(MAIL_SMTP_POST, smtpPort);
             properties.put(MAIL_SMTP_HOST, smtpHost);
             properties.put(MAIL_SMTP_AUTH, "true");
-            if(smtpEncrypted.equals("STARTTLS"))
+            if(smtpEncrypted != null && smtpEncrypted.equals("STARTTLS"))
             {
                 //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.smtp.starttls.enable", "true");
@@ -181,7 +181,11 @@ class EmailCore {
                 sf.setTrustAllHosts(true);*/
                // properties.put("mail.smtp.ssl.checkserveridentity", "false");
                 //properties.put("mail.smtp.ssl.socketFactory", sf);
-            }else{
+            }else if(smtpEncrypted != null && smtpEncrypted.equals("None")){
+                //properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
+                //properties.put("mail.smtp.starttls.enable", "false");
+                //properties.put("mail.smtp.ssl.enable", "true");
+            }else {
                 properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
                 //properties.put("mail.smtp.starttls.enable", "false");
                 //properties.put("mail.smtp.ssl.enable", "true");
@@ -196,7 +200,26 @@ class EmailCore {
             properties.put(MAIL_POP3_AUTH, "true");
         }
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
-            properties.put(MAIL_IMAP_SOCKETFACTORY_CLASS, sslSocketFactory);
+            if(imapEncrypted != null && imapEncrypted.equals("STARTTLS"))
+            {
+                //properties.put("mail.transport.protocol", "smtp");
+                properties.put("mail.imap.starttls.enable", "true");
+               /* properties.setProperty("mail.imaps.auth.plain.disable", "true");
+                properties.setProperty("mail.imaps.auth.ntlm.disable", "true");*/
+                //properties.put("mail.smtp.ssl.enable", "false");
+              /*  MailSSLSocketFactory sf = new MailSSLSocketFactory();
+                sf.setTrustAllHosts(true);*/
+                // properties.put("mail.smtp.ssl.checkserveridentity", "false");
+                //properties.put("mail.smtp.ssl.socketFactory", sf);
+            }else if(imapEncrypted != null && imapEncrypted.equals("None")){
+                //properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
+                //properties.put("mail.smtp.starttls.enable", "false");
+                //properties.put("mail.smtp.ssl.enable", "true");
+            }else {
+                properties.put(MAIL_IMAP_SOCKETFACTORY_CLASS, sslSocketFactory);
+                //properties.put("mail.smtp.starttls.enable", "false");
+                //properties.put("mail.smtp.ssl.enable", "true");
+            }
             properties.put(MAIL_IMAP_SOCKETFACTORY_FALLBACK, isFallback);
             properties.put(MAIL_IMAP_SOCKETFACTORY_PORT, imapPort);
             properties.put(MAIL_IMAP_POST, imapPort);
