@@ -1123,144 +1123,152 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
         {
 
-            var endStr = ""
-            if(emailMeaasgeData!!.content.contains("myconfidantbegin"))
-            {
-                endStr =  "<div myconfidantbegin=''>"+
-                        "<br />"+
-                        " <br />"+
-                        " <br />"+
-                        "<span>"+
-                        getString(R.string.sendfromconfidant)+
-                        "</span>"+
-                        "</div>"
-            }
-            var miContentSoucreBgeinIndex= 0
-            var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
-            if(miContentSoucreEndIndex == -1)
-            {
-                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
-            }
-            if(miContentSoucreEndIndex == -1)
-            {
-                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantkey=")
-            }
-            if(miContentSoucreEndIndex == -1)
-            {
-                miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantKey=")
-            }
-            var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
-            if(beginIndex == -1)
-            {
-                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
-            }
-            if(beginIndex == -1)
-            {
-                beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey=\"")
-            }
-            if(beginIndex == -1)
-            {
-                beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey=\"")
-            }
-            if(beginIndex < 0)
-            {
-                beginIndex = 0;
-            }
-            if(miContentSoucreEndIndex < 0)
-            {
-                miContentSoucreEndIndex = 0;
-            }
-            var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-            var endIndexd = emailMeaasgeData!!.content.length
-            if(endIndexd < beginIndex)
-            {
-                endIndexd = beginIndex
-            }
-            var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,endIndexd)
-            var endIndex = confidantkeyBefore.indexOf("'></span>")
-            if(endIndex < 0)
-            {
-                endIndex = confidantkeyBefore.indexOf("\"></span>")
-            }
-            if(endIndex < 14)
-            {
-                endIndex = 14
-            }
-            var confidantkey = confidantkeyBefore.substring(14,endIndex)
-
-            var confidantkeyArr = listOf<String>()
-            var accountMi = ""
-            var shareMiKey = ""
-            var account =  String(RxEncodeTool.base64Decode(accountMi))
-
-            if(confidantkey!!.contains("###"))
-            {
-                var confidantkeyList = confidantkey.split("###")
-                var userIdStr = confidantkeyList.get(0)
-                userID = userIdStr.substring(7,userIdStr.length)
-                confidantkey = confidantkeyList.get(1)
-            }else{
-
-                if(confidantkey!!.contains("userid"))
+            try{
+                var endStr = ""
+                if(emailMeaasgeData!!.content.contains("myconfidantbegin"))
                 {
-                    var userIdStr = confidantkey
-                    userID = userIdStr.substring(7,userIdStr.length)
-                    confidantkey = "";
+                    endStr =  "<div myconfidantbegin=''>"+
+                            "<br />"+
+                            " <br />"+
+                            " <br />"+
+                            "<span>"+
+                            getString(R.string.sendfromconfidant)+
+                            "</span>"+
+                            "</div>"
                 }
-            }
-            if(confidantkey != "")
-            {
-                if(confidantkey!!.contains("##"))
+                var miContentSoucreBgeinIndex= 0
+                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+                if(miContentSoucreEndIndex == -1)
                 {
-                    var confidantkeyList = confidantkey.split("##")
-                    for(item in confidantkeyList)
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+                }
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantkey=")
+                }
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantKey=")
+                }
+                var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
+                }
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey=\"")
+                }
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey=\"")
+                }
+                if(beginIndex < 0)
+                {
+                    beginIndex = 0;
+                }
+                if(miContentSoucreEndIndex < 0)
+                {
+                    miContentSoucreEndIndex = 0;
+                }
+                var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+                var endIndexd = emailMeaasgeData!!.content.length
+                if(endIndexd < beginIndex)
+                {
+                    endIndexd = beginIndex
+                }
+                var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,endIndexd)
+                var endIndex = confidantkeyBefore.indexOf("'></span>")
+                if(endIndex < 0)
+                {
+                    endIndex = confidantkeyBefore.indexOf("\"></span>")
+                }
+                if(endIndex < 14)
+                {
+                    endIndex = 14
+                }
+                var confidantkey = confidantkeyBefore.substring(14,endIndex)
+
+                var confidantkeyArr = listOf<String>()
+                var accountMi = ""
+                var shareMiKey = ""
+                var account =  String(RxEncodeTool.base64Decode(accountMi))
+
+                if(confidantkey!!.contains("###"))
+                {
+                    var confidantkeyList = confidantkey.split("###")
+                    var userIdStr = confidantkeyList.get(0)
+                    userID = userIdStr.substring(7,userIdStr.length)
+                    confidantkey = confidantkeyList.get(1)
+                }else{
+
+                    if(confidantkey!!.contains("userid"))
                     {
-                        if(item.contains("&&"))
+                        var userIdStr = confidantkey
+                        userID = userIdStr.substring(7,userIdStr.length)
+                        confidantkey = "";
+                    }
+                }
+                if(confidantkey != "")
+                {
+                    if(confidantkey!!.contains("##"))
+                    {
+                        var confidantkeyList = confidantkey.split("##")
+                        for(item in confidantkeyList)
                         {
-                            confidantkeyArr = item.split("&&")
-                        }else{
-                            confidantkeyArr = item.split("&amp;&amp;")
+                            if(item.contains("&&"))
+                            {
+                                confidantkeyArr = item.split("&&")
+                            }else{
+                                confidantkeyArr = item.split("&amp;&amp;")
+                            }
+
+                            accountMi = confidantkeyArr.get(0)
+                            shareMiKey = confidantkeyArr.get(1)
+                            account =  String(RxEncodeTool.base64Decode(accountMi))
+                            if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
+                            {
+                                break;
+                            }
                         }
 
+                    }else{
+                        if(confidantkey.contains("&&"))
+                        {
+                            confidantkeyArr = confidantkey.split("&&")
+                        }else{
+                            confidantkeyArr = confidantkey.split("&amp;&amp;")
+                        }
                         accountMi = confidantkeyArr.get(0)
                         shareMiKey = confidantkeyArr.get(1)
-                        account =  String(RxEncodeTool.base64Decode(accountMi))
-                        if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
-                        {
-                            break;
-                        }
                     }
-
-                }else{
-                    if(confidantkey.contains("&&"))
+                    var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+                    var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+                    val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                    var sourceContent = ""
+                    try{
+                        sourceContent = String(miContent)
+                        contactMapList.put("originalText",sourceContent + endStr)
+                        contactMapList.put("aesKey",aesKey)
+                        contactMapList.put("userId",userID)
+                    }catch (e:Exception)
                     {
-                        confidantkeyArr = confidantkey.split("&&")
-                    }else{
-                        confidantkeyArr = confidantkey.split("&amp;&amp;")
+                        contactMapList.put("originalText","")
+                        contactMapList.put("aesKey","")
+                        contactMapList.put("userId",userID)
                     }
-                    accountMi = confidantkeyArr.get(0)
-                    shareMiKey = confidantkeyArr.get(1)
-                }
-                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-                var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-                var sourceContent = ""
-                try{
-                    sourceContent = String(miContent)
-                    contactMapList.put("originalText",sourceContent + endStr)
-                    contactMapList.put("aesKey",aesKey)
-                    contactMapList.put("userId",userID)
-                }catch (e:Exception)
-                {
+                }else{
                     contactMapList.put("originalText","")
                     contactMapList.put("aesKey","")
                     contactMapList.put("userId",userID)
                 }
-            }else{
+            }catch (e:Exception)
+            {
                 contactMapList.put("originalText","")
                 contactMapList.put("aesKey","")
                 contactMapList.put("userId",userID)
             }
+
 
             return contactMapList
         }else{
