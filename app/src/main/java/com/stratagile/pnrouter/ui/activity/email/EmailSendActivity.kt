@@ -62,6 +62,8 @@ import android.text.TextWatcher
 import android.view.ViewTreeObserver
 import android.webkit.*
 import android.widget.*
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.luck.picture.lib.PicturePreviewActivity
@@ -81,7 +83,8 @@ import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
 import java.io.ByteArrayInputStream
@@ -1271,7 +1274,18 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }else{
                 contentHtml +=emailMeaasgeInfoData!!.content
             }
-
+            if(contentHtml.contains("confidantkey"))
+            {
+                var beginFlag = contentHtml.indexOf("<span style='display:none' confidantkey=")
+                if(beginFlag < 0)
+                {
+                    beginFlag = contentHtml.indexOf("<span style=\"display:none\" confidantkey=")
+                }
+                if(beginFlag >= 0)
+                {
+                    contentHtml = contentHtml.substring(0,beginFlag)
+                }
+            }
 
         }
         var needTipsShow = true;
@@ -1305,9 +1319,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
             confidantKey += myAccountBase64+"&&"+dstKey;
         }
+        var userId = "userid:"+SpUtil.getString(this, ConstantValue.userId, "")
         if(contactMapList.size >0)
         {
+            confidantKey = userId +"###"+confidantKey
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
+        }else{
+            contentHtml += "<span style=\'display:none\' confidantkey=\'"+userId+"\'></span>";
         }
         var endStr =  "<div myconfidantbegin=''>"+
                 "<br />"+
@@ -1521,6 +1539,35 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
                                     emailConfigEntityChoose.sendMenuRefresh = true
                                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
+                                }
+
+                                if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
+                                {
+                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+                                    var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                                    var msg= "I'm"+ nickName
+                                    msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
+                                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                                    var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
+                                    var sendData = BaseData(addFriendReq);
+                                    if(ConstantValue.encryptionType.equals( "1"))
+                                    {
+                                        addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                                        sendData = BaseData(4,addFriendReq);
+                                    }
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                    }else if (ConstantValue.isToxConnected) {
+                                        var baseData = sendData
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }
+                                    }
                                 }
                                 EventBus.getDefault().post(SendEmailSuccess(positionIndex))
                                 Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()

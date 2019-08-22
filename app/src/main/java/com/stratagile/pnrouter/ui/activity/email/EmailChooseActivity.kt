@@ -116,14 +116,8 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
             startActivity(Intent)
             finish()
         }
-        if (BuildConfig.DEBUG)
-        {
-            icloud.visibility = View.VISIBLE
-            otherEmail.visibility = View.VISIBLE
-        }else{
-            icloud.visibility = View.GONE
-            otherEmail.visibility = View.GONE
-        }
+        icloud.visibility = View.GONE
+        otherEmail.visibility = View.VISIBLE
         icloud.setOnClickListener {
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.mail.me.com")

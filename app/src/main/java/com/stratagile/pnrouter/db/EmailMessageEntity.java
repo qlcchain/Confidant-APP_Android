@@ -37,6 +37,7 @@ public class EmailMessageEntity implements Parcelable{
     private String aesKey;
     private long messageTotalCount;
     private String emailAttachPath;
+    private String userId;
     
     public EmailMessageEntity() {
 
@@ -76,15 +77,17 @@ public class EmailMessageEntity implements Parcelable{
         aesKey = in.readString();
         messageTotalCount = in.readLong();
         emailAttachPath = in.readString();
+        userId = in.readString();
     }
 
 
-    @Generated(hash = 261816859)
+    @Generated(hash = 1788327900)
     public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
             String from, String to, String cc, String bcc, String date, Long timeStamp, boolean isSeen,
             boolean isStar, String priority, boolean isReplySign, long size,
             boolean isContainerAttachment, int attachmentCount, String content, String contentText,
-            String originalText, String aesKey, long messageTotalCount, String emailAttachPath) {
+            String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
+            String userId) {
         this.id = id;
         this.account = account;
         this.msgId = msgId;
@@ -109,6 +112,7 @@ public class EmailMessageEntity implements Parcelable{
         this.aesKey = aesKey;
         this.messageTotalCount = messageTotalCount;
         this.emailAttachPath = emailAttachPath;
+        this.userId = userId;
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -331,6 +335,14 @@ public class EmailMessageEntity implements Parcelable{
         return this.isContainerAttachment;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -372,6 +384,6 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeString(aesKey);
         dest.writeLong(messageTotalCount);
         dest.writeString(emailAttachPath);
+        dest.writeString(userId);
     }
-
 }
