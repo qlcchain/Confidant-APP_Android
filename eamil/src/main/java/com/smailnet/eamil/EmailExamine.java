@@ -63,7 +63,7 @@ public class EmailExamine {
                             getConnectCallback.loginSuccess();
                         }
                     });
-                } catch (final MessagingException e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -88,7 +88,7 @@ public class EmailExamine {
                 try {
                     Operator.Core(emailConfig).authentication();
                     getConnectCallback.loginSuccess();
-                } catch (final MessagingException e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                     getConnectCallback.loginFailure(e.toString());
                 }

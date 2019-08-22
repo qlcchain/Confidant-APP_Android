@@ -60,11 +60,11 @@
     <include layout="@layout/divide_line"/>
 
     <com.stratagile.pnrouter.view.DetailView
-        android:id="@+id/setttings"
+        android:id="@+id/updatePassword"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
         app:showImg="true"
-        app:text1="@string/setting_">
+        app:text1="@string/Update_Config">
     </com.stratagile.pnrouter.view.DetailView>
     <include layout="@layout/divide_line"/>
     <com.stratagile.pnrouter.view.DetailView

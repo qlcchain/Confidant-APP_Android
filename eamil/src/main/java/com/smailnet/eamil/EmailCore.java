@@ -257,28 +257,32 @@ class EmailCore {
                 return new PasswordAuthentication(userName, password);
             }
         };
-        session = Session.getDefaultInstance(properties,authenticator);
+        if(emailConfig.getEmailType() == "4")
+        {
+            session = Session.getDefaultInstance(properties,authenticator);
+        }else{
+            session = Session.getInstance(properties);
+        }
         session.setDebug(BuildConfig.DEBUG);
-        //session = Session.getInstance(properties);
     }
 
     /**
      * 验证邮箱帐户和服务器配置信息
      * @throws MessagingException
      */
-    public void authentication() throws MessagingException {
+    public void authentication() throws Exception {
         Transport transport = session.getTransport(SMTP);
         Store store = session.getStore(POP3);
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
 
         if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
-            transport.connect(smtpHost, account, password);
+            transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
         }
         /*if (ConfigCheckUtil.getResult(popHost, popPort)) {
             store.connect(popHost, account, password);
         }*/
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
-            imapStore.connect(imapHost, account, password);
+            imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         }
     }
 

@@ -201,7 +201,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         var account = AppConfig.instance.emailConfig().account
 
 
-        if(emailMeaasgeData!!.content!= "" && emailMeaasgeData!!.content.contains("confidantkey"))
+        if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
         {
             lockTips.visibility = View.VISIBLE
         }else{

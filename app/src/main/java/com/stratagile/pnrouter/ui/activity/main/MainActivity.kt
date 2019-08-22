@@ -4013,6 +4013,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.visibility = View.VISIBLE
             rootName.text = AppConfig.instance.emailConfig().account
             emailMenu.visibility = View.VISIBLE
+            if(AppConfig.instance.emailConfig().emailType == "255" || AppConfig.instance.emailConfig().emailType == "6")
+            {
+                drafts.visibility = View.GONE
+                sent.visibility = View.GONE
+                spam.visibility = View.GONE
+                trash.visibility = View.GONE
+            }else{
+                drafts.visibility = View.VISIBLE
+                sent.visibility = View.VISIBLE
+                spam.visibility = View.VISIBLE
+                trash.visibility = View.VISIBLE
+            }
             when(ConstantValue.chooseEmailMenu)
             {
                 0->

@@ -27,6 +27,7 @@ class EmailConfigEncryptedActivity : BaseActivity(), EmailConfigEncryptedContrac
 
     @Inject
     internal lateinit var mPresenter: EmailConfigEncryptedPresenter
+    var encryptedTypeChoose = "None"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,21 +38,43 @@ class EmailConfigEncryptedActivity : BaseActivity(), EmailConfigEncryptedContrac
     }
     override fun initData() {
         title.text = getString(R.string.Encrypted)
+        encryptedTypeChoose = intent.getStringExtra("encryptedTypeChoose")
+        when (encryptedTypeChoose)
+        {
+            "None" ->
+            {
+                noneChoose.visibility = View.VISIBLE
+            }
+            "SSL/TLS" ->
+            {
+                sslChoose.visibility = View.VISIBLE
+            }
+            "STARTTLS" ->
+            {
+                starttlsChoose.visibility = View.VISIBLE
+            }
+        }
         noneParent.setOnClickListener {
             noneChoose.visibility = View.VISIBLE
+            sslChoose.visibility = View.GONE
+            starttlsChoose.visibility = View.GONE
             var intent = Intent()
             intent.putExtra("encryptedType", "None")
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
         sslParent.setOnClickListener {
+            noneChoose.visibility = View.GONE
             sslChoose.visibility = View.VISIBLE
+            starttlsChoose.visibility = View.GONE
             var intent = Intent()
             intent.putExtra("encryptedType", "SSL/TLS")
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
         starttlsParent.setOnClickListener {
+            noneChoose.visibility = View.GONE
+            sslChoose.visibility = View.GONE
             starttlsChoose.visibility = View.VISIBLE
             var intent = Intent()
             intent.putExtra("encryptedType", "STARTTLS")

@@ -15,6 +15,7 @@ import android.widget.TextView
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
 import com.smailnet.eamil.Callback.GetCountCallback
+import com.smailnet.eamil.EmailConfig
 import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailExamine
 import com.smailnet.eamil.EmailReceiveClient
@@ -92,6 +93,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
     protected val REQUEST_CODE_IN = 101
     protected val REQUEST_CODE_TO = 102
     private  var otherEmailConfig: OtherEmailConfig?= null
+    var settings = 0;
+    var emailConfig:EmailConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -121,29 +124,60 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
+        emailConfig = AppConfig.instance.emailConfig().clone()
         if(BuildConfig.DEBUG)
         {
-            /*var account = account.text.toString()
-            var hostname = hostname.text.toString()
-            var userName = userName.text.toString()
-            var password = password.text.toString()
-            var inPort = inPort.text.toString()
-            var outhostname = outhostname.text.toString()
-            var outPort = outPort.text.toString()*/
             account.setText("emaildev@qlink.mobi")
             password.setText("Qlcchain@123")
             hostname.setText("imap.exmail.qq.com")
             userName.setText("ak47")
             outhostname.setText("smtp.exmail.qq.com")
         }
+        if(intent.hasExtra("settings"))
+        {
+            settings = intent.getIntExtra("settings",0)
+        }
+        if(settings == 1)
+        {
+            account.setText(AppConfig.instance.emailConfig().account)
+            account.isEnabled = false
+            password.setText(AppConfig.instance.emailConfig().password)
+            hostname.setText(AppConfig.instance.emailConfig().imapHost)
+            inPort.setText(AppConfig.instance.emailConfig().imapPort.toString())
+            if(AppConfig.instance.emailConfig().name == null || AppConfig.instance.emailConfig().name == "")
+            {
+                var name = AppConfig.instance.emailConfig().account.substring(0,AppConfig.instance.emailConfig().account.indexOf("@"))
+                userName.setText(name)
+            }else{
+                userName.setText(AppConfig.instance.emailConfig().name)
+            }
+
+            outhostname.setText(AppConfig.instance.emailConfig().smtpHost)
+            outPort.setText(AppConfig.instance.emailConfig().smtpPort.toString())
+            if(AppConfig.instance.emailConfig().imapEncrypted == null || AppConfig.instance.emailConfig().imapEncrypted == "")
+            {
+                inEncrypted.setText("None")
+            }else{
+                inEncrypted.setText(AppConfig.instance.emailConfig().imapEncrypted)
+            }
+            if(AppConfig.instance.emailConfig().smtpEncrypted == null || AppConfig.instance.emailConfig().smtpEncrypted == "")
+            {
+                outEncrypted.setText("None")
+            }else{
+                outEncrypted.setText(AppConfig.instance.emailConfig().smtpEncrypted)
+            }
+
+        }
         otherEmailConfig  = OtherEmailConfig();
         title.text = getString(R.string.IMAP_Email_Settings)
         inEncrypted.setOnClickListener {
             var Intent = Intent(this, EmailConfigEncryptedActivity::class.java)
+            Intent.putExtra("encryptedTypeChoose",inEncrypted.text.toString())
             startActivityForResult(Intent,REQUEST_CODE_IN)
         }
         outEncrypted.setOnClickListener {
             var Intent = Intent(this, EmailConfigEncryptedActivity::class.java)
+            Intent.putExtra("encryptedTypeChoose",outEncrypted.text.toString())
             startActivityForResult(Intent,REQUEST_CODE_TO)
         }
     }
@@ -167,7 +201,7 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                         }
                         "STARTTLS" ->
                         {
-                            inPort.setText("99.")
+                            inPort.setText("993")
                         }
                     }
                 }
@@ -281,10 +315,31 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             override fun loginSuccess() {
                 //progressDialog.dismiss()
                 //showProgressDialog(getString(R.string.waiting))
-                var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
-                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-                var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                if(settings == 1)
+                {
+                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account)).list()
+                    if(emailConfigEntityList.size > 0) {
+                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        emailConfigEntity.password = password.text.toString()
+                        emailConfigEntity.imapHost= hostname.text.toString()
+                        emailConfigEntity.imapPort= inPort.text.toString().toInt()
+                        emailConfigEntity.imapEncrypted= inEncrypted.text.toString()
+                        emailConfigEntity.name= userName.text.toString()
+                        emailConfigEntity.smtpHost= outhostname.text.toString()
+                        emailConfigEntity.smtpPort= outPort.text.toString().toInt()
+                        emailConfigEntity.smtpEncrypted= outEncrypted.text.toString()
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                    }
+                    toast(R.string.success)
+                    finish()
+                }else{
+                    var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+                    var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                    var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                }
+
+
 
                 //sycDataCountIMAP()
                 /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
@@ -297,6 +352,19 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                     closeProgressDialog()
                     //toast(R.string.Over_configure)
                 }
+                AppConfig.instance.emailConfig()
+                        .setSmtpHost(emailConfig!!.smtpHost)
+                        .setSmtpPort(emailConfig!!.smtpPort)
+                        .setPopHost(emailConfig!!.popHost)
+                        .setPopPort(emailConfig!!.popPort)
+                        .setImapHost(emailConfig!!.imapHost)
+                        .setImapPort(emailConfig!!.imapPort)
+                        .setAccount(emailConfig!!.account)
+                        .setPassword(emailConfig!!.password)
+                        .setName(emailConfig!!.name)
+                        .setEmailType(emailConfig!!.emailType)
+                        .setImapEncrypted(emailConfig!!.imapEncrypted)
+                        .setSmtpEncrypted(emailConfig!!.smtpEncrypted)
                 try {
                     Islands.ordinaryDialog(this@EmailConfigActivity)
                             .setText(null, getString(R.string.fail)+":"+errorMsg)

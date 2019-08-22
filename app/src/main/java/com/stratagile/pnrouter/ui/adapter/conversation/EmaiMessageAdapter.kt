@@ -132,7 +132,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             startPic.visibility = View.GONE
         }
         var lockPic = helper.getView<TextView>(R.id.lockPic)
-        if(item.content!= "" && item.content.contains("confidantkey"))
+        if(item.originalText != null && item.originalText != "")
         {
             lockPic.visibility = View.VISIBLE
         }else{

@@ -102,11 +102,19 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View , PNRouterServi
                     }
                     .show()
         }
-        setttings.setOnClickListener {
-            var Intent = Intent(this, EmailLoginActivity::class.java)
-            Intent.putExtra("emailType",currentChooseConfig!!.emailType)
-            Intent.putExtra("settings",1)
-            startActivity(Intent)
+        updatePassword.setOnClickListener {
+            if(currentChooseConfig!!.emailType == "255")
+            {
+                var Intent = Intent(this, EmailConfigActivity::class.java)
+                Intent.putExtra("settings",1)
+                startActivity(Intent)
+            }else{
+                var Intent = Intent(this, EmailLoginActivity::class.java)
+                Intent.putExtra("emailType",currentChooseConfig!!.emailType)
+                Intent.putExtra("settings",1)
+                startActivity(Intent)
+            }
+
         }
         nickName.setOnClickListener {
             var remarks = ""

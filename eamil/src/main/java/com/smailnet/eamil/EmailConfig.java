@@ -25,7 +25,7 @@ package com.smailnet.eamil;
  * @author
  * @version 2.3
  */
-public class EmailConfig {
+public class EmailConfig implements Cloneable {
 
     private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
     private int smtpPort;           //SMTP端口
@@ -146,5 +146,15 @@ public class EmailConfig {
     public EmailConfig setSmtpEncrypted(String smtpEncrypted) {
         this.smtpEncrypted = smtpEncrypted;
         return this;
+    }
+    @Override
+    public EmailConfig clone() {
+        EmailConfig stu = null;
+        try {
+            stu = (EmailConfig) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return stu;
     }
 }
