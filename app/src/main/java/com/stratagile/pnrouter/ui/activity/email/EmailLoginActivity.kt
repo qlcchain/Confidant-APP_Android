@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
@@ -52,6 +54,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     var account =""
     var password =""
     var settings = 0;
+    var isShow = false
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
         if(jSaveEmailConfRsp.params.retCode == 0)
@@ -188,6 +191,19 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             }
         }
         title.text = getString(R.string.NewAccount)
+        showandhide.setOnClickListener {
+
+            isShow = !isShow
+            if (isShow) {
+                //如果选中，显示密码
+                password_editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_shut)
+            }
+        }
         login.setOnClickListener {
             //配置发件服务器
             account = account_editText.getText().toString().trim()
