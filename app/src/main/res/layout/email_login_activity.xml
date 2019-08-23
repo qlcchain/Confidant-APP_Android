@@ -153,8 +153,8 @@
             android:id="@+id/webView"
             android:background="@color/headmainColor"
             android:layout_below="@+id/setTup"
-            android:layout_marginLeft="@dimen/x30"
-            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x28"
+            android:layout_marginRight="@dimen/x25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
