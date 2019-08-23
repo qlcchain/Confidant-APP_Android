@@ -7,6 +7,8 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.InflateException
 import android.view.LayoutInflater
 import android.view.Menu
@@ -95,6 +97,7 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
     private  var otherEmailConfig: OtherEmailConfig?= null
     var settings = 0;
     var emailConfig:EmailConfig? = null
+    var isShow = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -123,6 +126,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
         setContentView(R.layout.email_otherconfig_activity)
     }
     override fun initData() {
+        isShow = false
+        otherEmailConfig  = OtherEmailConfig();
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailConfig = AppConfig.instance.emailConfig().clone()
         if(BuildConfig.DEBUG)
@@ -133,6 +138,8 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             userName.setText("ak47")
             outhostname.setText("smtp.exmail.qq.com")
         }
+        password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        showandhide.setImageResource(R.mipmap.tabbar_shut)
         if(intent.hasExtra("settings"))
         {
             settings = intent.getIntExtra("settings",0)
@@ -141,9 +148,10 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
         {
             account.setText(AppConfig.instance.emailConfig().account)
             account.isEnabled = false
-            password.setText(AppConfig.instance.emailConfig().password)
+            password.setText("")
             hostname.setText(AppConfig.instance.emailConfig().imapHost)
             inPort.setText(AppConfig.instance.emailConfig().imapPort.toString())
+
             if(AppConfig.instance.emailConfig().name == null || AppConfig.instance.emailConfig().name == "")
             {
                 var name = AppConfig.instance.emailConfig().account.substring(0,AppConfig.instance.emailConfig().account.indexOf("@"))
@@ -154,21 +162,26 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
 
             outhostname.setText(AppConfig.instance.emailConfig().smtpHost)
             outPort.setText(AppConfig.instance.emailConfig().smtpPort.toString())
+
             if(AppConfig.instance.emailConfig().imapEncrypted == null || AppConfig.instance.emailConfig().imapEncrypted == "")
             {
                 inEncrypted.setText("None")
+                otherEmailConfig!!.imapEncrypted ="None"
             }else{
+                otherEmailConfig!!.imapEncrypted = AppConfig.instance.emailConfig().imapEncrypted
                 inEncrypted.setText(AppConfig.instance.emailConfig().imapEncrypted)
             }
             if(AppConfig.instance.emailConfig().smtpEncrypted == null || AppConfig.instance.emailConfig().smtpEncrypted == "")
             {
                 outEncrypted.setText("None")
+                otherEmailConfig!!.smtpEncrypted ="None"
             }else{
+                otherEmailConfig!!.smtpEncrypted = AppConfig.instance.emailConfig().smtpEncrypted
                 outEncrypted.setText(AppConfig.instance.emailConfig().smtpEncrypted)
             }
 
         }
-        otherEmailConfig  = OtherEmailConfig();
+
         title.text = getString(R.string.IMAP_Email_Settings)
         inEncrypted.setOnClickListener {
             var Intent = Intent(this, EmailConfigEncryptedActivity::class.java)
@@ -179,6 +192,18 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             var Intent = Intent(this, EmailConfigEncryptedActivity::class.java)
             Intent.putExtra("encryptedTypeChoose",outEncrypted.text.toString())
             startActivityForResult(Intent,REQUEST_CODE_TO)
+        }
+        showandhide.setOnClickListener {
+            isShow = !isShow
+            if (isShow) {
+                //如果选中，显示密码
+                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_shut)
+            }
         }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -240,6 +265,13 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             var hostname = hostname.text.toString()
             var userName = userName.text.toString()
             var password = password.text.toString()
+            if(settings == 1)
+            {
+                if(password== "")
+                {
+                    password = AppConfig.instance.emailConfig().password
+                }
+            }
             var inPort = inPort.text.toString()
             var outhostname = outhostname.text.toString()
             var outPort = outPort.text.toString()
@@ -254,18 +286,18 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                 toast(account +" "+ getString(R.string.Some_addresses_are_illegal))
             }
 
-          /*  private String account;         //邮箱帐号
-            private String imapHost;        //IMAP的Host
-            private String name;            //昵称
-            private String password;        //邮箱密码
-            private int imapPort;           //IMAP端口
-            private String imapEncrypted;
-            private String popHost;         //POP的Host
-            private int popPort;            //POP端口
-            private String smtpHost;        //SMTP的Host
-            private int smtpPort;           //SMTP端口
-            private String smtpEncrypted;
-            private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱*/
+            /*  private String account;         //邮箱帐号
+              private String imapHost;        //IMAP的Host
+              private String name;            //昵称
+              private String password;        //邮箱密码
+              private int imapPort;           //IMAP端口
+              private String imapEncrypted;
+              private String popHost;         //POP的Host
+              private int popPort;            //POP端口
+              private String smtpHost;        //SMTP的Host
+              private int smtpPort;           //SMTP端口
+              private String smtpEncrypted;
+              private String emailType;       //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱*/
             otherEmailConfig!!.account = account
             otherEmailConfig!!.imapHost = hostname
             otherEmailConfig!!.name = userName
@@ -295,7 +327,9 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                     .setEmailType("255")
                     .setImapEncrypted(otherEmailConfig!!.imapEncrypted)
                     .setSmtpEncrypted(otherEmailConfig!!.smtpEncrypted)
-            showProgressDialog()
+            runOnUiThread {
+                showProgressDialog()
+            }
             Islands.circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)
@@ -320,7 +354,7 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
                     var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account)).list()
                     if(emailConfigEntityList.size > 0) {
                         var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                        emailConfigEntity.password = password.text.toString()
+                        emailConfigEntity.password =  AppConfig.instance.emailConfig().password
                         emailConfigEntity.imapHost= hostname.text.toString()
                         emailConfigEntity.imapPort= inPort.text.toString().toInt()
                         emailConfigEntity.imapEncrypted= inEncrypted.text.toString()

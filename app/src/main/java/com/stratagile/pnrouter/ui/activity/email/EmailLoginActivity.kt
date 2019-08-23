@@ -1,9 +1,13 @@
 package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.ProgressDialog
+import android.net.http.SslError
+import android.os.Build
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.view.View
+import android.webkit.*
 import android.widget.Toast
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
@@ -12,6 +16,7 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailExamine
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.islands.Islands
+import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -100,6 +105,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
+        isShow = false
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
         emailTypeOld = intent.getStringExtra("emailType")
@@ -112,7 +118,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
        {
            settings = intent.getIntExtra("settings",0)
        }
-
+        password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        showandhide.setImageResource(R.mipmap.tabbar_shut)
         if(settings == 1)
         {
             account_editText.setText(accountOld)
@@ -121,35 +128,42 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             account_editText.setText("")
             account_editText.isEnabled = true
         }
+        var url = "file:///android_asset/guidance_notes_qqmailbox.html"
         when(emailType)
         {
             "1"->
             {
+                url = "file:///android_asset/guidance_notes_qqmailbox.html"
                 emailHelper.setText(getString(R.string.qqCompany_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qqmailbox_n))
             }
             "2"->
             {
+                url = "file:///android_asset/guidance_notes_qqmail.html"
                 emailHelper.setText(getString(R.string.qq_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qq_n))
             }
             "3"->
             {
+                url = "file:///android_asset/guidance_notes_163.html"
                 emailHelper.setText(getString(R.string.wangyi_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_163_n))
             }
             "4"->
             {
+                url = "file:///android_asset/guidance_notes_gmail.html"
                 emailHelper.setText(getString(R.string.gmail_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_google_n))
             }
             "5"->
             {
+                url = "file:///android_asset/guidance_notes_hotmail.html"
                 emailHelper.setText(getString(R.string.hotlook_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_outlook_n))
             }
             "6"->
             {
+                url = "file:///android_asset/guidance_notes_icloud.html"
                 emailHelper.setText(getString(R.string.icloud_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_icloud_n))
             }
@@ -226,6 +240,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     .setCancelable(false)
                     .run { progressDialog -> login(progressDialog) }
         }
+
+
+
+        webView.setBackgroundColor(0); // 设置背景色
+        webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
+        webView.loadUrl(url)
     }
 
     override fun setupActivityComponent() {

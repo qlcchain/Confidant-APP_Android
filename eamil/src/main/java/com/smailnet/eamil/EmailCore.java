@@ -399,7 +399,7 @@ class EmailCore {
      */
     public Message sendMail() throws MessagingException {
         Transport transport = session.getTransport(SMTP);
-        transport.connect(smtpHost, account, password);
+        transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
         transport.sendMessage(message, message.getAllRecipients());
        /* transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
         transport.sendMessage(message, message.getRecipients(Message.RecipientType.CC));
@@ -423,7 +423,7 @@ class EmailCore {
     public List<EmailMessage> popReceiveMail() throws MessagingException, IOException {
 
         Store store = session.getStore(POP3);
-        store.connect(popHost, account, password);
+        store.connect(popHost,Integer.parseInt(popPort), account, password);
         Folder folder = store.getFolder("INBOX");//获取邮件服务器的收件箱
         folder.open(Folder.READ_ONLY);//以只读权限打开收件箱
         Folder defaultFolder = store.getDefaultFolder();
@@ -496,7 +496,7 @@ class EmailCore {
         List<EmailCount> emailMessageList = new ArrayList<>();
         EmailCount emailData = new EmailCount();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         Folder defaultFolder = imapStore.getDefaultFolder();
         Folder[] allFolder = defaultFolder.list();
         try {
@@ -627,7 +627,7 @@ class EmailCore {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
@@ -772,7 +772,7 @@ class EmailCore {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
@@ -953,7 +953,7 @@ class EmailCore {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
@@ -1114,7 +1114,7 @@ class EmailCore {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
@@ -1261,7 +1261,7 @@ class EmailCore {
     public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
@@ -1302,7 +1302,7 @@ class EmailCore {
      */
     public boolean imapMarkMail(String menu,String uid,int flag,boolean value,String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         if(menu.equals("star"))
         {
             menu = "INBOX";
@@ -1364,7 +1364,7 @@ class EmailCore {
      */
     public boolean imapSaveMail(Message message, String toMenu,String flag) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
@@ -1394,7 +1394,7 @@ class EmailCore {
      */
     public boolean imapDeleteDrsftsMail(String uid, String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost, account, password);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
