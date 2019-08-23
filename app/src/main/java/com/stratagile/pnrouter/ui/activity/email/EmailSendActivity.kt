@@ -1319,14 +1319,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
             confidantKey += myAccountBase64+"&&"+dstKey;
         }
-        var userId = "userid:"+SpUtil.getString(this, ConstantValue.userId, "")
+        var userId = SpUtil.getString(this, ConstantValue.userId, "")
         if(contactMapList.size >0)
         {
-            confidantKey = userId +"###"+confidantKey
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
-        }else{
-            contentHtml += "<span style=\'display:none\' confidantkey=\'"+userId+"\'></span>";
         }
+        contentHtml += "<span style=\'display:none\' confidantuserid=\'"+userId+"\'></span>";
         var endStr =  "<div myconfidantbegin=''>"+
                 "<br />"+
                 " <br />"+

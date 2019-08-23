@@ -853,9 +853,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.subject = item.subject
                                                 eamilMessage.content= item.content
                                                 eamilMessage.contentText= item.contentText
-                                                eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
-                                                eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
-                                                eamilMessage.userId  = getOriginalText(eamilMessage).get("userId")
+                                                var originMap = getOriginalText(eamilMessage)
+                                                eamilMessage.originalText = originMap.get("originalText")
+                                                eamilMessage.aesKey  = originMap.get("aesKey")
+                                                eamilMessage.userId  = originMap.get("userId")
                                                 eamilMessage.date = item.date
                                                 eamilMessage.setTimeStamp(DateUtil.getDateTimeStame(item.date))
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
@@ -1043,9 +1044,10 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.subject = item.subject
                                                 eamilMessage.content= item.content
                                                 eamilMessage.contentText= item.contentText
-                                                eamilMessage.originalText = getOriginalText(eamilMessage).get("originalText")
-                                                eamilMessage.aesKey  = getOriginalText(eamilMessage).get("aesKey")
-                                                eamilMessage.userId  = getOriginalText(eamilMessage).get("userId")
+                                                var originMap = getOriginalText(eamilMessage)
+                                                eamilMessage.originalText = originMap.get("originalText")
+                                                eamilMessage.aesKey  = originMap.get("aesKey")
+                                                eamilMessage.userId  = originMap.get("userId")
                                                 eamilMessage.date = item.date
                                                 eamilMessage.setTimeStamp(DateUtil.getDateTimeStame(item.date))
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
@@ -1123,7 +1125,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
         {
 
-            try{
+            try {
                 var endStr = ""
                 if(emailMeaasgeData!!.content.contains("myconfidantbegin"))
                 {
@@ -1178,6 +1180,25 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     endIndexd = beginIndex
                 }
                 var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,endIndexd)
+
+                if(confidantkeyBefore.contains("confidantuserid"))
+                {
+                    var userIDBeginStr = "confidantuserid='"
+                    userID = ""
+                    var userIDBeginIndex = confidantkeyBefore.indexOf(userIDBeginStr)
+                    if(userIDBeginIndex == -1)
+                    {
+                        userIDBeginStr = "confidantuserid=\""
+                        userIDBeginIndex = confidantkeyBefore.indexOf("confidantuserid=\"")
+                    }
+                    var userIDEndIndex = confidantkeyBefore.lastIndexOf("'></span>")
+                    if(userIDEndIndex < 0)
+                    {
+                        userIDEndIndex = confidantkeyBefore.lastIndexOf("\"></span>")
+                    }
+                    userID = confidantkeyBefore.substring(userIDBeginIndex+userIDBeginStr.length,userIDEndIndex)
+                    var aa = ""
+                }
                 var endIndex = confidantkeyBefore.indexOf("'></span>")
                 if(endIndex < 0)
                 {
@@ -1193,84 +1214,63 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 var accountMi = ""
                 var shareMiKey = ""
                 var account =  String(RxEncodeTool.base64Decode(accountMi))
-
-                if(confidantkey!!.contains("###"))
+                if(confidantkey!!.contains("##"))
                 {
-                    var confidantkeyList = confidantkey.split("###")
-                    var userIdStr = confidantkeyList.get(0)
-                    userID = userIdStr.substring(7,userIdStr.length)
-                    confidantkey = confidantkeyList.get(1)
-                }else{
-
-                    if(confidantkey!!.contains("userid"))
+                    var confidantkeyList = confidantkey.split("##")
+                    for(item in confidantkeyList)
                     {
-                        var userIdStr = confidantkey
-                        userID = userIdStr.substring(7,userIdStr.length)
-                        confidantkey = "";
-                    }
-                }
-                if(confidantkey != "")
-                {
-                    if(confidantkey!!.contains("##"))
-                    {
-                        var confidantkeyList = confidantkey.split("##")
-                        for(item in confidantkeyList)
+                        if(item.contains("&&"))
                         {
-                            if(item.contains("&&"))
-                            {
-                                confidantkeyArr = item.split("&&")
-                            }else{
-                                confidantkeyArr = item.split("&amp;&amp;")
-                            }
-
-                            accountMi = confidantkeyArr.get(0)
-                            shareMiKey = confidantkeyArr.get(1)
-                            account =  String(RxEncodeTool.base64Decode(accountMi))
-                            if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
-                            {
-                                break;
-                            }
-                        }
-
-                    }else{
-                        if(confidantkey.contains("&&"))
-                        {
-                            confidantkeyArr = confidantkey.split("&&")
+                            confidantkeyArr = item.split("&&")
                         }else{
-                            confidantkeyArr = confidantkey.split("&amp;&amp;")
+                            confidantkeyArr = item.split("&amp;&amp;")
                         }
+
                         accountMi = confidantkeyArr.get(0)
                         shareMiKey = confidantkeyArr.get(1)
+                        account =  String(RxEncodeTool.base64Decode(accountMi))
+                        if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
+                        {
+                            break;
+                        }
                     }
-                    var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-                    var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                    val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-                    var sourceContent = ""
-                    try{
-                        sourceContent = String(miContent)
-                        contactMapList.put("originalText",sourceContent + endStr)
-                        contactMapList.put("aesKey",aesKey)
-                        contactMapList.put("userId",userID)
-                    }catch (e:Exception)
-                    {
-                        contactMapList.put("originalText","")
-                        contactMapList.put("aesKey","")
-                        contactMapList.put("userId",userID)
-                    }
+
                 }else{
+                    if(confidantkey.contains("&&"))
+                    {
+                        confidantkeyArr = confidantkey.split("&&")
+                    }else{
+                        confidantkeyArr = confidantkey.split("&amp;&amp;")
+                    }
+                    accountMi = confidantkeyArr.get(0)
+                    shareMiKey = confidantkeyArr.get(1)
+                }
+                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+                var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                var sourceContent = ""
+                try{
+                    sourceContent = String(miContent)
+                    contactMapList.put("originalText",sourceContent + endStr)
+                    contactMapList.put("aesKey",aesKey)
+                    contactMapList.put("userId",userID)
+                }catch (e:Exception)
+                {
                     contactMapList.put("originalText","")
                     contactMapList.put("aesKey","")
                     contactMapList.put("userId",userID)
+                }finally {
+                    return contactMapList
                 }
             }catch (e:Exception)
             {
                 contactMapList.put("originalText","")
                 contactMapList.put("aesKey","")
                 contactMapList.put("userId",userID)
+            }finally {
+                return contactMapList
             }
 
-
-            return contactMapList
         }else{
             contactMapList.put("originalText","")
             contactMapList.put("aesKey","")
