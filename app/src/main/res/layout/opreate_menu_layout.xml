@@ -44,7 +44,6 @@
         <View style="@style/divide_line_nomarge"/>
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_marginBottom="@dimen/x25"
             android:background="#f6f6f6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
