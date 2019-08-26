@@ -1071,8 +1071,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.visibility = View.VISIBLE
                     }else{
                         addSubject.text = ""
+                        addSubject.visibility = View.INVISIBLE
                     }
                 }
                 R.id.iv_add -> {
@@ -2157,8 +2159,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.visibility = View.VISIBLE
                     }else{
                         addSubject.text = ""
+                        addSubject.visibility = View.INVISIBLE
                     }
                 }
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
@@ -2182,8 +2186,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.visibility = View.VISIBLE
                     }else{
                         addSubject.text = ""
+                        addSubject.visibility = View.INVISIBLE
                     }
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
@@ -2206,8 +2212,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             if( emaiAttachAdapter!!.itemCount > 1)
                             {
                                 addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                                addSubject.visibility = View.VISIBLE
                             }else{
                                 addSubject.text = ""
+                                addSubject.visibility = View.INVISIBLE
                             }
                         }
                     }

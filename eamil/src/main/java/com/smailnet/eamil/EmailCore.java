@@ -968,26 +968,32 @@ class EmailCore {
         }
         boolean noMoreData = false;
         int len = 0;
+        int lengFlag = 0;
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
-            long[] uuidList = new long[pageSize];
-            for(int i = 0 ; i < pageSize ;i++)
+            while (messagesAll.length == 0 || messagesAll[0]== null)
             {
-                long index = maxUUID + i +1;
-                if(index > fromMaxUUID)
+                long[] uuidList = new long[pageSize];
+                lengFlag = 0;
+                for(int i = 0 ; i < pageSize ;i++)
                 {
-                    break;
+                    long index = maxUUID + i +1;
+                    if(index > fromMaxUUID)
+                    {
+                        break;
+                    }
+                    uuidList[i] = index;
+                    len  ++;
+                    lengFlag ++;
                 }
-                uuidList[i] = index;
-                len  ++;
+                long[] uuidListNew = new long[lengFlag];
+                for(int i = 0 ; i< lengFlag ;i++)
+                {
+                    uuidListNew[i] = uuidList[i];
+                }
+                messagesAll = folder.getMessagesByUID(uuidListNew);
             }
-            long[] uuidListNew = new long[len];
-            for(int i = 0 ; i< len ;i++)
-            {
-                uuidListNew[i] = uuidList[i];
-            }
-            messagesAll = folder.getMessagesByUID(uuidListNew);
         }else{
             noMoreData = true;
             messagesAll = new Message[]{};
