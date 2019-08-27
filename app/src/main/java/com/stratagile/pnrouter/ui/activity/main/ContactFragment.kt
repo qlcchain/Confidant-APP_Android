@@ -328,7 +328,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
         if (ConstantValue.encryptionType.equals("1")) {
-            sendData = BaseData(4, pullFriend)
+            sendData = BaseData(6, pullFriend)
         }
         Log.i("pullFriendList", "tox " + ConstantValue.isToxConnected)
         if (ConstantValue.isWebsocketConnected) {

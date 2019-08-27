@@ -783,3 +783,8 @@ data class BakMailsNum(var User :String,var Action : String = "BakMailsNum")
  * (2)	响应（APP->Router）
  */
 data class BakMailsCheck(var User :String,var Uuid :String,var Action : String = "BakMailsCheck")
+/**
+ * 93.	用户发送邮件提醒
+ * (2)	响应（APP->Router）
+ */
+data class MailSendNotice(var MailsTo :String,var Action : String = "MailSendNotice")

@@ -588,6 +588,12 @@ val credentialsProvider: CredentialsProvider, private
                     val JBakMailsCheckRsp = gson.fromJson(text, JBakMailsCheckRsp::class.java)
                     bakMailsCheckCallback?.BakMailsCheckBack(JBakMailsCheckRsp)
                 }
+                "MailSendNotice" -> {
+                    val JMailSendNoticeRsp = gson.fromJson(text, JMailSendNoticeRsp::class.java)
+                    mailSendNoticeCallback?.MailSendNoticeBack(JMailSendNoticeRsp)
+                }
+
+
             }
         }
 
@@ -678,6 +684,8 @@ val credentialsProvider: CredentialsProvider, private
     var bakMailsNumCallback:BakMailsNumCallback?= null
 
     var bakMailsCheckCallback: BakMailsCheckCallback? = null
+
+    var mailSendNoticeCallback:MailSendNoticeCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1069,6 +1077,9 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakMailsCheckCallback {
         fun BakMailsCheckBack(JBakMailsCheckRsp: JBakMailsCheckRsp)
+    }
+    interface MailSendNoticeCallback {
+        fun MailSendNoticeBack(JMailSendNoticeRsp: JMailSendNoticeRsp)
     }
 }
 

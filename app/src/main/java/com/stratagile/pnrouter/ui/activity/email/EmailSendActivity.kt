@@ -167,6 +167,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var replayAll = true
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
     var dataTips = arrayListOf<String>()
+    var addressBase64 = ""
 
     private val users = arrayListOf(
             User("1", "激浊扬清"),
@@ -247,6 +248,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         setContentView(R.layout.email_send_edit)
     }
     override fun initData() {
+        addressBase64 = ""
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
         var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.notEq("")).orderDesc(EmailContactsEntityDao.Properties.CreateTime).list()
         for (item in emailContactsList)
@@ -1224,7 +1226,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             toAdressBase64BCC = toAdressBase64BCC.substring(0,toAdressBase64BCC.length -1)
         }
-        var addressBase64 = toAdressBase64
+        addressBase64 = toAdressBase64
         if(toAdressBase64CC != "")
         {
             addressBase64 += ","+toAdressBase64CC
@@ -1567,6 +1569,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
+                                    }
+                                }
+
+                                var addFriendReq = MailSendNotice(addressBase64)
+                                var sendData = BaseData(6,addFriendReq);
+                                if (ConstantValue.isWebsocketConnected) {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                }else if (ConstantValue.isToxConnected) {
+                                    var baseData = sendData
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    if (ConstantValue.isAntox) {
+                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    }else{
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
                                 }
                                 EventBus.getDefault().post(SendEmailSuccess(positionIndex))

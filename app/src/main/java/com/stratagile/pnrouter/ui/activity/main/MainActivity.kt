@@ -3510,7 +3510,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var pullFriend = PullFriendReq_V4(selfUserId!!)
             var sendData = BaseData(pullFriend)
             if (ConstantValue.encryptionType.equals("1")) {
-                sendData = BaseData(4, pullFriend)
+                sendData = BaseData(6, pullFriend)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -3921,7 +3921,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
         if (ConstantValue.encryptionType.equals("1")) {
-            sendData = BaseData(4, pullFriend)
+            sendData = BaseData(6, pullFriend)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

@@ -905,6 +905,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                         }
                                         //var emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
                                         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
+                                        var aabb = "'"
                                         runOnUiThread {
                                             emaiMessageChooseAdapter!!.setNewData(localEmailMessage);
                                             progressDialog.dismiss()

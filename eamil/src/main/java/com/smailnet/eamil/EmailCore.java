@@ -969,6 +969,7 @@ class EmailCore {
         boolean noMoreData = false;
         int len = 0;
         int lengFlag = 0;
+        int pageFlag = 1;
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
@@ -978,7 +979,7 @@ class EmailCore {
                 lengFlag = 0;
                 for(int i = 0 ; i < pageSize ;i++)
                 {
-                    long index = maxUUID + i +1;
+                    long index = maxUUID + i + 1 + (pageFlag -1) * pageSize;
                     if(index > fromMaxUUID)
                     {
                         break;
@@ -992,6 +993,7 @@ class EmailCore {
                 {
                     uuidListNew[i] = uuidList[i];
                 }
+                pageFlag ++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
             }
         }else{
