@@ -18,6 +18,8 @@ package com.smailnet.eamil;
 
 import java.util.List;
 
+import javax.mail.Message;
+
 /**
  * 邮件内容集合
  */
@@ -40,6 +42,7 @@ public class EmailMessage {
     private String content;
     private String contentText;
     private List<MailAttachment> mailAttachmentList;
+    private Message message;
 
 
     public EmailMessage()
@@ -47,7 +50,8 @@ public class EmailMessage {
 
     }
 
-    public   EmailMessage(String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen,boolean isStar, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
+    public EmailMessage(Message message, String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content, String contentText) {
+        this.message = message;
         this.id = id;
         this.subject = subject;
         this.from = from;
@@ -64,6 +68,14 @@ public class EmailMessage {
         this.attachmentCount = attachmentCount;
         this.content = content;
         this.contentText = contentText;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
     }
 
     public String getSubject() {

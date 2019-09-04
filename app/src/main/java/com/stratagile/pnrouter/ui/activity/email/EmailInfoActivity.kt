@@ -25,13 +25,11 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.toast
-import com.pawegio.kandroid.v
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.socks.library.KLog
-import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -44,7 +42,6 @@ import com.stratagile.pnrouter.entity.events.ChangEmailStar
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
-import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
@@ -190,8 +187,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         var to = emailMeaasgeData!!.to
         var cc = emailMeaasgeData!!.cc
         var bcc = emailMeaasgeData!!.bcc
-        var attachCount = emailMeaasgeData!!.attachmentCount
-        mailInfo.attchCount = attachCount
+        var isContainerAttachment = emailMeaasgeData!!.isContainerAttachment()
+        mailInfo.attchCount = emailMeaasgeData!!.attachmentCount
         mailInfo.subTitle = emailMeaasgeData!!.subject
         emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChooseList.size > 0)
@@ -247,7 +244,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         loadingTips.visibility = View.GONE
         if(menu != "node")
         {
-            if(attachCount > 0)
+            if(isContainerAttachment)
             {
                 attachListParent.visibility =View.VISIBLE
 
@@ -262,45 +259,51 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 var isDownload = true
                 var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
                 var i = 0;
-                for (attach in attachList)
+                if(attachList.size > 0)
                 {
-                    var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
-                    if(addMenu)
+                    for (attach in attachList)
                     {
-                        savePath = save_dir+attach.account+"_"+emailMeaasgeData!!.menu+"_"+attach.msgId+"_"+attach.name
-                    }
-                    var file = File(savePath)
-                    if(!file.exists())
-                    {
-                        isDownload = false
-                        needWaitAttach = true
-                    }
-                    attach.localPath = savePath
-                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+                        var savePath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+                        if(addMenu)
+                        {
+                            savePath = save_dir+attach.account+"_"+emailMeaasgeData!!.menu+"_"+attach.msgId+"_"+attach.name
+                        }
+                        var file = File(savePath)
+                        if(!file.exists())
+                        {
+                            isDownload = false
+                            needWaitAttach = true
+                        }
+                        attach.localPath = savePath
+                        AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
-                    var fileName =  attach.name
-                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                        val localMedia = LocalMedia()
-                        localMedia.isCompressed = false
-                        localMedia.duration = 0
-                        localMedia.height = 100
-                        localMedia.width = 100
-                        localMedia.isChecked = false
-                        localMedia.isCut = false
-                        localMedia.mimeType = 0
-                        localMedia.num = 0
-                        localMedia.path = attach.localPath
-                        localMedia.pictureType = "image/jpeg"
-                        localMedia.setPosition(i)
-                        localMedia.sortIndex = i
-                        previewImages.add(localMedia)
-                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
-                    }
+                        var fileName =  attach.name
+                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                            val localMedia = LocalMedia()
+                            localMedia.isCompressed = false
+                            localMedia.duration = 0
+                            localMedia.height = 100
+                            localMedia.width = 100
+                            localMedia.isChecked = false
+                            localMedia.isCut = false
+                            localMedia.mimeType = 0
+                            localMedia.num = 0
+                            localMedia.path = attach.localPath
+                            localMedia.pictureType = "image/jpeg"
+                            localMedia.setPosition(i)
+                            localMedia.sortIndex = i
+                            previewImages.add(localMedia)
+                            ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                        }
 
-                    i++
-                    /*var inputStream = ByteArrayInputStream(accach.data);
-                    var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
-                    listAccath.add(mailAttachment)*/
+                        i++
+                        /*var inputStream = ByteArrayInputStream(accach.data);
+                        var mailAttachment = MailAttachment(accach.name,inputStream,accach.data,accach.msgId,accach.account);
+                        listAccath.add(mailAttachment)*/
+                    }
+                }else{
+                    isDownload = false
+                    needWaitAttach = true
                 }
                 //MailUtil.saveFile(listAccath)
                 /*  val tipDialog: QMUITipDialog
@@ -324,6 +327,50 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                     loadingTips.visibility = View.GONE
                                     needWaitAttach = false
                                     runOnUiThread {
+                                        var iFlag = 0;
+                                        for (attachItem in messageList)
+                                        {
+                                            var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                            if(attachListTemp.size == 0)
+                                            {
+                                                attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                            }
+                                            if(attachListTemp == null || attachListTemp.size == 0)
+                                            {
+                                                var eamilAttach = EmailAttachEntity()
+                                                eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                eamilAttach.msgId = emailMeaasgeData!!.menu+"_"+msgId
+                                                eamilAttach.name = attachItem.name
+                                                eamilAttach.data = attachItem.byt
+                                                eamilAttach.hasData = true
+                                                eamilAttach.isCanDelete = false
+                                                var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                eamilAttach.localPath = savePath
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+
+                                                var fileName =  eamilAttach.name
+                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    val localMedia = LocalMedia()
+                                                    localMedia.isCompressed = false
+                                                    localMedia.duration = 0
+                                                    localMedia.height = 100
+                                                    localMedia.width = 100
+                                                    localMedia.isChecked = false
+                                                    localMedia.isCut = false
+                                                    localMedia.mimeType = 0
+                                                    localMedia.num = 0
+                                                    localMedia.path = eamilAttach.localPath
+                                                    localMedia.pictureType = "image/jpeg"
+                                                    localMedia.setPosition(iFlag)
+                                                    localMedia.sortIndex = iFlag
+                                                    previewImages.add(localMedia)
+                                                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                }
+
+                                                iFlag++
+                                            }
+                                        }
                                         attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                                         if(attachList.size == 0)
                                         {
@@ -397,7 +444,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
             }
         }else{
-            if(attachCount > 0) {
+            if(isContainerAttachment) {
                 attachListParent.visibility = View.VISIBLE
             }
             var folderName = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId

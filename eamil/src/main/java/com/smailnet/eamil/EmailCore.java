@@ -451,7 +451,7 @@ class EmailCore {
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
             contentText = getHtmlText(contentTemp.toString());
-            EmailMessage emailMessage = new EmailMessage("",subject, from, to,"","", date,true,false,"",true,0,true,2, content,contentText);
+            EmailMessage emailMessage = new EmailMessage(message,"",subject, from, to,"","", date,true,false,"",true,0,true,2, content,contentText);
             emailMessageList.add(emailMessage);
             Log.i("POP3", "邮件subject："+subject +"  时间："+date);
             File file = Environment.getExternalStorageDirectory();
@@ -703,15 +703,17 @@ class EmailCore {
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
+                boolean hasAttachment = false;
                 try {
-                    MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
 
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
-                isContainerAttachment = attachmentCount > 0;
+                isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
                 content = "";
                 contentText = "";
@@ -729,7 +731,7 @@ class EmailCore {
 
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
@@ -883,15 +885,17 @@ class EmailCore {
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
+                boolean hasAttachment = false;
                 try {
-                    MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
 
                 }
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
-                isContainerAttachment = attachmentCount > 0;
+                isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
                 content = "";
                 contentText = "";
@@ -909,7 +913,7 @@ class EmailCore {
 
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
@@ -1052,15 +1056,17 @@ class EmailCore {
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
+                boolean hasAttachment = false;
                 try {
-                    MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
 
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
-                isContainerAttachment = attachmentCount > 0;
+                isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
                 content = "";
                 contentText = "";
@@ -1077,7 +1083,7 @@ class EmailCore {
 
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
@@ -1200,15 +1206,17 @@ class EmailCore {
                 isReplySign = isReplySign((MimeMessage)message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
+                boolean hasAttachment = false;
                 try {
-                    MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
 
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
-                isContainerAttachment = attachmentCount > 0;
+                isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
                 content = "";
                 contentText = "";
@@ -1225,7 +1233,7 @@ class EmailCore {
 
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);

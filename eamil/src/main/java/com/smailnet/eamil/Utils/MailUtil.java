@@ -378,7 +378,7 @@ public class MailUtil {
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean hasAttachment(Part part) throws MessagingException, IOException {
+    public static boolean hasAttachment(Part part) throws MessagingException, IOException {
         boolean flag = false;
         if (part.isMimeType("multipart/*")) {
             MimeMultipart multipart = (MimeMultipart) part.getContent();

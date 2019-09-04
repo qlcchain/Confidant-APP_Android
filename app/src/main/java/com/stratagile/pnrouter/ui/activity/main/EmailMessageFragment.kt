@@ -23,6 +23,7 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
+import com.smailnet.eamil.Utils.MailUtil
 import com.smailnet.eamil.Utils.TimeUtil
 import com.smailnet.islands.Islands
 import com.socks.library.KLog
@@ -51,6 +52,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
+import javax.mail.Message
 
 /**
  * @author zl
@@ -368,17 +370,17 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     if(menu == "node")
                     {
                         refreshLayout.finishLoadMore()
-                      /*  nodeUpandDown = "down";
-                        if(lastPayload == null)
-                        {
-                            nodeStartId = 0;
-                        }else{
-                            nodeStartId = lastPayload!!.id
-                        }
-                        var type = AppConfig.instance.emailConfig().emailType.toInt()
-                        var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-                        var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))*/
+                        /*  nodeUpandDown = "down";
+                          if(lastPayload == null)
+                          {
+                              nodeStartId = 0;
+                          }else{
+                              nodeStartId = lastPayload!!.id
+                          }
+                          var type = AppConfig.instance.emailConfig().emailType.toInt()
+                          var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                          var pullMailList = PullMailList(type ,accountBase64,nodeStartId, 20)
+                          AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))*/
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
                         pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
@@ -832,7 +834,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                         var list = messageList;
                                         for (item in messageList)
                                         {
-                                            var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.TimeStamp.eq(item.id)).list()
+                                            var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.MsgId.eq(item.id)).list()
                                             var name = ""
                                             var account  = ""
                                             if(localEmailMessage ==null || localEmailMessage.size == 0)
@@ -876,7 +878,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
                                             for (attachItem in mailAttachmentList)
                                             {
-                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(menu+"_"+item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
                                                 if(attachList == null || attachList.size == 0)
                                                 {
                                                     var eamilAttach = EmailAttachEntity()
@@ -1024,7 +1026,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                         var list = messageList;
                                         for (item in messageList)
                                         {
-                                            var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.TimeStamp.eq(item.id)).list()
+                                            var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.MsgId.eq(item.id)).list()
                                             var name = ""
                                             var account  = ""
                                             if(localEmailMessage ==null || localEmailMessage.size == 0)
@@ -1068,7 +1070,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                             var mailAttachmentList: List<MailAttachment> = item.mailAttachmentList
                                             for (attachItem in mailAttachmentList)
                                             {
-                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(menu+"_"+item.id),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
                                                 if(attachList == null || attachList.size == 0)
                                                 {
                                                     var eamilAttach = EmailAttachEntity()
@@ -1099,7 +1101,6 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                             emaiMessageChooseAdapter!!.setNewData(localEmailMessage);
                                             progressDialog.dismiss()
                                         }
-
                                     }
                                     override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()

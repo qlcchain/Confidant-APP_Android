@@ -139,10 +139,17 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             lockPic.visibility = View.GONE
         }
         var attach = helper.getView<TextView>(R.id.attach)
-        if(item.attachmentCount >0)
+        /*if(item.attachmentCount >0)
         {
             attach.visibility = View.VISIBLE
             attach.text = item.attachmentCount.toString();
+        }else{
+            attach.visibility = View.GONE
+        }*/
+        if(item.isContainerAttachment())
+        {
+            attach.visibility = View.VISIBLE
+            attach.text = "";
         }else{
             attach.visibility = View.GONE
         }
