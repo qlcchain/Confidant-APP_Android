@@ -981,13 +981,25 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             })
         }
         needOp = false
-        if( emailMeaasgeData!!.content != null && emailMeaasgeData!!.content.contains("<img"))
+        if( emailMeaasgeData!!.content != null)
         {
-            needOp = true
+            var exitName = emailMeaasgeData!!.content.toLowerCase()
+            if(emailMeaasgeData!!.content.contains("<img"))
+            {
+                if(exitName.contains(".jpg") || exitName.contains(".jpeg")|| exitName.contains(".png"))
+                {
+                    needOp = true
+                }
+            }
+
         }
         if(emailMeaasgeData!!.originalText!= null && emailMeaasgeData!!.originalText.contains("<img"))
         {
-            needOp = true;
+            var exitName = emailMeaasgeData!!.originalText.toLowerCase()
+            if(exitName.contains(".jpg") || exitName.contains(".jpeg")|| exitName.contains(".png"))
+            {
+                needOp = true
+            }
         }
         if(needOp)
         {

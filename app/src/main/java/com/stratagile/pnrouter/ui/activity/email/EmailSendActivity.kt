@@ -1306,8 +1306,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             val contentBuffer = contentHtml.toByteArray()
             var fileKey16 = fileKey.substring(0,16)
             Log.i("fileKey16",fileKey16)
-            var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
-            contentHtml = contentBufferMiStr;
+            if(!contentHtml.equals(""))
+            {
+                var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+                contentHtml = contentBufferMiStr;
+            }
         }
         var confidantKey = "";
         for(item in contactMapList)

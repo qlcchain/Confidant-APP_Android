@@ -977,7 +977,7 @@ class EmailCore {
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
-            while (messagesAll.length == 0 || messagesAll[0]== null)
+            while (messagesAll.length == 0)
             {
                 long[] uuidList = new long[pageSize];
                 lengFlag = 0;

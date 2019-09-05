@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -76,6 +77,12 @@ public class MailUtil {
     public MailUtil() {
         this("emaildev@qlink.mobi", "Qlcchain@123");
     }
+
+
+    private ArrayList<String> attachments = new ArrayList<>();
+    private ArrayList<InputStream> attachmentsInputStreams = new ArrayList<>();
+    private ArrayList<Long> attachSizeList = new ArrayList<>();
+    private ArrayList<String> cidList = new ArrayList<>();
 
     private MailUtil(String user, String password) {
         this.user = user;
@@ -395,10 +402,14 @@ public class MailUtil {
                     if (contentType.contains("application")) {
                         flag = true;
                     }
-
-                    if (contentType.contains("name")) {
-                        flag = true;
+                    String fileName = bodyPart.getFileName();
+                    if ((fileName != null)) {
+                        String cid = getCid(bodyPart);
+                        Log.i("getCid 内嵌= ", cid);
                     }
+                    /*if (contentType.contains("name")) {
+                        flag = true;
+                    }*/
                 }
                 if (flag) break;
             }
@@ -407,7 +418,21 @@ public class MailUtil {
         }
         return flag;
     }
-
+    public static String getCid(Part p) throws MessagingException {
+        String content, cid;
+        String[] headers = p.getHeader("Content-Id");
+        if (headers != null && headers.length > 0) {
+            content = headers[0];
+        } else {
+            return null;
+        }
+        if (content.startsWith("<") && content.endsWith(">")) {
+            cid = "cid:" + content.substring(1, content.length() - 1);
+        } else {
+            cid = "cid:" + content;
+        }
+        return cid;
+    }
     /**
      * 获得邮件文本内容
      *
