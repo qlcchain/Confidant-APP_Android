@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.email
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -124,9 +125,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
     var msgID = 0
     var needOp = false
+    var this_:Activity? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        this_ = this
         super.onCreate(savedInstanceState)
     }
     override fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp) {
@@ -738,7 +741,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                     .setCancelText(getString(R.string.no))
                     .setConfirmText(getString(R.string.yes))
-                    .setContentText(getString(R.string.Send_attachments))
+                    .setContentText(getString(R.string.askdelete))
                     .setConfirmClickListener {
                         showProgressDialog(getString(R.string.waiting))
                         if(menu == "node")
@@ -957,23 +960,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                             showMovePop()
                         }
                         "Delete" -> {
-                              SweetAlertDialog(AppConfig.instance, SweetAlertDialog.BUTTON_NEUTRAL)
-                                    .setCancelText(getString(R.string.no))
-                                    .setConfirmText(getString(R.string.yes))
-                                    .setContentText(getString(R.string.Send_attachments))
-                                    .setConfirmClickListener {
-                                        showProgressDialog(getString(R.string.waiting))
-                                        if(menu == "node")
-                                        {
-                                            var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
-                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
-                                        }else{
-                                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
-                                        }
-                                    }.setCancelClickListener {
-
-                                    }
-                                    .show()
+                            deleteMenu.performClick()
                         }
                     }
                 }

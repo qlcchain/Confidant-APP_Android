@@ -78,9 +78,10 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         }else{
             if(BuildConfig.DEBUG)
             {
-                sycDataCountIMAP()
+
                 //AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
                 runOnUiThread {
+                    sycDataCountIMAP()
                     closeProgressDialog()
                     //sycDataCountIMAP()
                     toast(R.string.The_mailbox_has_been_configured)
