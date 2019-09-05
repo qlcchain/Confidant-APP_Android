@@ -370,6 +370,27 @@ public class MailUtil {
                     if (contentType.contains("name") || contentType.contains("application")) {
 
                     }
+                    String fileName = bodyPart.getFileName();
+                    if ((fileName != null)) {
+                        String cid = getCid(bodyPart);
+                        InputStream is = bodyPart.getInputStream();
+                        System.out.println("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
+                        //byte[] byt = MailUtil.toByteArray(is);
+                        byte[] byt = new byte[0];
+                        System.out.println("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                        Log.i("getAttachment",byt.length +"");
+                        // 附件名通过MimeUtility解码，否则是乱码
+                        System.out.println("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
+                        int aaabb= bodyPart.getSize();
+                        String name = "";
+                        if(bodyPart.getFileName() != null)
+                        {
+                            name = MimeUtility.decodeText(bodyPart.getFileName());
+                        }
+                        System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
+                        list.add(new MailAttachment(name,is, byt,msgId,account));
+                        Log.i("getCid 内嵌= ", cid);
+                    }
                 }
             }
             System.out.println("getAttachment:end"+System.currentTimeMillis());
@@ -404,12 +425,13 @@ public class MailUtil {
                     }
                     String fileName = bodyPart.getFileName();
                     if ((fileName != null)) {
+                        fileName = MimeUtility.decodeText(fileName);
                         String cid = getCid(bodyPart);
                         Log.i("getCid 内嵌= ", cid);
                     }
-                    /*if (contentType.contains("name")) {
+                    if (contentType.contains("name")) {
                         flag = true;
-                    }*/
+                    }
                 }
                 if (flag) break;
             }
