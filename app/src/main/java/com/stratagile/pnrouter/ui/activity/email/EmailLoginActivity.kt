@@ -175,8 +175,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             {
                 "1"->
                 {
-                    account_editText.setText("zhipeng.hu@qlink.mobi")
-                    password_editText.setText("HUzhi0826")
+                    account_editText.setText("emaildev@qlink.mobi")
+                    password_editText.setText("Qlcchain@123")
                 }
                 "2"->
                 {

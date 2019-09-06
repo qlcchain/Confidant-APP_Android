@@ -1139,6 +1139,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 needOp = true
             }
         }
+        NestedScrollViewParent.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                isScaleInit = true
+                return false
+            }
+        })
         val webSettings = webView.getSettings()
         //允许webview对文件的操作
         webSettings.setAllowUniversalAccessFromFileURLs(true);
@@ -1204,6 +1210,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         webView.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View, event: MotionEvent): Boolean {
+                isScaleInit = true
                 if(!needOp)
                 {
                     webViewScroll = false
@@ -1229,7 +1236,6 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 if(!isScaleInit)
                 {
                     newScaleInit = newScale
-                    isScaleInit = true
                 }
                 if(newScaleInit == newScale)
                 {
@@ -1237,7 +1243,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 }else{
                     webViewScroll = true
                 }
-                Log.i("onScaleChanged",saleOld.toString()+"##"+sscaleNew.toString())
+                Log.i("onScaleChanged",saleOld.toString()+"##"+sscaleNew.toString() +"##"+(saleOld -sscaleNew))
                 super.onScaleChanged(view, oldScale, newScale)
             }
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
