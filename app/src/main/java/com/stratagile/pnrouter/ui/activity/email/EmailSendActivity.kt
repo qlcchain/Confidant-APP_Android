@@ -73,6 +73,7 @@ import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
@@ -1253,6 +1254,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 发送邮件
      */
     private fun sendEmail(send: Boolean) {
+        if(BuildConfig.DEBUG)
+        {
+            contactMapList = HashMap<String, String>()
+        }
         var fileKey = RxEncryptTool.generateAESKey()
         var contentHtml = re_main_editor.html
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
@@ -2357,7 +2362,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
     }
     fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ):String {
-        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + fileName + "\"").toString();
+        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + "1"+fileName + "\"").toString();
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent

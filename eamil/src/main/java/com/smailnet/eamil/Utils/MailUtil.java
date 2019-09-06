@@ -423,7 +423,7 @@ public class MailUtil {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disposition = bodyPart.getDisposition();
-                if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE))) {
+                if (disposition != null && disposition.equalsIgnoreCase(Part.ATTACHMENT) ) {
                     String aa = "";
                 } else if (bodyPart.isMimeType("multipart/*")) {
                     getCid(bodyPart, list,msgId,account);

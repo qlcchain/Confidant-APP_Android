@@ -345,9 +345,9 @@ class EmailCore {
         //** 附件测试
 
         //整封邮件的MINE消息体
-        MimeMultipart msgMultipart = new MimeMultipart("mixed");//混合的组合关系
+        MimeMultipart mm = new MimeMultipart("mixed");//混合的组合关系
         //设置邮件的MINE消息体
-        message.setContent(msgMultipart,"text/html;charset=utf-8");
+        message.setContent(mm,"text/html;charset=utf-8");
 
         if(attach.length > 0)
         {
@@ -361,7 +361,7 @@ class EmailCore {
                 if(fileTxt.exists())
                 {
                     //把内容，附件1，附件2加入到 MINE消息体中
-                    msgMultipart.addBodyPart(attch1);
+                    mm.addBodyPart(attch1);
                     String aa = "";
                     DataSource ds1 = new FileDataSource(fileTxt);
                     //数据处理器
@@ -381,66 +381,63 @@ class EmailCore {
                 }
             }
         }
-
+        //正文（图片和文字部分）
+        MimeMultipart mm_text_image  = new MimeMultipart("related");
         MimeBodyPart contentCid = null;
         if(cidPath.length > 0)
         {
-            contentCid = createContent("", cidPath);
-            /*for (String cidPathItem :cidPath)
+            //contentCid = createContent("", cidPath);
+            for (String cidPathItem :cidPath)
             {
-                //附件
-                MimeBodyPart imageCid = new MimeBodyPart();
-                //把文件，添加到附件1中
-                //数据源
-                File fileTxt = new File(cidPathItem);
-                if(fileTxt.exists())
+                if(!cidPathItem.equals(""))
                 {
-                    //把内容，附件1，附件2加入到 MINE消息体中
-                   try {
-                       //imageCid.attachFile(fileTxt);
-                         DataSource ds1 = new FileDataSource(fileTxt);
-                    //数据处理器
-                    DataHandler dh1 = new DataHandler(ds1 );
-                    //设置第一个附件的数据
-                    imageCid.setDataHandler(dh1);
-                       //设置第一个附件的文件名
-                       String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
-                       String cid = fileName.substring(0,fileName.lastIndexOf("."));
-                       imageCid.setContentID("<"+cid+ ">");
-                       imageCid.setHeader("Content-Type", "image/*");
-                       imageCid.setDisposition(MimeBodyPart.INLINE);
-                       msgMultipart.addBodyPart(imageCid);
-                   }catch (Exception e)
-                   {
+                    //cid
+                    MimeBodyPart imageCid = new MimeBodyPart();
+                    //把文件，添加到附件1中
+                    //数据源
+                    File fileTxt = new File(cidPathItem);
+                    if(fileTxt.exists())
+                    {
+                        //把内容，附件1，附件2加入到 MINE消息体中
+                        try {
+                            //imageCid.attachFile(fileTxt);
+                            DataSource ds1 = new FileDataSource(fileTxt);
+                            //数据处理器
+                            DataHandler dh1 = new DataHandler(ds1 );
+                            //设置第一个附件的数据
+                            imageCid.setDataHandler(dh1);
+                            //设置第一个附件的文件名
+                            String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
+                            String cid = fileName.substring(0,fileName.lastIndexOf("."));
+                            imageCid.setContentID("<1"+fileName+">");
+                            //imageCid.setFileName(fileName);
+                            //imageCid.setHeader("Content-Type", "image/*");
+                            //imageCid.setDisposition(MimeBodyPart.INLINE);
+                            mm_text_image.addBodyPart(imageCid);
+                            //mm_text_image.setSubType("related");
+                        }catch (Exception e)
+                        {
 
-                   }
+                        }
 
+                    }
                 }
-            }*/
+
+            }
         }
 
         //正文内容
-        MimeBodyPart contentMimeBodyPart = new MimeBodyPart();
-        msgMultipart.addBodyPart(contentMimeBodyPart);
-
-
-
-
-
-        //正文（图片和文字部分）
-        MimeMultipart bodyMultipart  = new MimeMultipart("related");
+        MimeBodyPart text_image = new MimeBodyPart();
+        mm.addBodyPart(text_image);
         //设置内容为正文
-        contentMimeBodyPart.setContent(bodyMultipart);
+        text_image.setContent(mm_text_image);
 
         //html代码部分
         MimeBodyPart htmlPart = new MimeBodyPart();
 
         //正文添加图片和html代码
-        bodyMultipart.addBodyPart(htmlPart);
-        if(contentCid != null)
-        {
-            bodyMultipart.addBodyPart(contentCid);
-        }
+        mm_text_image.addBodyPart(htmlPart);
+
         //html代码
         htmlPart.setContent(content,"text/html;charset=utf-8");
         message.setSentDate(new Date());
@@ -478,8 +475,8 @@ class EmailCore {
                         //设置第一个附件的文件名
                         String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
                         String cid = fileName.substring(0,fileName.lastIndexOf("."));
-                        imageCid.setContentID("<"+cid+ ">");
-                        imageCid.setDisposition(MimeBodyPart.INLINE);
+                        imageCid.setContentID(fileName);
+                        //imageCid.setDisposition(MimeBodyPart.INLINE);
                         multipart.addBodyPart(imageCid);
                     }catch (Exception e)
                     {
