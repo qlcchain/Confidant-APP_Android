@@ -1311,6 +1311,43 @@ class EmailCore {
         return mailAttachments;
     }
     /**
+     * 使用IMAP协议接收服务器上的邮件cid资源
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<MailAttachment> imapDownloadMailCid(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+        System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
+        folder.open(Folder.READ_WRITE);
+        Message message= folder.getMessageByUID(Long.valueOf(uid));
+        //设置标记
+        /*message.setFlag(Flags.Flag.SEEN,true);
+        message.saveChanges();*/
+        PraseMimeMessage pmm = null;
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        List<MailAttachment> mailAttachments = new ArrayList<>();
+        try {
+            pmm = new PraseMimeMessage((MimeMessage)message);
+            MailUtil.getCid(message, mailAttachments,uid,this.account);
+            //pmm.setAttachPath(file.toString()+"/");
+            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            long aa = System.currentTimeMillis();
+            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
+            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        folder.close(false);
+        imapStore.close();
+        return mailAttachments;
+    }
+    /**
      * 使用IMAP协议接收服务器上的邮件附件
      * @return
      * @throws MessagingException

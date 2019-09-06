@@ -4,11 +4,11 @@ import java.io.InputStream;
 
 /**
  * @author zl
- * @date 2019/1/10 21:14
+ * @date 2019/9/6 21:14
  *
- * 邮件附件类
+ * 邮件正文cid类
  */
-public class MailAttachment {
+public class MailCid {
     private String msgId;
     private String account;
     private String name;
@@ -55,7 +55,7 @@ public class MailAttachment {
         this.byt = byt;
     }
 
-    public MailAttachment(String name,InputStream inputStream, byte[] byt, String msgId, String account) {
+    public MailCid(String name, InputStream inputStream, byte[] byt, String msgId, String account) {
         this.msgId = msgId;
         this.account = account;
         this.name = name;

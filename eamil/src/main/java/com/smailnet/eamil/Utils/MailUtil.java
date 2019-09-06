@@ -370,7 +370,7 @@ public class MailUtil {
                     if (contentType.contains("name") || contentType.contains("application")) {
 
                     }
-                    String fileName = bodyPart.getFileName();
+                   /* String fileName = bodyPart.getFileName();
                     if ((fileName != null)) {
                         String cid = getCid(bodyPart);
                         InputStream is = bodyPart.getInputStream();
@@ -390,7 +390,7 @@ public class MailUtil {
                         System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
                         list.add(new MailAttachment(name,is, byt,msgId,account));
                         Log.i("getCid 内嵌= ", cid);
-                    }
+                    }*/
                 }
             }
             System.out.println("getAttachment:end"+System.currentTimeMillis());
@@ -398,7 +398,68 @@ public class MailUtil {
             getAttachment((Part) part.getContent(), list,msgId,account);
         }
     }
+    /**
+     * 获取附件
+     * 只获取附件里的
+     * 邮件内容里的附件（图片等）忽略
+     * @param part 邮件中多个组合体中的其中一个组合体
+     * @param list 附件容器
+     * @throws UnsupportedEncodingException
+     * @throws MessagingException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void getCid(Part part, List<MailAttachment> list,String msgId,String account) throws UnsupportedEncodingException, MessagingException,
+            FileNotFoundException, IOException {
+        System.out.println("getCid:begin"+System.currentTimeMillis());
+        if (part.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
+            //复杂体邮件包含多个邮件体
+            int partCount = multipart.getCount();
+            System.out.println("getCid:for"+System.currentTimeMillis());
+            for (int i = 0; i < partCount; i++) {
+                //获得复杂体邮件中其中一个邮件体
+                System.out.println("getCid:for:"+i+System.currentTimeMillis());
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                //某一个邮件体也有可能是由多个邮件体组成的复杂体
+                String disposition = bodyPart.getDisposition();
+                if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE))) {
 
+                } else if (bodyPart.isMimeType("multipart/*")) {
+                    getCid(bodyPart, list,msgId,account);
+                } else {
+                    String contentType = bodyPart.getContentType();
+                    if (contentType.contains("name") || contentType.contains("application")) {
+
+                    }
+                    String fileName = bodyPart.getFileName();
+                    if ((fileName != null)) {
+                        String cid = getCid(bodyPart);
+                        InputStream is = bodyPart.getInputStream();
+                        System.out.println("getCid:for:toByteArrayText:"+i+System.currentTimeMillis());
+                        //byte[] byt = MailUtil.toByteArray(is);
+                        byte[] byt = new byte[0];
+                        System.out.println("getCid:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                        Log.i("getCid",byt.length +"");
+                        // 附件名通过MimeUtility解码，否则是乱码
+                        System.out.println("getCid:for:decodeText:"+i+System.currentTimeMillis());
+                        int aaabb= bodyPart.getSize();
+                        String name = "";
+                        if(bodyPart.getFileName() != null)
+                        {
+                            name = MimeUtility.decodeText(bodyPart.getFileName());
+                        }
+                        System.out.println("getCid:for:decodeEndText:"+i+System.currentTimeMillis());
+                        list.add(new MailAttachment(name,is, byt,msgId,account));
+                        Log.i("getCid 内嵌= ", cid);
+                    }
+                }
+            }
+            System.out.println("getCid:end"+System.currentTimeMillis());
+        } else if (part.isMimeType("message/rfc822")) {
+            getCid((Part) part.getContent(), list,msgId,account);
+        }
+    }
     /**
      * 判断邮件中是否包含附件
      *
@@ -423,7 +484,7 @@ public class MailUtil {
                     if (contentType.contains("application")) {
                         flag = true;
                     }
-                    String fileName = bodyPart.getFileName();
+                   /* String fileName = bodyPart.getFileName();
                     if ((fileName != null)) {
                         fileName = MimeUtility.decodeText(fileName);
                         String cid = getCid(bodyPart);
@@ -431,7 +492,7 @@ public class MailUtil {
                     }
                     if (contentType.contains("name")) {
                         flag = true;
-                    }
+                    }*/
                 }
                 if (flag) break;
             }
