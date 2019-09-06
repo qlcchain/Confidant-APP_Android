@@ -918,7 +918,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             startActivity(intent)
         }
         forWardbtn.setOnClickListener {
-            if(emailMeaasgeData!!.attachmentCount >0)
+            if(emailMeaasgeData!!.isContainerAttachment())
             {
                 showDialog()
             }else{

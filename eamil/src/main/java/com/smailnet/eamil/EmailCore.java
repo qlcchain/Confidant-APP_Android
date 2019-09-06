@@ -287,6 +287,21 @@ class EmailCore {
     }
 
     /**
+     * 使用SMTP协议发送邮件
+     * @throws MessagingException
+     */
+    public Message sendMail() throws MessagingException {
+        Transport transport = session.getTransport(SMTP);
+        transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
+        transport.sendMessage(message, message.getAllRecipients());
+       /* transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.CC));
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.BCC));*/
+        transport.close();
+        return message;
+    }
+
+    /**
      * 组装邮件的信息
      * @param nickname
      * @param to
@@ -296,7 +311,7 @@ class EmailCore {
      * @param content
      * @throws MessagingException
      */
-    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach) throws MessagingException {
+    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach,String[] cidPath) throws MessagingException {
         Message message = new MimeMessage(session);
         message.addRecipients(Message.RecipientType.TO, to);
         if (cc != null) {
@@ -367,6 +382,43 @@ class EmailCore {
             }
         }
 
+        MimeBodyPart contentCid = null;
+        if(cidPath.length > 0)
+        {
+            contentCid = createContent("", cidPath);
+            /*for (String cidPathItem :cidPath)
+            {
+                //附件
+                MimeBodyPart imageCid = new MimeBodyPart();
+                //把文件，添加到附件1中
+                //数据源
+                File fileTxt = new File(cidPathItem);
+                if(fileTxt.exists())
+                {
+                    //把内容，附件1，附件2加入到 MINE消息体中
+                   try {
+                       //imageCid.attachFile(fileTxt);
+                         DataSource ds1 = new FileDataSource(fileTxt);
+                    //数据处理器
+                    DataHandler dh1 = new DataHandler(ds1 );
+                    //设置第一个附件的数据
+                    imageCid.setDataHandler(dh1);
+                       //设置第一个附件的文件名
+                       String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
+                       String cid = fileName.substring(0,fileName.lastIndexOf("."));
+                       imageCid.setContentID("<"+cid+ ">");
+                       imageCid.setHeader("Content-Type", "image/*");
+                       imageCid.setDisposition(MimeBodyPart.INLINE);
+                       msgMultipart.addBodyPart(imageCid);
+                   }catch (Exception e)
+                   {
+
+                   }
+
+                }
+            }*/
+        }
+
         //正文内容
         MimeBodyPart contentMimeBodyPart = new MimeBodyPart();
         msgMultipart.addBodyPart(contentMimeBodyPart);
@@ -385,6 +437,10 @@ class EmailCore {
 
         //正文添加图片和html代码
         bodyMultipart.addBodyPart(htmlPart);
+        if(contentCid != null)
+        {
+            bodyMultipart.addBodyPart(contentCid);
+        }
         //html代码
         htmlPart.setContent(content,"text/html;charset=utf-8");
         message.setSentDate(new Date());
@@ -392,20 +448,58 @@ class EmailCore {
         this.message = message;
         return this;
     }
+    public static MimeBodyPart createContent(String body, String[] cidPath) {
 
-    /**
-     * 使用SMTP协议发送邮件
-     * @throws MessagingException
-     */
-    public Message sendMail() throws MessagingException {
-        Transport transport = session.getTransport(SMTP);
-        transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
-        transport.sendMessage(message, message.getAllRecipients());
-       /* transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
-        transport.sendMessage(message, message.getRecipients(Message.RecipientType.CC));
-        transport.sendMessage(message, message.getRecipients(Message.RecipientType.BCC));*/
-        transport.close();
-        return message;
+        /* 创建代表组合MIME消息的MimeMultipart对象和该对象保存到的MimeBodyPart对象 */
+        MimeBodyPart content = new MimeBodyPart();
+
+        // 创建一个MimeMultipart对象
+        MimeMultipart multipart = new MimeMultipart();
+
+        if(cidPath.length > 0)
+        {
+            for (String cidPathItem :cidPath)
+            {
+                //附件
+                MimeBodyPart imageCid = new MimeBodyPart();
+                //把文件，添加到附件1中
+                //数据源
+                File fileTxt = new File(cidPathItem);
+                if(fileTxt.exists())
+                {
+                    //把内容，附件1，附件2加入到 MINE消息体中
+                    try {
+                        //imageCid.attachFile(fileTxt);
+                        DataSource ds1 = new FileDataSource(fileTxt);
+                        //数据处理器
+                        DataHandler dh1 = new DataHandler(ds1 );
+                        //设置第一个附件的数据
+                        imageCid.setDataHandler(dh1);
+                        //设置第一个附件的文件名
+                        String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
+                        String cid = fileName.substring(0,fileName.lastIndexOf("."));
+                        imageCid.setContentID("<"+cid+ ">");
+                        imageCid.setDisposition(MimeBodyPart.INLINE);
+                        multipart.addBodyPart(imageCid);
+                    }catch (Exception e)
+                    {
+
+                    }
+
+                }
+            }
+        }
+
+        // 将MimeMultipart对象保存到MimeBodyPart对象中
+        try {
+            content.setContent(multipart);
+        }catch (Exception e)
+        {
+
+        }
+
+
+        return content;
     }
     /**
      * 使用SMTP协议保存邮件

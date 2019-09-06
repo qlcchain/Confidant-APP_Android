@@ -928,12 +928,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private fun initAttachUI()
     {
         attachListEntity =  arrayListOf<EmailAttachEntity>()
-        var attachCount = 0
+        var attachCount = false
         if(emailMeaasgeInfoData != null)
         {
-            attachCount = emailMeaasgeInfoData!!.attachmentCount
+            attachCount = emailMeaasgeInfoData!!.isContainerAttachment()
         }
-        if(attach > 0 && attachCount > 0)
+        if(attachCount)
         {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var addMenu = false
@@ -1301,6 +1301,46 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 contentHtml = contentHtml.substring(0,endIndex)
             }
         }
+
+        //解析cid资源
+        var cidList = ""
+        if(emailMeaasgeInfoData != null)
+        {
+            var citList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+            if(citList.size == 0)
+            {
+                citList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+            }
+            for(item in citList)
+            {
+                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+                var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId+"_"+item.name
+                if(!contentHtml.equals(""))
+                {
+                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.name ,savePath )
+                }
+                if(item.localPath != null)
+                {
+                    if(contactMapList.size >0)
+                    {
+                        val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
+                        val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
+                        if(code ==1)
+                        {
+                            cidList +=base58files_dir+","
+                        }
+                    }else{
+                        cidList +=item.localPath+","
+                    }
+                }
+
+            }
+            if(cidList.length >0)
+            {
+                cidList = cidList.substring(0,cidList.length -1)
+            }
+        }
+
         if(contactMapList.size >0)
         {
             val contentBuffer = contentHtml.toByteArray()
@@ -1480,7 +1520,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             toast(R.string.The_recipient_cant_be_empty)
             return
         }
-
         var attachList = ""
         var emaiAttachAdapterList = emaiAttachAdapter!!.data
         for(item in emaiAttachAdapterList)
@@ -1534,7 +1573,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     .setNickname(name)                                    //发件人昵称
                     .setSubject(subject.getText().toString())             //邮件标题
                     .setContent(contentHtml)              //邮件正文
-                    .setAttach(attachList)
+                    .setCidPath(cidList)                 //cid资源
+                    .setAttach(attachList)              //附件
                     .sendAsyn(this, object : GetSendCallback {
                         override fun sendSuccess() {
                             runOnUiThread {
@@ -2315,6 +2355,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
+    }
+    fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ):String {
+        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + fileName + "\"").toString();
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent
