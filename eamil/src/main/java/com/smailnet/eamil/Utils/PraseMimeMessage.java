@@ -210,7 +210,7 @@ public class PraseMimeMessage{
             for(int i=0;i<mp.getCount();i++){
                 BodyPart mpart = mp.getBodyPart(i);
                 String disposition = mpart.getDisposition();
-                if((disposition != null) &&((disposition.equals(Part.ATTACHMENT)) ||(disposition.equals(Part.INLINE))))
+                if((disposition != null) &&((disposition.equals(Part.ATTACHMENT))))
                     attachflag = true;
                 else if(mpart.isMimeType("multipart/*")){
 
@@ -239,7 +239,7 @@ public class PraseMimeMessage{
             for(int i=0;i<mp.getCount();i++){
                 BodyPart mpart = mp.getBodyPart(i);
                 String disposition = mpart.getDisposition();
-                if((disposition != null) &&((disposition.equalsIgnoreCase(Part.ATTACHMENT)) ||(disposition.equalsIgnoreCase(Part.INLINE)))){
+                if((disposition != null) &&((disposition.equalsIgnoreCase(Part.ATTACHMENT)))){
                     fileName = mpart.getFileName();
                     fileName = MimeUtility.decodeText(fileName);
                     saveFile(fileName,mpart.getInputStream());

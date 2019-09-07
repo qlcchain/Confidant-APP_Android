@@ -409,10 +409,14 @@ class EmailCore {
                             //设置第一个附件的文件名
                             String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
                             String cid = fileName.substring(0,fileName.lastIndexOf("."));
-                            imageCid.setContentID("<1"+fileName+">");
+                            //imageCid.setContentID("<1"+fileName+">");
                             //imageCid.setFileName(fileName);
                             //imageCid.setHeader("Content-Type", "image/*");
                             //imageCid.setDisposition(MimeBodyPart.INLINE);
+                            imageCid.setHeader("Content-ID","<1"+fileName+">");
+                            /*imageCid.setHeader("Content-Type", "image/jpg");
+                            imageCid.setDisposition(MimeBodyPart.INLINE);*/
+                            //imageCid.setFileName(fileName);
                             mm_text_image.addBodyPart(imageCid);
                             //mm_text_image.setSubType("related");
                         }catch (Exception e)
@@ -1766,7 +1770,7 @@ class EmailCore {
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 String disp = bodyPart.getDisposition();
-                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE))) {
+                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT))) {
                     flag = true;
                     count ++;
                 } else if (bodyPart.isMimeType("multipart/*")) {
@@ -1950,7 +1954,7 @@ class EmailCore {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disp = bodyPart.getDisposition();
-                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE))) {
+                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT))) {
                     InputStream is = bodyPart.getInputStream();
                     saveFile(is, destDir, decodeText(bodyPart.getFileName()));
                 } else if (bodyPart.isMimeType("multipart/*")) {
