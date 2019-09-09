@@ -2244,7 +2244,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         var emailAttachEntity = EmailAttachEntity()
                         emailAttachEntity.isHasData = true
                         emailAttachEntity.localPath = list.get(i).path
-                        emailAttachEntity.name = list.get(i).path.substring(list.get(0).path.lastIndexOf("/")+1,list.get(0).path.length)
+                        emailAttachEntity.name = list.get(i).path.substring(list.get(i).path.lastIndexOf("/")+1,list.get(i).path.length)
                         emailAttachEntity.isCanDelete = true
                         emaiAttachAdapter!!.addData(0,emailAttachEntity)
 
