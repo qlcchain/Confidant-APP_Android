@@ -234,6 +234,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             runOnUiThread {
                 showProgressDialog("logining...")
             }
+            ConstantValue.isNewUser = true;
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn

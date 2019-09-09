@@ -129,6 +129,7 @@ object ConstantValue {
         var sinaMenu = arrayOf("INBOX","节点","星标邮件","草稿夹","已发送","垃圾邮件","已删除");
         var qqMenu = arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
         var currentEmailConfigEntity:EmailConfigEntity ?= null
+        var isNewUser = false
         //1：qq企业邮箱
         //2：qq邮箱
         //3：163邮箱

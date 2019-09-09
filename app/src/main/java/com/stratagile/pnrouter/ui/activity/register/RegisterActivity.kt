@@ -214,6 +214,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             runOnUiThread {
                 closeProgressDialog()
             }
+            ConstantValue.isNewUser = true;
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn

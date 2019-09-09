@@ -14,7 +14,9 @@ import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
+import com.message.Message
 import com.message.UserProvider
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
@@ -448,6 +450,22 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
         contactList.sortBy {
             it.nickSouceName
+        }
+
+        if(contactList.size == 1 && ConstantValue.isNewUser)
+        {
+            var adminTemp = contactList.get(0)
+            val gson = Gson()
+            val Message = Message()
+            Message.msg = "  "
+            Message.from = userId
+            Message.to = adminTemp.userId
+            Message.status = 0
+            Message.timeStamp = System.currentTimeMillis() / 1000
+            Message.unReadCount = 0
+            Message.chatType = EMMessage.ChatType.Chat
+            val baseDataJson = gson.toJson(Message)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + adminTemp.userId, baseDataJson)
         }
         //一对多数据处理begin
         var contactMapList = HashMap<String, MyFriend>()

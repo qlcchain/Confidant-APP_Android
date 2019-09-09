@@ -190,6 +190,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(i)
                 }
             }
+            ConstantValue.isNewUser = true;
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn

@@ -1254,10 +1254,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 发送邮件
      */
     private fun sendEmail(send: Boolean) {
-        if(BuildConfig.DEBUG)
+       /* if(BuildConfig.DEBUG)
         {
             contactMapList = HashMap<String, String>()
-        }
+        }*/
         var fileKey = RxEncryptTool.generateAESKey()
         var contentHtml = re_main_editor.html
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)

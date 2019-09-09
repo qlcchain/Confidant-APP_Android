@@ -241,6 +241,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 closeProgressDialog()
                 KLog.i("1111")
             }
+            ConstantValue.isNewUser = true;
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn
