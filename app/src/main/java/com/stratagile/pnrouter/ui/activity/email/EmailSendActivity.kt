@@ -1269,9 +1269,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     " <br />"+
                     "<div style=\"background: #f2f2f2;\">"+
                     getString(R.string.Original_mail)+
-                    "   <br />"+getString(R.string.From)+"：&quot;"+from+"：&quot;"+
-                    "   <br />"+getString(R.string.To)+"：&quot;"+toStr+"：&quot;"+
-                    "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"：&quot;"+
+                    "   <br />"+getString(R.string.From)+"：&quot;"+from+"&quot;"+
+                    "   <br />"+getString(R.string.To)+"：&quot;"+toStr+"&quot;"+
+                    "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"&quot;"+
                     "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
                     "  </div>"+
                     "   <br />"+
@@ -1309,6 +1309,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         //解析cid资源
         var cidList = ""
+        var uuid = (System.currentTimeMillis() / 1000).toString()
         if(emailMeaasgeInfoData != null)
         {
             var citList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
@@ -1322,7 +1323,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId+"_"+item.name
                 if(!contentHtml.equals(""))
                 {
-                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.name ,savePath )
+                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.name ,savePath ,uuid)
                 }
                 if(item.localPath != null)
                 {
@@ -1579,6 +1580,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     .setSubject(subject.getText().toString())             //邮件标题
                     .setContent(contentHtml)              //邮件正文
                     .setCidPath(cidList)                 //cid资源
+                    .setUUID(uuid)
                     .setAttach(attachList)              //附件
                     .sendAsyn(this, object : GetSendCallback {
                         override fun sendSuccess() {
@@ -2361,8 +2363,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
     }
-    fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ):String {
-        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + "1"+fileName + "\"").toString();
+    fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ,pre:String):String {
+        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + pre+fileName + "\"").toString();
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent

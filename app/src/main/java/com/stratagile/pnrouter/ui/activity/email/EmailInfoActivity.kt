@@ -1129,12 +1129,24 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     needOp = true
                 }
             }
+            if(emailMeaasgeData!!.content.contains("cid:") || emailMeaasgeData!!.content.contains("file:///"))
+            {
+                needOp = true
+            }
 
         }
-        if(emailMeaasgeData!!.originalText!= null && emailMeaasgeData!!.originalText.contains("<img"))
+        if(emailMeaasgeData!!.originalText!= null)
         {
-            var exitName = emailMeaasgeData!!.originalText.toLowerCase()
-            if(exitName.contains(".jpg") || exitName.contains(".jpeg")|| exitName.contains(".png")|| exitName.contains("cid:"))
+            if(emailMeaasgeData!!.originalText.contains("<img"))
+            {
+                var exitName = emailMeaasgeData!!.originalText.toLowerCase()
+                if(exitName.contains(".jpg") || exitName.contains(".jpeg")|| exitName.contains(".png"))
+                {
+                    needOp = true
+                }
+            }
+
+            if(emailMeaasgeData!!.originalText.contains("cid:") || emailMeaasgeData!!.originalText.contains("file:///"))
             {
                 needOp = true
             }

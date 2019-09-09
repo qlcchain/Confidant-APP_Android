@@ -49,6 +49,7 @@ public class EmailSendClient {
     private String[] attach;
     private String[] cidPath;
     private EmailConfig emailConfig;
+    private String uuid;
 
     public EmailSendClient(EmailConfig emailConfig){
         this.emailConfig = emailConfig;
@@ -127,6 +128,16 @@ public class EmailSendClient {
         return this;
     }
     /**
+     * 设置附件路径
+     * @param uuid
+     * @return
+     */
+    public EmailSendClient setUUID(String uuid){
+        this.uuid = uuid;
+        return this;
+    }
+
+    /**
      * 设置密送人的邮箱地址
      * @param bcc
      * @return
@@ -178,7 +189,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                     try {
@@ -227,7 +238,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
                             .saveDrafts();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu,flag);
@@ -270,7 +281,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                 } catch (final MessagingException e) {
