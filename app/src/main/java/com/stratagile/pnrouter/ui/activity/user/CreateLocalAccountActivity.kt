@@ -1,7 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.user
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,15 +8,11 @@ import android.os.Message
 import android.text.Editable
 import android.text.Html
 import android.text.TextWatcher
-import android.view.KeyEvent
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.stratagile.pnrouter.R
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.application.AppConfig
@@ -27,11 +22,8 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
-import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
-import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerCreateLocalAccountComponent
@@ -40,15 +32,7 @@ import com.stratagile.pnrouter.ui.activity.user.module.CreateLocalAccountModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.CreateLocalAccountPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.NetUtils.isMacAddress
-import com.stratagile.tox.toxcore.KotlinToxService
-import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_create_local_account.*
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.ArrayList
 
@@ -211,7 +195,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                             {
                                 if(!item.equals(""))
                                 {
-                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)
@@ -583,7 +567,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                                             }*/
                                             count ++;
                                             MobileSocketClient.getInstance().init(handler,this)
-                                            var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                             MobileSocketClient.getInstance().destroy()
                                             MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                             MobileSocketClient.getInstance().receive()
@@ -615,7 +599,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 }
                 var type = result.substring(0,6);
                 var data = result.substring(7,result.length);
-                var soureData:ByteArray =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
                 if(type.equals("type_1"))
                 {
                     scanType = 1
@@ -696,7 +680,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                         MobileSocketClient.getInstance().receive()
@@ -792,7 +776,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                         MobileSocketClient.getInstance().receive()

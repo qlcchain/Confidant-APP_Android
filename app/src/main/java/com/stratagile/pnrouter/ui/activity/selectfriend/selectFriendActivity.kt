@@ -13,7 +13,7 @@ import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -177,7 +177,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                 var friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                 var SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                 var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                var miMsg = EmailAESCipher.aesEncryptString(msg, aesKey)
+                                var miMsg = AESCipher.aesEncryptString(msg, aesKey)
                                 var msgData = SendMsgReq(userId!!, i.userId!!, miMsg, String(SrcKey), String(DstKey))
                                 if (ConstantValue.isWebsocketConnected) {
                                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
@@ -639,7 +639,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             var msg:String = eMTextMessageBody!!.message
                             val userId = SpUtil.getString(this, ConstantValue.userId, "")
                             var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
-                            var fileBufferMi = EmailAESCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+                            var fileBufferMi = AESCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
                             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
                             var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi)
                             var baseData = BaseData(4,groupSendMsgReq)

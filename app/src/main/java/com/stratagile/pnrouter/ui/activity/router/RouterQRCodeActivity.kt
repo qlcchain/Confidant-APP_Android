@@ -8,16 +8,14 @@ import android.view.Menu
 import android.view.MenuItem
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
-import com.pawegio.kandroid.i
 import com.pawegio.kandroid.longToast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.RouterCodeData
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterQRCodeComponent
@@ -92,7 +90,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         routerCodeData.routerId = routerEntity.routerId.toByteArray()
         routerCodeData.userSn = routerEntity.userSn.toByteArray()
         var routerCodeDataByte = routerCodeData.toByteArray();
-        var base64Str = EmailAESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
+        var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
         Thread(Runnable() {
             run() {
                 var bitMapAvatar =  getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))

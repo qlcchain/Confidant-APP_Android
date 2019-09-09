@@ -1,5 +1,9 @@
 package com.smailnet.eamil.Utils;
 
+
+
+
+
 import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -14,7 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class EmailAESCipher {
+public class AESCipher {
 
     private static final String IV_STRING = "AABBCCDDEEFFGGHH";
     private static final String charset = "UTF-8";

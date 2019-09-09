@@ -217,7 +217,7 @@ public class MailUtil {
 
                     InputStream newInput = null;
                     byte[] fileBufferMi =  InputStreamTOByte(inputStream);
-                    byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     newInput = byteTOInputStream(miFile);
 
                     OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(    savaPath+mailAttachment.getAccount()+"_"+menu+"_"+  mailAttachment.getMsgId()+"_"+mailAttachment.getName())));

@@ -3,20 +3,12 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
-import android.provider.Settings
-import android.support.v7.app.AlertDialog
-import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import com.jaeger.library.StatusBarUtil
-import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -31,12 +23,9 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.view.CommonDialog
-import kotlinx.android.synthetic.main.activity_register.*
 import javax.inject.Inject
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
-import java.util.*
 
 /**
  * @author hzp
@@ -238,7 +227,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                             {
                                 if(!item.equals(""))
                                 {
-                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)

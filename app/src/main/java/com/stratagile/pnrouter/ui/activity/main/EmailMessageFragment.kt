@@ -1,7 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
-import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,8 +11,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.reflect.TypeToken
-import com.hyphenate.chat.EMMessage
-import com.noober.menu.FloatMenu
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetCountCallback
@@ -23,14 +20,11 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
-import com.smailnet.eamil.Utils.EmailAESCipher
-import com.smailnet.eamil.Utils.MailUtil
-import com.smailnet.eamil.Utils.TimeUtil
+import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
@@ -53,7 +47,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
-import javax.mail.Message
 
 /**
  * @author zl
@@ -92,7 +85,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 var aesKey = LibsodiumUtil.DecryptShareKey(userKey);
                 var mailInfoStr = item.mailInfo
                 var miContentSoucreBase = RxEncodeTool.base64Decode(mailInfoStr)
-                val miContent = EmailAESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
                 var sourceContent = ""
                 try {
                     sourceContent = String(miContent)
@@ -1250,7 +1243,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 }
                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                val miContent = EmailAESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
                 var sourceContent = ""
                 try{
                     sourceContent = String(miContent)

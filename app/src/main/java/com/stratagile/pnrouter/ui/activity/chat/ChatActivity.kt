@@ -2,7 +2,6 @@ package com.stratagile.pnrouter.ui.activity.chat
 
 import android.annotation.TargetApi
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -30,15 +29,13 @@ import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.hyphenate.easeui.utils.PathUtils
-import com.luck.picture.lib.PicturePreviewActivity
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.adapter.SimpleFragmentAdapter
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
-import com.luck.picture.lib.photoview.PhotoView
 import com.message.Message
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -61,8 +58,6 @@ import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.view.CustomPopWindow
-import com.stratagile.pnrouter.view.RxDialogLoading
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -70,7 +65,6 @@ import events.*
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_chat.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -148,7 +142,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         var soureData:ByteArray =  ByteArray(0)
                         if(!type.equals("type_0"))
                         {
-                            soureData =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                            soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
                         }
                         if (hasQRCode!!.indexOf("http://") > -1 || hasQRCode!!.indexOf("https://") > -1) {
                             /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
@@ -231,7 +225,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                         macAddress = macAddress + RouterMacStr.substring(i * 2, (i + 1) * 2) + ":"
                                                                     }
                                                                     macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
-                                                                    var toMacMi = EmailAESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
+                                                                    var toMacMi = AESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
                                                                     MobileSocketClient.getInstance().destroy()
                                                                     MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                     MobileSocketClient.getInstance().receive()
@@ -454,7 +448,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                 }
                                                                 count ++;
                                                                 MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
                                                                 MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                                                 MobileSocketClient.getInstance().receive()
@@ -576,7 +570,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                 }
                                                                 count ++;
                                                                 MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                                var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
                                                                 MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                 MobileSocketClient.getInstance().receive()
@@ -1719,7 +1713,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
             var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
             LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())
-            var miMsg = EmailAESCipher.aesEncryptString(Msg,aesKey)
+            var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
             LogUtil.addLog("sendMsg miMsg:",miMsg)
             var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
             if (ConstantValue.isWebsocketConnected) {
@@ -2037,7 +2031,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             if(!item.equals(""))
                             {
                                 try {
-                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)

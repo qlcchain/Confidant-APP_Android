@@ -6,9 +6,8 @@ import android.os.Environment
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.hyphenate.easeui.utils.PathUtils
-import com.hyphenate.util.ImageUtils.getRoundedCornerBitmap
 import com.pawegio.kandroid.longToast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -89,7 +88,7 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
         routerCodeData.routerId = routerEntity.routerId.toByteArray()
         routerCodeData.userSn = routerEntity.userSn.toByteArray()
         var routerCodeDataByte = routerCodeData.toByteArray();
-        var base64Str = EmailAESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
+        var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
         Thread(Runnable() {
             run() {
                 var bitMapAvatar =  getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))

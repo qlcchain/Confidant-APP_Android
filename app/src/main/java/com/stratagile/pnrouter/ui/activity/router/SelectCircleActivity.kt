@@ -12,7 +12,7 @@ import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -22,11 +22,9 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.NameChange
 import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
@@ -731,7 +729,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 if(!item.equals(""))
                                 {
                                     try {
-                                        var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                        var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                         var udpRouterArray = udpData.split(";")
 
                                         if(udpRouterArray.size > 1)
@@ -1122,7 +1120,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         // 走广播，本地的路由器
                         count ++;
                         MobileSocketClient.getInstance().init(handler,this)
-                        var toxIdMi = EmailAESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
+                        var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
                         MobileSocketClient.getInstance().destroy()
                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                         MobileSocketClient.getInstance().receive()

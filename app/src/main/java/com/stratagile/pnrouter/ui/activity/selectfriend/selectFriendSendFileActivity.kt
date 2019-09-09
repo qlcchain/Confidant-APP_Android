@@ -11,17 +11,15 @@ import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.message.Message
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.PullFileList
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactAndGroupFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendSendFileComponent
@@ -202,7 +200,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         }
         for (i in groupSelectedList) {
             val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
-            var FileKeyBase64 = RxEncodeTool.base64Encode2String(EmailAESCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
+            var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
             KLog.i("文件转发 发送："+FileKeyBase64)
             if(fileInfo == null || fileInfo.equals(""))
             {

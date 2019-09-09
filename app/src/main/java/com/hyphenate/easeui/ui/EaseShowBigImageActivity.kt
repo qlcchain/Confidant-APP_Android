@@ -27,7 +27,6 @@ import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.View
-import android.view.View.OnClickListener
 import android.widget.ProgressBar
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
@@ -35,8 +34,6 @@ import chat.tox.antox.wrapper.FriendKey
 
 import com.hyphenate.EMCallBack
 import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.easeui.model.EaseCompat
 import com.hyphenate.easeui.model.EaseImageCache
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.widget.photoview.EasePhotoView
@@ -45,8 +42,6 @@ import com.hyphenate.util.ImageUtils
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
-import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.view.CustomPopWindow
 
@@ -56,14 +51,11 @@ import java.io.File
 import java.util.ArrayList
 import java.util.Calendar
 
-import javax.xml.transform.Result
-
 import cn.bingoogolapple.qrcode.zxing.QRCodeDecoder
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
-import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.constant.UserDataManger
@@ -85,7 +77,6 @@ import events.ToxSendInfoEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -93,7 +84,6 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
-import scalaz.Alpha
 
 /**
  * download and show original image
@@ -678,7 +668,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                 if(!item.equals(""))
                                 {
                                     try {
-                                        var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                        var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                         var udpRouterArray = udpData.split(";")
 
                                         if(udpRouterArray.size > 1)
@@ -858,7 +848,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             var soureData:ByteArray =  ByteArray(0)
                             if(!type.equals("type_0"))
                             {
-                                soureData =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                                soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
                             }
                             if (hasQRCode!!.indexOf("http://") > -1 || hasQRCode!!.indexOf("https://") > -1) {
                                 /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
@@ -935,7 +925,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                             macAddress = macAddress + RouterMacStr.substring(i * 2, (i + 1) * 2) + ":"
                                                                         }
                                                                         macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
-                                                                        var toMacMi = EmailAESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
+                                                                        var toMacMi = AESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
                                                                         MobileSocketClient.getInstance().destroy()
                                                                         MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                         MobileSocketClient.getInstance().receive()
@@ -1157,7 +1147,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                     }
                                                                     count ++;
                                                                     MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                    var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                                                     MobileSocketClient.getInstance().destroy()
                                                                     MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                                                     MobileSocketClient.getInstance().receive()
@@ -1278,7 +1268,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                     }
                                                                     count ++;
                                                                     MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                    var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                                    var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                                                     MobileSocketClient.getInstance().destroy()
                                                                     MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                     MobileSocketClient.getInstance().receive()

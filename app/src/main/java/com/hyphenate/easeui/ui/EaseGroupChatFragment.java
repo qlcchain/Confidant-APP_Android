@@ -79,7 +79,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.observable.ImagesObservable;
 import com.message.Message;
-import com.smailnet.eamil.Utils.EmailAESCipher;
+import com.smailnet.eamil.Utils.AESCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -1388,7 +1388,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 try {
                     String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                     byte[] base64Scoure = RxEncodeTool.base64Decode(Message.getMsg());
-                    msgSouce = new String(EmailAESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
+                    msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
                 } catch (Exception e) {
 
                 }
@@ -4157,7 +4157,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                     String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());
                     String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
-                    String FileKeyBase64 = RxEncodeTool.base64Encode2String(EmailAESCipher.aesEncryptBytes(fileSouceKey.getBytes(), aesKey.getBytes()));
+                    String FileKeyBase64 = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(fileSouceKey.getBytes(), aesKey.getBytes()));
                     String fileInfo  = fileData.getFileInfo();
                     if(fileInfo == null || fileInfo.equals(""))
                     {
@@ -4239,7 +4239,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         byte[] base64Scoure = RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getMsg());
         String msgSouce = "";
         try {
-            msgSouce = new String(EmailAESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
+            msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
             if (msgSouce != null && !msgSouce.equals("")) {
                 jPushMsgRsp.getParams().setMsg(msgSouce);
             }

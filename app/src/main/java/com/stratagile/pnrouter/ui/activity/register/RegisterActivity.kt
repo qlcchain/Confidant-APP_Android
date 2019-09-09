@@ -11,7 +11,7 @@ import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -303,7 +303,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 when (msg.what) {
                     MyAuthCallback.MSG_UPD_DATA -> {
                         var aa:String = msg.obj.toString()
-                        var keydd2 = EmailAESCipher.aesDecryptString(aa,"slph\$%*&^@-78231")
+                        var keydd2 = AESCipher.aesDecryptString(aa,"slph\$%*&^@-78231")
                         var bb = aa;
                     }
                 }
@@ -451,7 +451,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result");
-            var soureData:ByteArray =  EmailAESCipher.aesDecryptByte(result,"welcometoqlc0101")
+            var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
             val keyId = ByteArray(6) //密钥ID
             val RouterId = ByteArray(76) //路由器id
             val UserSn = ByteArray(32)  //用户SN

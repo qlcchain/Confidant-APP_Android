@@ -16,19 +16,14 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
-import android.text.InputType
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.hyphenate.easeui.model.EaseCompat
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
-import com.hyphenate.easeui.widget.ATEmailEditText
-import com.hyphenate.easeui.widget.TInputConnection
-import com.hyphenate.util.EMLog
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -48,7 +43,6 @@ import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailSendPresenter
 import com.stratagile.pnrouter.ui.activity.email.view.ColorPickerView
 import com.stratagile.pnrouter.ui.activity.email.view.RichEditor
-import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
@@ -59,37 +53,28 @@ import javax.inject.Inject
 import com.stratagile.pnrouter.method.*
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
-import android.view.ViewTreeObserver
 import android.webkit.*
 import android.widget.*
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
-import com.hyphenate.easeui.utils.OpenFileUtil
 import com.luck.picture.lib.PicturePreviewActivity
 import com.luck.picture.lib.observable.ImagesObservable
-import com.message.Message
-import com.qmuiteam.qmui.widget.dialog.QMUITipDialog
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
-import com.smailnet.eamil.Utils.EmailAESCipher
-import com.stratagile.pnrouter.BuildConfig
+import com.smailnet.eamil.Utils.AESCipher
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.entity.events.SendEmailSuccess
 import com.stratagile.pnrouter.ui.activity.email.view.SemicolonTokenizer
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
-import java.io.ByteArrayInputStream
 import java.io.Serializable
 
 
@@ -1355,7 +1340,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             Log.i("fileKey16",fileKey16)
             if(!contentHtml.equals(""))
             {
-                var contentBufferMiStr = RxEncodeTool.base64Encode2String(EmailAESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+                var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
                 contentHtml = contentBufferMiStr;
             }
         }

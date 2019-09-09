@@ -12,14 +12,13 @@ import android.support.v4.content.FileProvider;
 
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
-import com.smailnet.eamil.Utils.EmailAESCipher;
+import com.smailnet.eamil.Utils.AESCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.RecentFileDao;
 
-import org.apache.http.util.EncodingUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedInputStream;
@@ -1119,7 +1118,7 @@ public class FileUtil {
             {
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                byte [] miFile = EmailAESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];
@@ -1152,7 +1151,7 @@ public class FileUtil {
                 {
                     InputStream fosfrom = new FileInputStream(tempPath);
                     byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                    byte [] miFile = EmailAESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     fosfrom = FileUtil.byteTOInputStream(miFile);
                     OutputStream fosto = new FileOutputStream(toFile);
                     byte bt[] = new byte[1024];
@@ -1185,7 +1184,7 @@ public class FileUtil {
         {
             InputStream fosfrom = new FileInputStream(fromFile);
             byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-            byte [] miFile = EmailAESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
             fosfrom = FileUtil.byteTOInputStream(miFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];
@@ -1219,7 +1218,7 @@ public class FileUtil {
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
                 KLog.i("copySdcardToxFileAndDecrypt:"+aesKey);
-                byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];
@@ -1257,7 +1256,7 @@ public class FileUtil {
                 long size = from.length();
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];

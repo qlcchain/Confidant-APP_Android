@@ -9,7 +9,7 @@ import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
-import com.smailnet.eamil.Utils.EmailAESCipher
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -645,9 +645,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             {
                                 fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
                             }else{
-                                fileBufferMi = EmailAESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                             }*/
-                            fileBufferMi = EmailAESCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
+                            fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
                             KLog.i("密文件大小 发送:" + fileBufferMi.size+"_aesKey:"+fileKey)
                             val miend = System.currentTimeMillis() / 1000
                             KLog.i("jiamiTime:" + (miend - miBegin) / 1000)
