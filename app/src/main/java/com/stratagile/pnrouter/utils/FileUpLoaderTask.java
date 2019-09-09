@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.smailnet.eamil.Utils.EmailAESCipher;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
 import java.io.BufferedInputStream;
@@ -192,7 +193,7 @@ public class FileUpLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 			}
 			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-			byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+			byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
 			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{

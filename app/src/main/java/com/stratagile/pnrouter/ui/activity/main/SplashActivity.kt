@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -237,7 +238,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                             {
                                 if(!item.equals(""))
                                 {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)

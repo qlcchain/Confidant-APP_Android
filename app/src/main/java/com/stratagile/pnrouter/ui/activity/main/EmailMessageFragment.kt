@@ -23,6 +23,7 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.smailnet.eamil.Utils.MailUtil
 import com.smailnet.eamil.Utils.TimeUtil
 import com.smailnet.islands.Islands
@@ -91,7 +92,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 var aesKey = LibsodiumUtil.DecryptShareKey(userKey);
                 var mailInfoStr = item.mailInfo
                 var miContentSoucreBase = RxEncodeTool.base64Decode(mailInfoStr)
-                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                val miContent = EmailAESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
                 var sourceContent = ""
                 try {
                     sourceContent = String(miContent)
@@ -1249,7 +1250,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 }
                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                val miContent = EmailAESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
                 var sourceContent = ""
                 try{
                     sourceContent = String(miContent)

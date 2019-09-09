@@ -20,6 +20,7 @@ import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 import com.message.Message;
+import com.smailnet.eamil.Utils.EmailAESCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -214,7 +215,7 @@ public class FileMangerUtil {
                                     long  miBegin = System.currentTimeMillis();
                                     if(!fileKey.equals("") && !fileKey.equals("zip"))//头像和附件不用加密
                                     {
-                                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                        fileBufferMi = EmailAESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     }
                                     int totlSegment = (int)Math.ceil(fileBufferMi.length / ConstantValue.INSTANCE.getSendFileSizeMax());
                                     sendFileTotalSegment.put(filePath,totlSegment);

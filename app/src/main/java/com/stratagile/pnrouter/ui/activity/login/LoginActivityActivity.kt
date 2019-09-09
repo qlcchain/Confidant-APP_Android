@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.smailnet.eamil.Utils.MailUtil
 import com.smailnet.islands.Islands
 import com.socks.library.KLog
@@ -1175,7 +1176,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 if(!item.equals(""))
                                 {
                                     try {
-                                        var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                        var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                         var udpRouterArray = udpData.split(";")
 
                                         if(udpRouterArray.size > 1)
@@ -1752,7 +1753,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         // 走广播，本地的路由器
                         count ++;
                         MobileSocketClient.getInstance().init(handler,this)
-                        var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
+                        var toxIdMi = EmailAESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
                         MobileSocketClient.getInstance().destroy()
                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                         MobileSocketClient.getInstance().receive()
@@ -2031,7 +2032,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             }
                                             count ++;
                                             MobileSocketClient.getInstance().init(handler,this)
-                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                            var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                             MobileSocketClient.getInstance().destroy()
                                             MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                             MobileSocketClient.getInstance().receive()
@@ -2063,7 +2064,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
                 var type = result.substring(0,6);
                 var data = result.substring(7,result.length);
-                var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                var soureData:ByteArray =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
                 if(type.equals("type_1"))
                 {
                     scanType = 1
@@ -2159,7 +2160,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                        var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                         MobileSocketClient.getInstance().receive()
@@ -2258,7 +2259,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                        var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                         MobileSocketClient.getInstance().receive()

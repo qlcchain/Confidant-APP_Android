@@ -9,6 +9,7 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import com.alibaba.fastjson.JSONObject
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -75,7 +76,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         var index = 0;
                         for (item in objArray) {
                             if (!item.equals("")) {
-                                var udpData = AESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
+                                var udpData = EmailAESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
                                 var udpRouterArray = udpData.split(";")
 
                                 if (udpRouterArray.size > 1) {
@@ -786,7 +787,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         }
                         count++;
                         MobileSocketClient.getInstance().init(handler, AppConfig.instance)
-                        var toxIdMi = AESCipher.aesEncryptString(routerId, "slph\$%*&^@-78231")
+                        var toxIdMi = EmailAESCipher.aesEncryptString(routerId, "slph\$%*&^@-78231")
                         MobileSocketClient.getInstance().destroy()
                         MobileSocketClient.getInstance().send("QLC" + toxIdMi)
                         MobileSocketClient.getInstance().receive()

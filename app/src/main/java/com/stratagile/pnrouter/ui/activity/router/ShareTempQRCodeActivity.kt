@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -55,7 +56,7 @@ class ShareTempQRCodeActivity : BaseActivity(), ShareTempQRCodeContract.View {
 
         var type = routerUserEntity.qrcode.substring(0,6);
         var data = routerUserEntity.qrcode.substring(7,routerUserEntity.qrcode.length);
-        var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+        var soureData:ByteArray =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
         if(type.equals("type_1")) {
             val keyId: ByteArray = ByteArray(6) //密钥ID
             val RouterId: ByteArray = ByteArray(76) //路由器id

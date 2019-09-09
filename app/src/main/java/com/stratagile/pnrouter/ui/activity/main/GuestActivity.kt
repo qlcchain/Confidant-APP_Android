@@ -22,6 +22,7 @@ import com.nightonke.wowoviewpager.Animation.WoWoTranslationAnimation
 import com.nightonke.wowoviewpager.Enum.Ease
 import com.nightonke.wowoviewpager.WoWoViewPagerAdapter
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -394,7 +395,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                             {
                                 if(!item.equals(""))
                                 {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)
@@ -699,7 +700,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                             }*/
                                             count ++;
                                             MobileSocketClient.getInstance().init(handler,this)
-                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                            var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                             MobileSocketClient.getInstance().destroy()
                                             MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                             MobileSocketClient.getInstance().receive()
@@ -731,7 +732,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 }
                 var type = result.substring(0,6);
                 var data = result.substring(7,result.length);
-                var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                var soureData:ByteArray =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
                 if(type.equals("type_1"))
                 {
                     scanType = 1
@@ -812,7 +813,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                        var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                         MobileSocketClient.getInstance().receive()
@@ -908,7 +909,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
-                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                        var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
                                         MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                         MobileSocketClient.getInstance().receive()

@@ -36,6 +36,7 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.message.Message
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -146,7 +147,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                         var soureData:ByteArray =  ByteArray(0)
                         if(!type.equals("type_0"))
                         {
-                            soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                            soureData =  EmailAESCipher.aesDecryptByte(data,"welcometoqlc0101")
                         }
                         if (hasQRCode!!.indexOf("http://") > -1 || hasQRCode!!.indexOf("https://") > -1) {
                             /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
@@ -221,7 +222,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                         macAddress = macAddress + RouterMacStr.substring(i * 2, (i + 1) * 2) + ":"
                                                                     }
                                                                     macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
-                                                                    var toMacMi = AESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
+                                                                    var toMacMi = EmailAESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
                                                                     MobileSocketClient.getInstance().destroy()
                                                                     MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                     MobileSocketClient.getInstance().receive()
@@ -443,7 +444,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                 }
                                                                 count ++;
                                                                 MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                var toxIdMi = EmailAESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
                                                                 MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                                                 MobileSocketClient.getInstance().receive()
@@ -565,7 +566,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                 }
                                                                 count ++;
                                                                 MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                                var toMacMi = EmailAESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
                                                                 MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                 MobileSocketClient.getInstance().receive()
@@ -1860,7 +1861,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
             LogUtil.addLog("groupSendMsgV3 UserKey:",UserKey)
             var aesKey = LibsodiumUtil.DecryptShareKey(UserKey)
-            var fileBufferMi = AESCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+            var fileBufferMi = EmailAESCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
             var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi)
             var baseData = BaseData(4,groupSendMsgReq)
@@ -2123,7 +2124,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                             if(!item.equals(""))
                             {
                                 try {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = EmailAESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
                                     if(udpRouterArray.size > 1)

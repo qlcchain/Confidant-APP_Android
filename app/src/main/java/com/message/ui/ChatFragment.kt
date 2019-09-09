@@ -24,6 +24,7 @@ import com.message.MessageProvider
 import com.message.adapter.MessageListAdapter
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.EmailAESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -262,7 +263,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             LogUtil.addLog("sendMsg2 SrcKey:",SrcKey.toString())
             var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
             LogUtil.addLog("sendMsg2 SrcKey:",SrcKey.toString())
-            var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
+            var miMsg = EmailAESCipher.aesEncryptString(Msg,aesKey)
             LogUtil.addLog("sendMsg2 miMsg:",miMsg)
             var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
             if (ConstantValue.isWebsocketConnected) {

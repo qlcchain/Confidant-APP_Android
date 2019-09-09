@@ -4,6 +4,7 @@ import android.os.Build;
 import android.text.Html;
 import android.util.Base64;
 
+import com.smailnet.eamil.Utils.EmailAESCipher;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
 import java.io.UnsupportedEncodingException;
@@ -206,7 +207,7 @@ public class RxEncodeTool {
             byte[] privateMy = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPrivateRAS());
             byte[] SrcKey = RxEncryptTool.decryptByPrivateKey(msgMi,privateMy);
             String aesKey = new String(SrcKey);
-            String msgSouce = AESCipher.aesDecryptString(msg,aesKey);
+            String msgSouce = EmailAESCipher.aesDecryptString(msg,aesKey);
             return msgSouce;
         }catch (Exception e)
         {
@@ -230,7 +231,7 @@ public class RxEncodeTool {
     {
         try {
             byte[] msgMi = RxEncodeTool.base64Decode(miKey.replace("\n",""));
-            String keySouce = new String(AESCipher.aesDecryptBytes(msgMi, aesKey.getBytes()));
+            String keySouce = new String(EmailAESCipher.aesDecryptBytes(msgMi, aesKey.getBytes()));
             return keySouce;
         }catch (Exception e)
         {

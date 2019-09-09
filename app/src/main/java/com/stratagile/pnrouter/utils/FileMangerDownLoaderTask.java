@@ -271,7 +271,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 			}
 			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-			byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+			byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
 			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{

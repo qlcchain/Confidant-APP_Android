@@ -29,6 +29,7 @@ import android.os.Message;
 import android.util.Base64;
 
 
+import com.smailnet.eamil.Utils.EmailAESCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
@@ -244,7 +245,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}
 				byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
 				KLog.i("密文件大小 接收："+fileBufferMi.length +"_aesKey:"+aesKey);
-				byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+				byte [] miFile = EmailAESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
 				newInput = FileUtil.byteTOInputStream(miFile);
 			}
 		}catch (Exception e)
