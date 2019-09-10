@@ -362,7 +362,7 @@ public class MailUtil {
                         name = MimeUtility.decodeText(bodyPart.getFileName());
                     }
                     System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
-                    list.add(new MailAttachment(name,is, byt,msgId,account));
+                    list.add(new MailAttachment(name,is, byt,msgId,account,""));
                 } else if (bodyPart.isMimeType("multipart/*")) {
                     getAttachment(bodyPart, list,msgId,account);
                 } else {
@@ -450,7 +450,7 @@ public class MailUtil {
                             name = MimeUtility.decodeText(bodyPart.getFileName());
                         }
                         System.out.println("getCid:for:decodeEndText:"+i+System.currentTimeMillis());
-                        list.add(new MailAttachment(name,is, byt,msgId,account));
+                        list.add(new MailAttachment(name,is, byt,msgId,account,cid.substring(4,cid.length())));
                         Log.i("getCid 内嵌= ", cid);
                     }
                 }

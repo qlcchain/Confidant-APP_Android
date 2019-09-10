@@ -516,6 +516,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                                 eamilCid.account = AppConfig.instance.emailConfig().account
                                                 eamilCid.msgId = emailMeaasgeData!!.menu+"_"+msgId
                                                 eamilCid.name = attachItem.name
+                                                eamilCid.cid = attachItem.cid
                                                 eamilCid.data = attachItem.byt
                                                 eamilCid.hasData = true
                                                 eamilCid.isCanDelete = false
@@ -534,11 +535,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                         {
                                             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
                                             var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeData!!.menu+"_"+msgId+"_"+cidItem.name
+                                            if(cidItem.cid == null && cidItem.cid =="")
+                                            {
+                                                cidItem.cid = cidItem.name
+                                            }
                                             if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
                                             {
-                                                emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.name ,savePath )
+                                                emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.cid ,savePath )
                                             }else{
-                                                emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.name ,savePath )
+                                                emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.cid ,savePath )
                                             }
 
                                         }
@@ -586,11 +591,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     {
                         val save_dir = PathUtils.getInstance().filePath.toString() + "/"
                         var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeData!!.menu+"_"+msgId+"_"+cidItem.name
+                        if(cidItem.cid == null && cidItem.cid =="")
+                        {
+                            cidItem.cid = cidItem.name
+                        }
                         if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
                         {
-                            emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.name ,savePath )
+                            emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.cid ,savePath )
                         }else{
-                            emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.name ,savePath )
+                            emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.cid ,savePath )
                         }
 
                     }

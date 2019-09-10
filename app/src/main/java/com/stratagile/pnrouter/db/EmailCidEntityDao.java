@@ -30,6 +30,7 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
         public final static Property CanDelete = new Property(5, boolean.class, "canDelete", false, "CAN_DELETE");
         public final static Property HasData = new Property(6, boolean.class, "hasData", false, "HAS_DATA");
         public final static Property Data = new Property(7, byte[].class, "data", false, "DATA");
+        public final static Property Cid = new Property(8, String.class, "cid", false, "CID");
     }
 
 
@@ -52,7 +53,8 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
                 "\"LOCAL_PATH\" TEXT," + // 4: localPath
                 "\"CAN_DELETE\" INTEGER NOT NULL ," + // 5: canDelete
                 "\"HAS_DATA\" INTEGER NOT NULL ," + // 6: hasData
-                "\"DATA\" BLOB);"); // 7: data
+                "\"DATA\" BLOB," + // 7: data
+                "\"CID\" TEXT);"); // 8: cid
     }
 
     /** Drops the underlying database table. */
@@ -96,6 +98,11 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
         if (data != null) {
             stmt.bindBlob(8, data);
         }
+ 
+        String cid = entity.getCid();
+        if (cid != null) {
+            stmt.bindString(9, cid);
+        }
     }
 
     @Override
@@ -133,6 +140,11 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
         if (data != null) {
             stmt.bindBlob(8, data);
         }
+ 
+        String cid = entity.getCid();
+        if (cid != null) {
+            stmt.bindString(9, cid);
+        }
     }
 
     @Override
@@ -150,7 +162,8 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // localPath
             cursor.getShort(offset + 5) != 0, // canDelete
             cursor.getShort(offset + 6) != 0, // hasData
-            cursor.isNull(offset + 7) ? null : cursor.getBlob(offset + 7) // data
+            cursor.isNull(offset + 7) ? null : cursor.getBlob(offset + 7), // data
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // cid
         );
         return entity;
     }
@@ -165,6 +178,7 @@ public class EmailCidEntityDao extends AbstractDao<EmailCidEntity, Long> {
         entity.setCanDelete(cursor.getShort(offset + 5) != 0);
         entity.setHasData(cursor.getShort(offset + 6) != 0);
         entity.setData(cursor.isNull(offset + 7) ? null : cursor.getBlob(offset + 7));
+        entity.setCid(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
      }
     
     @Override

@@ -20,6 +20,7 @@ public class EmailCidEntity implements Parcelable{
     private boolean canDelete;
     private boolean hasData;
     private byte[] data;
+    private String cid;
 
     public EmailCidEntity() {
 
@@ -40,9 +41,9 @@ public class EmailCidEntity implements Parcelable{
         data = in.createByteArray();
     }
 
-    @Generated(hash = 1387125441)
+    @Generated(hash = 1005614747)
     public EmailCidEntity(Long id, String msgId, String account, String name,
-            String localPath, boolean canDelete, boolean hasData, byte[] data) {
+            String localPath, boolean canDelete, boolean hasData, byte[] data, String cid) {
         this.id = id;
         this.msgId = msgId;
         this.account = account;
@@ -51,8 +52,8 @@ public class EmailCidEntity implements Parcelable{
         this.canDelete = canDelete;
         this.hasData = hasData;
         this.data = data;
+        this.cid = cid;
     }
-
 
 
     public static final Creator<EmailCidEntity> CREATOR = new Creator<EmailCidEntity>() {
@@ -123,6 +124,31 @@ public class EmailCidEntity implements Parcelable{
         this.data = data;
     }
 
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean getCanDelete() {
+        return this.canDelete;
+    }
+
+    public boolean getHasData() {
+        return this.hasData;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public void setCid(String cid) {
+        this.cid = cid;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -143,21 +169,6 @@ public class EmailCidEntity implements Parcelable{
         dest.writeByte((byte) (canDelete ? 1 : 0));
         dest.writeByte((byte) (hasData ? 1 : 0));
         dest.writeByteArray(data);
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public boolean getCanDelete() {
-        return this.canDelete;
-    }
-
-    public boolean getHasData() {
-        return this.hasData;
+        dest.writeString(cid);
     }
 }
