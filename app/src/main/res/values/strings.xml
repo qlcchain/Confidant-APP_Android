@@ -736,11 +736,11 @@
     <string name="The_mail_has_been_sent">The mail has_been sent</string>
     <string name="Mail_Delivery_Failed">Mail Delivery Failed</string>
     <string name="Over_configure">Over-configure</string>
-    <string name="QQMAILBOX">QQMAILBOX</string>
+    <string name="QQMAILBOX">QQMailbox</string>
     <string name="QQ">QQMail</string>
     <string name="wangyi">163Mail</string>
     <string name="Google">Gmail</string>
-    <string name="outlook">Outlook、Hotmail、Live</string>
+    <string name="outlook">Outlook, Hotmail, Live</string>
     <string name="Send_Email">Compose</string>
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
