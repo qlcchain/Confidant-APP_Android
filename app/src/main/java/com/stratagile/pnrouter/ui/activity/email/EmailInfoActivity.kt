@@ -1960,10 +1960,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         if (TextUtils.isEmpty(text)) {
             return false;
         }
-        return text.contains("<img src=\"cid:");
+        return text.contains("src=\"cid:");
     }
     fun  replaceLocalPathByImgCid(content:String ,fileName:String ,filePath:String ):String {
-        return content.replace("<img src=" + "\"cid:" + fileName + "\"","<img src=\"file://" + filePath+"\"").toString();
+        return content.replace("src=" + "\"cid:" + fileName + "\"","src=\"file://" + filePath+"\"").toString();
     }
     override fun onDestroy() {
         AppConfig.instance.messageReceiver!!.bakupEmailCallback = null

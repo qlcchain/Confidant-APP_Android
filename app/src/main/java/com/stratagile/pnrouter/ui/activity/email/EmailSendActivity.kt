@@ -931,47 +931,54 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 addMenu = true
                 attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
             }
-            if(attachListData.size > 0)
+            if(attachListEntityNode == null || attachListEntityNode.size == 0)
             {
                 var isDownload = true
-                var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
-                var i = 0;
-                for (attach in attachListData)
+                if(attachListData.size > 0)
                 {
-                    var file = File(save_dir+attach.account+"_"+attach.msgId+"_"+attach.name)
-                    if(addMenu)
+                    var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+                    var i = 0;
+                    for (attach in attachListData)
                     {
-                        file = File(save_dir+attach.account+"_"+emailMeaasgeInfoData!!.menu+"_"+attach.msgId+"_"+attach.name)
-                     }
-                    if(!file.exists())
-                    {
-                        isDownload = false
+                        var file = File(save_dir+attach.account+"_"+attach.msgId+"_"+attach.name)
+                        if(addMenu)
+                        {
+                            file = File(save_dir+attach.account+"_"+emailMeaasgeInfoData!!.menu+"_"+attach.msgId+"_"+attach.name)
+                        }
+                        if(!file.exists())
+                        {
+                            isDownload = false
+                        }
+                        attach.localPath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+                        AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
+
+                        var fileName =  attach.name
+                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                            val localMedia = LocalMedia()
+                            localMedia.isCompressed = false
+                            localMedia.duration = 0
+                            localMedia.height = 100
+                            localMedia.width = 100
+                            localMedia.isChecked = false
+                            localMedia.isCut = false
+                            localMedia.mimeType = 0
+                            localMedia.num = 0
+                            localMedia.path = attach.localPath
+                            localMedia.pictureType = "image/jpeg"
+                            localMedia.setPosition(i)
+                            localMedia.sortIndex = i
+                            previewImages.add(localMedia)
+                            ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                        }
+
+                        i++
+
                     }
-                    attach.localPath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
-                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
-                    var fileName =  attach.name
-                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                        val localMedia = LocalMedia()
-                        localMedia.isCompressed = false
-                        localMedia.duration = 0
-                        localMedia.height = 100
-                        localMedia.width = 100
-                        localMedia.isChecked = false
-                        localMedia.isCut = false
-                        localMedia.mimeType = 0
-                        localMedia.num = 0
-                        localMedia.path = attach.localPath
-                        localMedia.pictureType = "image/jpeg"
-                        localMedia.setPosition(i)
-                        localMedia.sortIndex = i
-                        previewImages.add(localMedia)
-                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
-                    }
-
-                    i++
-
+                }else{
+                    isDownload = false
                 }
+
                 if(!isDownload)
                 {
                     showProgressDialog(getString(R.string.Attachmentdownloading))
@@ -983,6 +990,52 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     //tipDialog.dismiss()
                                     closeProgressDialog()
                                     runOnUiThread {
+
+                                        var iFlag = 0;
+                                        for (attachItem in messageList)
+                                        {
+                                            var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                            if(attachListTemp.size == 0)
+                                            {
+                                                attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
+                                            }
+                                            if(attachListTemp == null || attachListTemp.size == 0)
+                                            {
+                                                var eamilAttach = EmailAttachEntity()
+                                                eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
+                                                eamilAttach.name = attachItem.name
+                                                eamilAttach.data = attachItem.byt
+                                                eamilAttach.hasData = true
+                                                eamilAttach.isCanDelete = false
+                                                var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                eamilAttach.localPath = savePath
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+
+                                                var fileName =  eamilAttach.name
+                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    val localMedia = LocalMedia()
+                                                    localMedia.isCompressed = false
+                                                    localMedia.duration = 0
+                                                    localMedia.height = 100
+                                                    localMedia.width = 100
+                                                    localMedia.isChecked = false
+                                                    localMedia.isCut = false
+                                                    localMedia.mimeType = 0
+                                                    localMedia.num = 0
+                                                    localMedia.path = eamilAttach.localPath
+                                                    localMedia.pictureType = "image/jpeg"
+                                                    localMedia.setPosition(iFlag)
+                                                    localMedia.sortIndex = iFlag
+                                                    previewImages.add(localMedia)
+                                                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                }
+
+                                                iFlag++
+                                            }
+                                        }
+
                                         attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
                                         if(attachListData.size == 0)
                                         {
@@ -1019,7 +1072,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     attachListEntity.addAll(attachListData)
                     updataAttachUI()
                 }
-            }else{
+            }
+            else{
                 for (item in attachListEntityNode)
                 {
                     item.isHasData = true
@@ -1651,6 +1705,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     .setNickname(name)                                    //发件人昵称
                     .setSubject(subject.getText().toString())             //邮件标题
                     .setContent(contentHtml)              //邮件正文
+                    .setCidPath(cidList)                 //cid资源
+                    .setUUID(uuid)
                     .setAttach(attachList)
                     .saveDraftsAsyn(this, object : GetSendCallback {
                         override fun sendSuccess() {
@@ -2351,7 +2407,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
     }
     fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ,pre:String):String {
-        return content.replace("<img src=\"file://" + filePath+"\"","<img src=" + "\"cid:" + pre+fileName + "\"").toString();
+        return content.replace("src=\"file://" + filePath+"\"","src=" + "\"cid:" + pre+fileName + "\"").toString();
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent
