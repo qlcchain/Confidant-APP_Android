@@ -1079,7 +1079,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileKey = "";
 
                     if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getPriKey());
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getPriKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     } else {
                         //fileKey =  RxEncodeTool.getAESKey(message.getUserKey());
                     }
@@ -1244,9 +1244,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (Message.getMsg() != null && !Message.getMsg().equals("")) {
                 if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
                     if (Message.getSender() == 0) {
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(), Message.getNonce(), Message.getPriKey());
+
+
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(), Message.getNonce(), Message.getPriKey(), ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),  ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     } else {
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign());
+                        UserEntity friendEntity = new UserEntity();
+                        List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(FriendId)).list();
+                        if (localFriendList.size() > 0)
+                            friendEntity = localFriendList.get(0);
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
                     }
                 } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
@@ -1593,7 +1599,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         break;
                     }
                     if (!PriKey.equals("") && !Nonce.equals("") && !PriKey.equals("")) {
-                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey);
+                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey(), ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                         EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
                         message.setFrom(userIdL);
                         message.setTo(friendId);
@@ -4309,7 +4315,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     }
 
-                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());
+                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     String FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.INSTANCE.EncryptShareKey(fileSouceKey+"0000000000000000", UserDataManger.curreantfriendUserData.getMiPublicKey()));
                     String fileInfo  = fileData.getFileInfo();
                     if(fileInfo == null || fileInfo.equals(""))
@@ -4401,7 +4407,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param jPushMsgRsp
      */
     public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp) {
-        String msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(), jPushMsgRsp.getParams().getNonce(), jPushMsgRsp.getParams().getFrom(), jPushMsgRsp.getParams().getSign());
+        UserEntity friendEntity = new UserEntity();
+        List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(jPushMsgRsp.getParams().getFrom())).list();
+        if (localFriendList.size() > 0)
+            friendEntity = localFriendList.get(0);
+        String msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(), jPushMsgRsp.getParams().getNonce(), jPushMsgRsp.getParams().getFrom(), jPushMsgRsp.getParams().getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());//,ConstantValue.libsodiumprivateMiKey!!
         if (msgSouce != null && !msgSouce.equals("")) {
             jPushMsgRsp.getParams().setMsg(msgSouce);
         }

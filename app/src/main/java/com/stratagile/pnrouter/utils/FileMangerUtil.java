@@ -718,7 +718,7 @@ public class FileMangerUtil {
                 }
             }else{
                 String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
-                String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
+                String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                 code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
                 UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
                 String fileMiUrl = fileMiName;

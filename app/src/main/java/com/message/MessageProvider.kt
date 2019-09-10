@@ -6,6 +6,8 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -58,7 +60,11 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         var msgSouce = ""
         if(ConstantValue.encryptionType.equals("1"))
         {
-            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+            var friendEntity = UserEntity()
+            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+            if (localFriendList.size > 0)
+                friendEntity = localFriendList[0]
+            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
         }else{
             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
         }
@@ -112,7 +118,11 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 var msgSouce = ""
                 if(ConstantValue.encryptionType.equals("1"))
                 {
-                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign)
+                    var friendEntity = UserEntity()
+                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(it.from)).list()
+                    if (localFriendList.size > 0)
+                        friendEntity = localFriendList[0]
+                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
                 }else{
                     //msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
                 }

@@ -38,7 +38,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -71,7 +71,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -98,7 +98,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -131,7 +131,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)

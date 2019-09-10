@@ -1,10 +1,5 @@
 package com.stratagile.pnrouter.utils
 
-import com.socks.library.KLog
-import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.db.UserEntityDao
 import org.libsodium.jni.Sodium
 import java.util.*
 
@@ -162,7 +157,7 @@ object LibsodiumUtil {
         }
 
     }
-    fun cryptoSign(souceStr:String):String
+    fun cryptoSign(souceStr:String,libsodiumprivateSignKey:String):String
     {
         var signBase64 = ""
         try {
@@ -171,17 +166,11 @@ object LibsodiumUtil {
                 return ""
             }
             var souceStrByte = souceStr.toByteArray()
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var mySignPrivate  = RxEncodeTool.base64Decode(libsodiumprivateSignKey)
             var dst_signed_msg = ByteArray(souceStrByte.size +64)
             var signed_msg_len = IntArray(1)
             var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,souceStrByte,souceStrByte.size,mySignPrivate)
             signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名souceStr->转base64
-
-
-
-            /*val dst_Friend_TempPublicKey = ByteArray(souceStrByte.size)
-            val msg_len = IntArray(1)
-            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))*/
         }catch (e:Exception)
         {
            e.printStackTrace()
@@ -194,13 +183,13 @@ object LibsodiumUtil {
     /**
      * 得到最后发送消息数据包
      */
-    fun EncryptSendMsg(Msg:String,friendMiPublic:ByteArray):HashMap<String, String>
+    fun EncryptSendMsg(Msg:String,friendMiPublic:ByteArray,libsodiumprivateSignKey:String,libsodiumprivateTemKey:String,libsodiumpublicTemKey:String,libsodiumpublicMiKey:String):HashMap<String, String>
     {
         var hashMap = HashMap<String, String>()
         try {
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
-            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
+            var mySignPrivate  = RxEncodeTool.base64Decode(libsodiumprivateSignKey)
+            var myTempPrivate = RxEncodeTool.base64Decode(libsodiumprivateTemKey)
+            var myTempPublic = RxEncodeTool.base64Decode(libsodiumpublicTemKey)
             val random = org.libsodium.jni.crypto.Random()
             var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
             //开始加密
@@ -209,21 +198,14 @@ object LibsodiumUtil {
             var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
             var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(Msg,NonceBase64,shared_keyBase64)//消息原文用对称密码加密后转base64
 
-            KLog.i("shared_keyBase64:"+shared_keyBase64)
             val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(encryptedBase64, NonceBase64, shared_keyBase64)
 
             var dst_signed_msg = ByteArray(96)
             var signed_msg_len = IntArray(1)
             var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,myTempPublic,myTempPublic.size,mySignPrivate)
             var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名自己临时公钥->转base64
-
-            /*var dst_msgaa = ByteArray(32)
-            var msg_lenaa = IntArray(1)
-            var crypto_sign_openaa = Sodium.crypto_sign_open(dst_msgaa,msg_lenaa,dst_signed_msg,dst_signed_msg.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-            var dst_msgaaSouce = String(dst_msgaa)*/
-
             var dst_shared_key_Mi_My = ByteArray(32 + 48)
-            var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
+            var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(libsodiumpublicMiKey))
             var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥
             hashMap.put("encryptedBase64",encryptedBase64)
             hashMap.put("signBase64",signBase64)
@@ -251,21 +233,21 @@ object LibsodiumUtil {
     /**
      * 解密获取加密秘钥aeskey
      */
-    fun DecryptShareKey(shareMiKey:String):String
+    fun DecryptShareKey(shareMiKey:String,libsodiumpublicMiKey:String,libsodiumprivateMiKey:String):String
     {
         var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(shareMiKey)
         var dst_shared_key_Soucre_My = ByteArray(32)
-        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(libsodiumpublicMiKey),RxEncodeTool.base64Decode(libsodiumprivateMiKey))
         var shareKey16 =  ByteArray(16)
         System.arraycopy(dst_shared_key_Soucre_My, 0, shareKey16,0 , 16)
         var shareKey16Str = String(shareKey16)
         return shareKey16Str
     }
-    fun DecryptShareKeyBySign(shareMiKey:String):String
+    fun DecryptShareKeyBySign(shareMiKey:String,libsodiumpublicSignKey:String,libsodiumprivateSignKey:String):String
     {
         var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(shareMiKey)
         var dst_shared_key_Soucre_My = ByteArray(32)
-        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey))
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(libsodiumpublicSignKey),RxEncodeTool.base64Decode(libsodiumprivateSignKey))
         var shareKey16 =  ByteArray(16)
         System.arraycopy(dst_shared_key_Soucre_My, 0, shareKey16,0 , 16)
         var shareKey16Str = String(shareKey16)
@@ -274,15 +256,15 @@ object LibsodiumUtil {
     /**
      * 得到最后发送文件数据
      */
-    fun EncryptSendFile(fileData:ByteArray,shareKey:String):ByteArray
+    fun EncryptSendFile(fileData:ByteArray,shareKey:String,libsodiumprivateSignKey:String,libsodiumprivateTemKey:String,libsodiumpublicTemKey:String,fileNonce:String):ByteArray
     {
         var byteArray = ByteArray(0)
         try {
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
-            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
+            var mySignPrivate  = RxEncodeTool.base64Decode(libsodiumprivateSignKey)
+            var myTempPrivate = RxEncodeTool.base64Decode(libsodiumprivateTemKey)
+            var myTempPublic = RxEncodeTool.base64Decode(libsodiumpublicTemKey)
 
-            var Nonce =  RxEncodeTool.base64Decode(ConstantValue.fileNonce)//固定不随机
+            var Nonce =  RxEncodeTool.base64Decode(fileNonce)//固定不随机
             //开始加密
             var dst_shared_key  = shareKey.toByteArray()
             var encryptedFile = LibsodiumUtil.encrypt_data_symmetric(fileData,Nonce,dst_shared_key)//消息原文用对称密码加密
@@ -296,11 +278,11 @@ object LibsodiumUtil {
     /**
      * 解密文件数据
      */
-    fun DecryptFile(fileData:ByteArray,shareKey:ByteArray):ByteArray
+    fun DecryptFile(fileData:ByteArray,shareKey:ByteArray,fileNonce:String):ByteArray
     {
         var byteArray = ByteArray(0)
         try {
-            var Nonce =  RxEncodeTool.base64Decode(ConstantValue.fileNonce)//固定不随机
+            var Nonce =  RxEncodeTool.base64Decode(fileNonce)//固定不随机
             var encryptedFile = LibsodiumUtil.decrypt_Filedata_symmetric(fileData,Nonce,shareKey)//消息原文用对称密码加密
             return encryptedFile
         }catch (e:Exception)
@@ -312,25 +294,19 @@ object LibsodiumUtil {
     /**
      * 解密好友的消息
      */
-    fun DecryptFriendMsg(msg:String,nonce:String,From:String,Sign:String):String
+    fun DecryptFriendMsg(msg:String,nonce:String,From:String,Sign:String,libsodiumprivateMiKey:String,friendSignPublicKey:String):String
     {
         try {
-            val myMiPrivateBase64 = ConstantValue.libsodiumprivateMiKey
-            var friendEntity = UserEntity()
-            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list()
-            if (localFriendList.size > 0)
-                friendEntity = localFriendList[0]
-
+            val myMiPrivateBase64 = libsodiumprivateMiKey
             val dst_signed_msg = RxEncodeTool.base64Decode(Sign)
 
             val dst_Friend_TempPublicKey = ByteArray(32)
             val msg_len = IntArray(1)
-            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(friendEntity.signPublicKey))
+            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(friendSignPublicKey))
 
             val dst_share_key = ByteArray(32)
             val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKey, RxEncodeTool.base64Decode(myMiPrivateBase64))
 
-            //KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
             val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(msg, nonce, RxEncodeTool.base64Encode2String(dst_share_key))
             return msgSouce
         }catch (e:Exception)
@@ -344,14 +320,13 @@ object LibsodiumUtil {
     /**
      * 解密自己的消息
      */
-    fun DecryptMyMsg(msg:String,nonce:String,priKey:String):String
+    fun DecryptMyMsg(msg:String,nonce:String,priKey:String,libsodiumpublicMiKey:String,libsodiumprivateMiKey:String):String
     {
         try {
             var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(priKey)
             //非对称解密方式crypto_box_seal_open解密出对称密钥
             var dst_shared_key_Soucre_My = ByteArray(32)
-            var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
-            //KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_shared_key_Soucre_My))
+            var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(libsodiumpublicMiKey),RxEncodeTool.base64Decode(libsodiumprivateMiKey))
             val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(msg, nonce, RxEncodeTool.base64Encode2String(dst_shared_key_Soucre_My))
             return msgSouce
         }catch (e:Exception)

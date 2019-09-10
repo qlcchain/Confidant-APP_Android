@@ -1160,7 +1160,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1262,7 +1262,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     var fileKey = RxEncryptTool.generateAESKey()
                     if(porperty != null && porperty.equals("1"))
                     {
-                        fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                        fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                     }
                     val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                     val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1373,7 +1373,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1487,7 +1487,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)

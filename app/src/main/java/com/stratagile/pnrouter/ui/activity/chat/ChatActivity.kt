@@ -1385,7 +1385,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var aesKey = ""
             if(ConstantValue.encryptionType.equals("1"))
             {
-                aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.dstKey)
+                aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.dstKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
             }else{
                 aesKey = RxEncodeTool.getAESKey(jPushFileMsgRsp!!.params.dstKey)
             }
@@ -1752,7 +1752,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
             LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
             var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
             var baseData = BaseData(3,msgData)

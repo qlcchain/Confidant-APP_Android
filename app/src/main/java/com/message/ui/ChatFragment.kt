@@ -294,7 +294,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             }
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
             LogUtil.addLog("sendMsgV3 friendKey:",FriendMiPublicKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
             var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {

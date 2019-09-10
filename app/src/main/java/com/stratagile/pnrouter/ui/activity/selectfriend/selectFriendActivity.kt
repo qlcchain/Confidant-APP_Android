@@ -157,7 +157,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             {
                                 var friendMiPublic = RxEncodeTool.base64Decode(i.miPublicKey)
                                 LogUtil.addLog("sendMsgV3 friendKey:",friendMiPublic.toString())
-                                var msgMap = LibsodiumUtil.EncryptSendMsg(msg,friendMiPublic)
+                                var msgMap = LibsodiumUtil.EncryptSendMsg(msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
                                 var msgData = SendMsgReqV3(userId!!, i.userId!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
                                 if (ConstantValue.isWebsocketConnected) {
@@ -639,7 +639,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             var eMTextMessageBody: EMTextMessageBody = message!!.body as EMTextMessageBody
                             var msg:String = eMTextMessageBody!!.message
                             val userId = SpUtil.getString(this, ConstantValue.userId, "")
-                            var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
+                            var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                             var fileBufferMi = AESToolsCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
                             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
                             var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi)
@@ -732,7 +732,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         } else {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
-                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
                                             val code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, aesKey.substring(0,16), false)
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
@@ -856,7 +856,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         } else {
                                             val strBase58 = Base58.encode(videoFileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
-                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
                                             val code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, aesKey.substring(0,16))
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
@@ -977,7 +977,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         } else {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
-                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
                                             val code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, aesKey.substring(0,16))
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()

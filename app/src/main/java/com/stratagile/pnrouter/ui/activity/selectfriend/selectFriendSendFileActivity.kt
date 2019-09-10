@@ -166,7 +166,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             toast(R.string.noSelected)
             return
         }
-        var fileSouceKey = LibsodiumUtil.DecryptShareKey(fileKey!!)
+        var fileSouceKey = LibsodiumUtil.DecryptShareKey(fileKey!!,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
         for (i in contactSelectedList) {
             var FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(fileSouceKey+"0000000000000000", i.miPublicKey))
             if(fileInfo == null || fileInfo.equals(""))
@@ -200,7 +200,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
         }
         for (i in groupSelectedList) {
-            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
+            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
             var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
             KLog.i("文件转发 发送："+FileKeyBase64)
             if(fileInfo == null || fileInfo.equals(""))

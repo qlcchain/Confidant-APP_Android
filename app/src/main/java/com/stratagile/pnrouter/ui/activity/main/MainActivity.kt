@@ -1791,7 +1791,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             when (pushMsgRsp.params.msgType) {
                 0 -> {
-                    val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey)
+                    val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                     val base64Scoure = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg())
                     var msgSouce: String? = ""
                     try {
@@ -1934,7 +1934,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var msgSouce = "";
 
             if (ConstantValue.encryptionType.equals("1")) {
-                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+                var friendEntity = UserEntity()
+                val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+                if (localFriendList.size > 0)
+                    friendEntity = localFriendList[0]
+                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
             } else {
                 msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
             }
@@ -3571,7 +3575,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         var msgSouce = ""
                         if (ConstantValue.encryptionType.equals("1")) {
-                            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+                            var friendEntity = UserEntity()
+                            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+                            if (localFriendList.size > 0)
+                                friendEntity = localFriendList[0]
+                            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
                         } else {
                             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
                         }

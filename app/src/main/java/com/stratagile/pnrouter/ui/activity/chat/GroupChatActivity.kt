@@ -1564,7 +1564,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             var baseSouceName =  String(Base58.decode(fileName))
             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + baseSouceName
             val files_dir = PathUtils.getInstance().filePath.toString() + "/" + baseSouceName
-            var aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.selfKey)
+            var aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.selfKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
 
             var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dir,aesKey)
             if(code == 1)
@@ -1686,7 +1686,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
                 if(jPushFileMsgRsp.params.fileKey != null && !jPushFileMsgRsp.params.fileKey.equals(""))//判断是从文件管理转发还是聊天转发GroupMsgPull
                 {
-                    val aesKey = LibsodiumUtil.DecryptShareKey(UserDataManger.currentGroupData.userKey)
+                    val aesKey = LibsodiumUtil.DecryptShareKey(UserDataManger.currentGroupData.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                     var fileKey = RxEncodeTool.getSouceKey(jPushFileMsgRsp.params.fileKey,aesKey)
                     FileDownloadUtils.doDownLoadWork(filledUri,fileName, files_dir, this,jPushFileMsgRsp.params.msgId, handler,fileKey,"1")//文件管理转发过来
                 }else{
@@ -1858,7 +1858,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }
 
             LogUtil.addLog("groupSendMsgV3 UserKey:",UserKey)
-            var aesKey = LibsodiumUtil.DecryptShareKey(UserKey)
+            var aesKey = LibsodiumUtil.DecryptShareKey(UserKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
             var fileBufferMi = AESToolsCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
             var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi)

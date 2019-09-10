@@ -82,7 +82,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             for (item in dataList)
             {
                 var userKey = item.userkey
-                var aesKey = LibsodiumUtil.DecryptShareKey(userKey);
+                var aesKey = LibsodiumUtil.DecryptShareKey(userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
                 var mailInfoStr = item.mailInfo
                 var miContentSoucreBase = RxEncodeTool.base64Decode(mailInfoStr)
                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
@@ -1241,7 +1241,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     accountMi = confidantkeyArr.get(0)
                     shareMiKey = confidantkeyArr.get(1)
                 }
-                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
+                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
                 var sourceContent = ""

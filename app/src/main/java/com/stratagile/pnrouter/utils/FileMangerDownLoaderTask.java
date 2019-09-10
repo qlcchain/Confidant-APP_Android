@@ -158,7 +158,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
                     String aesKey = "";
                     if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                     {
-                        aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+                        aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr,ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     }else{
                         aesKey = RxEncodeTool.getAESKey(keyStr);
                     }

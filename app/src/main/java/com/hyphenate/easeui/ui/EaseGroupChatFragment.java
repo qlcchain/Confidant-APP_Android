@@ -1150,9 +1150,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                     if(message.getFileKey() != null && !message.getFileKey().equals(""))
                     {
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getFileKey());
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getFileKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());//,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!
                     }else{
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     }
 
                     int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dirTemp, fileKey);
@@ -1387,7 +1387,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String msgSouce = "";
             if (Message.getMsg() != null && !Message.getMsg().equals("")) {
                 try {
-                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     byte[] base64Scoure = RxEncodeTool.base64Decode(Message.getMsg());
                     msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
                 } catch (Exception e) {
@@ -1434,7 +1434,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1475,7 +1475,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1520,7 +1520,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1566,7 +1566,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 String save_dir = PathUtils.getInstance().getFilePath() + "/";
                                 if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                                 {
-                                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                     String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                     FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                                 }else{
@@ -1607,7 +1607,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                             }else{
@@ -1769,7 +1769,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                     }
                     if (!PriKey.equals("") && !Nonce.equals("") && !PriKey.equals("")) {
-                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey);
+                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey(), ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                         EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
                         message.setFrom(userIdL);
                         message.setTo(friendId);
@@ -3134,7 +3134,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
                     String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                    String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                     if (code == 1) {
                         int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3316,7 +3316,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey.substring(0, 16), isCompress);
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3702,7 +3702,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         } else {
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3917,7 +3917,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -4156,8 +4156,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     }
 
-                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());
-                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     String FileKeyBase64 = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(fileSouceKey.getBytes(), aesKey.getBytes()));
                     String fileInfo  = fileData.getFileInfo();
                     if(fileInfo == null || fileInfo.equals(""))
@@ -4236,7 +4236,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param jPushMsgRsp
      */
     public void receiveTxtMessageV3(JGroupMsgPushRsp jPushMsgRsp) {
-        String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+        String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
         byte[] base64Scoure = RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getMsg());
         String msgSouce = "";
         try {
