@@ -32,6 +32,7 @@ import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -1679,7 +1680,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             var mailInfoJson = mailInfo.baseDataToJson()
             val contentBuffer = mailInfoJson.toByteArray()
             var fileKey16 = fileAESKey.substring(0,16)
-            var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+            var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
             var saveEmailConf = BakupEmail(type,fileID.toInt(),fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
         }

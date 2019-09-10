@@ -12,6 +12,7 @@ import com.hyphenate.chat.*
 import com.message.Message
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -200,7 +201,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         }
         for (i in groupSelectedList) {
             val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
-            var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
+            var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
             KLog.i("文件转发 发送："+FileKeyBase64)
             if(fileInfo == null || fileInfo.equals(""))
             {

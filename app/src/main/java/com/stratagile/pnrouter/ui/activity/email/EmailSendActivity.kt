@@ -63,6 +63,7 @@ import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
@@ -1340,7 +1341,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             Log.i("fileKey16",fileKey16)
             if(!contentHtml.equals(""))
             {
-                var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+                var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
                 contentHtml = contentBufferMiStr;
             }
         }

@@ -2618,8 +2618,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                 dataFileVersion = 0
                 routerNameTips.setTextColor(resources.getColor(R.color.white))
-                routerNameTips.text = "pow node"
-                ivAvatar.setText("pow node")
+                routerNameTips.text = "Default node"
+                ivAvatar.setText("Default node")
                 loginKey.setText("")
                 ivAvatar.visibility = View.VISIBLE
                 tvUserName.visibility = View.VISIBLE

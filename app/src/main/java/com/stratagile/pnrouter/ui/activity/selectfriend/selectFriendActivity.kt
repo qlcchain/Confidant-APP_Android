@@ -14,6 +14,7 @@ import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -639,7 +640,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             var msg:String = eMTextMessageBody!!.message
                             val userId = SpUtil.getString(this, ConstantValue.userId, "")
                             var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
-                            var fileBufferMi = AESCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+                            var fileBufferMi = AESToolsCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
                             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
                             var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi)
                             var baseData = BaseData(4,groupSendMsgReq)

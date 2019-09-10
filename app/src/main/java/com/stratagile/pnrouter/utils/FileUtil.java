@@ -13,6 +13,7 @@ import android.support.v4.content.FileProvider;
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.smailnet.eamil.Utils.AESCipher;
+import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
@@ -1118,7 +1119,7 @@ public class FileUtil {
             {
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];
@@ -1151,7 +1152,7 @@ public class FileUtil {
                 {
                     InputStream fosfrom = new FileInputStream(tempPath);
                     byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                    byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     fosfrom = FileUtil.byteTOInputStream(miFile);
                     OutputStream fosto = new FileOutputStream(toFile);
                     byte bt[] = new byte[1024];
@@ -1184,7 +1185,7 @@ public class FileUtil {
         {
             InputStream fosfrom = new FileInputStream(fromFile);
             byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-            byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
             fosfrom = FileUtil.byteTOInputStream(miFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];

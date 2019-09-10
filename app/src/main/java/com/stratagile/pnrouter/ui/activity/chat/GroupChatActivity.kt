@@ -37,6 +37,7 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.message.Message
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -1858,7 +1859,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
             LogUtil.addLog("groupSendMsgV3 UserKey:",UserKey)
             var aesKey = LibsodiumUtil.DecryptShareKey(UserKey)
-            var fileBufferMi = AESCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+            var fileBufferMi = AESToolsCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
             var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi)
             var baseData = BaseData(4,groupSendMsgReq)
