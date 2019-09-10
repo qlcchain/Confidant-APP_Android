@@ -122,7 +122,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
-        AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
+        //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
         {
