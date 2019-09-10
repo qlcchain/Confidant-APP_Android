@@ -741,7 +741,7 @@
     <string name="wangyi">163Mail</string>
     <string name="Google">Gmail</string>
     <string name="outlook">Outlook、Hotmail、Live</string>
-    <string name="Send_Email">Send Email</string>
+    <string name="Send_Email">Compose</string>
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
     <string name="Send_attachments">Send attachments?</string>

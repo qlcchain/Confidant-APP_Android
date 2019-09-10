@@ -44,7 +44,8 @@ class EmaiAttachAdapter(arrayList: MutableList<EmailAttachEntity>) : BaseQuickAd
             iv_add.visibility = View.GONE
             pic_size.visibility = View.VISIBLE
             val file = File(item.localPath)
-            var size = (file.length() / 1000).toInt();
+            var sizeLong = (file.length().toFloat() / 1000).toFloat();
+            var size = String.format("%.2f",sizeLong)
             val fileName = item.name
             var iv_file = helper.getView<ImageView>(R.id.iv_file)
 

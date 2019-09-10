@@ -62,8 +62,8 @@ import com.luck.picture.lib.observable.ImagesObservable
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
-import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.eamil.Utils.AESToolsCipher
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
@@ -1295,7 +1295,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 发送邮件
      */
     private fun sendEmail(send: Boolean) {
-       /* if(BuildConfig.DEBUG)
+       /*if(BuildConfig.DEBUG)
         {
             contactMapList = HashMap<String, String>()
         }*/
@@ -1349,6 +1349,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
 
         //解析cid资源
+        var cidNameList = ""
         var cidList = ""
         var uuid = (System.currentTimeMillis() / 1000).toString()
         if(emailMeaasgeInfoData != null)
@@ -1364,7 +1365,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId+"_"+item.name
                 if(!contentHtml.equals(""))
                 {
-                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.name ,savePath ,uuid)
+                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.cid ,savePath ,uuid)
                 }
                 if(item.localPath != null)
                 {
@@ -1374,13 +1375,19 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
                         if(code ==1)
                         {
-                            cidList +=base58files_dir+","
+                            cidNameList +=base58files_dir+","
+
                         }
                     }else{
-                        cidList +=item.localPath+","
+                        cidNameList +=item.localPath+","
                     }
+                    cidList += item.cid+","
                 }
 
+            }
+            if(cidNameList.length >0)
+            {
+                cidNameList = cidNameList.substring(0,cidNameList.length -1)
             }
             if(cidList.length >0)
             {
@@ -1620,7 +1627,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     .setNickname(name)                                    //发件人昵称
                     .setSubject(subject.getText().toString())             //邮件标题
                     .setContent(contentHtml)              //邮件正文
-                    .setCidPath(cidList)                 //cid资源
+                    .setCidPath(cidNameList)                 //cid资源
+                    .setCid(cidList)
                     .setUUID(uuid)
                     .setAttach(attachList)              //附件
                     .sendAsyn(this, object : GetSendCallback {
@@ -1705,7 +1713,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     .setNickname(name)                                    //发件人昵称
                     .setSubject(subject.getText().toString())             //邮件标题
                     .setContent(contentHtml)              //邮件正文
-                    .setCidPath(cidList)                 //cid资源
+                    .setCidPath(cidNameList)                 //cid资源
+                    .setCid(cidList)
                     .setUUID(uuid)
                     .setAttach(attachList)
                     .saveDraftsAsyn(this, object : GetSendCallback {

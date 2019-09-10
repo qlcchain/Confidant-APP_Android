@@ -311,7 +311,7 @@ class EmailCore {
      * @param content
      * @throws MessagingException
      */
-    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach,String[] cidPath,String uuid) throws MessagingException {
+    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach,String[] cidPath,String uuid,String[] cidList) throws MessagingException {
         Message message = new MimeMessage(session);
         message.addRecipients(Message.RecipientType.TO, to);
         if (cc != null) {
@@ -362,6 +362,7 @@ class EmailCore {
         if(cidPath.length > 0)
         {
             //contentCid = createContent("", cidPath);
+            int flag = 0;
             for (String cidPathItem :cidPath)
             {
                 if(!cidPathItem.equals(""))
@@ -382,9 +383,9 @@ class EmailCore {
                             //设置第一个附件的数据
                             imageCid.setDataHandler(dh1);
                             //设置第一个附件的文件名
-                            String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
-                            String cid = fileName.substring(0,fileName.lastIndexOf("."));
-                            fileName = fileName.substring(fileName.lastIndexOf("_")+1,fileName.length());
+                           /* String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
+                            String cid = fileName.substring(0,fileName.lastIndexOf("."));*/
+                            String fileName  = cidList[flag];
                             imageCid.setContentID(uuid+fileName);
                             //imageCid.setFileName(fileName);
                             //imageCid.setHeader("Content-Type", "image/*");
@@ -402,7 +403,7 @@ class EmailCore {
 
                     }
                 }
-
+                flag ++;
             }
         }
         //设置内容为正文

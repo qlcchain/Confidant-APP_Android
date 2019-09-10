@@ -48,6 +48,7 @@ public class EmailSendClient {
     private Address[] bcc;
     private String[] attach;
     private String[] cidPath;
+    private String[] cid;
     private EmailConfig emailConfig;
     private String uuid;
 
@@ -129,6 +130,20 @@ public class EmailSendClient {
     }
     /**
      * 设置附件路径
+     * @param cid
+     * @return
+     */
+    public EmailSendClient setCid(String cid){
+        if(cid != null)
+        {
+            this.cid = cid.split(",");
+        }else{
+            this.cid = new String[]{};
+        }
+        return this;
+    }
+    /**
+     * 设置附件路径
      * @param uuid
      * @return
      */
@@ -189,7 +204,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                     try {
@@ -238,7 +253,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .saveDrafts();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu,flag);
@@ -281,7 +296,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                 } catch (final MessagingException e) {
