@@ -17,7 +17,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.baidu.mapapi.BMapManager.getContext;
 //import rx.Observable;
 //import rx.functions.Func1;
 

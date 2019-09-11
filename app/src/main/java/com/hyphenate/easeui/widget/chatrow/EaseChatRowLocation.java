@@ -1,17 +1,14 @@
 package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
-import com.stratagile.pnrouter.R;
-import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.util.LatLng;
+import com.stratagile.pnrouter.R;
 
 public class EaseChatRowLocation extends EaseChatRow{
 

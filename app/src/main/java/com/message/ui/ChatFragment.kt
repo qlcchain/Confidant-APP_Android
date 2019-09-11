@@ -16,7 +16,6 @@ import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.domain.EaseEmojicon
-import com.hyphenate.easeui.ui.EaseBaiduMapActivity
 import com.hyphenate.easeui.widget.EaseChatExtendMenu
 import com.hyphenate.easeui.widget.EaseChatInputMenu
 import com.message.Message
@@ -355,7 +354,6 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                         )
                         .callback(permissionVideo)
                         .start()
-                ITEM_LOCATION -> startActivityForResult(Intent(activity, EaseBaiduMapActivity::class.java), REQUEST_CODE_MAP)
                 ITEM_FILE -> startActivityForResult(Intent(activity, FileChooseActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
                 else -> Toast.makeText(activity, R.string.wait, Toast.LENGTH_SHORT).show()
             }
