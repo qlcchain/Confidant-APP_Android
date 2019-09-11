@@ -672,7 +672,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
             fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
         }else{
-            fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("@"))
+            var itemEndIndex = emailMeaasgeData!!.from.indexOf("@")
+            if(itemEndIndex < 0)
+            {
+                itemEndIndex = 0;
+            }
+            fromName = emailMeaasgeData!!.from.substring(0,itemEndIndex)
             fromAdress = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.length)
         }
         var toName = ""
@@ -687,17 +692,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName += item.substring(0,item.indexOf("<"))+","
                     toAdress += item.substring(item.indexOf("<"),item.length)+","
                 }else{
-                    toName += item.substring(0,item.indexOf("@"))+","
+                    var itemEndIndex = item.indexOf("@")
+                    if(itemEndIndex < 0)
+                    {
+                        itemEndIndex = 0;
+                    }
+                    toName += item.substring(0,itemEndIndex)+","
                     toAdress += item.substring(0,item.length)+","
                 }
             }
             if(toName.contains(","))
             {
-                toName.substring(0,toName.lastIndex -1)
+                toName.substring(0,toName.length -1)
             }
             if(toAdress.contains(","))
             {
-                toAdress.substring(0,toAdress.lastIndex -1)
+                toAdress.substring(0,toAdress.length -1)
             }
         }else{
             if(emailMeaasgeData!!.to.indexOf("<") >-1)
@@ -705,7 +715,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("<"))
                 toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"),emailMeaasgeData!!.to.length)
             }else{
-                toName = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.indexOf("@"))
+                var itemEndIndex = emailMeaasgeData!!.to.indexOf("@")
+                if(itemEndIndex < 0)
+                {
+                    itemEndIndex = 0;
+                }
+                toName = emailMeaasgeData!!.to.substring(0,itemEndIndex)
                 toAdress = emailMeaasgeData!!.to.substring(0,emailMeaasgeData!!.to.length)
             }
         }
@@ -758,7 +773,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName = toItem.substring(0,toItem.indexOf("<"))
                     toAdress = toItem.substring(toItem.indexOf("<"),toItem.length)
                 }else{
-                    toName = toItem.substring(0,toItem.indexOf("@"))
+                    var itemEndIndex = toItem.indexOf("@")
+                    if(itemEndIndex < 0)
+                    {
+                        itemEndIndex = 0;
+                    }
+                    toName = toItem.substring(0,itemEndIndex)
                     toAdress = toItem.substring(0,toItem.length)
                 }
                /* toName =toName.replace("\"","")
@@ -802,7 +822,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = ccItem.substring(0,ccItem.indexOf("<"))
                     ccAdress = ccItem.substring(ccItem.indexOf("<"),ccItem.length)
                 }else{
-                    ccName = ccItem.substring(0,ccItem.indexOf("@"))
+                    var itemEndIndex = ccItem.indexOf("@")
+                    if(itemEndIndex < 0)
+                    {
+                        itemEndIndex = 0;
+                    }
+                    ccName = ccItem.substring(0,itemEndIndex)
                     ccAdress = ccItem.substring(0,ccItem.length)
                 }
                /* ccName =ccName.replace("\"","")
@@ -846,7 +871,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = bccItem.substring(0,bccItem.indexOf("<"))
                     ccAdress = bccItem.substring(bccItem.indexOf("<"),bccItem.length)
                 }else{
-                    ccName = bccItem.substring(0,bccItem.indexOf("@"))
+                    var itemEndIndex = bccItem.indexOf("@")
+                    if(itemEndIndex < 0)
+                    {
+                        itemEndIndex = 0;
+                    }
+                    ccName = bccItem.substring(0,itemEndIndex)
                     ccAdress = bccItem.substring(0,bccItem.length)
                 }
                 /*ccName =ccName.replace("\"","")

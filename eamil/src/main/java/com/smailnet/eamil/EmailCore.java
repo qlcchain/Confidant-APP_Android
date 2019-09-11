@@ -945,16 +945,17 @@ class EmailCore {
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
+        String errorMsg = "";
         for (Message message : list){
-            uuid = folder.getUID(message) +"";
             try {
+                uuid = folder.getUID(message) +"";
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
 
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
@@ -988,7 +989,7 @@ class EmailCore {
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
@@ -1007,7 +1008,7 @@ class EmailCore {
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
@@ -1029,6 +1030,7 @@ class EmailCore {
             }catch (Exception e)
             {
                 e.printStackTrace();
+                errorMsg += e.getMessage();
             }
 
             index ++;
@@ -1041,7 +1043,7 @@ class EmailCore {
         messageMap.put("totalCount",totalSize);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
-
+        messageMap.put("errorMsg",errorMsg);
         return messageMap;
     }
     /**
@@ -1112,21 +1114,22 @@ class EmailCore {
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
+        String errorMsg = "";
         for (Message message : list){
             if(message == null)
             {
                 index++;
                 continue;
             }
-            uuid = folder.getUID(message) +"";
             try {
+                uuid = folder.getUID(message) +"";
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
                 }catch (Exception e)
                 {
-
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
@@ -1159,7 +1162,7 @@ class EmailCore {
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
-
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
@@ -1177,7 +1180,7 @@ class EmailCore {
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
                 {
-
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
@@ -1199,6 +1202,7 @@ class EmailCore {
             }catch (Exception e)
             {
                 e.printStackTrace();
+                errorMsg+=e.getMessage();
             }
 
             index ++;
@@ -1213,6 +1217,7 @@ class EmailCore {
         messageMap.put("maxUUID",maxUUID +len);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
+        messageMap.put("errorMsg",errorMsg);
         return messageMap;
     }
     /**
@@ -1267,6 +1272,7 @@ class EmailCore {
         PraseMimeMessage pmm = null;
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
+        String errorMsg = "";
         for (Message message : list){
             uuid = folder.getUID(message) +"";
             try {
@@ -1276,7 +1282,7 @@ class EmailCore {
                     subject = getSubject((MimeMessage)message);
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
@@ -1309,7 +1315,7 @@ class EmailCore {
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
@@ -1327,7 +1333,7 @@ class EmailCore {
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
                 {
-
+                    errorMsg += e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
@@ -1349,6 +1355,7 @@ class EmailCore {
             }catch (Exception e)
             {
                 e.printStackTrace();
+                errorMsg += e.getMessage();
             }
 
             index ++;
@@ -1363,6 +1370,7 @@ class EmailCore {
         messageMap.put("maxUUID",maxUUID);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
+        messageMap.put("errorMsg",errorMsg);
         return messageMap;
     }
     /**

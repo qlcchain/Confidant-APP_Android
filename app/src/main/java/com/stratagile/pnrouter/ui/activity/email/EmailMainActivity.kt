@@ -76,7 +76,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .popReceiveAsyn(this@EmailMainActivity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Long, totalUnreadCount: Long,noMoreData:Boolean) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Long, totalUnreadCount: Long,noMoreData:Boolean,errorMsg:String) {
                                         progressDialog.dismiss()
                                         Toast.makeText(this@EmailMainActivity, "邮件总数：" + totalCount + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
                                         Log.i("oversee", "邮件总数：" + totalCount + " 标题：" + messageList[0].from)
@@ -99,7 +99,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .imapReceiveMoreAsyn(this@EmailMainActivity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Long, totalUnreadCount: Long,noMoreData:Boolean) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, totalCount: Long, totalUnreadCount: Long,noMoreData:Boolean,errorMsg:String) {
                                         progressDialog.dismiss()
                                         Toast.makeText(this@EmailMainActivity, "邮件总数：" + totalCount + " 标题：" + messageList[0].from, Toast.LENGTH_SHORT).show()
                                         Log.i("oversee", "邮件总数：" + totalCount + " 标题：" + messageList[0].subject)

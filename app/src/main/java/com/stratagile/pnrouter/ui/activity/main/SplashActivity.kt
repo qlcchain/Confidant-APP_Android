@@ -15,6 +15,9 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.EmailConfigEntity
+import com.stratagile.pnrouter.db.EmailConfigEntityDao
+import com.stratagile.pnrouter.db.EmailMessageEntityDao
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -123,6 +126,29 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
         //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0) {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            var susan = SpUtil.getBoolean(this,"susan",false)
+            if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
+            //if(emailConfigEntity.account != null)
+            {
+                SpUtil.putBoolean(this, "susan", true)
+                var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("INBOX")).list()
+                for (item in localEmailMessage)
+                {
+                    AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+                }
+                var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                if(emailConfigEntityChoose.size > 0) {
+                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                    emailConfigEntity.totalCount = 0;
+                    emailConfigEntity.inboxMinMessageId = 0;
+                    emailConfigEntity.inboxMaxMessageId = 0;
+                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                }
+            }
+        }
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
         {

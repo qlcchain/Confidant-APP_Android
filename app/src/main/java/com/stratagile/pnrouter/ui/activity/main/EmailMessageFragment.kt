@@ -40,6 +40,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.EmailMessagePresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.email_search_bar.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
@@ -680,6 +681,13 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMoreMessageList()
+            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
+            if (localMessageList == null ||localMessageList.size == 0)
+            {
+                showProgressDialog()
+                pullMoreMessageList(0)
+            }
+
         }
     }
     override fun setupFragmentComponent() {
@@ -695,6 +703,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         mPresenter = presenter as EmailMessagePresenter
     }
     fun pullNewMessageList(localSize:Long) {
+        var root_ = this.activity
         var account= AppConfig.instance.emailConfig().account
         var smtpHost = AppConfig.instance.emailConfig().smtpHost
         Log.i("pullMoreMessageList",account +":"+smtpHost)
@@ -769,7 +778,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .imapReceiveNewAsyn(this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String) {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
@@ -784,6 +793,21 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 closeProgressDialog()
                                                 refreshLayout.finishRefresh()
                                                 refreshLayout.resetNoMoreData()
+                                            }
+                                        }
+                                        if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
+                                        {
+                                            runOnUiThread {
+                                                SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                        .setCancelText(getString(R.string.close))
+                                                        .setConfirmText(getString(R.string.yes))
+                                                        .setContentText(errorMs)
+                                                        .setConfirmClickListener {
+
+                                                        }.setCancelClickListener {
+
+                                                        }
+                                                        .show()
                                             }
                                         }
                                         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
@@ -929,6 +953,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
     }
     fun pullMoreMessageList(localSize:Int) {
+        var root_ = this.activity;
         var account= AppConfig.instance.emailConfig().account
         var smtpHost = AppConfig.instance.emailConfig().smtpHost
         Log.i("pullMoreMessageList",account +":"+smtpHost)
@@ -1002,7 +1027,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .imapReceiveMoreAsyn(this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String) {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
@@ -1017,9 +1042,43 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 refreshLayout.finishLoadMore()
                                             }
                                         }
+                                        if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
+                                        {
+                                            runOnUiThread {
+                                                SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                        .setCancelText(getString(R.string.close))
+                                                        .setConfirmText(getString(R.string.yes))
+                                                        .setContentText(errorMs)
+                                                        .setConfirmClickListener {
+
+                                                        }.setCancelClickListener {
+
+                                                        }
+                                                        .show()
+                                            }
+                                        }
                                         var list = messageList;
                                         for (item in messageList)
                                         {
+                                            var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                                            if(emailConfigEntityChoose.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                                                when(menu)
+                                                {
+                                                    emailConfigEntity.inboxMenu->
+                                                    {
+                                                        if(emailConfigEntity.inboxMaxMessageId == 0L)
+                                                        {
+                                                            emailConfigEntity.totalCount = minUUID.toInt()
+                                                            emailConfigEntity.inboxMaxMessageId = item.id.toLong()
+                                                            emailConfigEntity.inboxMinMessageId = item.id.toLong()
+                                                        }
+
+                                                    }
+                                                }
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            }
                                             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.MsgId.eq(item.id)).list()
                                             var name = ""
                                             var account  = ""
