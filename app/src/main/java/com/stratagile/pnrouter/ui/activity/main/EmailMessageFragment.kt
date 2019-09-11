@@ -681,12 +681,16 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMoreMessageList()
-            var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
-            if (localMessageList == null ||localMessageList.size == 0)
+            if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
             {
-                showProgressDialog()
-                pullMoreMessageList(0)
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
+                if (localMessageList == null ||localMessageList.size == 0)
+                {
+                    showProgressDialog()
+                    pullMoreMessageList(0)
+                }
             }
+
 
         }
     }
