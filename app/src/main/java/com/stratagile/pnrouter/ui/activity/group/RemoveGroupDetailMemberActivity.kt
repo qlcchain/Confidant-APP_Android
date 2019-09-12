@@ -120,6 +120,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
             userHead.userName = it.userName
             userHead.remarks = it.remarks
             userHead.userEntity = it.userEntity
+            userHead.isShowRouteName = false
             if (it.routerItemList.size > 1) {
                 it.routerItemList?.forEach {
                     userHead.addSubItem(UserItem(it))

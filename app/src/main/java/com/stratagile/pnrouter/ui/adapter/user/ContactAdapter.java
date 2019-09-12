@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.adapter.user;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,13 +89,21 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     helper.setText(R.id.tvNickName, nickNameSouce + "(" + lv0.getSubItems().size() + ")");
                 } else {
                     helper.setVisible(R.id.ivArrow, false);
-                    if (lv0.getUserEntity().getRouterAlias() == null || "".equals(lv0.getUserEntity().getRouterAlias())) {
-                        String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv0.getUserEntity().getRouteName()));
-                        helper.setText(R.id.tvNickName, nickNameSouce+" - "+nickNameSouce1);
-                    } else {
-                        String nickNameSouce1 = lv0.getUserEntity().getRouterAlias();
-                        helper.setText(R.id.tvNickName, nickNameSouce+" - "+nickNameSouce1);
+                    if(lv0.getUserEntity().getValidationInfo() != "removeGroup")
+                    {
+                        if (lv0.getUserEntity().getRouterAlias() == null || "".equals(lv0.getUserEntity().getRouterAlias())) {
+                            if(lv0.getUserEntity().getRouteName() != null)
+                            {
+                                String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv0.getUserEntity().getRouteName()));
+                                helper.setText(R.id.tvRouterName, "-"+nickNameSouce1);
+                            }
+
+                        } else {
+                            String nickNameSouce1 = lv0.getUserEntity().getRouterAlias();
+                            helper.setText(R.id.tvRouterName, "-"+nickNameSouce1);
+                        }
                     }
+                    helper.setText(R.id.tvNickName, nickNameSouce);
                 }
                 //helper.setText(R.id.ivAvatar, nickNameSouce);
                 ImageButtonWithText imagebutton = helper.getView(R.id.ivAvatar);

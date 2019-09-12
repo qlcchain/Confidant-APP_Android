@@ -410,6 +410,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     {
                         if(it.routeId != null && it.routeId.equals(routerId))
                         {
+                            it.validationInfo = "removeGroup"
                             contactList.add(it)
                         }
                     }else{

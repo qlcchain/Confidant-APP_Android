@@ -8,6 +8,7 @@ public class UserHead extends AbstractExpandableItem<UserItem> implements MultiI
     private String userName;
     private String remarks; //用户备注
     private boolean isChecked = false;
+    private boolean isShowRouteName = true;
 
     public boolean isChecked() {
         return isChecked;
@@ -51,6 +52,14 @@ public class UserHead extends AbstractExpandableItem<UserItem> implements MultiI
     @Override
     public int getLevel() {
         return 0;
+    }
+
+    public boolean isShowRouteName() {
+        return isShowRouteName;
+    }
+
+    public void setShowRouteName(boolean showRouteName) {
+        isShowRouteName = showRouteName;
     }
 }
 
