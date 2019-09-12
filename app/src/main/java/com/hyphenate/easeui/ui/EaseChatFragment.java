@@ -2647,7 +2647,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if (forward_msg != null) {
                         conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
-                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
+                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getNewId());
                         forward_msg.setAcked(true);
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");

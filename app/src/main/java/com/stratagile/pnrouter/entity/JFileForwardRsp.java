@@ -40,6 +40,7 @@ public class JFileForwardRsp extends BaseEntity{
         private String Action;
         private int RetCode;
         private int MsgId;
+        private int NewId;
         private String ToId;
 
         public String getAction() {
@@ -64,6 +65,14 @@ public class JFileForwardRsp extends BaseEntity{
 
         public void setMsgId(int MsgId) {
             this.MsgId = MsgId;
+        }
+
+        public int getNewId() {
+            return NewId;
+        }
+
+        public void setNewId(int newId) {
+            NewId = newId;
         }
 
         public String getToId() {
