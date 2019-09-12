@@ -310,11 +310,12 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             setNoteName.setRightTitleText("")
             setNoteName.setTitleText(getString(R.string.Add_Nickname))
         }
-        if (userInfo!!.routerAlias == null || "" == userInfo!!.routerAlias){
+        /*if (userInfo!!.routerAlias == null || "" == userInfo!!.routerAlias){
             nickName.text = nickNameSouce +" - " +String(RxEncodeTool.base64Decode(userInfo!!.routeName));
         }else{
             nickName.text = nickNameSouce +" - " +userInfo!!.routerAlias
-        }
+        }*/
+        nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
         var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
         avatar.setImageFile(avatarPath);

@@ -725,12 +725,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getRemarks()));
         }
 
-        if (UserDataManger.curreantfriendUserData.getRouterAlias() == null || "".equals(UserDataManger.curreantfriendUserData.getRouterAlias())){
+        /*if (UserDataManger.curreantfriendUserData.getRouterAlias() == null || "".equals(UserDataManger.curreantfriendUserData.getRouterAlias())){
             String routerName = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getRouteName()));
             titleBar.setTitle(usernameSouce +" - " +routerName);
         }else{
             titleBar.setTitle(usernameSouce +" - " +UserDataManger.curreantfriendUserData.getRouterAlias());
-        }
+        }*/
+        titleBar.setTitle(usernameSouce);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
             // set title
             if (EaseUserUtils.getUserInfo(toChatUserId) != null) {
