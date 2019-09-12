@@ -310,7 +310,11 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             setNoteName.setRightTitleText("")
             setNoteName.setTitleText(getString(R.string.Add_Nickname))
         }
-        nickName.text = nickNameSouce
+        if (userInfo!!.routerAlias == null || "" == userInfo!!.routerAlias){
+            nickName.text = nickNameSouce +" - " +String(RxEncodeTool.base64Decode(userInfo!!.routeName));
+        }else{
+            nickName.text = nickNameSouce +" - " +userInfo!!.routerAlias
+        }
         avatar.setText(nickNameSouce)
         var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
         avatar.setImageFile(avatarPath);

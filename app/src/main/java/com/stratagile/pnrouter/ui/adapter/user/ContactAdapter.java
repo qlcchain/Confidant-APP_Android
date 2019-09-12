@@ -88,7 +88,13 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     helper.setText(R.id.tvNickName, nickNameSouce + "(" + lv0.getSubItems().size() + ")");
                 } else {
                     helper.setVisible(R.id.ivArrow, false);
-                    helper.setText(R.id.tvNickName, nickNameSouce);
+                    if (lv0.getUserEntity().getRouterAlias() == null || "".equals(lv0.getUserEntity().getRouterAlias())) {
+                        String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv0.getUserEntity().getRouteName()));
+                        helper.setText(R.id.tvNickName, nickNameSouce+" - "+nickNameSouce1);
+                    } else {
+                        String nickNameSouce1 = lv0.getUserEntity().getRouterAlias();
+                        helper.setText(R.id.tvNickName, nickNameSouce+" - "+nickNameSouce1);
+                    }
                 }
                 //helper.setText(R.id.ivAvatar, nickNameSouce);
                 ImageButtonWithText imagebutton = helper.getView(R.id.ivAvatar);

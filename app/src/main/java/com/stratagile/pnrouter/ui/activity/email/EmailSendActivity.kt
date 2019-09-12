@@ -2178,6 +2178,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
             //onBackPressed()
         }else if (id == R.id.sendBtn ) {
+            allSpan(toAdressEdit)
+            allSpan(ccAdressEdit)
+            allSpan(bccAdressEdit)
             sendCheck(true);
             //sendEmail()
         }
@@ -2416,7 +2419,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
     }
     fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ,pre:String):String {
-        return content.replace("src=\"file://" + filePath+"\"","src=" + "\"cid:" + pre+fileName + "\"").toString();
+        return content.replace("file://" + filePath+"\"","cid:" + pre+fileName + "\"").toString();
     }
     override fun setupActivityComponent() {
         DaggerEmailSendComponent

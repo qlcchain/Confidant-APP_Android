@@ -1990,10 +1990,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         if (TextUtils.isEmpty(text)) {
             return false;
         }
-        return text.contains("src=\"cid:");
+        return text.contains("cid:");
     }
     fun  replaceLocalPathByImgCid(content:String ,fileName:String ,filePath:String ):String {
-        return content.replace("src=" + "\"cid:" + fileName + "\"","src=\"file://" + filePath+"\"").toString();
+        return content.replace("cid:" + fileName + "\"","file://" + filePath+"\"").toString();
     }
     override fun onDestroy() {
         AppConfig.instance.messageReceiver!!.bakupEmailCallback = null

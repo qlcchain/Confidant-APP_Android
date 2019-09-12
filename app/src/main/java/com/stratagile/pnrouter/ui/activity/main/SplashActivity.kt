@@ -129,7 +129,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0) {
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-            var susan = SpUtil.getBoolean(this,"susan",false)
+           /* var susan = SpUtil.getBoolean(this,"susan",false)
             if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
             //if(emailConfigEntity.account != null)
             {
@@ -147,7 +147,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                     emailConfigEntity.inboxMaxMessageId = 0;
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                 }
-            }
+            }*/
         }
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)

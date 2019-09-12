@@ -847,5 +847,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Update_Password">Update Password</string>
     <string name="Update_Config">Update Config</string>
     <string name="server_setting">Server setting</string>
+    <string name="Stay">Stay in touch with the ones who matter</string>
 
 </resources>

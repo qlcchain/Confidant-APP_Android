@@ -681,7 +681,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMoreMessageList()
-            if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
+           /* if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
             {
                 var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
                 if (localMessageList == null ||localMessageList.size == 0)
@@ -689,7 +689,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     showProgressDialog()
                     pullMoreMessageList(0)
                 }
-            }
+            }*/
 
 
         }
@@ -799,7 +799,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 refreshLayout.resetNoMoreData()
                                             }
                                         }
-                                        if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
+                                       /* if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
                                         {
                                             runOnUiThread {
                                                 SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
@@ -813,7 +813,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                         }
                                                         .show()
                                             }
-                                        }
+                                        }*/
                                         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
                                         if(emailConfigEntityChoose.size > 0)
                                         {
@@ -1046,7 +1046,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 refreshLayout.finishLoadMore()
                                             }
                                         }
-                                        if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
+                                        /*if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
                                         {
                                             runOnUiThread {
                                                 SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
@@ -1060,7 +1060,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                         }
                                                         .show()
                                             }
-                                        }
+                                        }*/
                                         var list = messageList;
                                         for (item in messageList)
                                         {
