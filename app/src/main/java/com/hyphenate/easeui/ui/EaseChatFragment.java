@@ -2497,6 +2497,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Log.i("消息时间:send:",System.currentTimeMillis()+"");
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.Chat);
                 String baseDataJson = gson.toJson(Message);
@@ -2584,6 +2585,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         forward_msg.setAcked(true);
                         forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
                         conversation.insertMessage(forward_msg);
+                        Log.i("消息时间:sendback:",jSendMsgRsp.getTimestamp()+"");
                         KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
                         if (isMessageListInited) {
                             easeChatMessageList.refresh();
@@ -4434,6 +4436,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setFrom(jPushMsgRsp.getParams().getFrom());
         Message.setTo(jPushMsgRsp.getParams().getTo());
         Message.setTimeStamp(System.currentTimeMillis() / 1000);
+        Log.i("消息时间:receiver:",jPushMsgRsp.getTimestamp()+"");
         Message.setUnReadCount(0);
         Message.setChatType(ChatType.Chat);
         String baseDataJson = gson.toJson(Message);
