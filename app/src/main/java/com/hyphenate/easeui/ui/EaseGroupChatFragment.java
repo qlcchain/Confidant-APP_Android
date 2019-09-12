@@ -499,8 +499,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }
                     }
 
-                    messageData.setMsgTime(message.getTimeStamp() * 1000);
+                    //messageData.setMsgTime(message.getTimeStamp() * 1000);
                     messageData.setMsgId(msgId + "");
+                    messageData.setMsgTime(Long.valueOf(msgId));
                     sendMessageTo(messageData);
                 }
             }
@@ -1224,7 +1225,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 }
                             }
 
-                            messageData.setMsgTime(message.getTimeStamp() * 1000);
+                            //messageData.setMsgTime(message.getTimeStamp() * 1000);
+                            messageData.setMsgTime(Long.valueOf(message.getMsgId()));
                             messageData.setMsgId(message.getMsgId() + "");
                             sendMessageTo(messageData);
                         }
@@ -1250,6 +1252,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             conversation.removeMessage(msgId);
             eMMessage.setMsgId(msgServerId);
             eMMessage.setAcked(true);
+            eMMessage.setMsgTime(Long.valueOf(msgServerId));
             sendMessageTo(eMMessage);
             conversation.updateMessage(eMMessage);
             if (eMMessage.getType().equals(EMMessage.Type.IMAGE))
@@ -1670,7 +1673,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStamp() * 1000);
+            //message.setMsgTime(Message.getTimeStamp() * 1000);
+            message.setMsgTime(Message.getMsgId());
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -2733,7 +2737,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis());
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
@@ -2819,7 +2823,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setAcked(true);
-                        forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
+                        //forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
+                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
                         if (isMessageListInited) {
@@ -2878,6 +2883,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     if (forward_msg != null) {
                         conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
                         forward_msg.setAcked(true);
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
@@ -3066,7 +3072,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setDelivered(true);
                 message.setAcked(false);
                 message.setUnread(true);
-
+                message.setMsgTime(System.currentTimeMillis());
                 if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     message.setMsgId(uuid);
@@ -3280,6 +3286,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = (int) (System.currentTimeMillis() / 1000) +"";
                             message.setMsgId(uuid);
@@ -3446,6 +3453,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         currentSendMsg = message;
 
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
@@ -3634,7 +3642,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
-
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
@@ -3840,6 +3848,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             int result = FileUtil.copyAppFileToSdcard(filePath, files_dir);
                             if(result == 0)
@@ -4131,6 +4140,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     message.setDelivered(true);
                     message.setAcked(false);
                     message.setUnread(true);
+                    message.setMsgTime(System.currentTimeMillis());
                     EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(fileData.getMsgId()+"");
                     if(forward_msg == null)
                     {
@@ -4249,7 +4259,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
             message.setFrom(jPushMsgRsp.getParams().getFrom());
             message.setTo(jPushMsgRsp.getParams().getGId());
-
+            message.setMsgTime(jPushMsgRsp.getParams().getMsgId());
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg(jPushMsgRsp.getParams().getMsg());
@@ -4326,6 +4336,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (message != null) {
             message.setDirection(EMMessage.Direct.RECEIVE);
             message.setMsgId(msgId);
+            message.setMsgTime(Long.valueOf(msgId));
             message.setFrom(fromId);
             message.setTo(toId);
             sendMessageTo(message);
@@ -5083,7 +5094,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 }
 
-                                messageData.setMsgTime(message.getTimeStamp() * 1000);
+                                //messageData.setMsgTime(message.getTimeStamp() * 1000);
+                                messageData.setMsgTime(message.getMsgId());
                                 messageData.setMsgId(message.getMsgId() + "");
                                 sendMessageTo(messageData);
                             }
