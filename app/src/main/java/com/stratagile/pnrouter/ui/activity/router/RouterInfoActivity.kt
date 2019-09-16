@@ -131,7 +131,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             {
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, routerEntity.userSn)
             }else{
-                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
+                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "no")
             }
         }
         llDiskManagement.setOnClickListener {

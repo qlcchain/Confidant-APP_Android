@@ -2924,6 +2924,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
+        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+        if(!autoLoginRouterSn.equals("no"))
+        {
+            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
+        }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
         var localEmailContactAcount = ""
         var localEmailContactAcountDelete = ""

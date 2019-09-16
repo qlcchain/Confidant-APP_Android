@@ -135,6 +135,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var hasFinger = false
     var name:Long  = 0;
     var openNewOnPow = true
+    var needAutoClickLogin = false
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -1146,14 +1147,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         isUnlock = true
                         setResultInfo(R.string.fingerprint_success)
                         cancellationSignal = null
-                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                        autoClickLoginBtn()
+                        /*var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                         if(!autoLoginRouterSn.equals("") && autoLoginRouterSn!!.equals(userSn))
                         {
                             runOnUiThread {
                                 getServer(routerId,userSn,true,true)
                             }
 
-                        }
+                        }*/
                     }
                     MSG_AUTH_FAILED -> {
                         setResultInfo(R.string.fingerprint_not_recognized)
@@ -1251,21 +1253,46 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         initRouterUI()
         showUnlock()
     }
+    fun autoClickLoginBtn()
+    {
+        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+        if(needAutoClickLogin)
+        {
+            loginBtn.performClick()
+        }else{
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            var routerNameTipsText = routerNameTips.text.toString()
+            if (routerList.size != 0) {
+                if(autoLoginRouterSn != "no")
+                {
+                    loginBtn.performClick()
+                }
+            }else if( routerNameTipsText == "Default node")
+            {
+                if(autoLoginRouterSn != "no")
+                {
+                    loginBtn.performClick()
+                }
+            }
+        }
 
+    }
     fun showUnlock() {
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         //!BuildConfig.DEBUG &&
-        if(BuildConfig.DEBUG)
+        /*if(BuildConfig.DEBUG)
         {
             isUnlock = true
             hasFinger = false
+            autoClickLoginBtn()
             return
-        }
+        }*/
         var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
         if(fingerprintSwitchFlag.equals("0") || fingerprintSwitchFlag.equals("-1"))
         {
             isUnlock = true
             hasFinger = true
+            autoClickLoginBtn()
             return;
         }
         if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -2484,7 +2511,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }else{
                                 loginKey.setText("")
                             }
-
+                            needAutoClickLogin = true
                             hasCheckedRouter = true
                             return@breaking
                         }

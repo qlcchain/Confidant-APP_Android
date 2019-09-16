@@ -51,6 +51,10 @@ object SpUtil {
         {
             return ""
         }
+        if("autoLoginRouterSn" == key)
+        {
+            var aa = ""
+        }
         if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
 

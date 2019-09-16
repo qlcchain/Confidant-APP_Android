@@ -370,7 +370,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             if (autoLoginSwitch.isChecked) {
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, selectedRouter.userSn)
             } else {
-                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
+                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "no")
             }
         }
 
