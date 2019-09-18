@@ -54,6 +54,7 @@ import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -2925,7 +2926,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             delay(10000)
         }
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-        if(!autoLoginRouterSn.equals("no"))
+        if(!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals(""))
         {
             SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
         }

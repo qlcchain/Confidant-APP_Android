@@ -1687,7 +1687,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -1703,7 +1703,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1732,7 +1732,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1745,7 +1745,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     KLog.i("没有远程，开启tox")
                                                     startTox(startToxFlag)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1759,7 +1759,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         } catch (e: Exception) {
                                             startTox(startToxFlag)
                                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                            if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                             {
                                                 runOnUiThread {
                                                     startLogin()
@@ -1796,7 +1796,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         override fun onFailure( e :Exception) {
                             startTox(startToxFlag)
                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                            if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                             {
                                 runOnUiThread {
                                     startLogin()
@@ -1831,7 +1831,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 //                                            closeProgressDialog()
                                         }
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1842,7 +1842,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     }else{
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1856,7 +1856,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } catch (e: Exception) {
                                 startTox(startToxFlag)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&& !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -2518,7 +2518,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }else{
                         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
                         val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                        if(!autoLoginRouterSn.equals(""))
+                        if(!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no"))
                         {
                             if (it.userSn.equals(autoLoginRouterSn)) {
                                 routerId = it.routerId

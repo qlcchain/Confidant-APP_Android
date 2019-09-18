@@ -9,6 +9,7 @@ import android.os.*
 import android.provider.MediaStore
 import com.jaeger.library.StatusBarUtil
 import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -121,6 +122,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
+
         /*if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")

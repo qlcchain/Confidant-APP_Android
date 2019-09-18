@@ -1030,7 +1030,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -1046,7 +1046,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("") &&!autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1075,7 +1075,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("") &&!autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1088,7 +1088,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     KLog.i("没有远程，开启tox")
                                                     startTox(startToxFlag)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1102,7 +1102,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                         } catch (e: Exception) {
                                             startTox(startToxFlag)
                                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                            if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                             {
                                                 runOnUiThread {
                                                     startLogin()
@@ -1139,7 +1139,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         override fun onFailure( e :Exception) {
                             startTox(startToxFlag)
                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                            if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                             {
                                 runOnUiThread {
                                     startLogin()
@@ -1174,7 +1174,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 //                                            closeProgressDialog()
                                         }
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1185,7 +1185,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     }else{
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1199,7 +1199,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                             } catch (e: Exception) {
                                 startTox(startToxFlag)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
