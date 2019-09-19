@@ -2922,6 +2922,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
+        if(BuildConfig.DEBUG)
+        {
+            var aa = "123";
+            var bb = LibsodiumUtil.base64Encode2String(aa.toByteArray())
+            var bbq = RxEncodeTool.base64Encode2String(aa.toByteArray())
+            var cc = LibsodiumUtil.base64Decode(bb);
+            var cc1 = RxEncodeTool.base64Decode(bbq);
+            var dd = String(cc)
+            var dd1 = String(cc1)
+            var ee = ""
+        }
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
