@@ -130,6 +130,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var msgID = 0
     var needOp = false
     var this_:Activity? = null;
+    var webviewContentWidth = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -1205,8 +1206,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         webSettings.setAllowUniversalAccessFromFileURLs(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setAllowFileAccessFromFileURLs(true);
-        //if(needOp)
-        if(false)
+        if(needOp)
         {
 
             if (Build.VERSION.SDK_INT >= 19) {
@@ -1276,6 +1276,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
         })
         webView.webViewClient = object  : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                webView.loadUrl("javascript:window.HTMLOUT.getContentWidth(document.getElementsByTagName('html')[0].scrollWidth);");
+            }
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 //view.loadUrl(url)
                 val intent = Intent()
@@ -2007,5 +2011,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         AppConfig.instance.messageReceiver!!.dlEmailCallback = null
         EventBus.getDefault().unregister(this)
         super.onDestroy()
+    }
+
+    internal inner class JavaScriptInterface {
+        fun getContentWidth(value: String?) {
+            if (value != null) {
+                webviewContentWidth = Integer.parseInt(value)
+                Log.d("EmailInfoActivity", "Result from javascript: $webviewContentWidth")
+
+            }
+        }
     }
 }
