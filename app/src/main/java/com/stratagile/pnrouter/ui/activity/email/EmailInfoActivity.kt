@@ -549,6 +549,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                         }
                                         if(menu != "node")
                                         {
+                                            var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
+                                            var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
                                             var URLText = "";
                                             if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
                                             {
@@ -558,7 +560,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                                     originalTextCun = originalTextCun.substring(0,50)
                                                 }
                                                 mailInfo.content = originalTextCun
-                                                URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
+                                                URLText = "<html>"+headStr+emailMeaasgeData!!.originalText+"</body>"+iframeStr+"</html>";
                                                 contentHtml = URLText
                                                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
                                             }else{
@@ -568,7 +570,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                                     contentText = contentText.substring(0,50)
                                                 }
                                                 mailInfo.content = contentText
-                                                URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+                                                URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</div></body>"+iframeStr+"</html>";
                                                 contentHtml = URLText
                                                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
                                             }
@@ -1203,7 +1205,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         webSettings.setAllowUniversalAccessFromFileURLs(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setAllowFileAccessFromFileURLs(true);
-        if(needOp)
+        //if(needOp)
+        if(false)
         {
 
             if (Build.VERSION.SDK_INT >= 19) {
@@ -1279,7 +1282,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 intent.action = "android.intent.action.VIEW"
                 val url = Uri.parse(url)
                 intent.data = url
-                startActivity(intent)
+                //startActivity(intent)
                 return true
             }
 
@@ -1326,6 +1329,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         Log.i("URLText",emailMeaasgeData!!.content)
         if(menu != "node")
         {
+            var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
+            var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
             if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
             {
                 var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
@@ -1334,7 +1339,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     originalTextCun = originalTextCun.substring(0,50)
                 }
                 mailInfo.content = originalTextCun
-                URLText = "<html><body style ='font-size:16px!important;'>"+emailMeaasgeData!!.originalText+"</body></html>";
+                URLText = "<html>"+headStr+emailMeaasgeData!!.originalText+"</body>"+iframeStr+"</html>";
                 contentHtml = URLText
                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
             }else{
@@ -1344,7 +1349,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     contentText = contentText.substring(0,50)
                 }
                 mailInfo.content = contentText
-                URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+                //URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
+                URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</body>"+iframeStr+"</html>";
                 contentHtml = URLText
                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
             }
