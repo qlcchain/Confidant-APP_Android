@@ -367,7 +367,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         refreshLayout.finishLoadMore()
                         /*  nodeUpandDown = "down";
                           if(lastPayload == null)
-                          {
+                          {pupu
                               nodeStartId = 0;
                           }else{
                               nodeStartId = lastPayload!!.id
@@ -681,7 +681,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMoreMessageList()
-           /* if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
+            if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
+            //if(AppConfig.instance.emailConfig().account != null)
             {
                 var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
                 if (localMessageList == null ||localMessageList.size == 0)
@@ -689,7 +690,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     showProgressDialog()
                     pullMoreMessageList(0)
                 }
-            }*/
+            }
 
 
         }
@@ -782,7 +783,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .imapReceiveNewAsyn(this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String) {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
@@ -864,7 +865,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 var eamilMessage = EmailMessageEntity()
                                                 eamilMessage.account = AppConfig.instance.emailConfig().account
                                                 eamilMessage.msgId = item.id
-                                                eamilMessage.menu = menu
+                                                eamilMessage.menu = menuFlag
                                                 eamilMessage.from = item.from
                                                 eamilMessage.to = item.to
                                                 eamilMessage.cc = item.cc
@@ -875,6 +876,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)
                                                 eamilMessage.subject = item.subject
+                                                println("time_" + "imapStoreBeginHelp:"+item.subject + menuFlag + "##" + System.currentTimeMillis())
                                                 eamilMessage.content= item.content
                                                 eamilMessage.contentText= item.contentText
                                                 var originMap = getOriginalText(eamilMessage)
@@ -1003,7 +1005,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 emailConfigEntity.sendMenu->
                 {
                     lastTotalCount = emailConfigEntity.sendMaxMessageId
-                    beginIndex = emailConfigEntity.sendMinMessageId
+                    beginIndex = emailConfigEntity.sendMinMessageIdpu
                 }
                 emailConfigEntity.garbageMenu->
                 {
@@ -1031,7 +1033,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .imapReceiveMoreAsyn(this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String) {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String) {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
@@ -1091,7 +1093,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 var eamilMessage = EmailMessageEntity()
                                                 eamilMessage.account = AppConfig.instance.emailConfig().account
                                                 eamilMessage.msgId = item.id
-                                                eamilMessage.menu = menu
+                                                eamilMessage.menu = menuFlag
                                                 eamilMessage.from = item.from
                                                 eamilMessage.to = item.to
                                                 eamilMessage.cc = item.cc
@@ -1102,6 +1104,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)
                                                 eamilMessage.subject = item.subject
+                                                println("time_" + "imapStoreBeginHelp:"+item.subject + menuFlag + "##" + System.currentTimeMillis())
                                                 eamilMessage.content= item.content
                                                 eamilMessage.contentText= item.contentText
                                                 var originMap = getOriginalText(eamilMessage)

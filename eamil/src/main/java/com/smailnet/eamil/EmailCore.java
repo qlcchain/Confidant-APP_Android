@@ -870,7 +870,7 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveMoreMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
+        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
@@ -1044,6 +1044,7 @@ class EmailCore {
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
         messageMap.put("errorMsg",errorMsg);
+        messageMap.put("menu",menu);
         return messageMap;
     }
     /**
@@ -1055,7 +1056,7 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveNewMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
+        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
@@ -1218,6 +1219,7 @@ class EmailCore {
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
         messageMap.put("errorMsg",errorMsg);
+        messageMap.put("menu",menu);
         return messageMap;
     }
     /**
@@ -1371,6 +1373,7 @@ class EmailCore {
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
         messageMap.put("errorMsg",errorMsg);
+        messageMap.put("menu",menu);
         return messageMap;
     }
     /**

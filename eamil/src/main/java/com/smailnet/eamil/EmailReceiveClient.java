@@ -60,7 +60,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"");
+                            getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"","");
                         }
                     });
                 } catch (final MessagingException e) {
@@ -94,7 +94,7 @@ public class EmailReceiveClient {
             public void run() {
                 try {
                     List<EmailMessage> messageList = Operator.Core(emailConfig).popReceiveMail();
-                    getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"");
+                    getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"","");
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());
@@ -124,10 +124,11 @@ public class EmailReceiveClient {
                     final long maxUUIDNew = (long)messageMap.get("maxUUID");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,maxUUIDNew,noMoreData,errorMsg);
+                            getReceiveCallback.gainSuccess(messageList, totalCount,maxUUIDNew,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -167,10 +168,11 @@ public class EmailReceiveClient {
                     final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg);
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -212,10 +214,11 @@ public class EmailReceiveClient {
                     final long maxUUIDNew = (long)messageMap.get("maxUUID");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg);
+                            getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -399,7 +402,8 @@ public class EmailReceiveClient {
                     final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     final String errorMsg = (String)messageMap.get("errorMsg");
-                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg);
+                    final String menuFlag = (String)messageMap.get("menu");
+                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());
