@@ -51,6 +51,12 @@ public class UserEntity implements Parcelable{
 
     private String validationInfo;//添加好友附言
 
+    private String Mails;//好友邮箱
+
+    public UserEntity() {
+
+    }
+
     protected UserEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -74,49 +80,16 @@ public class UserEntity implements Parcelable{
         addFromMe = in.readByte() != 0;
         timestamp = in.readLong();
         validationInfo = in.readString();
+        Mails = in.readString();
     }
 
-    public static final Creator<UserEntity> CREATOR = new Creator<UserEntity>() {
-        @Override
-        public UserEntity createFromParcel(Parcel in) {
-            return new UserEntity(in);
-        }
-
-        @Override
-        public UserEntity[] newArray(int size) {
-            return new UserEntity[size];
-        }
-    };
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", index='" + index + '\'' +
-                ", routerUserId='" + routerUserId + '\'' +
-                ", signPublicKey='" + signPublicKey + '\'' +
-                ", RouteId='" + RouteId + '\'' +
-                ", RouteName='" + RouteName + '\'' +
-                ", miPublicKey='" + miPublicKey + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", remarks='" + remarks + '\'' +
-                ", nickSouceName='" + nickSouceName + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", noteName='" + noteName + '\'' +
-                ", friendStatus=" + friendStatus +
-                ", addFromMe=" + addFromMe +
-                ", timestamp=" + timestamp +
-                ", validationInfo='" + validationInfo + '\'' +
-                '}';
-    }
-
-    @Generated(hash = 1512865517)
+    @Generated(hash = 1208335532)
     public UserEntity(Long id, String userId, String index, String routerUserId,
-            String signPublicKey, String RouteId, String RouteName, String routerAlias,
-            String miPublicKey, String nickName, String remarks, String nickSouceName,
-            String avatar, String noteName, int friendStatus, boolean addFromMe,
-            long timestamp, String validationInfo) {
+            String signPublicKey, String RouteId, String RouteName,
+            String routerAlias, String miPublicKey, String nickName, String remarks,
+            String nickSouceName, String avatar, String noteName, int friendStatus,
+            boolean addFromMe, long timestamp, String validationInfo,
+            String Mails) {
         this.id = id;
         this.userId = userId;
         this.index = index;
@@ -135,35 +108,21 @@ public class UserEntity implements Parcelable{
         this.addFromMe = addFromMe;
         this.timestamp = timestamp;
         this.validationInfo = validationInfo;
-    }
-
-    @Generated(hash = 1433178141)
-    public UserEntity() {
+        this.Mails = Mails;
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        UserEntity that = (UserEntity) o;
-        return getFriendStatus() == that.getFriendStatus() &&
-                isAddFromMe() == that.isAddFromMe() &&
-                getTimestamp() == that.getTimestamp() &&
-                Objects.equals(getUserId(), that.getUserId()) &&
-                Objects.equals(getRouterUserId(), that.getRouterUserId()) &&
-                Objects.equals(getRouteId(), that.getRouteId()) &&
-                Objects.equals(getRouteName(), that.getRouteName()) &&
-                Objects.equals(getNickName(), that.getNickName()) &&
-                Objects.equals(getNoteName(), that.getNoteName()) &&
-                Objects.equals(getValidationInfo(), that.getValidationInfo());
-    }
+    public static final Creator<UserEntity> CREATOR = new Creator<UserEntity>() {
+        @Override
+        public UserEntity createFromParcel(Parcel in) {
+            return new UserEntity(in);
+        }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getRouterUserId(), getRouteId(), getRouteName(), getNickName());
-    }
-
+        @Override
+        public UserEntity[] newArray(int size) {
+            return new UserEntity[size];
+        }
+    };
 
     public Long getId() {
         return this.id;
@@ -282,37 +241,7 @@ public class UserEntity implements Parcelable{
         this.miPublicKey = miPublicKey;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeLong(id);
-        }
-        parcel.writeString(userId);
-        parcel.writeString(index);
-        parcel.writeString(routerUserId);
-        parcel.writeString(signPublicKey);
-        parcel.writeString(RouteId);
-        parcel.writeString(RouteName);
-        parcel.writeString(routerAlias);
-        parcel.writeString(miPublicKey);
-        parcel.writeString(nickName);
-        parcel.writeString(remarks);
-        parcel.writeString(nickSouceName);
-        parcel.writeString(avatar);
-        parcel.writeString(noteName);
-        parcel.writeInt(friendStatus);
-        parcel.writeByte((byte) (addFromMe ? 1 : 0));
-        parcel.writeLong(timestamp);
-        parcel.writeString(validationInfo);
-    }
 
     public String getRouterAlias() {
         return this.routerAlias;
@@ -320,5 +249,46 @@ public class UserEntity implements Parcelable{
 
     public void setRouterAlias(String routerAlias) {
         this.routerAlias = routerAlias;
+    }
+
+    public String getMails() {
+        return Mails;
+    }
+
+    public void setMails(String mails) {
+        Mails = mails;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(userId);
+        dest.writeString(index);
+        dest.writeString(routerUserId);
+        dest.writeString(signPublicKey);
+        dest.writeString(RouteId);
+        dest.writeString(RouteName);
+        dest.writeString(routerAlias);
+        dest.writeString(miPublicKey);
+        dest.writeString(nickName);
+        dest.writeString(remarks);
+        dest.writeString(nickSouceName);
+        dest.writeString(avatar);
+        dest.writeString(noteName);
+        dest.writeInt(friendStatus);
+        dest.writeByte((byte) (addFromMe ? 1 : 0));
+        dest.writeLong(timestamp);
+        dest.writeString(validationInfo);
+        dest.writeString(Mails);
     }
 }

@@ -40,6 +40,7 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         public final static Property AddFromMe = new Property(15, boolean.class, "addFromMe", false, "ADD_FROM_ME");
         public final static Property Timestamp = new Property(16, long.class, "timestamp", false, "TIMESTAMP");
         public final static Property ValidationInfo = new Property(17, String.class, "validationInfo", false, "VALIDATION_INFO");
+        public final static Property Mails = new Property(18, String.class, "Mails", false, "MAILS");
     }
 
 
@@ -72,7 +73,8 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
                 "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 14: friendStatus
                 "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 15: addFromMe
                 "\"TIMESTAMP\" INTEGER NOT NULL ," + // 16: timestamp
-                "\"VALIDATION_INFO\" TEXT);"); // 17: validationInfo
+                "\"VALIDATION_INFO\" TEXT," + // 17: validationInfo
+                "\"MAILS\" TEXT);"); // 18: Mails
     }
 
     /** Drops the underlying database table. */
@@ -162,6 +164,11 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         if (validationInfo != null) {
             stmt.bindString(18, validationInfo);
         }
+ 
+        String Mails = entity.getMails();
+        if (Mails != null) {
+            stmt.bindString(19, Mails);
+        }
     }
 
     @Override
@@ -245,6 +252,11 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         if (validationInfo != null) {
             stmt.bindString(18, validationInfo);
         }
+ 
+        String Mails = entity.getMails();
+        if (Mails != null) {
+            stmt.bindString(19, Mails);
+        }
     }
 
     @Override
@@ -272,7 +284,8 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             cursor.getInt(offset + 14), // friendStatus
             cursor.getShort(offset + 15) != 0, // addFromMe
             cursor.getLong(offset + 16), // timestamp
-            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17) // validationInfo
+            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // validationInfo
+            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18) // Mails
         );
         return entity;
     }
@@ -297,6 +310,7 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         entity.setAddFromMe(cursor.getShort(offset + 15) != 0);
         entity.setTimestamp(cursor.getLong(offset + 16));
         entity.setValidationInfo(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
+        entity.setMails(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
      }
     
     @Override

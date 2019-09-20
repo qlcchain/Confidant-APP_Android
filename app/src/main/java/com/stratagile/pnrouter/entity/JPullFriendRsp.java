@@ -82,6 +82,7 @@ public class JPullFriendRsp extends BaseEntity {
             private String RouteName;
             private String Remarks;
             private String UserKey;
+            private String Mails;
 
             public int getStatus() {
                 return Status;
@@ -144,6 +145,14 @@ public class JPullFriendRsp extends BaseEntity {
 
             public void setUserKey(String userKey) {
                 UserKey = userKey;
+            }
+
+            public String getMails() {
+                return Mails;
+            }
+
+            public void setMails(String mails) {
+                Mails = mails;
             }
         }
 

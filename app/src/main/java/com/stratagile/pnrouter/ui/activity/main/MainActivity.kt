@@ -1549,6 +1549,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var userEntity = UserEntity()
                 userEntity.nickName = i.name
                 userEntity.userId = i.id
+                userEntity.mails = i.mails
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
