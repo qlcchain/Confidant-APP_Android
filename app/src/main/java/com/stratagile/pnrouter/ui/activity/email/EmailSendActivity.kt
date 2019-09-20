@@ -53,6 +53,7 @@ import javax.inject.Inject
 import com.stratagile.pnrouter.method.*
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.util.AttributeSet
 import android.webkit.*
 import android.widget.*
 import chat.tox.antox.tox.MessageHelper

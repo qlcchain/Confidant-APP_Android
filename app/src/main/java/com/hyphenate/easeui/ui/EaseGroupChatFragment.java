@@ -2597,6 +2597,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         {
             return;
         }
+        inputMenu.insertReplyText( "aefweggwegergfwegegew",userId);
         if(userId.equals("All"))
         {
             int inserResult = inputMenu.insertATText("@All" + " ",userId);

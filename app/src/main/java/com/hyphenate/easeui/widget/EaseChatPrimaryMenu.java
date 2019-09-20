@@ -26,6 +26,8 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.util.EMLog;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.method.AtTools;
+import com.stratagile.pnrouter.method.User;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
@@ -452,6 +454,24 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             editText.getText().delete(editContent.length() -1,editContent.length());
         }
         int result = editText.addSpan(text,data);
+        return result;
+    }
+    @Override
+    public int onAddReplyText(String text,String data) {
+        /*int start = editText.getSelectionStart();
+        Editable editable = editText.getEditableText();
+        editable.insert(start, text);
+        setModeKeyboard();*/
+        String editContent = getEdittext();
+        if(editContent.contains("@") && editContent.lastIndexOf("@") == editContent.length() -1)
+        {
+            editText.getText().delete(editContent.length() -1,editContent.length());
+        }
+        int result = editText.addSpan(text,data);
+        AtTools AtTools = new AtTools();
+        User user = new User(data,text);
+        Spannable Spannable = AtTools.newSpannable(user,editText,0);
+        editText.append(Spannable);
         return result;
     }
     @Override
