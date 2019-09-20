@@ -770,7 +770,7 @@
     <string name="Download_failure">Download failure</string>
     <string name="Failure_of_decompression">Failure of decompression</string>
 
-    <string name="delete_email">Delete email</string>
+    <string name="delete_email">Delete message</string>
     <string name="Setup_Guides">Setup Guides</string>
     <string name="qqCompany_Guides">Step A: Check that IMAP is turned on\n
 1. On your computer, open QQ Mailbox.\n

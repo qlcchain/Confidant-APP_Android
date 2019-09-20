@@ -47,6 +47,7 @@ import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu;
+import com.stratagile.pnrouter.entity.events.UnReadMessageCount;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -370,6 +371,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
         if (!handler.hasMessages(MSG_REFRESH)) {
             handler.sendEmptyMessage(MSG_REFRESH);
+            EventBus.getDefault().post(new UnReadMessageCount(0));
         }
     }
     public void shouUIMSG(boolean flag)
@@ -543,7 +545,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                     }
                                 }
 
-                                message.setMsgTime(Message.getTimeStamp()*1000);
+                                String time = Message.getTimeStamp() + "";
+                                if(time.length() == 10)
+                                {
+                                    message.setMsgTime(Message.getTimeStamp()*1000);
+                                }
                                 message.setMsgId(Message.getMsgId() + "");
                                 if(Message.getChatType() != null)
                                 {

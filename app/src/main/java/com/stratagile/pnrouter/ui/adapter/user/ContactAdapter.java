@@ -139,7 +139,7 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                                 String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv0.getUserEntity().getRouteName()));
                                 if(nickNameSouce1 != null && nickNameSouce1 != "")
                                 {
-                                    helper.setText(R.id.tvRouterName, "-"+nickNameSouce1);
+                                    helper.setText(R.id.tvRouterName, " - "+nickNameSouce1);
                                 }else{
                                     helper.setText(R.id.tvRouterName, "");
                                 }
@@ -150,7 +150,7 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                             String nickNameSouce1 = lv0.getUserEntity().getRouterAlias();
                             if(nickNameSouce1 != null && nickNameSouce1 != "")
                             {
-                                helper.setText(R.id.tvRouterName, "-"+nickNameSouce1);
+                                helper.setText(R.id.tvRouterName, " - "+nickNameSouce1);
                             }else{
                                 helper.setText(R.id.tvRouterName, "");
                             }

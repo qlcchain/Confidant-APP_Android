@@ -218,7 +218,10 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         String time = lastMessage.getEmMessage().getMsgTime() + "";
         if (time.length() == 10) {
             holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() * 1000), getContext()));
-        } else {
+        } else if(time.length() == 16){
+            long timeTemp = Long.valueOf(lastMessage.getEmMessage().getMsgTime() /1000);
+            holder.time.setText(DateUtil.getTimestampString(new Date(timeTemp), getContext()));
+        }else{
             holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
         }
         if (lastMessage.getEmMessage().isUnread()) {
