@@ -48,6 +48,7 @@ import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu;
 import com.stratagile.pnrouter.entity.events.UnReadMessageCount;
+import com.stratagile.pnrouter.entity.events.UnReadMessageZero;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -427,6 +428,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
              */
             Map<String, Object> keyMap = SpUtil.INSTANCE.getAll(AppConfig.instance);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            int countUnMessage = 0;
             for (String key : keyMap.keySet()) {
 
                 if (key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId + "_")) {
@@ -555,6 +557,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                 {
                                     message.setChatType(Message.getChatType());
                                 }
+                                countUnMessage += Message.getUnReadCount();
                                 if (draftEntity != null && !draftEntity.getContent().equals("")) {
                                     conversations.put(toChatUserId, new UnReadEMMessage(message, draftEntity.getContent(), Message.getUnReadCount()));
                                 } else {
@@ -566,6 +569,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                     }
 
                 }
+            }
+            if(countUnMessage == 0)
+            {
+                EventBus.getDefault().post(new UnReadMessageZero());
             }
             synchronized (conversations) {
                 for (UnReadEMMessage conversation : conversations.values()) {

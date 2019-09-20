@@ -2685,7 +2685,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             new_contact.text = ""
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleMessageUnReadCount(unReadMessageZero: UnReadMessageZero) {
+        unread_count.visibility = View.INVISIBLE
+        unread_count.text = ""
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
 
@@ -2744,7 +2748,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         if (unread_count != null) {
-            if (hasUnReadMsgCount == 0) {
+            if (hasUnReadMsgCount <= 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
             } else if (hasUnReadMsgCount > 99) {
