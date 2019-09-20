@@ -467,12 +467,12 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         {
             editText.getText().delete(editContent.length() -1,editContent.length());
         }
-        int result = editText.addSpan(text,data);
+        //int result = editText.addSpan(text,data);
         AtTools AtTools = new AtTools();
         User user = new User(data,text);
         Spannable Spannable = AtTools.newSpannable(user,editText,0);
         editText.append(Spannable);
-        return result;
+        return 1;
     }
     @Override
     public EditText getEditText() {
