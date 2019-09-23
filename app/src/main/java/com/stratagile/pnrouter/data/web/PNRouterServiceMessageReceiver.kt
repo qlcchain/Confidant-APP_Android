@@ -592,7 +592,10 @@ val credentialsProvider: CredentialsProvider, private
                     val JMailSendNoticeRsp = gson.fromJson(text, JMailSendNoticeRsp::class.java)
                     mailSendNoticeCallback?.MailSendNoticeBack(JMailSendNoticeRsp)
                 }
-
+                "SysMsgPush" -> {
+                    val JSysMsgPushRsp = gson.fromJson(text, JSysMsgPushRsp::class.java)
+                    mainInfoBack?.sysMsgPushRsp(JSysMsgPushRsp)
+                }
 
             }
         }
@@ -841,6 +844,7 @@ val credentialsProvider: CredentialsProvider, private
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
+        fun sysMsgPushRsp(jSysMsgPushRsp:JSysMsgPushRsp)
     }
     interface BigImageBack {
         fun registerBack(registerRsp: JRegisterRsp)

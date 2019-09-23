@@ -130,6 +130,10 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener, PNRouterServiceMessageReceiver.BakMailsNumCallback {
+    override fun sysMsgPushRsp(jSysMsgPushRsp: JSysMsgPushRsp) {
+
+    }
+
     override fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp) {
         if(JBakMailsNumRsp.params.retCode == 0)
         {

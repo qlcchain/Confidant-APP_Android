@@ -788,3 +788,9 @@ data class BakMailsCheck(var User :String,var Uuid :String,var Action : String =
  * (2)	响应（APP->Router）
  */
 data class MailSendNotice(var MailsTo :String,var Action : String = "MailSendNotice")
+
+/**
+ * 94.	系统提醒通知
+ * (2)	响应（APP->Router）
+ */
+data class SysMsgPush(var Retcode :Int,var ToId:String,var Action : String = "SysMsgPush")
