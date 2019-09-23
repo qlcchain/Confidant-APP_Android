@@ -4,5 +4,7 @@
     <item
         app:menu_title="@string/copy" app:icon = "@mipmap/copy"/>
     <item
+        app:menu_title="@string/reply" app:icon = "@mipmap/sheet_react"/>
+    <item
         app:menu_title="@string/forward" app:icon = "@mipmap/forward"/>
 </menu>
