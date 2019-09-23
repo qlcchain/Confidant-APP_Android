@@ -100,7 +100,27 @@
                 android:paddingRight="@dimen/x19"
                 android:textSize="16sp"
                 android:imeOptions="actionSend"/>
-
+            <TextView
+                android:id="@+id/et_sendmessagehide"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textCursorDrawable="@drawable/bg_edittext"
+                android:background="@null"
+                android:maxLines="4"
+                android:text="123456789ABCDEFGHIJKLMNOPQRST"
+                android:paddingTop="@dimen/x4"
+                android:paddingBottom="@dimen/x4"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:textColor="@color/color_2B2B2B"
+                android:minHeight="@dimen/x78"
+                android:paddingLeft="@dimen/x19"
+                android:paddingRight="@dimen/x19"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:imeOptions="actionSend"/>
         </RelativeLayout>
 
         <RelativeLayout

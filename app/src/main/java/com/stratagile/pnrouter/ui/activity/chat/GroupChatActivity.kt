@@ -1537,6 +1537,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         getSupportSoftInputHeight()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onReplyMsgEvent(replyMsgEvent: ReplyMsgEvent) {
+        var msgId=  replyMsgEvent.msgId
+        var content = replyMsgEvent.content
+        chatFragment?.inputReplyMsg(msgId,content)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
         var fileNumber=  toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key

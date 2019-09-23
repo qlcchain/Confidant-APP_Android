@@ -3,6 +3,8 @@ package com.hyphenate.easeui.widget;
 import android.Manifest;
 import android.content.Context;
 import android.text.Editable;
+import android.text.Html;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -28,6 +30,7 @@ import com.hyphenate.util.EMLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.method.AtTools;
 import com.stratagile.pnrouter.method.User;
+import com.stratagile.pnrouter.utils.StringUitl;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
@@ -39,6 +42,7 @@ import java.util.List;
  */
 public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnClickListener {
     public ATEditText editText;
+    private TextView et_sendmessagehide;
     private View buttonSetModeKeyboard;
     private RelativeLayout edittext_layout;
     private View buttonSetModeVoice;
@@ -103,6 +107,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         Context context1 = context;
         LayoutInflater.from(context).inflate(R.layout.ease_widget_chat_primary_menu, this);
         editText = (ATEditText) findViewById(R.id.et_sendmessage);
+        et_sendmessagehide = (TextView) findViewById(R.id.et_sendmessagehide);
         buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
         edittext_layout = (RelativeLayout) findViewById(R.id.edittext_layout);
         buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
@@ -462,16 +467,38 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         Editable editable = editText.getEditableText();
         editable.insert(start, text);
         setModeKeyboard();*/
+        //String contentTemp = StringUitl.getBaseReplyMsg(text,24);
+
+        et_sendmessagehide.setText(text);
         String editContent = getEdittext();
+
+        Layout l=et_sendmessagehide.getLayout();
+        int ellipsisCount = l.getEllipsisCount(0);
+        boolean ellipsisFlag = true;
+        while (ellipsisCount <=0)
+        {
+            ellipsisFlag = false;
+            String currentText = et_sendmessagehide.getText().toString();
+            et_sendmessagehide.setText(Html.fromHtml(currentText+"&nbsp;"));
+            ellipsisCount = l.getEllipsisCount(0);
+        }
+        int end = et_sendmessagehide.getText().toString().length() - ellipsisCount;
+        if(!ellipsisFlag)
+        {
+            end -= 2;
+        }
+        String contentaaa = et_sendmessagehide.getText().toString().substring(0,end);
+        String content = contentaaa+"...";
         if(editContent.contains("@") && editContent.lastIndexOf("@") == editContent.length() -1)
         {
             editText.getText().delete(editContent.length() -1,editContent.length());
         }
         //int result = editText.addSpan(text,data);
         AtTools AtTools = new AtTools();
-        User user = new User(data,text);
-        Spannable Spannable = AtTools.newSpannable(user,editText,0);
+        User user = new User(data,content);
+        Spannable Spannable = AtTools.newSpannable(user,editText,2);
         editText.append(Spannable);
+        editText.append("\n");
         return 1;
     }
     @Override

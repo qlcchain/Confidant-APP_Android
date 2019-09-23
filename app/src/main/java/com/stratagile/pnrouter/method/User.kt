@@ -12,9 +12,13 @@ import com.stratagile.pnrouter.application.AppConfig
 data class User(val id: String, var name: String): DataBindingSpan,
                                                    DirtySpan {
 
-    fun getSpannedName(): Spannable {
+    fun getSpannedName(colorFlag:Int): Spannable {
         return SpannableString("$name").apply {
             var color = AppConfig.instance.getResources().getColor(R.color.sent_contacts)
+            if(colorFlag != 0)
+            {
+                color = colorFlag
+            }
             setSpan(ForegroundColorSpan(color), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     }

@@ -26,7 +26,7 @@ object Weibo: Method {
     }
 
     override fun newSpannable(user: User): Spannable {
-        return SpanFactory.newSpannable(user.getSpannedName(), user)
+        return SpanFactory.newSpannable(user.getSpannedName(0), user)
     }
 
 }

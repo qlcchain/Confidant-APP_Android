@@ -31,10 +31,13 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.GroupDelMsgReq;
+import com.stratagile.pnrouter.entity.events.ReplyMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.StringUitl;
 import com.stratagile.tox.toxcore.ToxCoreJni;
+
+import org.greenrobot.eventbus.EventBus;
 
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
@@ -99,7 +102,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
             {
                 if(UserDataManger.currentGroupData.getGAdmin().equals(userId))//如果是群管理员
                 {
-                    floatMenu.inflate(R.menu.popup_menu);
+                    floatMenu.inflate(R.menu.popup_text_menu);
                 }else{
                     floatMenu.inflate(R.menu.friendpopup_menu);
                 }
@@ -137,6 +140,11 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                         intent.putExtra("message",message);
                         getContext().startActivity(intent);
                         ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
+                        break;
+                    case "Reply":
+                        String  msgIdReply = message.getMsgId();
+                        String msg = ((EMTextMessageBody) message.getBody()).getMessage();
+                        EventBus.getDefault().post(new ReplyMsgEvent(msgIdReply,msg));
                         break;
                     case "Withdraw":
                         if(message.getChatType().equals( EMMessage.ChatType.GroupChat))

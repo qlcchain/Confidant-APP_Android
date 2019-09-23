@@ -963,4 +963,13 @@ public class StringUitl {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
         return  uuid;
     }
+    public static String getBaseReplyMsg(String content, int length) {
+        for (int i = content.length(); i > 0; i--) {
+            byte[] result = (content.substring(0, i)).getBytes();
+            if (result.length < length) {
+                return new String(result);
+            }
+        }
+        return "";
+    }
 }

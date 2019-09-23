@@ -2585,7 +2585,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
         }
     };
-
+    public void inputReplyMsg(String msgId, String content) {
+        int inserResult = inputMenu.insertReplyText(content,msgId);
+    }
     /**
      * input @
      *
