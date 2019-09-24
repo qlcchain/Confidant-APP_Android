@@ -705,16 +705,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onSendMessage(String content,String point,String AssocId) {
+            public void onSendMessage(String content,String point,String AssocId,String AssocContent) {
                 if(point.toLowerCase().contains("all"))
                 {
                     point = "all";
                 }
-                sendTextMessage(content,point.toLowerCase(),AssocId);
+                sendTextMessage(content,point.toLowerCase(),AssocId,AssocContent);
             }
             @Override
             public void onSendMessage(String content) {
-                sendTextMessage(content,"","");
+                sendTextMessage(content,"","","");
             }
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
@@ -1342,6 +1342,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
+            if(Message.getAssocId() != 0 && currentPage == 1)
+            {
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        loadAssocIdMessages(Message.getAssocId(),Message.getMsgId());
+                    }
+                }, 10);
+            }
             if (Message.getFrom().equals("")) {
                 Message.setFrom(userId);
             } else {
@@ -2066,7 +2076,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     public void run() {
                         loadMoreRoamingMessages();
                     }
-                }, 600);
+                }, 50);
             }
         });
     }
@@ -2075,7 +2085,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         swipeRefreshLayout.setRefreshing(true);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0, MsgStartId, 10, "GroupMsgPull");
+        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0, MsgStartId, 10, 0,"GroupMsgPull");
         BaseData sendData = new BaseData(pullMsgList);
         if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
             sendData = new BaseData(4, pullMsgList);
@@ -2098,6 +2108,32 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
 
 
+    }
+    private void loadAssocIdMessages(int AssocId,int msgID) {
+
+        swipeRefreshLayout.setRefreshing(true);
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0,AssocId+1, 10,msgID, "GroupMsgPull");
+        BaseData sendData = new BaseData(pullMsgList);
+        if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+            sendData = new BaseData(4, pullMsgList);
+        }
+
+        if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData);
+        } else if (ConstantValue.INSTANCE.isToxConnected()) {
+            BaseData baseData = sendData;
+            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+
+            if (ConstantValue.INSTANCE.isAntox()) {
+                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+            } else {
+                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+            }
+
+
+        }
     }
     private void initPictureSelector() {
         PictureSelector.create(this)
@@ -2705,15 +2741,20 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     //send message
-    public void sendTextMessage(String content,String point,String AssocId) {
+    public void sendTextMessage(String content,String point,String AssocId,String AssocContent) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
+        String contentTemp = content;
+        if(!AssocId.equals(""))
+        {
+            contentTemp = AssocContent +"\n……………………………………\n" +contentTemp;
+        }
         if (EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
         } else {
-            EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
+            EMMessage message = EMMessage.createTxtSendMessage(contentTemp, toChatUserId);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
@@ -2735,7 +2776,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 ConstantValue.INSTANCE.getSendFileMsgMap().put(msgId, message);
                 Gson gson = new Gson();
                 Message Message = new Message();
-                Message.setMsg(content);
+
+                Message.setMsg(contentTemp);
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
@@ -2809,7 +2851,50 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
 
     }
+    public void upateAssocIdMessage(Message messageData,int SrcMsgId) {
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(SrcMsgId+ "");
+        KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
+        LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
+        if (forward_msg != null) {
+            String msgSouce = "";
+            if (messageData.getMsg() != null && !messageData.getMsg().equals("")) {
+                try {
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
+                    byte[] base64Scoure = RxEncodeTool.base64Decode(messageData.getMsg());
+                    msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
+                } catch (Exception e) {
 
+                }
+            }
+            if (msgSouce != null && !msgSouce.equals("")) {
+                messageData.setMsg(msgSouce);
+            }
+            final EMTextMessageBody body = (EMTextMessageBody) forward_msg.getBody();
+            conversation.removeMessage(SrcMsgId + "");
+            String contentAll = messageData.getMsg() +"\n……………………………………\n" +body.getMessage();
+            EMMessage message = EMMessage.createTxtSendMessage(contentAll, toChatUserId);
+            message.setDirection(EMMessage.Direct.RECEIVE);
+            message.setFrom(forward_msg.getFrom());
+            message.setTo(UserDataManger.currentGroupData.getGId() + "");
+            message.setDelivered(true);
+            message.setAcked(true);
+            message.setUnread(true);
+            message.setMsgId(forward_msg.getMsgId());
+            message.setMsgTime(forward_msg.getMsgTime());
+            conversation.insertMessage(message);
+           /* forward_msg.addBody();
+            forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+            forward_msg.setAcked(true);
+            //forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
+            forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
+            conversation.updateMessage(forward_msg);*/
+            KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
+            if (isMessageListInited) {
+                easeChatMessageList.refresh();
+            }
+        }
+
+    }
     public void upateMessage(JGroupSendMsgRsp jSendMsgRsp) {
         if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
@@ -4782,7 +4867,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
-                    sendTextMessage(content,"","");
+                    sendTextMessage(content,"","","");
                 }
                 break;
             case IMAGE:

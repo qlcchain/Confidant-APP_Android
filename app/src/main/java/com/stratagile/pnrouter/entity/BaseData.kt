@@ -590,7 +590,7 @@ data class GroupUserPullReq(var UserId : String, var RouterId : String, var GId 
  * 69.	拉取群消息列表
  * (2)	响应（APP->Router）
  */
-data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId : String, var MsgType : Int, var MsgStartId : Int, var MsgNum : Int,var Action : String = "GroupMsgPull")
+data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId : String, var MsgType : Int, var MsgStartId : Int, var MsgNum : Int,var SrcMsgId:Int,var Action : String = "GroupMsgPull")
 
 
 

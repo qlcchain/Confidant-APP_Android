@@ -216,7 +216,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                          ctrlPress == true)) {
                     String s = editText.getText().toString().trim();
                     editText.setText("");
-                    listener.onSendBtnClicked(s,"","");
+                    listener.onSendBtnClicked(s,"","","");
                     return true;
                 }
                 else{
@@ -341,10 +341,11 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                     }
                 }
                 String s = editText.getText().toString().trim();
+                String currentText = "";
                 if(!AssocId.equals(""))
                 {
-                    String currentText = et_sendmessagehide.getText().toString();
-                    s = currentText +"\n……………………………………\n" +s;
+                    currentText = et_sendmessagehide.getText().toString();
+                    //s = currentText +"\n……………………………………\n" +s;
                 }
                 /*String[] assocCotentArray = assocContent.split(",");
                 boolean isAssocId = false;
@@ -358,10 +359,10 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                     s = s.replace("\n","");
                 }*/
                 editText.setText("");
+                listener.onSendBtnClicked(s,point,AssocId,currentText);
                 et_sendmessagehide.setText("");
                 AssocId = "";
                 et_sendmessagehide.setVisibility(GONE);
-                listener.onSendBtnClicked(s,point,AssocId);
             }
         } else if (id == R.id.btn_set_mode_voice) {
             if (isRecording) {

@@ -1739,7 +1739,18 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         {
             messageList = pushMsgRsp.params.payload
         }
-        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
+        if(pushMsgRsp.params.srcMsgId == 0)
+        {
+            chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
+        }else{
+            var message = messageList.get(0)
+            if(message!= null )
+            {
+                chatFragment?.upateAssocIdMessage(message,pushMsgRsp.params.srcMsgId)
+            }
+
+        }
+
     }
 
     override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
@@ -1955,7 +1966,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         {
             return;
         }
-        val pullMsgList = GroupMsgPullReq(userId!!, ConstantValue.currentRouterId, UserDataManger.currentGroupData.gId.toString() + "", 0, 0, 10, "GroupMsgPull")
+        val pullMsgList = GroupMsgPullReq(userId!!, ConstantValue.currentRouterId, UserDataManger.currentGroupData.gId.toString() + "", 0, 0, 10, 0,"GroupMsgPull")
         var sendData = BaseData(pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))
         {
