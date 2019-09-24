@@ -14,6 +14,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.method.AtTools;
+import com.stratagile.pnrouter.method.User;
 
 /**
  * 带@功能的文本
@@ -64,7 +66,7 @@ public class ATEditText extends AppCompatEditText {
      * 添加 @内容
      * @param text
      * @param data
-     * @return 0 成功 ，1已经存在 ，2：人数过多并且返回具体数量
+     * @return 0 成功 ，1已经存在
      */
     public int addSpan(String text,String data) {
         if(!isHasSpan(data))

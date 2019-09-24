@@ -598,7 +598,7 @@ data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId :
  * 70.	群组会话中发文本消息
  * (2)	响应（APP->Router）
  */
-data class GroupSendMsgReq(var UserId : String, var GId : String, var Point : String, var Msg : String,var Action : String = "GroupSendMsg")
+data class GroupSendMsgReq(var UserId : String, var GId : String, var Point : String, var Msg : String, var AssocId : String,var Action : String = "GroupSendMsg")
 
 
 /**

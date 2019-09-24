@@ -950,7 +950,7 @@ val credentialsProvider: CredentialsProvider, private
     }
 
     interface GroupChatCallBack {
-        fun sendGroupMsg(userId: String, gId: String, point: String, Msg: String, userKey: String): String;
+        fun sendGroupMsg(userId: String, gId: String, point: String, Msg: String, userKey: String,AssocId:String): String;
         fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
         fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)

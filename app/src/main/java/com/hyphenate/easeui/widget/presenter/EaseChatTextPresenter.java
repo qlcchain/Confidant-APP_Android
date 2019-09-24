@@ -144,7 +144,8 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                     case "Reply":
                         String  msgIdReply = message.getMsgId();
                         String msg = ((EMTextMessageBody) message.getBody()).getMessage();
-                        EventBus.getDefault().post(new ReplyMsgEvent(msgIdReply,msg));
+                        String userIdTemp = message.getFrom();
+                        EventBus.getDefault().post(new ReplyMsgEvent(msgIdReply,msg,userIdTemp));
                         break;
                     case "Withdraw":
                         if(message.getChatType().equals( EMMessage.ChatType.GroupChat))

@@ -9,7 +9,7 @@ import com.iyao.eastat.span.DirtySpan
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 
-data class User(val id: String, var name: String): DataBindingSpan,
+data class User(val id: String, var name: String,var content:String): DataBindingSpan,
                                                    DirtySpan {
 
     fun getSpannedName(colorFlag:Int): Spannable {

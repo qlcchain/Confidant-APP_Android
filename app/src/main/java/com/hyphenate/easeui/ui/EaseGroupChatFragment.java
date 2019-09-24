@@ -705,16 +705,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onSendMessage(String content,String point) {
+            public void onSendMessage(String content,String point,String AssocId) {
                 if(point.toLowerCase().contains("all"))
                 {
                     point = "all";
                 }
-                sendTextMessage(content,point.toLowerCase());
+                sendTextMessage(content,point.toLowerCase(),AssocId);
             }
             @Override
             public void onSendMessage(String content) {
-                sendTextMessage(content,"");
+                sendTextMessage(content,"","");
             }
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
@@ -2593,7 +2593,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      *
      * @param userId
      */
-    protected void inputAtUsername(String userId, boolean autoAddAtSymbol) {
+    public void inputAtUsername(String userId, boolean autoAddAtSymbol) {
         String userSelftId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if(userSelftId.equals(userId))
         {
@@ -2705,7 +2705,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     //send message
-    public void sendTextMessage(String content,String point) {
+    public void sendTextMessage(String content,String point,String AssocId) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
@@ -2719,7 +2719,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
             if (AppConfig.instance.getMessageReceiver() != null) {
-                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey());
+                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey(),AssocId);
 
                 if(msgId.equals("0"))
                 {
@@ -4782,7 +4782,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
-                    sendTextMessage(content,"");
+                    sendTextMessage(content,"","");
                 }
                 break;
             case IMAGE:

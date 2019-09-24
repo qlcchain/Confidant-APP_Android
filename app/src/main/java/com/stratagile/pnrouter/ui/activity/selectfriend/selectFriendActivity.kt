@@ -642,7 +642,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                             var fileBufferMi = AESToolsCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
                             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
-                            var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi)
+                            var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi,"")
                             var baseData = BaseData(4,groupSendMsgReq)
                             var msgId = baseData.msgid!!
                             if (ConstantValue.curreantNetworkType.equals("WIFI")) {

@@ -1540,7 +1540,15 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     fun onReplyMsgEvent(replyMsgEvent: ReplyMsgEvent) {
         var msgId=  replyMsgEvent.msgId
         var content = replyMsgEvent.content
+        var userId=  replyMsgEvent.userId
+        val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list()
+        if (userList.size > 0) {
+            val user = userList[0]
+            var username = String(RxEncodeTool.base64Decode(user.getNickName()))
+            content = username +":" + content;
+        }
         chatFragment?.inputReplyMsg(msgId,content)
+        //chatFragment?.inputAtUsername(userId,true)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
@@ -1848,7 +1856,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         }
     }
 
-    override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String):String {
+    override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String,AssocId:String ):String {
         var msgId = 0
         try {
             if(userId.equals("") || gId.equals(""))
@@ -1867,7 +1875,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             var aesKey = LibsodiumUtil.DecryptShareKey(UserKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
             var fileBufferMi = AESToolsCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
             var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
-            var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi)
+            var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi,AssocId)
             var baseData = BaseData(4,groupSendMsgReq)
             msgId = baseData.msgid!!
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {

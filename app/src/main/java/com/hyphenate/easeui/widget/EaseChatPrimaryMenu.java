@@ -55,6 +55,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private View contentView;
     private TextView holdTextView;
     private boolean onKeyDel = false;
+    private String AssocId= "";
 
     //是否正在录音，正在录音，其他点击不能生效
     private boolean isRecording = false;
@@ -192,6 +193,13 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 }
                 onKeyDel = true;
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    String editTextStr = editText.getText().toString();
+                    if(editTextStr.equals(""))
+                    {
+                        et_sendmessagehide.setText("");
+                        AssocId = "";
+                        et_sendmessagehide.setVisibility(GONE);
+                    }
                     return ATEditText.KeyDownHelper(editText.getText());
                 }
                 return false;
@@ -208,7 +216,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                          ctrlPress == true)) {
                     String s = editText.getText().toString().trim();
                     editText.setText("");
-                    listener.onSendBtnClicked(s,"");
+                    listener.onSendBtnClicked(s,"","");
                     return true;
                 }
                 else{
@@ -300,7 +308,25 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             if(listener != null){
                 int selectionEnd = editText.length();
                 int selectionStart = 0;
+                //User[] spansReply = editText.getText().getSpans(selectionStart, selectionEnd, User.class);
                 ATEditText.DataSpan[] spans = editText.getText().getSpans(selectionStart, selectionEnd, ATEditText.DataSpan.class);
+               /* String assocId  = "";
+                String assocContent  = "";
+                int indexRely = 0;
+                for (User span : spansReply) {
+                    if (span != null && span.getId() != null && !span.getId().equals("")) {
+                        if(indexRely > 0)
+                        {
+                            assocId += ","+span.getId();
+                            assocContent += ","+span.getName();
+                        }else{
+                            assocId += span.getId();
+                            assocContent += span.getName();
+                        }
+                        indexRely ++;
+                    }
+                }*/
+
                 String point  = "";
                 int index = 0;
                 for (ATEditText.DataSpan span : spans) {
@@ -315,8 +341,27 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                     }
                 }
                 String s = editText.getText().toString().trim();
+                if(!AssocId.equals(""))
+                {
+                    String currentText = et_sendmessagehide.getText().toString();
+                    s = currentText +"\n……………………………………\n" +s;
+                }
+                /*String[] assocCotentArray = assocContent.split(",");
+                boolean isAssocId = false;
+                for(String item : assocCotentArray)
+                {
+                    s = s.replaceAll(item,"");
+                    isAssocId = true;
+                }
+                if(isAssocId)
+                {
+                    s = s.replace("\n","");
+                }*/
                 editText.setText("");
-                listener.onSendBtnClicked(s,point);
+                et_sendmessagehide.setText("");
+                AssocId = "";
+                et_sendmessagehide.setVisibility(GONE);
+                listener.onSendBtnClicked(s,point,AssocId);
             }
         } else if (id == R.id.btn_set_mode_voice) {
             if (isRecording) {
@@ -470,7 +515,9 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         //String contentTemp = StringUitl.getBaseReplyMsg(text,24);
 
         et_sendmessagehide.setText(text);
-        String editContent = getEdittext();
+        AssocId = data;
+        et_sendmessagehide.setVisibility(VISIBLE);
+        /*String editContent = getEdittext();
 
         Layout l=et_sendmessagehide.getLayout();
         int ellipsisCount = l.getEllipsisCount(0);
@@ -483,23 +530,30 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             ellipsisCount = l.getEllipsisCount(0);
         }
         int end = et_sendmessagehide.getText().toString().length() - ellipsisCount;
+        String contentaaa = "";
+        String content = "";
         if(!ellipsisFlag)
         {
+            contentaaa = et_sendmessagehide.getText().toString().substring(0,end);
+            content = contentaaa;
+        }else{
             end -= 2;
+            contentaaa = et_sendmessagehide.getText().toString().substring(0,end);
+            content = contentaaa+"...";
         }
-        String contentaaa = et_sendmessagehide.getText().toString().substring(0,end);
-        String content = contentaaa+"...";
         if(editContent.contains("@") && editContent.lastIndexOf("@") == editContent.length() -1)
         {
             editText.getText().delete(editContent.length() -1,editContent.length());
         }
         //int result = editText.addSpan(text,data);
         AtTools AtTools = new AtTools();
-        User user = new User(data,content);
+        User user = new User(data,content,text);
         Spannable Spannable = AtTools.newSpannable(user,editText,2);
         editText.append(Spannable);
-        editText.append("\n");
+        editText.append("\n");*/
         return 1;
+        /*int result = editText.addReplaySpan(content,data);
+        return result;*/
     }
     @Override
     public EditText getEditText() {

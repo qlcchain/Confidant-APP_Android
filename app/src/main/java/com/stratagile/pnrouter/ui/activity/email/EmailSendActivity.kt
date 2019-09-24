@@ -159,21 +159,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var addressBase64 = ""
 
     private val users = arrayListOf(
-            User("1", "激浊扬清"),
-            User("2", "清风引佩下瑶台"),
-            User("3", "浊泾清渭"),
-            User("4", "刀光掩映孔雀屏"),
-            User("5", "清风徐来"),
-            User("6", "英雄无双风流婿"),
-            User("7", "源清流洁"),
-            User("8", "占断人间天上福"),
-            User("9", "清音幽韵"),
-            User("10", "碧箫声里双鸣凤"),
-            User("11", "风清弊绝"),
-            User("12", "天教艳质为眷属"),
-            User("13", "独清独醒"),
-            User("14", "千金一刻庆良宵"),
-            User("15", "必须要\\n\n，不然不够长"))
+            User("1", "激浊扬清",""),
+            User("15", "必须要\\n\n，不然不够长",""))
     var flag = 0;
     var foward = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
@@ -476,7 +463,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 val spans = editText!!.getText()!!.getSpans(beginIndex, endIndex, User::class.java)
                 if(spans.size == 0)
                 {
-                    var addUser = User(str, str)
+                    var addUser = User(str, str, str)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
@@ -581,7 +568,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp)
+                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -612,7 +599,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         fromNameTemp= fromNameTemp.replace("\"","")
                         fromNameTemp= fromNameTemp.replace("\"","")
                         fromNameTemp= fromNameTemp.replace("\"","")
-                        var user = User(fromAdressTemp,fromNameTemp)
+                        var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                         (toAdressEdit.text as SpannableStringBuilder)
                                 .append(methodContext.newSpannable(user))
                                 .append(";")
@@ -645,7 +632,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         fromNameTemp= fromNameTemp.replace("\"","")
                         fromNameTemp= fromNameTemp.replace("\"","")
                         fromNameTemp= fromNameTemp.replace("\"","")
-                        var user = User(fromAdressTemp,fromNameTemp)
+                        var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                         (ccAdressEdit.text as SpannableStringBuilder)
                                 .append(methodContext.newSpannable(user))
                                 .append(";")
@@ -678,7 +665,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp)
+                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -711,7 +698,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp)
+                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                     (ccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -744,7 +731,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp)
+                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
                     (bccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -2360,7 +2347,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         {
                             var adress = item
                             var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name)
+                            var user = User(adress,name,name)
                             (toAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
@@ -2383,7 +2370,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         {
                             var adress = item
                             var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name)
+                            var user = User(adress,name,name)
                             (ccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
@@ -2406,7 +2393,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         {
                             var adress = item
                             var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name)
+                            var user = User(adress,name,name)
                             (bccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
