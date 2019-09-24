@@ -1927,9 +1927,14 @@ class EmailCore {
     }
     public static String getHtmlText(String htmlStr)
     {
+        if(htmlStr.contains("/head>"))
+        {
+            int begin = htmlStr.indexOf("/head>") + 6;
+            htmlStr = htmlStr.substring(begin,htmlStr.length());
+        }
         String regFormat = "\\t|\r|\n";
         String regTag = "<[^>]*>";
-        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;"," ");
+        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;"," ").replaceAll("&quot;","");
         return text;
     }
     /**
