@@ -2112,7 +2112,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     private void loadAssocIdMessages(int AssocId,int msgID) {
 
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0,AssocId+1, 10,msgID, "GroupMsgPull");
+        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0,AssocId+1, 1,msgID, "GroupMsgPull");
         BaseData sendData = new BaseData(pullMsgList);
         if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
             sendData = new BaseData(4, pullMsgList);
@@ -2924,6 +2924,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
+            easeChatMessageList.scrollLast();
         }
 
     }
@@ -4372,6 +4373,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
             if (msgSouce != null && !msgSouce.equals("")) {
                 jPushMsgRsp.getParams().setMsg(msgSouce);
+            }
+            if(jPushMsgRsp.getParams().getAssocId() != 0 && currentPage == 1)
+            {
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        loadAssocIdMessages(jPushMsgRsp.getParams().getAssocId(),jPushMsgRsp.getParams().getMsgId());
+                    }
+                }, 10);
             }
             EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
             message.setDirection(EMMessage.Direct.RECEIVE);
