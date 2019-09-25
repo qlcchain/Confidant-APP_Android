@@ -2111,7 +2111,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
     private void loadAssocIdMessages(int AssocId,int msgID) {
 
-        swipeRefreshLayout.setRefreshing(true);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0,AssocId+1, 10,msgID, "GroupMsgPull");
         BaseData sendData = new BaseData(pullMsgList);
@@ -2749,7 +2748,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String contentTemp = content;
         if(!AssocId.equals(""))
         {
-            contentTemp = AssocContent +"\n……………………………………\n" +contentTemp;
+            //contentTemp = AssocContent +"\n……………………………………\n" +contentTemp;
         }
         if (EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
@@ -2766,6 +2765,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 {
                     return;
                 }
+                message.setAttribute("AssocContent",AssocContent);
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
                 message.setDelivered(true);
@@ -2869,19 +2869,49 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if (msgSouce != null && !msgSouce.equals("")) {
                 messageData.setMsg(msgSouce);
             }
-            final EMTextMessageBody body = (EMTextMessageBody) forward_msg.getBody();
-            conversation.removeMessage(SrcMsgId + "");
-            String contentAll = messageData.getMsg() +"\n……………………………………\n" +body.getMessage();
+            //final EMTextMessageBody body = (EMTextMessageBody) forward_msg.getBody();
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String from = messageData.getFrom();
+            if(!from.equals( ""))
+            {
+                List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
+                if (userList.size() > 0) {
+                    UserEntity user = userList.get(0);
+                    String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
+                    forward_msg.setAttribute("username",username);
+                }
+            }else{
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                forward_msg.setAttribute("username",name);
+            }
+            forward_msg.setAttribute("AssocContent",messageData.getMsg());
+            conversation.updateMessage(forward_msg);
+            //conversation.removeMessage(SrcMsgId + "");
+            //String contentAll = messageData.getMsg() +"\n……………………………………\n" +body.getMessage();
+            /*String contentAll = body.getMessage();
             EMMessage message = EMMessage.createTxtSendMessage(contentAll, toChatUserId);
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String from = forward_msg.getFrom();
+            if(from.equals( ""))
+            {
+                from= userId;
+            }
+            List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
+            if (userList.size() > 0) {
+                UserEntity user = userList.get(0);
+                String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
+                message.setAttribute("username",username);
+            }
+            message.setAttribute("AssocContent",messageData.getMsg());
             message.setDirection(EMMessage.Direct.RECEIVE);
-            message.setFrom(forward_msg.getFrom());
+            message.setFrom(from);
             message.setTo(UserDataManger.currentGroupData.getGId() + "");
             message.setDelivered(true);
             message.setAcked(true);
             message.setUnread(true);
             message.setMsgId(forward_msg.getMsgId());
             message.setMsgTime(forward_msg.getMsgTime());
-            conversation.insertMessage(message);
+            conversation.insertMessage(message);*/
            /* forward_msg.addBody();
             forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
             forward_msg.setAcked(true);

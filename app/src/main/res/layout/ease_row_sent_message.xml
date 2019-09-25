@@ -38,26 +38,52 @@
             android:layout_toLeftOf="@id/iv_userhead"
             android:background="@drawable/ease_chatto_bg"
             >
-
-            <TextView
-                android:id="@+id/tv_chatcontent"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:lineSpacingExtra="2dp"
-                android:paddingLeft="@dimen/x10"
-                android:paddingRight="@dimen/x10"
-              	android:textColor="@color/color_2c2c2c"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:id="@+id/msg_sendstatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:src="@drawable/send"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_chatAssoccontent"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="28dp"
+                    android:text=""
+                    android:textColor="@color/FF999999"
+                    android:textSize="14sp" />
+                <View
+                    android:id="@+id/tv_chatcontentDash"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/dash_line"
+                    android:layerType="software"
+                    android:layout_height="2dp" />
+                <TextView
+                    android:id="@+id/tv_chatcontent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="2dp"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:text=""
+                    android:textColor="@color/color_2c2c2c"
+                    android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/msg_sendstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:src="@drawable/send"
+                    android:visibility="visible"
+                    android:layout_gravity="right"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
+            </LinearLayout>
         </android.support.constraint.ConstraintLayout>
 
         <ImageView

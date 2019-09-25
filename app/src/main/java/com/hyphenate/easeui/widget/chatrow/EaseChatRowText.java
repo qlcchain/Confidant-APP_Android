@@ -20,6 +20,8 @@ import java.util.List;
 public class EaseChatRowText extends EaseChatRow{
 
 	private TextView contentView;
+    private TextView tv_chatAssoccontent;
+    private View tv_chatcontentDash;
 
     public EaseChatRowText(Context context, EMMessage message, int position, BaseAdapter adapter) {
 		super(context, message, position, adapter);
@@ -34,11 +36,39 @@ public class EaseChatRowText extends EaseChatRow{
     @Override
 	protected void onFindViewById() {
 		contentView = (TextView) findViewById(R.id.tv_chatcontent);
+        tv_chatAssoccontent = (TextView) findViewById(R.id.tv_chatAssoccontent);
+        tv_chatcontentDash = (View) findViewById(R.id.tv_chatcontentDash);
 	}
 
     @Override
     public void onSetUpView() {
         EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
+        String AssocContent = "";
+        String AssocUserName = "";
+        try {
+            AssocContent = message.getStringAttribute("AssocContent");
+            AssocUserName = message.getStringAttribute("username");
+            String aa = "";
+        }catch (Exception e)
+        {
+
+        }
+        if(!AssocContent.equals(""))
+        {
+            if(!AssocContent.equals(""))
+            {
+                AssocContent = AssocUserName +": “"+AssocContent+"”";
+            }
+
+            Spannable span = EaseSmileUtils.getSmiledTextInput(context, AssocContent);
+            // 设置内容
+            tv_chatAssoccontent.setText(span, BufferType.SPANNABLE);
+            tv_chatAssoccontent.setVisibility(VISIBLE);
+            tv_chatcontentDash.setVisibility(VISIBLE);
+        }else{
+            tv_chatAssoccontent.setVisibility(GONE);
+            tv_chatcontentDash.setVisibility(GONE);
+        }
         Spannable span = EaseSmileUtils.getSmiledTextInput(context, txtBody.getMessage());
         // 设置内容
         contentView.setText(span, BufferType.SPANNABLE);
