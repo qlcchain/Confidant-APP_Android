@@ -2896,7 +2896,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 forward_msg.setAttribute("username",name);
             }
             switch (messageData.getMsgType()) {
-                case 1:
+                case 0:
                     forward_msg.setAttribute("AssocContent",messageData.getMsg());
                     break;
                 case 5:
