@@ -1342,7 +1342,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
-            if(Message.getAssocId() != 0 && currentPage == 1)
+            if(Message.getAssocId() != 0)
             {
                 handler.postDelayed(new Runnable() {
 
@@ -2107,7 +2107,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         }
 
-
+        if(currentPage > 1)
+        {
+            easeChatMessageList.scrollLast(0);
+        }
     }
     private void loadAssocIdMessages(int AssocId,int msgID) {
 
@@ -2854,6 +2857,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     }
     public void upateAssocIdMessage(Message messageData,int SrcMsgId) {
+        if(currentPage == 1)
+        {
+            easeChatMessageList.scrollLast(1);
+        }else{
+            easeChatMessageList.scrollLast(0);
+        }
         EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(SrcMsgId+ "");
         KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
         LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
@@ -2924,7 +2933,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
-            easeChatMessageList.scrollLast();
+
         }
 
     }
