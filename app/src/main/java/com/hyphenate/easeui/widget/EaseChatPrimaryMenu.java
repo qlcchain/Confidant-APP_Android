@@ -345,6 +345,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 if(!AssocId.equals(""))
                 {
                     currentText = et_sendmessagehide.getText().toString();
+                    currentText = currentText.substring(currentText.indexOf(":")+1,currentText.length());
                     //s = currentText +"\n……………………………………\n" +s;
                 }
                 /*String[] assocCotentArray = assocContent.split(",");

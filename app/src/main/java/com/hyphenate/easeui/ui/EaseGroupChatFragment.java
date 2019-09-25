@@ -2765,6 +2765,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 {
                     return;
                 }
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                message.setAttribute("username",name);
                 message.setAttribute("AssocContent",AssocContent);
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
