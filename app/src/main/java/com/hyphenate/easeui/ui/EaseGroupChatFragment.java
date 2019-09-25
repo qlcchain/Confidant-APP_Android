@@ -2895,7 +2895,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
                 forward_msg.setAttribute("username",name);
             }
-            forward_msg.setAttribute("AssocContent",messageData.getMsg());
+            switch (messageData.getMsgType()) {
+                case 1:
+                    forward_msg.setAttribute("AssocContent",messageData.getMsg());
+                    break;
+                case 5:
+                    forward_msg.setAttribute("AssocContent",messageData.getFileName());
+                    break;
+            }
             conversation.updateMessage(forward_msg);
             //conversation.removeMessage(SrcMsgId + "");
             //String contentAll = messageData.getMsg() +"\n……………………………………\n" +body.getMessage();

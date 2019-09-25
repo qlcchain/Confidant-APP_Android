@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
@@ -210,7 +211,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                         {
                             floatMenu.inflate(R.menu.popup_menu_pic_video);
                         }else{
-                            floatMenu.inflate(R.menu.popup_menu_file);
+                            floatMenu.inflate(R.menu.popup_replaymenu_file);
                         }
 
                     }else{
@@ -252,6 +253,12 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             intent.putExtra("message",message);
                             getContext().startActivity(intent);
                             ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
+                            break;
+                        case "Reply":
+                            String  msgIdReply = message.getMsgId();
+                            String msg = ((EMFileMessageBody) message.getBody()).getFileName();
+                            String userIdTemp = message.getFrom();
+                            EventBus.getDefault().post(new ReplyMsgEvent(msgIdReply,msg,userIdTemp));
                             break;
                         case "Withdraw":
                             String  msgId = message.getMsgId();
