@@ -102,6 +102,14 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:imeOptions="actionSend"/>
+            <View
+                android:id="@+id/tv_chatcontentDash"
+                android:visibility="gone"
+                android:layout_below="@+id/et_sendmessagehide"
+                android:layout_width="match_parent"
+                android:background="@drawable/dash_line"
+                android:layerType="software"
+                android:layout_height="2dp" />
             <com.hyphenate.easeui.widget.ATEditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"

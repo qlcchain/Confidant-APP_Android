@@ -43,6 +43,7 @@ import java.util.List;
 public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnClickListener {
     public ATEditText editText;
     private TextView et_sendmessagehide;
+    private View tv_chatcontentDash;
     private View buttonSetModeKeyboard;
     private RelativeLayout edittext_layout;
     private View buttonSetModeVoice;
@@ -109,6 +110,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         LayoutInflater.from(context).inflate(R.layout.ease_widget_chat_primary_menu, this);
         editText = (ATEditText) findViewById(R.id.et_sendmessage);
         et_sendmessagehide = (TextView) findViewById(R.id.et_sendmessagehide);
+        tv_chatcontentDash = (View) findViewById(R.id.tv_chatcontentDash);
         buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
         edittext_layout = (RelativeLayout) findViewById(R.id.edittext_layout);
         buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
@@ -199,6 +201,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                         et_sendmessagehide.setText("");
                         AssocId = "";
                         et_sendmessagehide.setVisibility(GONE);
+                        tv_chatcontentDash.setVisibility(GONE);
                     }
                     return ATEditText.KeyDownHelper(editText.getText());
                 }
@@ -364,6 +367,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 et_sendmessagehide.setText("");
                 AssocId = "";
                 et_sendmessagehide.setVisibility(GONE);
+                tv_chatcontentDash.setVisibility(GONE);
             }
         } else if (id == R.id.btn_set_mode_voice) {
             if (isRecording) {
@@ -519,6 +523,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         et_sendmessagehide.setText(text);
         AssocId = data;
         et_sendmessagehide.setVisibility(VISIBLE);
+        tv_chatcontentDash.setVisibility(VISIBLE);
         /*String editContent = getEdittext();
 
         Layout l=et_sendmessagehide.getLayout();
