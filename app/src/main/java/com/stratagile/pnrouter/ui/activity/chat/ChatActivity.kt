@@ -1355,6 +1355,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         getSupportSoftInputHeight()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onReplyMsgEvent(replyMsgEvent: ReplyMsgEvent) {
+        var msgId=  replyMsgEvent.msgId
+        var content = replyMsgEvent.content
+        var userId=  replyMsgEvent.userId
+        val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list()
+        if (userList.size > 0) {
+            val user = userList[0]
+            var username = String(RxEncodeTool.base64Decode(user.getNickName()))
+            content = username +":" + content;
+        }
+        chatFragment?.inputReplyMsg(msgId,content)
+        //chatFragment?.inputAtUsername(userId,true)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
         var fileNumber=  toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key
@@ -1636,7 +1650,21 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
         }
-        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
+        if(pushMsgRsp.params.srcMsgId == 0)
+        {
+            chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
+        }else{
+            if(messageList.size > 0)
+            {
+                var message = messageList.get(0)
+                if(message!= null )
+                {
+                    chatFragment?.upateAssocIdMessage(message,pushMsgRsp.params.srcMsgId,pushMsgRsp.params.friendId)
+                }
+            }
+
+        }
+
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
@@ -1735,7 +1763,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             toast(R.string.Encryptionerror)
         }
     }
-    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String):String {
+    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String,AssocId:String):String {
         var msgId = 0
         try {
             if(FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals(""))
@@ -1753,7 +1781,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
             LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
             var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
-            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!,AssocId)
 
             var baseData = BaseData(3,msgData)
             msgId = baseData.msgid!!
@@ -1829,7 +1857,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             delay(10000)
         }
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10)
+        var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10,0)
         var sendData = BaseData(5,pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))
         {

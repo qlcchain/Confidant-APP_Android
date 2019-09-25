@@ -2904,39 +2904,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     break;
             }
             conversation.updateMessage(forward_msg);
-            //conversation.removeMessage(SrcMsgId + "");
-            //String contentAll = messageData.getMsg() +"\n……………………………………\n" +body.getMessage();
-            /*String contentAll = body.getMessage();
-            EMMessage message = EMMessage.createTxtSendMessage(contentAll, toChatUserId);
-            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-            String from = forward_msg.getFrom();
-            if(from.equals( ""))
-            {
-                from= userId;
-            }
-            List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
-            if (userList.size() > 0) {
-                UserEntity user = userList.get(0);
-                String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
-                message.setAttribute("username",username);
-            }
-            message.setAttribute("AssocContent",messageData.getMsg());
-            message.setDirection(EMMessage.Direct.RECEIVE);
-            message.setFrom(from);
-            message.setTo(UserDataManger.currentGroupData.getGId() + "");
-            message.setDelivered(true);
-            message.setAcked(true);
-            message.setUnread(true);
-            message.setMsgId(forward_msg.getMsgId());
-            message.setMsgTime(forward_msg.getMsgTime());
-            conversation.insertMessage(message);*/
-           /* forward_msg.addBody();
-            forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
-            forward_msg.setAcked(true);
-            //forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
-            forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
-            conversation.updateMessage(forward_msg);*/
-            KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
             if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }

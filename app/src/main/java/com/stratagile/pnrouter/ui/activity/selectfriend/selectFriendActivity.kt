@@ -158,7 +158,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                 var friendMiPublic = RxEncodeTool.base64Decode(i.miPublicKey)
                                 LogUtil.addLog("sendMsgV3 friendKey:",friendMiPublic.toString())
                                 var msgMap = LibsodiumUtil.EncryptSendMsg(msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
-                                var msgData = SendMsgReqV3(userId!!, i.userId!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
+                                var msgData = SendMsgReqV3(userId!!, i.userId!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!,"")
 
                                 if (ConstantValue.isWebsocketConnected) {
                                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))

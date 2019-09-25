@@ -1548,7 +1548,6 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             content = username +":" + content;
         }
         chatFragment?.inputReplyMsg(msgId,content)
-        //chatFragment?.inputAtUsername(userId,true)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
@@ -1743,11 +1742,15 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         {
             chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
         }else{
-            var message = messageList.get(0)
-            if(message!= null )
+            if(messageList.size > 0)
             {
-                chatFragment?.upateAssocIdMessage(message,pushMsgRsp.params.srcMsgId)
+                var message = messageList.get(0)
+                if(message!= null )
+                {
+                    chatFragment?.upateAssocIdMessage(message,pushMsgRsp.params.srcMsgId)
+                }
             }
+
 
         }
 

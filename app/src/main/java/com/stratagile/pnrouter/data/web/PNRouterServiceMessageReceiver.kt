@@ -929,7 +929,7 @@ val credentialsProvider: CredentialsProvider, private
 
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey: String, Msg: String);
-        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey: String, Msg: String): String;
+        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey: String, Msg: String,AssocId:String): String;
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
