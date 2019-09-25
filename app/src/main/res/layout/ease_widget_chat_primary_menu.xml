@@ -105,6 +105,8 @@
             <View
                 android:id="@+id/tv_chatcontentDash"
                 android:visibility="gone"
+                android:layout_marginLeft="@dimen/x19"
+                android:layout_marginRight="@dimen/x19"
                 android:layout_below="@+id/et_sendmessagehide"
                 android:layout_width="match_parent"
                 android:background="@drawable/dash_line"
