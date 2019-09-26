@@ -519,8 +519,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         editable.insert(start, text);
         setModeKeyboard();*/
         //String contentTemp = StringUitl.getBaseReplyMsg(text,24);
-
-        et_sendmessagehide.setText(text);
+        et_sendmessagehide.setText(EaseSmileUtils.getSmiledText(getContext(),text));
         AssocId = data;
         et_sendmessagehide.setVisibility(VISIBLE);
         tv_chatcontentDash.setVisibility(VISIBLE);

@@ -552,6 +552,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                         {
                                             var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
                                             var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
+                                            iframeStr = ""
                                             var URLText = "";
                                             if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
                                             {
@@ -1286,7 +1287,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 intent.action = "android.intent.action.VIEW"
                 val url = Uri.parse(url)
                 intent.data = url
-                //startActivity(intent)
+                startActivity(intent)
                 return true
             }
 
@@ -1335,6 +1336,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         {
             var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
             var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
+            iframeStr = ""
             if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
             {
                 var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
