@@ -61,6 +61,7 @@
     <string name="file_hasnot_changed">file hasn\'t changed</string>
 
     <string name="fail">fail</string>
+    <string name="Failedmail">Failed to get mail</string>
     <string name="Alreadyagoodfriend">Already a good friend</string>
 
     <string name="refuse">Decline</string>

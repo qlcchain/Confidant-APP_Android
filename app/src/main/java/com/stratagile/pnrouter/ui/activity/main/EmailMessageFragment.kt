@@ -942,7 +942,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                     override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()
                                         runOnUiThread {
-                                            toast(R.string.fail)
+                                            toast(R.string.Failedmail)
                                             closeProgressDialog()
                                             refreshLayout.finishRefresh()
                                             refreshLayout.resetNoMoreData()
@@ -1165,7 +1165,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                     override fun gainFailure(errorMsg: String) {
                                         progressDialog.dismiss()
                                         runOnUiThread {
-                                            toast(R.string.fail)
+                                            toast(R.string.Failedmail)
                                             closeProgressDialog()
                                             refreshLayout.finishLoadMore()
                                         }
