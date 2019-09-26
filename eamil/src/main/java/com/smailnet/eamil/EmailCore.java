@@ -960,6 +960,10 @@ class EmailCore {
 
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
+                if("".equals(from))
+                {
+                    from = this.account;
+                }
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
@@ -1134,6 +1138,10 @@ class EmailCore {
                 }
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
+                if("".equals(from))
+                {
+                    from = this.account;
+                }
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
@@ -1705,9 +1713,8 @@ class EmailCore {
     public static String getFrom(MimeMessage msg) throws MessagingException, UnsupportedEncodingException {
         String from = "";
         Address[] froms = msg.getFrom();
-        if (froms.length < 1)
-            throw new MessagingException("没有发件人!");
-
+        if (froms == null || froms.length < 1)
+            return "";
         InternetAddress address = (InternetAddress) froms[0];
         String person = address.getPersonal();
         if (person != null) {

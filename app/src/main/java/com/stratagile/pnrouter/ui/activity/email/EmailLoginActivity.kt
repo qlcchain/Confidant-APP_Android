@@ -168,6 +168,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 emailHelper.setText(getString(R.string.icloud_Guides))
                 emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_icloud_n))
             }
+            "7"->
+            {
+                url = "file:///android_asset/guidance_notes_hotmail.html"
+                emailHelper.setText(getString(R.string.hotlook_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_exchange_n))
+            }
         }
         if(BuildConfig.DEBUG)
         {
@@ -203,6 +209,11 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     account_editText.setText("kzh1989@icloud.com")
                     password_editText.setText("ewfj-edtl-ydhs-ehml")
                 }
+                "7"->
+                {
+                    account_editText.setText("peng.wang@qlinke.onmicrosoft.com")
+                    password_editText.setText("Qlink@123")
+                }
             }
         }
         title.text = getString(R.string.NewAccount)
@@ -233,6 +244,18 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             if(password.equals("")  )
             {
                 toast(R.string.NeedPassword)
+                return@setOnClickListener
+            }
+            if(emailType == "5" && account.contains("onmicrosoft."))
+            {
+                toast(R.string.Exchangeentry)
+                return@setOnClickListener
+            }
+            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+            var EmailMessage = false
+            if(emailConfigEntityList.size > 0)
+            {
+                toast(R.string.It_already_exists)
                 return@setOnClickListener
             }
             showProgressDialog()
@@ -316,11 +339,22 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
                 try {
-                    Islands.ordinaryDialog(this@EmailLoginActivity)
-                            .setText(null, getString(R.string.fail)+":"+errorMsg)
-                            .setButton( getString(R.string.close), null, null)
-                            .click()
-                            .show()
+                    //javax.mail.AuthenticationFailedException
+                    if(errorMsg.contains("AuthenticationFailedException"))
+                    {
+                        Islands.ordinaryDialog(this@EmailLoginActivity)
+                                .setText(null, getString(R.string.Incorrect_account_or_password))
+                                .setButton( getString(R.string.close), null, null)
+                                .click()
+                                .show()
+                    }else{
+                        Islands.ordinaryDialog(this@EmailLoginActivity)
+                                .setText(null, getString(R.string.fail)+":"+errorMsg)
+                                .setButton( getString(R.string.close), null, null)
+                                .click()
+                                .show()
+                    }
+
                 }catch (e:Exception)
                 {
 
@@ -450,6 +484,17 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.sendMenu = ""
                     emailConfigEntity.garbageMenu = ""
                     emailConfigEntity.deleteMenu = ""
+                }
+                "7"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "草稿"
+                    emailConfigEntity.sendMenu = "已发送邮件"
+                    emailConfigEntity.garbageMenu = "垃圾邮件"
+                    emailConfigEntity.deleteMenu = "已删除邮件"
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

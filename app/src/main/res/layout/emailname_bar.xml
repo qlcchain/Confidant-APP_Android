@@ -20,8 +20,6 @@
         android:layout_centerVertical="true"
         android:background="@drawable/ease_seabar_input"
         android:drawableLeft="@mipmap/sign_email_account"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:hint="@string/Account"
         android:textSize="16sp"
         android:text=""

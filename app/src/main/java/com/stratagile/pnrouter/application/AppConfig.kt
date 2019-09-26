@@ -14,6 +14,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import chat.tox.antox.tox.ToxService
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
+import cn.jpush.android.api.JPushInterface
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -119,7 +120,8 @@ class AppConfig : MultiDexApplication() {
         /*if (TextSecurePreferences.isFcmDisabled(this)) {
            ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }*/
-
+        JPushInterface.setDebugMode(BuildConfig.DEBUG)    // 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this)            // 初始化 JPush
 
         /* var intent =  Intent(this, MyService::class.java)
          var sender= PendingIntent.getService(this, 0, intent, 0);

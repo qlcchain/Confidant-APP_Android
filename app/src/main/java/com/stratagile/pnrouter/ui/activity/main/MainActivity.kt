@@ -30,6 +30,7 @@ import android.widget.RelativeLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
+import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.huawei.android.hms.agent.HMSAgent
@@ -149,6 +150,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
+    companion object {
+        var isForeground = false
+        val MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION"
+        val KEY_MESSAGE = "message"
+        val KEY_EXTRAS = "extras"
+    }
     private lateinit var standaloneCoroutine : Job
     var routerId = ""
     var userSn = ""
@@ -2628,7 +2635,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
-//            ConstantValue.mHuaWeiRegId = "" + it
+            ConstantValue.mHuaWeiRegId = "" + it
         }
     }
 
@@ -2662,6 +2669,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onResume() {
 //        AppShortCutUtil.clearBadge(this)
+        isForeground = true
         WinqMessageReceiver.count = 0
         ShortcutBadger.removeCount(this)
         exitTime = System.currentTimeMillis() - 2001
@@ -2674,6 +2682,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onPause() {
+        isForeground = false
         ShortcutBadger.removeCount(this)
         super.onPause()
     }
@@ -3109,13 +3118,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             run() {
                 while (isSendRegId) {
                     Thread.sleep(10 * 1000)
+                    ConstantValue.mJiGuangRegId = JPushInterface.getRegistrationID(applicationContext)
+                    var aa = ConstantValue.mHuaWeiRegId
                     var map: HashMap<String, String> = HashMap()
                     var os = VersionUtil.getDeviceBrand()
                     map.put("os", os.toString())
-                    map.put("appversion", "1.0.1")
+                    map.put("appversion", BuildConfig.VERSION_NAME)
                     if (os == 3) {
                         map.put("regid", ConstantValue.mRegId)
-                        map.put("token", ConstantValue.mHuaWeiRegId)
+                        map.put("token", ConstantValue.mJiGuangRegId)
                     } else {
                         map.put("regid", ConstantValue.mRegId)
                     }
@@ -4098,7 +4109,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.text  = ""
             rootName.visibility = View.GONE
             emailMenu.visibility = View.GONE
-            rootTitle.text = getString(R.string.Email)
+            rootTitle.text = getString(R.string.AddEmail)
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

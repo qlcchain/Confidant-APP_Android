@@ -687,6 +687,7 @@
 
     <string name="Message">Message</string>
     <string name="Email">Email</string>
+    <string name="AddEmail">Add Email</string>
     <string name="MyDocuments">My Documents</string>
     <string name="Nodename">Node name</string>
     <string name="unsupportedmessagebody">Unsupported message body</string>
@@ -722,7 +723,7 @@
     <string name="New_Account">New Account</string>
     <string name="Add_a_New_Circle">Add a New Circle</string>
     <string name="Mark_Unread">Mark Unread</string>
-    <string name="Star">Star</string>
+    <string name="Star">Starred</string>
     <string name="Node_back_up">Node back up</string>
     <string name="Move_to">Move to</string>
     <string name="Delete">Delete</string>
@@ -742,6 +743,7 @@
     <string name="wangyi">163Mail</string>
     <string name="Google">Gmail</string>
     <string name="outlook">Outlook, Hotmail, Live</string>
+    <string name="Exchange">Exchange</string>
     <string name="Send_Email">Compose</string>
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
@@ -849,5 +851,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Update_Config">Update Config</string>
     <string name="server_setting">Server setting</string>
     <string name="Stay">Stay in touch with the ones who matter</string>
-
+    <string name="Exchangeentry">Please select Exchange entry</string>
+    <string name="Incorrect_account_or_password">Incorrect account or password</string>
 </resources>

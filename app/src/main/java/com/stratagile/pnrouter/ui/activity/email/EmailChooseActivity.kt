@@ -133,6 +133,21 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
             startActivity(Intent)
             finish()
         }
+        exchange.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.office365.com")
+                    .setSmtpPort(587)
+                    .setPopHost("outlook.office365.com")
+                    .setPopPort(995)
+                    .setImapHost("outlook.office365.com")
+                    .setImapPort(993)
+                    .setImapEncrypted("SSL/TLS")
+                    .setSmtpEncrypted("STARTTLS")
+            var Intent = Intent(this, EmailLoginActivity::class.java)
+            Intent.putExtra("emailType","7")
+            startActivity(Intent)
+            finish()
+        }
         otherEmail.setOnClickListener {
             var Intent = Intent(this, EmailConfigActivity::class.java)
             Intent.putExtra("emailType","255")
