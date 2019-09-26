@@ -345,7 +345,7 @@ public class MailUtil {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disposition = bodyPart.getDisposition();
-                if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT))) {
+                if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE))) {
 
                     InputStream is = bodyPart.getInputStream();
                     System.out.println("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
@@ -475,7 +475,7 @@ public class MailUtil {
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 String disp = bodyPart.getDisposition();
-                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) )) {
+                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE) )) {
                     flag = true;
                 } else if (bodyPart.isMimeType("multipart/*")) {
                     flag = hasAttachment(bodyPart);

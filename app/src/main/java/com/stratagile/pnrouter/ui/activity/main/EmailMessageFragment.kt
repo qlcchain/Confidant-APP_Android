@@ -681,7 +681,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         {
             EventBus.getDefault().post(ChangFragmentMenu("Email"))
             //pullMoreMessageList()
-            if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
+            /*if(AppConfig.instance.emailConfig().account != null && AppConfig.instance.emailConfig().account.equals("susan.zhou@qlink.mobi"))
             //if(AppConfig.instance.emailConfig().account != null)
             {
                 var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
@@ -690,7 +690,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     showProgressDialog()
                     pullMoreMessageList(0)
                 }
-            }
+            }*/
 
 
         }

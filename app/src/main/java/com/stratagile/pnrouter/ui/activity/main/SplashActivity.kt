@@ -128,7 +128,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
         //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
-        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+       /* var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0) {
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
             var susan = SpUtil.getBoolean(this,"susan2",false)
@@ -161,7 +161,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
 
             }
-        }
+        }*/
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
         {
