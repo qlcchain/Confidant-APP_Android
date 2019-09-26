@@ -211,8 +211,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "7"->
                 {
-                    account_editText.setText("peng.wang@qlinke.onmicrosoft.com")
-                    password_editText.setText("Qlink@123")
+
                 }
             }
         }
