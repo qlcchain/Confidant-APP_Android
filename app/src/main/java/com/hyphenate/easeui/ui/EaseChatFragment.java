@@ -620,7 +620,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
             @Override
-            public void onSendMessage(String content,String point,String AssocId,String AssocContent) {
+            public void onSendMessage(String content,String point,String AssocId,String AssocContent,String userName) {
                 sendTextMessage(content,AssocId,AssocContent);
             }
             @Override
@@ -2528,7 +2528,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     return;
                 }
                 String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
-                message.setAttribute("username",name);
+                List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
+                if (userList.size() > 0) {
+                    UserEntity user = userList.get(0);
+                    String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
+                    message.setAttribute("username",username);
+                }
                 message.setAttribute("AssocContent",AssocContent);
                 message.setFrom(userId);
                 message.setTo(UserDataManger.curreantfriendUserData.getUserId());
@@ -2651,7 +2656,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             //final EMTextMessageBody body = (EMTextMessageBody) forward_msg.getBody();
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             String from = FriendId;
-            if (messageData.getSender() == 0) {
+            if(!from.equals( ""))
+            {
+                List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
+                if (userList.size() > 0) {
+                    UserEntity user = userList.get(0);
+                    String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
+                    forward_msg.setAttribute("username",username);
+                }
+            }
+            /*if (messageData.getSender() == 0) {
                 if(!from.equals( ""))
                 {
                     List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
@@ -2664,7 +2678,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }else{
                 String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
                 forward_msg.setAttribute("username",name);
-            }
+            }*/
             switch (messageData.getMsgType()) {
                 case 0:
                     forward_msg.setAttribute("AssocContent",messageData.getMsg());

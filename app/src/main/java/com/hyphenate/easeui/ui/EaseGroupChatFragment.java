@@ -705,16 +705,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onSendMessage(String content,String point,String AssocId,String AssocContent) {
+            public void onSendMessage(String content,String point,String AssocId,String AssocContent,String userName) {
                 if(point.toLowerCase().contains("all"))
                 {
                     point = "all";
                 }
-                sendTextMessage(content,point.toLowerCase(),AssocId,AssocContent);
+                sendTextMessage(content,point.toLowerCase(),AssocId,AssocContent,userName);
             }
             @Override
             public void onSendMessage(String content) {
-                sendTextMessage(content,"","","");
+                sendTextMessage(content,"","","","");
             }
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
@@ -2743,7 +2743,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     //send message
-    public void sendTextMessage(String content,String point,String AssocId,String AssocContent) {
+    public void sendTextMessage(String content,String point,String AssocId,String AssocContent,String userName) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
@@ -2768,8 +2768,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 {
                     return;
                 }
-                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
-                message.setAttribute("username",name);
+                //String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                message.setAttribute("username",userName);
                 message.setAttribute("AssocContent",AssocContent);
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
@@ -4893,7 +4893,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
-                    sendTextMessage(content,"","","");
+                    sendTextMessage(content,"","","","");
                 }
                 break;
             case IMAGE:

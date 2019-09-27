@@ -219,7 +219,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                          ctrlPress == true)) {
                     String s = editText.getText().toString().trim();
                     editText.setText("");
-                    listener.onSendBtnClicked(s,"","","");
+                    listener.onSendBtnClicked(s,"","","","");
                     return true;
                 }
                 else{
@@ -345,9 +345,11 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 }
                 String s = editText.getText().toString().trim();
                 String currentText = "";
+                String userName = "";
                 if(!AssocId.equals(""))
                 {
                     currentText = et_sendmessagehide.getText().toString();
+                    userName = currentText.substring(0,currentText.indexOf(":"));
                     currentText = currentText.substring(currentText.indexOf(":")+1,currentText.length());
                     //s = currentText +"\n……………………………………\n" +s;
                 }
@@ -363,7 +365,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                     s = s.replace("\n","");
                 }*/
                 editText.setText("");
-                listener.onSendBtnClicked(s,point,AssocId,currentText);
+                listener.onSendBtnClicked(s,point,AssocId,currentText,userName);
                 et_sendmessagehide.setText("");
                 AssocId = "";
                 et_sendmessagehide.setVisibility(GONE);
