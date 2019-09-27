@@ -1358,6 +1358,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 //URLText = "<html><body style ='font-size:16px!important;'><div style ='overflow-wrap: break-word;width: 100%;'>"+emailMeaasgeData!!.content+"</div></body></html>";
                 URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</body>"+iframeStr+"</html>";
                 contentHtml = URLText
+                //contentHtml = StringUitl.addHrefToURL(contentHtml);
                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
             }
         }

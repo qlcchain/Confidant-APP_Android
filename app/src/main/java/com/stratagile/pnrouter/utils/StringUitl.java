@@ -808,15 +808,30 @@ public class StringUitl {
      * @return 如果是符合网址格式的字符串,返回<b>true</b>,否则为<b>false</b>
      */
     public static boolean isHomepage( String str ){
-        /*String regex = "http://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
-        String regex2 = "https://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;*/
-        String regex = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
-        String regex2 = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex = "http://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex2 = "https://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        /*String regex = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex2 = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;*/
         if(match( regex ,str ) || match( regex2 ,str ))
         {
             return true;
         }
         return false;
+    }
+    public static String addHrefToURL(String str)
+    {
+        String regex = "(http:|https:)//[^[A-Za-z0-9\\._\\?%&+\\-=/#]]*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            StringBuffer replace = new StringBuffer();
+            replace.append("<a href=\"").append(matcher.group());
+            replace.append("\" target=\"_blank\"></a>");
+            matcher.appendReplacement(result, replace.toString());
+        }
+        matcher.appendTail(result);
+        return  result.toString();
     }
     public static boolean isPhoneNumber(String phoneNumber) {
         if (phoneNumber == null || "".equals(phoneNumber))
