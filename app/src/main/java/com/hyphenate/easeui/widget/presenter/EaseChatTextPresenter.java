@@ -1,12 +1,16 @@
 package com.hyphenate.easeui.widget.presenter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
@@ -36,8 +40,12 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.StringUitl;
 import com.stratagile.tox.toxcore.ToxCoreJni;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.PermissionListener;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
@@ -52,6 +60,9 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
     private static final String TAG = "EaseChatTextPresenter";
     private Context context;
     private View viewRoot;
+    private String phone;
+
+    public static final int REQUEST_CALL_PERMISSION = 10111; //拨号请求码
     @Override
     protected EaseChatRow onCreateChatRow(Context cxt, EMMessage message, int position, BaseAdapter adapter) {
         context = cxt;
@@ -66,6 +77,10 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         {
             Intent intent = new Intent();
             intent.setAction("android.intent.action.VIEW");
+            if(!msg.contains("http://") && !msg.contains("https://"))
+            {
+                msg = "https://" + msg;
+            }
             Uri url = Uri.parse(msg);
             intent.setData(url);
             getContext().startActivity(intent);
@@ -73,6 +88,17 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         }else if(StringUitl.isEmail(msg))
         {
             sendEmail2(getContext(),"","",msg);
+            return;
+        }else if(StringUitl.isPhoneNumber(msg))
+        {
+            phone = msg;
+            AndPermission.with(AppConfig.instance)
+                    .requestCode(101)
+                    .permission(
+                            Manifest.permission.CALL_PHONE
+                    )
+                    .callback(permission)
+                    .start();
             return;
         }
         if (!EaseDingMessageHelper.get().isDingMessage(message)) {
@@ -84,6 +110,26 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         i.putExtra("msg", message);
         getContext().startActivity(i);
     }
+    private PermissionListener permission = new PermissionListener() {
+        @Override
+        public void onSucceed(int requestCode, List<String> grantedPermissions) {
+
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                Intent intentPhone = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phone));
+                getContext().startActivity(intentPhone);
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, List<String> deniedPermissions) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败");
+
+            }
+        }
+    };
     @Override
     public void onBubbleLongClick(EMMessage message, View view) {
         super.onBubbleLongClick(message,view);
@@ -197,6 +243,21 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                 }
             }
         });
+    }
+    /**
+     * 判断是否有某项权限
+     * @param string_permission 权限
+     * @param request_code 请求码
+     * @return
+     */
+    public boolean checkReadPermission(String string_permission,int request_code) {
+        boolean flag = false;
+        if (ContextCompat.checkSelfPermission(getContext(), string_permission) == PackageManager.PERMISSION_GRANTED) {//已有权限
+            flag = true;
+        } else {//申请权限
+            //ActivityCompat.requestPermissions(getContext(), new String[]{string_permission}, request_code);
+        }
+        return flag;
     }
     /**
      * 邮件分享

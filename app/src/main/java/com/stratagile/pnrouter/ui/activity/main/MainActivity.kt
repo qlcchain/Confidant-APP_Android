@@ -2635,7 +2635,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
-            ConstantValue.mHuaWeiRegId = "" + it
+            //ConstantValue.mHuaWeiRegId = "" + it
         }
     }
 
@@ -4014,6 +4014,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
             ConstantValue.isRefeshed = true
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun addEmailEvent(AddEmailEvent: AddEmailEvent) {
+        chatAndEmailFragment!!.setCurrentItem(1)
+        if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.openDrawer(GravityCompat.START)
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

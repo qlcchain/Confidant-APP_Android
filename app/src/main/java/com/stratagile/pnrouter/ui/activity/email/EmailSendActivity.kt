@@ -286,6 +286,39 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 sentTitle.visibility = View.VISIBLE
             }
 
+        }else if(flag == 255)
+        {
+            var emailAdress = intent.getStringExtra("emailAdress")
+            var fromAdressList = emailAdress.split(",")
+            for (item in fromAdressList)
+            {
+                var myAccount = AppConfig.instance.emailConfig().account
+                var toAdress = getEditText(toAdressEdit)
+                if(item != "" && !item.contains(myAccount) && !toAdress.contains(item))
+                {
+                    var fromNameTemp = ""
+                    var fromAdressTemp = ""
+                    if(item.indexOf("<") >=0)
+                    {
+                        fromNameTemp = item.substring(0,item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
+                    }else{
+                        fromNameTemp = item.substring(0,item.indexOf("@"))
+                        fromAdressTemp = item.substring(0,item.length)
+                    }
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    fromNameTemp= fromNameTemp.replace("\"","")
+                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                    (toAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(";")
+                }
+            }
+            toAdressEdit.post(Runnable {
+                var lineCount = toAdressEdit.lineCount
+                toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
         }
         toAdressEdit.setOnItemClickListener { parent, view, position, id ->
 

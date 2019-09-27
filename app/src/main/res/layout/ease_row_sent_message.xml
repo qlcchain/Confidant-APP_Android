@@ -71,6 +71,7 @@
                     android:paddingLeft="@dimen/x10"
                     android:paddingRight="@dimen/x10"
                     android:text=""
+                    android:autoLink="email|phone|web"
                     android:textColor="@color/color_2c2c2c"
                     android:textSize="16sp" />
                 <ImageView

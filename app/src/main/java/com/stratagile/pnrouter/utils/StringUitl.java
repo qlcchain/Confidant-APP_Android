@@ -808,13 +808,21 @@ public class StringUitl {
      * @return 如果是符合网址格式的字符串,返回<b>true</b>,否则为<b>false</b>
      */
     public static boolean isHomepage( String str ){
-        String regex = "http://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
-        String regex2 = "https://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        /*String regex = "http://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex2 = "https://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;*/
+        String regex = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex2 = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
         if(match( regex ,str ) || match( regex2 ,str ))
         {
             return true;
         }
         return false;
+    }
+    public static boolean isPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || "".equals(phoneNumber))
+            return false;
+        String regex = "^1[3|4|5|8|6][0-9]\\d{8}$";
+        return phoneNumber.matches(regex);
     }
     /**
      * @param str 待验证的字符串

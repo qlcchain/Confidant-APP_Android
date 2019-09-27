@@ -218,6 +218,10 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
     override fun setPresenter(presenter: ChatAndEmailContract.ChatAndEmailContractPresenter) {
         mPresenter = presenter as ChatAndEmailPresenter
     }
+    fun setCurrentItem(position:Int)
+    {
+        viewPager.setCurrentItem(position)
+    }
     fun getConversationListFragment():EaseConversationListFragment
     {
         return conversationListFragment!!
