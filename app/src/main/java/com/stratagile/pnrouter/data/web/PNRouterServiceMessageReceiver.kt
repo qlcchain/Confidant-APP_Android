@@ -757,9 +757,12 @@ val credentialsProvider: CredentialsProvider, private
         KLog.i("没有初始化。。createMessagePipe" + pipe)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver" + this)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver loginBackListener" + loginBackListener)
+        KLog.i("超时调试：1" + pipe)
         if (pipe == null) {
             val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
+            KLog.i("超时调试：2" + webSocket)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
+            KLog.i("超时调试：3" + pipe)
             KLog.i("pipe 重新设置监听。。。")
             pipe!!.messagePipeCallback = this
             return pipe!!

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -8,6 +9,11 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.application.AppConfig;
 
 import org.libsodium.jni.Sodium;
 
@@ -22,6 +28,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import qlc.mng.AccountMng;
+import qlc.network.QlcException;
+import qlc.rpc.AccountRpc;
+import qlc.utils.Helper;
 
 
 /**
@@ -994,5 +1005,37 @@ public class StringUitl {
             }
         }
         return "";
+    }
+    public static void wallet()
+    {
+       /* String seed = QlcUtil.generateSeed().toLowerCase();
+        try {
+            JSONObject jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
+            String priKey = jsonObject.getString("privKey");
+            String pubKey = jsonObject.getString("pubKey");
+            KLog.i(jsonObject.toJSONString());
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.add(seed);
+            String mnemonics = AccountRpc.seedToMnemonics(jsonArray);
+            KLog.i(mnemonics);
+            String address =  QlcUtil.publicToAddress(pubKey).toLowerCase();
+            QLCAccount qlcAccount = new QLCAccount();
+            qlcAccount.setPrivKey(priKey.toLowerCase());
+            qlcAccount.setPubKey(pubKey);
+            qlcAccount.setAddress(address);
+            qlcAccount.setMnemonic(mnemonics);
+            qlcAccount.setIsCurrent(true);
+            qlcAccount.setAccountName(QLCAPI.Companion.getQlcWalletName());
+            qlcAccount.setSeed(seed);
+            qlcAccount.setIsAccountSeed(true);
+            qlcAccount.setWalletIndex(0);
+            AppConfig.instance.getDaoSession().getQLCAccountDao().insert(qlcAccount);
+            closeProgressDialog();
+            startActivityForResult(new Intent(this, QlcWalletCreatedActivity.class).putExtra("wallet", qlcAccount), 0);
+        } catch (QlcException e) {
+            e.printStackTrace();
+        }*/
+
+
     }
 }

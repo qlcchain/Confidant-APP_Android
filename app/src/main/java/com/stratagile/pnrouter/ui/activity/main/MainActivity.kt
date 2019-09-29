@@ -35,6 +35,8 @@ import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.huawei.android.hms.agent.HMSAgent
 import com.huawei.android.hms.agent.common.handler.ConnectHandler
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler
+import com.huawei.hms.support.api.push.TokenResult
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMConversation
 import com.hyphenate.chat.EMMessage
@@ -2636,6 +2638,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
             //ConstantValue.mHuaWeiRegId = "" + it
+
         }
     }
 
@@ -2942,6 +2945,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun initData() {
         if(BuildConfig.DEBUG)
         {
+
             var aa = "123";
             var bb = LibsodiumUtil.base64Encode2String(aa.toByteArray())
             var bbq = RxEncodeTool.base64Encode2String(aa.toByteArray())
@@ -3125,8 +3129,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     map.put("os", os.toString())
                     map.put("appversion", BuildConfig.VERSION_NAME)
                     if (os == 3) {
-                        map.put("regid", ConstantValue.mRegId)
-                        map.put("token", ConstantValue.mJiGuangRegId)
+                        map.put("regid", ConstantValue.mJiGuangRegId)
+                        map.put("token", ConstantValue.mHuaWeiRegId)
                     } else {
                         map.put("regid", ConstantValue.mRegId)
                     }
@@ -3137,6 +3141,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
                     map.put("usersn", lastLoginUserSn)
                     KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
+                    KLog.i("华为推送注册RegId= " + ConstantValue.mHuaWeiRegId)
+                    KLog.i("极光推送注册RegId= " + ConstantValue.mJiGuangRegId)
                     LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
                     KLog.i(map)
                     OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
@@ -3303,7 +3309,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startActivity(Intent(this, EmailEditActivity::class.java))
         }
         mDrawer.setDrawerListener(object : DrawerLayout.DrawerListener {
-           override fun onDrawerStateChanged(arg0: Int) {
+            override fun onDrawerStateChanged(arg0: Int) {
 
                 //Log.i("zhangshuli", "statechange")
             }
@@ -3776,7 +3782,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun initLeftMenu(fragmentMenu:String,sort:Boolean,refresh:Boolean)
     {
-       
+
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0)
         {

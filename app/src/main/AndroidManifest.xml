@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-   <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -436,11 +436,11 @@
             </intent-filter>
         </receiver>
 
-       <!-- &lt;!&ndash; 百度地图所需的service &ndash;&gt;
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote" />-->
+        <!-- &lt;!&ndash; 百度地图所需的service &ndash;&gt;
+         <service
+             android:name="com.baidu.location.f"
+             android:enabled="true"
+             android:process=":remote" />-->
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -533,7 +533,7 @@
         </receiver>
 
         <receiver
-            android:name=".reciver.WinqMessageReceiver"
+            android:name="com.stratagile.pnrouter.reciver.WinqMessageReceiver"
             android:exported="true">
             <!--这里com.xiaomi.mipushdemo.DemoMessageRreceiver改成app中定义的完整类名-->
             <intent-filter>
@@ -558,7 +558,7 @@
             android:value="appid=100667397"></meta-data>
         <!--“xxx”用实际的类名替换, ${PACKAGE_NAME} 要替换上您应用的包名-->
         <receiver android:name=".reciver.HuaweiPushReceiver"
-            android:permission=".permission.PROCESS_PUSH_MSG">
+            android:permission="com.stratagile.pnrouter.permission.PROCESS_PUSH_MSG">
             <intent-filter>
                 <!-- 必须,用于接收token -->
                 <action android:name="com.huawei.android.push.intent.REGISTRATION" />
