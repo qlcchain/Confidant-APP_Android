@@ -341,7 +341,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             LogUtil.addLog("连接成功：${webSocketClient!!.request().url()}")
             attempts = 0
             connected = true
-            KLog.i("超时调试：6"+this)
+            KLog.i("超时调试：webSocketConnection6"+this)
             reconnectCount = 0
             isReconnectting = false
             if (listener != null) listener!!.onConnected()

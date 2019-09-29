@@ -526,7 +526,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 KLog.i("超时调试：4" + pipe)
                 KLog.i("发送信息2："+pipe.get())
                 KLog.i("发送信息3："+pipe.get().get())
-                KLog.i("超时调试：5"+pipe.get().get().webSocketConnection())
+                KLog.i("超时调试：webSocketConnection 5"+pipe.get().get().webSocketConnection())
                 var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送结果：${reslut}")
 

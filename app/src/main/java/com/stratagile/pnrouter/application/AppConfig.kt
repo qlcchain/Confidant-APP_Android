@@ -113,8 +113,9 @@ class AppConfig : MultiDexApplication() {
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
             HMSAgent.init(this)
+        }else{
+            initMiPush()
         }
-        initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
