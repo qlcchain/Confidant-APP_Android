@@ -186,6 +186,8 @@ class AppConfig : MultiDexApplication() {
         KLog.i("超时调试：getPNRouterServiceMessageSender"+messageSender)
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+        }else{
+            messageSender!!.setPipe(Optional.fromNullable(MessageRetrievalService.getPipe()))
         }
         return messageSender!!
     }

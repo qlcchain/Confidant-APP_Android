@@ -33,7 +33,7 @@ import javax.inject.Inject
 import kotlin.concurrent.thread
 
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
-    private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
+    private var pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
     lateinit var msgHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<BaseData>>
     lateinit var fileHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<SendFileInfo>>
@@ -89,7 +89,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         this.pipe = AtomicReference(pipe)
         initThread()
     }
-
+    fun setPipe(pipeFrom: Optional<SignalServiceMessagePipe>)
+    {
+        pipe = AtomicReference(pipeFrom)
+    }
     fun addDataFromSql(userId:String, BaseDataStr:String)
     {
         var gson = GsonUtil.getIntGson()
