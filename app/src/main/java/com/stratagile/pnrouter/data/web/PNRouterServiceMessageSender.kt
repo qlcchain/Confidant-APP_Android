@@ -61,8 +61,6 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var sendFileMsgTimeMap:ConcurrentHashMap<String, String>;
     var fileLock = Object()
     init {
-
-        KLog.i("超时调试：7"+this)
         sendMsgLocalMap = ConcurrentHashMap<String, Boolean>()
         sendFilePathMap = ConcurrentHashMap<String, String>()
         deleteFileMap = ConcurrentHashMap<String, Boolean>()
@@ -87,6 +85,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         fileHashMap = ConcurrentHashMap<String,ConcurrentLinkedQueue<SendFileInfo>>()
         toSendMessage = ConcurrentLinkedQueue()
         //toSendChatMessage = LinkedList()
+        KLog.i("超时调试：PNRouterServiceMessageSender init"+pipe)
         this.pipe = AtomicReference(pipe)
         initThread()
     }
@@ -524,6 +523,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 KLog.i("send " + message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
                 KLog.i("超时调试：4" + pipe)
+                KLog.i("超时调试：4___" + AppConfig.instance.messageSender!!.pipe)
                 KLog.i("发送信息2："+pipe.get())
                 KLog.i("发送信息3："+pipe.get().get())
                 KLog.i("超时调试：webSocketConnection 5"+pipe.get().get().webSocketConnection())

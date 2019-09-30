@@ -113,6 +113,9 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
                     1 -> {
                         allowUserJoinGroup(newGroupMemberAdapter!!.data[position])
                     }
+                    0 -> {
+
+                    }
                 }
             }
         }else{

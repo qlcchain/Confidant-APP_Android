@@ -169,8 +169,7 @@ class AppConfig : MultiDexApplication() {
     }
 
     fun getPNRouterServiceMessageReceiver(): PNRouterServiceMessageReceiver {
-        KLog.i("超时调试：9"+messageSender)
-        KLog.i("没有初始化。。 PNRouterServiceMessageSender  重连 " + this + "##" + messageSender)
+        KLog.i("超时调试：getPNRouterServiceMessageReceiver"+messageSender)
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
@@ -184,8 +183,7 @@ class AppConfig : MultiDexApplication() {
     }
 
     fun getPNRouterServiceMessageSender(): PNRouterServiceMessageSender {
-        KLog.i("超时调试：8"+messageSender)
-        KLog.i("没有初始化。。 PNRouterServiceMessageSender  AAAAA " + this + "##" + messageSender)
+        KLog.i("超时调试：getPNRouterServiceMessageSender"+messageSender)
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
         }
