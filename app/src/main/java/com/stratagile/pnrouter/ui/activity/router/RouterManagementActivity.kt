@@ -365,7 +365,13 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
 
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-        autoLoginSwitch.isChecked = autoLoginRouterSn.equals(selectedRouter.userSn)
+        if(autoLoginRouterSn.equals(""))
+        {
+            autoLoginSwitch.isChecked = true
+        }else{
+            autoLoginSwitch.isChecked = autoLoginRouterSn.equals(selectedRouter.userSn)
+        }
+
         autoLoginSwitch.setOnClickListener {
             if (autoLoginSwitch.isChecked) {
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, selectedRouter.userSn)

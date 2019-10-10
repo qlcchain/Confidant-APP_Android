@@ -22,7 +22,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
@@ -70,6 +76,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Logger
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
@@ -84,7 +91,19 @@ import javax.inject.Inject
  * @date 2018/09/10 15:05:29
  */
 
-class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
+class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+    override fun onConnected(p0: Bundle?) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onConnectionSuspended(p0: Int) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
 
     @Inject
@@ -137,6 +156,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var name:Long  = 0;
     var openNewOnPow = true
     var needAutoClickLogin = false
+    var mGoogleApiClient: GoogleApiClient? = null;
+    var RC_SIGN_IN= 10001
     var mGoogleSignInClient = null
 
     override fun registerBack(registerRsp: JRegisterRsp) {
@@ -662,20 +683,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     fun signIn() {
         // Build a GoogleSignInClient with the options specified by gso.
-       /* mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        var signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);*/
+        /* mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+         var signInIntent = mGoogleSignInClient.getSignInIntent();
+         startActivityForResult(signInIntent, RC_SIGN_IN);*/
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         if (intent.hasExtra("flag")) {
             isUnlock = true
         }
-        // Configure sign-in to request the user's ID, email address, and basic
-// profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-       /* var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();*/
-        // Build a GoogleSignInClient with the options specified by gso.
 
         name = System.currentTimeMillis();
         maxLogin = 0
@@ -1046,6 +1061,29 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+
+        var gso = GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestId()
+                .build();
+
+        mGoogleApiClient = GoogleApiClient
+                .Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .enableAutoManage(this, this)/* FragmentActivity *//* OnConnectionFailedListener */
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        sign_in_button.setSize(SignInButton.SIZE_STANDARD);
+        sign_in_button.setScopes(gso.getScopeArray());
+        sign_in_button.setOnClickListener {
+            var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+
+
         version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
@@ -2436,6 +2474,29 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             } else {
                 KLog.i("密码错误。。。。")
             }
+        }else if(requestCode==RC_SIGN_IN){
+            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+    }
+    private fun handleSignInResult(result:GoogleSignInResult ){
+        KLog.i("robin"+ "handleSignInResult:" + result.isSuccess());
+        if(result.isSuccess()){
+            toast("成功")
+            KLog.i("robin"+ "成功");
+            var acct = result.getSignInAccount();
+            if(acct!=null){
+                KLog.i("robin"+"用户名是:" + acct.getDisplayName());
+                toast("用户email是:" + acct.getEmail())
+                KLog.i("robin"+"用户email是:" + acct.getEmail());
+                KLog.i("robin"+ "用户头像是:" + acct.getPhotoUrl());
+                KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
+                toast("用户Id是:" + acct.getId())
+                KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
+            }
+        }else{
+            toast("失败")
+            KLog.i("robin"+ "没有成功"+result.getStatus());
         }
     }
     private fun startToxAndRecovery() {

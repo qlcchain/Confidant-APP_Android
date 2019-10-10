@@ -98,10 +98,24 @@ android {
         exclude 'LICENSE-2.0.txt'
         exclude 'APK LICENSE.txt'
     }
+    signingConfigs {
+        release {
+            //签名文件路径，我是放到项目中了
+            storeFile file { "../qlink.jks" }
+            //签名密码
+            storePassword "qlinkdapp"
+            //别名
+            keyAlias "qlink"
+            //别名密码
+            keyPassword "qlinkdapp"
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
             buildConfigField "boolean", "LOG_DEBUG", "true"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
@@ -267,7 +281,7 @@ dependencies {
     //1.1.0 （1.0.5及以前版本的老用户升级需谨慎，API改动过大）
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-32'
     compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-32'
-    implementation 'com.google.android.gms:play-services-auth:11.4.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.0' //15.0.1
     //没有使用特殊Header，可以不加这行
     implementation files('libs/jcore-android-2.1.4.jar')
     implementation files('libs/jpush-android-3.3.6.jar')

@@ -23,6 +23,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public static void createAllTables(Database db, boolean ifNotExists) {
         DraftEntityDao.createTable(db, ifNotExists);
         EmailAttachEntityDao.createTable(db, ifNotExists);
+        EmailCidEntityDao.createTable(db, ifNotExists);
         EmailConfigEntityDao.createTable(db, ifNotExists);
         EmailContactsEntityDao.createTable(db, ifNotExists);
         EmailMessageEntityDao.createTable(db, ifNotExists);
@@ -34,13 +35,13 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.createTable(db, ifNotExists);
         RouterUserEntityDao.createTable(db, ifNotExists);
         UserEntityDao.createTable(db, ifNotExists);
-        EmailCidEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
         DraftEntityDao.dropTable(db, ifExists);
         EmailAttachEntityDao.dropTable(db, ifExists);
+        EmailCidEntityDao.dropTable(db, ifExists);
         EmailConfigEntityDao.dropTable(db, ifExists);
         EmailContactsEntityDao.dropTable(db, ifExists);
         EmailMessageEntityDao.dropTable(db, ifExists);
@@ -52,7 +53,6 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.dropTable(db, ifExists);
         RouterUserEntityDao.dropTable(db, ifExists);
         UserEntityDao.dropTable(db, ifExists);
-        EmailCidEntityDao.dropTable(db, ifExists);
     }
 
     /**
@@ -73,6 +73,7 @@ public class DaoMaster extends AbstractDaoMaster {
         super(db, SCHEMA_VERSION);
         registerDaoClass(DraftEntityDao.class);
         registerDaoClass(EmailAttachEntityDao.class);
+        registerDaoClass(EmailCidEntityDao.class);
         registerDaoClass(EmailConfigEntityDao.class);
         registerDaoClass(EmailContactsEntityDao.class);
         registerDaoClass(EmailMessageEntityDao.class);
@@ -84,7 +85,6 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(RouterEntityDao.class);
         registerDaoClass(RouterUserEntityDao.class);
         registerDaoClass(UserEntityDao.class);
-        registerDaoClass(EmailCidEntityDao.class);
     }
 
     public DaoSession newSession() {
