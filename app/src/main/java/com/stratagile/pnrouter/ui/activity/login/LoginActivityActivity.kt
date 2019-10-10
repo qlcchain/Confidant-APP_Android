@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
@@ -136,6 +137,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var name:Long  = 0;
     var openNewOnPow = true
     var needAutoClickLogin = false
+    var mGoogleSignInClient = null
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -658,10 +660,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
     }
+    fun signIn() {
+        // Build a GoogleSignInClient with the options specified by gso.
+       /* mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        var signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);*/
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         if (intent.hasExtra("flag")) {
             isUnlock = true
         }
+        // Configure sign-in to request the user's ID, email address, and basic
+// profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+       /* var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();*/
+        // Build a GoogleSignInClient with the options specified by gso.
+
         name = System.currentTimeMillis();
         maxLogin = 0
         loginGoMain = false
