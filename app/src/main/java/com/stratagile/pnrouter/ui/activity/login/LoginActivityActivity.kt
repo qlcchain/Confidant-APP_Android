@@ -1062,7 +1062,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     override fun initData() {
 
-        var gso = GoogleSignInOptions
+      /*  var gso = GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestId()
@@ -1072,7 +1072,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 .Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .enableAutoManage(this, this)/* FragmentActivity *//* OnConnectionFailedListener */
+                .enableAutoManage(this, this)*//* FragmentActivity *//**//* OnConnectionFailedListener *//*
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -1081,7 +1081,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         sign_in_button.setOnClickListener {
             var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
-        }
+        }*/
 
 
         version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"

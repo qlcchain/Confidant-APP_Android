@@ -251,6 +251,46 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     }
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
 
+        if(jLogOutRsp.params.retCode == 0)
+        {
+            Thread(Runnable() {
+                run() {
+                    ConstantValue.isHasWebsocketInit = true
+                    if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()
+                    ConstantValue.loginOut = true
+                    ConstantValue.logining = false
+                    ConstantValue.isHeart = false
+                    ConstantValue.currentRouterIp = ""
+                    resetUnCompleteFileRecode()
+                    if (ConstantValue.isWebsocketConnected) {
+                        FileMangerDownloadUtils.init()
+                        ConstantValue.webSockeFileMangertList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSockeFileMangertList.remove(it)
+                        }
+                        ConstantValue.webSocketFileList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSocketFileList.remove(it)
+                        }
+                    }else{
+                        val intentTox = Intent(this, KotlinToxService::class.java)
+                        this.stopService(intentTox)
+                    }
+                    ConstantValue.loginReq = null
+                    ConstantValue.isWebsocketReConnect = false
+                    ConstantValue.hasLogin = true
+                    ConstantValue.isHeart = true
+                    resetUnCompleteFileRecode()
+                    AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                    Thread.sleep(1000)
+                    connectRouter(currentRouterEntity!!)
+                }
+
+        }).start()
+
+        }
+
        /* if(jLogOutRsp.params.retCode == 0)
         {
             ConstantValue.isHasWebsocketInit = true
@@ -877,6 +917,10 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     //先退出当前的路由器
     fun logOutRouter(router : RouterEntity) {
         KLog.i("路由器登出："+router.routerName)
+        runOnUiThread {
+            closeProgressDialog()
+            showProgressNoCanelDialog("Connecting...")
+        }
         if(ConstantValue.logining)
         {
             var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -894,36 +938,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 }
             }
         }
-        ConstantValue.isHasWebsocketInit = true
-        if(AppConfig.instance.messageReceiver != null)
-            AppConfig.instance.messageReceiver!!.close()
 
-        ConstantValue.loginOut = true
-        ConstantValue.logining = false
-        ConstantValue.isHeart = false
-        ConstantValue.currentRouterIp = ""
-        resetUnCompleteFileRecode()
-        if (ConstantValue.isWebsocketConnected) {
-            FileMangerDownloadUtils.init()
-            ConstantValue.webSockeFileMangertList.forEach {
-                it.disconnect(true)
-                //ConstantValue.webSockeFileMangertList.remove(it)
-            }
-            ConstantValue.webSocketFileList.forEach {
-                it.disconnect(true)
-                //ConstantValue.webSocketFileList.remove(it)
-            }
-        }else{
-            val intentTox = Intent(this, KotlinToxService::class.java)
-            this.stopService(intentTox)
-        }
-        ConstantValue.loginReq = null
-        ConstantValue.isWebsocketReConnect = false
-        ConstantValue.hasLogin = true
-        ConstantValue.isHeart = true
-        resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-        connectRouter(currentRouterEntity!!)
 
     }
 
@@ -1007,11 +1022,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     {
         ConstantValue.currentRouterIp = ""
         islogining = false
-        runOnUiThread {
-            KLog.i("777")
-            closeProgressDialog()
-            showProgressNoCanelDialog("Connecting...")
-        }
         if(WiFiUtil.isWifiConnect())
         {
             var count =0;
