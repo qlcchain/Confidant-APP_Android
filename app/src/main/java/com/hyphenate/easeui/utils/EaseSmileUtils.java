@@ -145,6 +145,14 @@ public class EaseSmileUtils {
 	public static final String ee_104 = "[左太极]";
 	public static final String ee_105 = "[右太极]";
 
+	public static final String ee_106 = "[捂脸]";
+	public static final String ee_107 = "[破涕为笑]";
+	public static final String ee_108 = "[奸笑]";
+	public static final String ee_109 = "[机智]";
+	public static final String ee_110 = "[皱眉]";
+	public static final String ee_111 = "[耶]";
+	public static final String ee_112 = "[嘿哈]";
+
 	private static final Factory spannableFactory = Factory
 	        .getInstance();
 	
