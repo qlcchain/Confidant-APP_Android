@@ -1196,6 +1196,16 @@ class EmailCore {
                     } else
                         getMailTextContent2(message,contentTemp, false);
                     content = contentTemp.toString();
+                    if(content.contains("<body>"))
+                    {
+                        int beginFlag = content.indexOf("<body>")+6;
+                        int endFlag =  content.indexOf("</body>");
+                        content = content.substring(beginFlag,endFlag);
+                        String regFormat = "\\t|\r|\n";
+                        content = content.replaceAll(regFormat,"");
+                        String regFormat2 = "&#43;";
+                        content = content.replaceAll(regFormat2,"+");
+                    }
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
                 {
