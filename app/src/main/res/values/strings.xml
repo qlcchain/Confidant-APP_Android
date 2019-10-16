@@ -410,7 +410,7 @@
     <string name="stop">Stop</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
-    <string name="wait_for_verification">Wait for verification</string>
+    <string name="wait_for_verification">Wait</string>
     <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>

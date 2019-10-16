@@ -82,6 +82,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
+import com.google.api.services.gmail.Gmail;
 
 
 /**
@@ -1061,29 +1062,36 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
-
-        var gso = GoogleSignInOptions
-                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestId()
-                .build();
-
-        mGoogleApiClient = GoogleApiClient
-                .Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .enableAutoManage(this, this)//* FragmentActivity *//**//* OnConnectionFailedListener *//*
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-        sign_in_button.setSize(SignInButton.SIZE_STANDARD);
-        sign_in_button.setScopes(gso.getScopeArray());
-        sign_in_button.setOnClickListener {
-            var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+        /*var aa = RxEncodeTool.base64Decode("MQ==")
+        var bb = ""
+        for(id in aa)
+        {
+            bb += id.toString() +","
         }
+        KLog.i("没有初始化。。设置loginBackListener"+String(aa))*/
+        if(ConstantValue.googleserviceFlag)
+        {
+            var gso = GoogleSignInOptions
+                    .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestId()
+                    .build();
 
+            mGoogleApiClient = GoogleApiClient
+                    .Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .enableAutoManage(this, this)//* FragmentActivity *//**//* OnConnectionFailedListener *//*
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
 
+            sign_in_button.setSize(SignInButton.SIZE_STANDARD);
+            sign_in_button.setScopes(gso.getScopeArray());
+            sign_in_button.setOnClickListener {
+                var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        }
         version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)

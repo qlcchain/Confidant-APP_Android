@@ -7,6 +7,7 @@ import android.support.annotation.Nullable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -161,9 +162,35 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
             newFriendListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
                 when (view.id) {
                     R.id.tvOpreate -> {
+                        var target = view as TextView;
+                        var showTips = target.text
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+                        when(showTips)
+                        {
+                            "Added" ->
+                            {
+                                var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(newFriendListAdapter!!.getItem(position)!!.userId)).list()
+                                if (localFriendStatusList.size > 0){
+                                    var it = localFriendStatusList.get(0)
+                                    if(it.friendLocalStatus == 0)
+                                    {
+                                        handleUser = newFriendListAdapter!!.getItem(position)
+                                        var intent = Intent(activity!!, UserInfoActivity::class.java)
+                                        intent.putExtra("user", newFriendListAdapter?.getItem(position))
+                                        startActivityForResult(intent, 1)
+                                        return@setOnItemChildClickListener
+                                    }
+                                }
+                            }
+                            getString(R.string.wait_for_verification) ->
+                            {
+                                return@setOnItemChildClickListener
+                            }
+
+                        }
                         handleUser = newFriendListAdapter!!.getItem(position)
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
                         friendStatus = 0
 

@@ -39,6 +39,7 @@ import static com.stratagile.pnrouter.utils.RxFileTool.isMediaDocument;
 public class RxPhotoTool {
     public static final int GET_IMAGE_BY_CAMERA = 5001;
     public static final int GET_IMAGE_FROM_PHONE = 5002;
+    protected static final int REQUEST_CODE_LOCAL = 5005;
     public static final int CROP_IMAGE = 5003;
     public static Uri imageUriFromCamera;
     public static Uri cropImageUri;

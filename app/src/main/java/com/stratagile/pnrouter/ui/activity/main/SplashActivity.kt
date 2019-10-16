@@ -7,6 +7,8 @@ import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.jaeger.library.StatusBarUtil
 import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.eamil.Utils.AESToolsCipher
@@ -30,6 +32,7 @@ import com.stratagile.pnrouter.utils.*
 import javax.inject.Inject
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
+import scalaz.std.boolean
 
 /**
  * @author hzp
@@ -128,39 +131,47 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
         //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
-       /* var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        if(emailConfigEntityChoose.size > 0) {
-            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-            var susan = SpUtil.getBoolean(this,"susan2",false)
-            if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
-            //if(emailConfigEntity.account != null)
-            {
-                SpUtil.putBoolean(this, "susan2", true)
-                var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("INBOX")).list()
-                for (item in localEmailMessage)
-                {
-                    AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
-                }
-                var localEmailMessage2 = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("Drafts")).list()
-                for (item in localEmailMessage2)
-                {
-                    AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
-                }
-                var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                if(emailConfigEntityChoose.size > 0) {
-                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-                    emailConfigEntity.totalCount = 0;
-                    emailConfigEntity.inboxMinMessageId = 0;
-                    emailConfigEntity.inboxMaxMessageId = 0;
+        /* var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+         if(emailConfigEntityChoose.size > 0) {
+             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+             var susan = SpUtil.getBoolean(this,"susan2",false)
+             if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
+             //if(emailConfigEntity.account != null)
+             {
+                 SpUtil.putBoolean(this, "susan2", true)
+                 var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("INBOX")).list()
+                 for (item in localEmailMessage)
+                 {
+                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+                 }
+                 var localEmailMessage2 = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("Drafts")).list()
+                 for (item in localEmailMessage2)
+                 {
+                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+                 }
+                 var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                 if(emailConfigEntityChoose.size > 0) {
+                     var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                     emailConfigEntity.totalCount = 0;
+                     emailConfigEntity.inboxMinMessageId = 0;
+                     emailConfigEntity.inboxMaxMessageId = 0;
 
-                    emailConfigEntity.drafTotalCount = 0;
-                    emailConfigEntity.drafMaxMessageId = 0
-                    emailConfigEntity.drafMinMessageId = 0
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                }
+                     emailConfigEntity.drafTotalCount = 0;
+                     emailConfigEntity.drafMaxMessageId = 0
+                     emailConfigEntity.drafMinMessageId = 0
+                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                 }
 
 
+             }
+         }*/
+       /* var googleApiAvailability = GoogleApiAvailability.getInstance();
+        var resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if(resultCode != ConnectionResult.SUCCESS) {
+            if(googleApiAvailability.isUserResolvableError(resultCode)) {
+                googleApiAvailability.getErrorDialog(this, resultCode, 2404).show();
             }
+            ConstantValue.googleserviceFlag = false;
         }*/
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
