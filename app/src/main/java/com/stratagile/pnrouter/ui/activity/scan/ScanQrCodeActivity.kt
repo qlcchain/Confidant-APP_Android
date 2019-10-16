@@ -400,22 +400,20 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
             if (galleryPackName != "") {
                 intent.setPackage(galleryPackName)
             }
-
-            try {
-                startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
-            } catch (e: ActivityNotFoundException) {
-                intent = Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
-            } finally {
-
-            }
-            /*var os = VersionUtil.getDeviceBrand()
+            var os = VersionUtil.getDeviceBrand()
             //这里要传一个整形的常量RESULT_LOAD_IMAGE到startActivityForResult()方法。
             if(os !==3)
             {
+                try {
+                    startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
+                } catch (e: ActivityNotFoundException) {
+                    intent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
+                } finally {
 
+                }
             }else{
                 PictureSelector.create(this)
                         .openGallery(PictureMimeType.ofImage())
@@ -443,9 +441,12 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
                         .videoMaxSecond(60 * 60 * 3)
                         .videoMinSecond(1)
                         .isDragFrame(false)
+                        .isReturnQuick(true)
                         .forResult(REQUEST_CODE_LOCAL)
                 //RxPhotoTool.openLocalImage(this)
-            }*/
+            }
+
+
         } else if (viewId == R.id.rl_title) {
             KLog.i("切换识别模式。。。" + localImgMode)
             if (localImgMode == 0) {
