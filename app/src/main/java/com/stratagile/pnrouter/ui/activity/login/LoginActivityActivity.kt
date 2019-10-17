@@ -1076,7 +1076,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             bb += id.toString() +","
         }
         KLog.i("没有初始化。。设置loginBackListener"+String(aa))*/
-       // Generate Credential using retrieved code.
+        // Generate Credential using retrieved code.
 /*    var response = flow.newTokenRequest(code)
         .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).execute();
     GoogleCredential credential = new GoogleCredential()
@@ -2515,9 +2515,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
                 toast("用户Id是:" + acct.getId())
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
-                var gmailService = GmailQuickstart.getGmailService();
-                var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
-                var cc = ""
+                Thread(Runnable() {
+                    run() {
+                        var gmailService = GmailQuickstart.getGmailService();
+                        var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
+                        var cc = ""
+                    }}
+                )
+
             }
         }else{
             toast("失败")
