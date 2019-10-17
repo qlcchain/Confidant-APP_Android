@@ -2520,7 +2520,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         var gmailService = GmailQuickstart.getGmailService();
                         var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
                         var cc = ""
-                    }}
+                    }}.run()
                 )
 
             }
