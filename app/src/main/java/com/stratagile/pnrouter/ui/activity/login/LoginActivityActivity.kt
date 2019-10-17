@@ -29,6 +29,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
@@ -83,6 +88,8 @@ import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 import com.google.api.services.gmail.Gmail;
+import com.stratagile.pnrouter.gmail.GmailHelper
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 
 
 /**
@@ -1069,6 +1076,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             bb += id.toString() +","
         }
         KLog.i("没有初始化。。设置loginBackListener"+String(aa))*/
+       // Generate Credential using retrieved code.
+/*    var response = flow.newTokenRequest(code)
+        .setRedirectUri(GoogleOAuthConstants.OOB_REDIRECT_URI).execute();
+    GoogleCredential credential = new GoogleCredential()
+        .setFromTokenResponse(response);
+        var aa = Gmail
+        GmailHelper.listMessagesMatchingQuery(aa,"","")*/
         if(ConstantValue.googleserviceFlag)
         {
             var gso = GoogleSignInOptions
@@ -2501,6 +2515,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
                 toast("用户Id是:" + acct.getId())
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
+                var gmailService = GmailQuickstart.getGmailService();
+                var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
+                var cc = ""
             }
         }else{
             toast("失败")

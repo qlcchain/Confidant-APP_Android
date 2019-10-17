@@ -131,7 +131,7 @@ object ConstantValue {
         var qqMenu = arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
         var currentEmailConfigEntity:EmailConfigEntity ?= null
         var isNewUser = false
-        var googleserviceFlag = false; //是否支持googleypaly
+        var googleserviceFlag = true; //是否支持googleypaly
         //1：qq企业邮箱
         //2：qq邮箱
         //3：163邮箱
