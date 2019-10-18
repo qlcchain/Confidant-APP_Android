@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GmailQuickstart {
-    private static final String APPLICATION_NAME = "Gmail API Quickstart";
+    private static final String APPLICATION_NAME = "com.stratagile.pnrouter";
     private static final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -82,6 +82,9 @@ public class GmailQuickstart {
             credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPESSTRING))
                     .setBackOff(new ExponentialBackOff())
                     .setSelectedAccountName("owen.peng.wang@gmail.com");
+            if (credential.getSelectedAccountName() == null) {
+                String aa = "";
+            }
             Gmail service = new Gmail.Builder(transport, JSON_FACTORY, credential)
                     .setApplicationName(APPLICATION_NAME)
                     .build();

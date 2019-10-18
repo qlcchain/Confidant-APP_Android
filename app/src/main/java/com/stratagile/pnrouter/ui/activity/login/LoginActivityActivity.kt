@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.ui.activity.login
 
-import android.accounts.AccountManager
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
