@@ -13,6 +13,7 @@ import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,24 +51,32 @@ public class GmailHelper {
      */
     public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
                                                           String query) throws IOException {
-
-        ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
         List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
-            messages.addAll(response.getMessages());
-            if (response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().messages().list(userId).setQ(query)
-                        .setPageToken(pageToken).execute();
-            } else {
-                break;
+        try
+        {
+            ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
+
+            while (response.getMessages() != null) {
+                messages.addAll(response.getMessages());
+                if (response.getNextPageToken() != null) {
+                    String pageToken = response.getNextPageToken();
+                    response = service.users().messages().list(userId).setQ(query)
+                            .setPageToken(pageToken).execute();
+                } else {
+                    break;
+                }
             }
-        }
 
-        for (Message message : messages) {
-            //System.out.println(message.toPrettyString());
-        }
+            for (Message message : messages) {
+                //System.out.println(message.toPrettyString());
+            }
+        }catch (SocketTimeoutException e)
+        {
 
+        }catch (Exception e)
+        {
+
+        }
         return messages;
     }
 

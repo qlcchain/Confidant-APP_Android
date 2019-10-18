@@ -1071,6 +1071,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+        var isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         /*var aa = RxEncodeTool.base64Decode("MQ==")
         var bb = ""
         for(id in aa)
