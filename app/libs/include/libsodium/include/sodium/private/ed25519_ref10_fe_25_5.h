@@ -29,7 +29,7 @@ fe25519_1(fe25519 h)
  h = f + g
  Can overlap h with f or g.
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
  |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
  *
@@ -67,7 +67,7 @@ fe25519_add(fe25519 h, const fe25519 f, const fe25519 g)
  h = f - g
  Can overlap h with f or g.
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
  |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
  *
@@ -104,7 +104,7 @@ fe25519_sub(fe25519 h, const fe25519 f, const fe25519 g)
 /*
  h = -f
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
  *
  Postconditions:
@@ -141,7 +141,7 @@ fe25519_neg(fe25519 h, const fe25519 f)
  Replace (f,g) with (g,g) if b == 1;
  replace (f,g) with (f,g) if b == 0.
  *
- Preconditions: b in {0,1}.
+ PreconditionsLocal: b in {0,1}.
  */
 
 static void
@@ -300,7 +300,7 @@ fe25519_copy(fe25519 h, const fe25519 f)
  return 1 if f is in {1,3,5,...,q-2}
  return 0 if f is in {0,2,4,...,q-1}
 
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
  */
 
@@ -318,7 +318,7 @@ fe25519_isnegative(const fe25519 f)
  return 1 if f == 0
  return 0 if f != 0
 
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
  */
 
@@ -336,7 +336,7 @@ fe25519_iszero(const fe25519 f)
  h = f * g
  Can overlap h with f or g.
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
  |g| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
  *
@@ -627,7 +627,7 @@ fe25519_mul(fe25519 h, const fe25519 f, const fe25519 g)
  h = f * f
  Can overlap h with f.
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
  *
  Postconditions:
@@ -799,7 +799,7 @@ fe25519_sq(fe25519 h, const fe25519 f)
  h = 2 * f * f
  Can overlap h with f.
  *
- Preconditions:
+ PreconditionsLocal:
  |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
  *
  Postconditions:

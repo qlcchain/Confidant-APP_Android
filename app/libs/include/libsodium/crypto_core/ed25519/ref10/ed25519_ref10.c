@@ -742,7 +742,7 @@ ge25519_double_scalarmult_vartime(ge25519_p2 *r, const unsigned char *a,
  h = a * p
  where a = a[0]+256*a[1]+...+256^31 a[31]
 
- Preconditions:
+ PreconditionsLocal:
  a[31] <= 127
 
  p is public
@@ -837,7 +837,7 @@ ge25519_scalarmult(ge25519_p3 *h, const unsigned char *a, const ge25519_p3 *p)
  B is the Ed25519 base point (x,4/5) with x positive
  (as bytes: 0x5866666666666666666666666666666666666666666666666666666666666666)
 
- Preconditions:
+ PreconditionsLocal:
  a[31] <= 127
  */
 

@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.login
 
+import android.accounts.AccountManager
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
@@ -131,6 +132,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     var newRouterEntity = RouterEntity()
     private lateinit var standaloneCoroutine : Job
+
+    private val PREF_ACCOUNT_NAME = "accountName"
 
     var routerId = ""
     var userSn = ""
@@ -2517,7 +2520,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
                 Thread(Runnable() {
                     run() {
-                        var gmailService = GmailQuickstart.getGmailService();
+                        val settings = getPreferences(Context.MODE_PRIVATE)
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance);
                         var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
                         var cc = ""
                     }}

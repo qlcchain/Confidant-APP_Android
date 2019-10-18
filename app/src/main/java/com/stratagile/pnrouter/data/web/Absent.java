@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.stratagile.pnrouter.data.web.Preconditions.checkNotNull;
+import static com.stratagile.pnrouter.data.web.PreconditionsLocal.checkNotNull;
 
 final class Absent extends Optional<Object> {
     static final Absent INSTANCE = new Absent();

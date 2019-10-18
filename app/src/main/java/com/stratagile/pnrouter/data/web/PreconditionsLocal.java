@@ -1,6 +1,6 @@
 package com.stratagile.pnrouter.data.web;
-public final class Preconditions {
-    private Preconditions() {}
+public final class PreconditionsLocal {
+    private PreconditionsLocal() {}
 
     /**
      * Ensures the truth of an expression involving one or more parameters to the

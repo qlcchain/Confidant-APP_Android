@@ -8,6 +8,7 @@ import java.io.IOException;
 // ...
 
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
@@ -49,6 +50,7 @@ public class GmailHelper {
      */
     public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
                                                           String query) throws IOException {
+
         ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
         List<Message> messages = new ArrayList<Message>();
         while (response.getMessages() != null) {

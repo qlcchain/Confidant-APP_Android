@@ -32,7 +32,7 @@ public class FileInfosRepository implements FileInfosDataSource {
     private BaseSchedulerProvider mSchedulerProvider;
 
     public FileInfosRepository() {
-//        mSchedulerProvider = Preconditions.checkNotNull(schedulerProvider, "schedulerProvider == null");
+//        mSchedulerProvider = PreconditionsLocal.checkNotNull(schedulerProvider, "schedulerProvider == null");
     }
 
 //    .map(new Func1<FileInfo, File>() {
