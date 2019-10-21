@@ -1086,7 +1086,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         .setFromTokenResponse(response);
         var aa = Gmail
         GmailHelper.listMessagesMatchingQuery(aa,"","")*/
-        if(ConstantValue.googleserviceFlag)
+        if(isGooglePlayServicesAvailable)
         {
             var gso = GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -1336,18 +1336,21 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
         if(needAutoClickLogin)
         {
-            loginBtn.performClick()
+            if(!BuildConfig.DEBUG)
+            {
+                loginBtn.performClick()
+            }
         }else{
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var routerNameTipsText = routerNameTips.text.toString()
             if (routerList.size != 0) {
-                if(autoLoginRouterSn != "no")
+                if(autoLoginRouterSn != "no" && !BuildConfig.DEBUG)
                 {
                     loginBtn.performClick()
                 }
             }else if( routerNameTipsText == "Default node")
             {
-                if(autoLoginRouterSn != "no")
+                if(autoLoginRouterSn != "no" && !BuildConfig.DEBUG)
                 {
                     loginBtn.performClick()
                 }
