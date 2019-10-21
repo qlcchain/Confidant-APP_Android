@@ -125,7 +125,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
-
+        ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         /*if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")

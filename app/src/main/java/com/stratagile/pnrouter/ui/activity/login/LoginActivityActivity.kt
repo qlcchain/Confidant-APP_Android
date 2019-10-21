@@ -1071,7 +1071,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
-        var isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         /*var aa = RxEncodeTool.base64Decode("MQ==")
         var bb = ""
         for(id in aa)
@@ -1086,7 +1085,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         .setFromTokenResponse(response);
         var aa = Gmail
         GmailHelper.listMessagesMatchingQuery(aa,"","")*/
-        if(isGooglePlayServicesAvailable)
+        if(ConstantValue.isGooglePlayServicesAvailable)
         {
             var gso = GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
