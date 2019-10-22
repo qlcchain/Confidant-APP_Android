@@ -1409,7 +1409,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                             refreshLayout.finishLoadMore()
                                         }
                                     }
-                                },menu,pageToken,1L,lastTotalCount)
+                                },menu,pageToken,5L,lastTotalCount)
                     }
         }else{
             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
