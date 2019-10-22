@@ -233,7 +233,7 @@ dependencies {
     implementation project(':picture_library')
     implementation project(':zbar')
     implementation project(':qmui')
-    api project(':eamil')
+    //api project(':eamil')
     implementation 'org.greenrobot:greendao:3.2.2'
 
     //图片加载框架
@@ -305,6 +305,10 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
     implementation files('libs/opencensus-contrib-http-util-0.21.0.jar')
     implementation files('libs/grpc-context-1.19.0.jar')
+
+    api files('libs/activation.jar')
+    api files('libs/additionnal.jar')
+    api files('libs/mail.jar')
 }
 
 def getSelfDefinedVersion(type) {

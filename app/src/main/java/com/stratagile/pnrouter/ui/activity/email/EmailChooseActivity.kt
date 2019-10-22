@@ -277,7 +277,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                 account = acct!!.getEmail()!!
                 userId = acct!!.getId()!!
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
-                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var accountBase64 = String(RxEncodeTool.base64Encode(account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
                 /*Thread(Runnable() {
@@ -436,9 +436,12 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                                             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
                                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                         }
+                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                        finish()
+                                    }else{
+                                        progressDialog.dismiss()
                                     }
-                                    EventBus.getDefault().post(ChangeEmailConfig())
-                                    finish()
+
                                 }
 
                                 override fun gainFailure(errorMsg: String) {
@@ -446,7 +449,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                                     //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
                                     finish()
                                 }
-                            },menuList)
+                            },menuList,gmailService,"me")
                 }
     }
     override fun onDestroy() {
