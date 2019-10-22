@@ -28,6 +28,7 @@ import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
 import com.stratagile.pnrouter.BuildConfig;
+import com.stratagile.pnrouter.utils.UIUtils;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 
@@ -51,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -1193,15 +1195,10 @@ class EmailCore {
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
             messagesAll[i] = email;
             i++;
-            String aa = "";
         }
 
 
         HashMap<String, Object> messageMap = new HashMap<>();
-
-
-
-
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
@@ -1215,7 +1212,7 @@ class EmailCore {
         String errorMsg = "";
         for (Message message : list){
             try {
-                uuid = "";
+                uuid = System.currentTimeMillis()+"";
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
