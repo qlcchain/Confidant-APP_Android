@@ -115,6 +115,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
         setContentView(R.layout.email_choose_activity)
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         var gso = GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()

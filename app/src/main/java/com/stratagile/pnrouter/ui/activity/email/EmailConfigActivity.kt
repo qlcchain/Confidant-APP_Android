@@ -126,7 +126,6 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
         setContentView(R.layout.email_otherconfig_activity)
     }
     override fun initData() {
-        AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         isShow = false
         otherEmailConfig  = OtherEmailConfig();
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
