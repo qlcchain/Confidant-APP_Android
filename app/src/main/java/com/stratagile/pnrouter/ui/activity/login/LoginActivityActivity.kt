@@ -2523,7 +2523,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 Thread(Runnable() {
                     run() {
                         val settings = getPreferences(Context.MODE_PRIVATE)
-                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance);
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"owen.peng.wang@gmail.com");
                         var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
                         var cc = ""
                     }}

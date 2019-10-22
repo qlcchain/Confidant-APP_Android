@@ -78,6 +78,7 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property IsChoose = new Property(53, Boolean.class, "isChoose", false, "IS_CHOOSE");
         public final static Property ImapEncrypted = new Property(54, String.class, "imapEncrypted", false, "IMAP_ENCRYPTED");
         public final static Property SmtpEncrypted = new Property(55, String.class, "smtpEncrypted", false, "SMTP_ENCRYPTED");
+        public final static Property UserId = new Property(56, String.class, "userId", false, "USER_ID");
     }
 
 
@@ -148,7 +149,8 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"DELETE_MIN_MESSAGE_ID\" INTEGER NOT NULL ," + // 52: deleteMinMessageId
                 "\"IS_CHOOSE\" INTEGER," + // 53: isChoose
                 "\"IMAP_ENCRYPTED\" TEXT," + // 54: imapEncrypted
-                "\"SMTP_ENCRYPTED\" TEXT);"); // 55: smtpEncrypted
+                "\"SMTP_ENCRYPTED\" TEXT," + // 55: smtpEncrypted
+                "\"USER_ID\" TEXT);"); // 56: userId
     }
 
     /** Drops the underlying database table. */
@@ -316,6 +318,11 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (smtpEncrypted != null) {
             stmt.bindString(56, smtpEncrypted);
         }
+ 
+        String userId = entity.getUserId();
+        if (userId != null) {
+            stmt.bindString(57, userId);
+        }
     }
 
     @Override
@@ -477,6 +484,11 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (smtpEncrypted != null) {
             stmt.bindString(56, smtpEncrypted);
         }
+ 
+        String userId = entity.getUserId();
+        if (userId != null) {
+            stmt.bindString(57, userId);
+        }
     }
 
     @Override
@@ -542,7 +554,8 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.getLong(offset + 52), // deleteMinMessageId
             cursor.isNull(offset + 53) ? null : cursor.getShort(offset + 53) != 0, // isChoose
             cursor.isNull(offset + 54) ? null : cursor.getString(offset + 54), // imapEncrypted
-            cursor.isNull(offset + 55) ? null : cursor.getString(offset + 55) // smtpEncrypted
+            cursor.isNull(offset + 55) ? null : cursor.getString(offset + 55), // smtpEncrypted
+            cursor.isNull(offset + 56) ? null : cursor.getString(offset + 56) // userId
         );
         return entity;
     }
@@ -605,6 +618,7 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setIsChoose(cursor.isNull(offset + 53) ? null : cursor.getShort(offset + 53) != 0);
         entity.setImapEncrypted(cursor.isNull(offset + 54) ? null : cursor.getString(offset + 54));
         entity.setSmtpEncrypted(cursor.isNull(offset + 55) ? null : cursor.getString(offset + 55));
+        entity.setUserId(cursor.isNull(offset + 56) ? null : cursor.getString(offset + 56));
      }
     
     @Override

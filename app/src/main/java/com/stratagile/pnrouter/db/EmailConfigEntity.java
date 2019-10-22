@@ -156,6 +156,82 @@ public class EmailConfigEntity implements Parcelable{
         userId = in.readString();
     }
 
+
+    @Generated(hash = 1278140260)
+    public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
+            String popHost, String imapHost, String account, String name, String emailType,
+            String password, int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount,
+            int starTotalCount, int starunReadCount, int drafTotalCount, int drafUnReadCount,
+            int sendTotalCount, int sendunReadCount, int garbageCount, int garbageUnReadCount,
+            int deleteTotalCount, int deleteUnReadCount, String inboxMenu, String nodeMenu,
+            String starMenu, String drafMenu, String sendMenu, String garbageMenu, String deleteMenu,
+            Boolean inboxMenuRefresh, Boolean nodeMenuRefresh, Boolean starMenuRefresh,
+            Boolean drafMenuRefresh, Boolean sendMenuRefresh, Boolean garbageMenuRefresh,
+            Boolean deleteMenuRefresh, long inboxMaxMessageId, long inboxMinMessageId,
+            long nodeMaxMessageId, long starMaxMessageId, long drafMaxMessageId, long sendMaxMessageId,
+            long garbageMaxMessageId, long deleteMaxMessageId, long nodeMinMessageId,
+            long starMinMessageId, long drafMinMessageId, long sendMinMessageId,
+            long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose, String imapEncrypted,
+            String smtpEncrypted, String userId) {
+        this.id = id;
+        this.smtpPort = smtpPort;
+        this.popPort = popPort;
+        this.imapPort = imapPort;
+        this.smtpHost = smtpHost;
+        this.popHost = popHost;
+        this.imapHost = imapHost;
+        this.account = account;
+        this.name = name;
+        this.emailType = emailType;
+        this.password = password;
+        this.totalCount = totalCount;
+        this.unReadCount = unReadCount;
+        this.nodeTotalCount = nodeTotalCount;
+        this.nodeUReadCount = nodeUReadCount;
+        this.starTotalCount = starTotalCount;
+        this.starunReadCount = starunReadCount;
+        this.drafTotalCount = drafTotalCount;
+        this.drafUnReadCount = drafUnReadCount;
+        this.sendTotalCount = sendTotalCount;
+        this.sendunReadCount = sendunReadCount;
+        this.garbageCount = garbageCount;
+        this.garbageUnReadCount = garbageUnReadCount;
+        this.deleteTotalCount = deleteTotalCount;
+        this.deleteUnReadCount = deleteUnReadCount;
+        this.inboxMenu = inboxMenu;
+        this.nodeMenu = nodeMenu;
+        this.starMenu = starMenu;
+        this.drafMenu = drafMenu;
+        this.sendMenu = sendMenu;
+        this.garbageMenu = garbageMenu;
+        this.deleteMenu = deleteMenu;
+        this.inboxMenuRefresh = inboxMenuRefresh;
+        this.nodeMenuRefresh = nodeMenuRefresh;
+        this.starMenuRefresh = starMenuRefresh;
+        this.drafMenuRefresh = drafMenuRefresh;
+        this.sendMenuRefresh = sendMenuRefresh;
+        this.garbageMenuRefresh = garbageMenuRefresh;
+        this.deleteMenuRefresh = deleteMenuRefresh;
+        this.inboxMaxMessageId = inboxMaxMessageId;
+        this.inboxMinMessageId = inboxMinMessageId;
+        this.nodeMaxMessageId = nodeMaxMessageId;
+        this.starMaxMessageId = starMaxMessageId;
+        this.drafMaxMessageId = drafMaxMessageId;
+        this.sendMaxMessageId = sendMaxMessageId;
+        this.garbageMaxMessageId = garbageMaxMessageId;
+        this.deleteMaxMessageId = deleteMaxMessageId;
+        this.nodeMinMessageId = nodeMinMessageId;
+        this.starMinMessageId = starMinMessageId;
+        this.drafMinMessageId = drafMinMessageId;
+        this.sendMinMessageId = sendMinMessageId;
+        this.garbageMinMessageId = garbageMinMessageId;
+        this.deleteMinMessageId = deleteMinMessageId;
+        this.isChoose = isChoose;
+        this.imapEncrypted = imapEncrypted;
+        this.smtpEncrypted = smtpEncrypted;
+        this.userId = userId;
+    }
+
     public static final Creator<EmailConfigEntity> CREATOR = new Creator<EmailConfigEntity>() {
         @Override
         public EmailConfigEntity createFromParcel(Parcel in) {

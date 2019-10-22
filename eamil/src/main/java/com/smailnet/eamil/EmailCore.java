@@ -715,6 +715,138 @@ class EmailCore {
 
     }
     /**
+     * 使用gmai API接收服务器上的邮件属性
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<EmailCount> gmailReceiveMailCountAndMenu(final ArrayList<String> menuList) throws MessagingException, IOException {
+
+        List<EmailCount> emailMessageList = new ArrayList<>();
+        EmailCount emailData = new EmailCount();
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+        Folder defaultFolder = imapStore.getDefaultFolder();
+        Folder[] allFolder = defaultFolder.list();
+        try {
+            IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menuList.get(0));
+            folder.open(Folder.READ_ONLY);
+
+            int total = folder.getMessageCount();
+            if(total > 0)
+            {
+                Message message = folder.getMessage(total);
+                emailData.setInboxMaxMessageId(folder.getUID(message));
+                emailData.setInboxMinMessageId(folder.getUID(message));
+            }else{
+                emailData.setInboxMaxMessageId(0);
+                emailData.setInboxMinMessageId(0);
+            }
+            emailData.setTotalCount(total);
+            int size = folder.getUnreadMessageCount();
+            emailData.setUnReadCount(size);
+
+            if(!menuList.get(1).equals(""))
+            {
+                IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
+                folderDraf.open(Folder.READ_ONLY);
+                int totalDraf = folderDraf.getMessageCount();
+                if(totalDraf > 0)
+                {
+                    Message message = folderDraf.getMessage(totalDraf);
+                    emailData.setDrafMaxMessageId(folderDraf.getUID(message));
+                    emailData.setDrafMinMessageId(folderDraf.getUID(message));
+                }else{
+                    emailData.setDrafMaxMessageId(0);
+                    emailData.setDrafMinMessageId(0);
+                }
+                emailData.setDrafTotalCount(totalDraf);
+                int sizeDraf = folderDraf.getUnreadMessageCount();
+                emailData.setDrafUnReadCount(sizeDraf);
+                folderDraf.close(false);
+            }
+            if(!menuList.get(2).equals(""))
+            {
+                IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
+                folderSend.open(Folder.READ_ONLY);
+                int totalSend = folderSend.getMessageCount();
+
+                if(totalSend > 0)
+                {
+                    Message message = folderSend.getMessage(totalSend);
+                    emailData.setSendMaxMessageId(folderSend.getUID(message));
+                    emailData.setSendMinMessageId(folderSend.getUID(message));
+                }else{
+                    emailData.setSendMaxMessageId(0);
+                    emailData.setSendMinMessageId(0);
+                }
+
+                emailData.setSendTotalCount(totalSend);
+                int sizeSend = folderSend.getUnreadMessageCount();
+                emailData.setSendunReadCount(sizeSend);
+                folderSend.close(false);
+            }
+
+
+
+            if(!menuList.get(3).equals(""))
+            {
+                IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
+                folderGarbage.open(Folder.READ_ONLY);
+                int totalGarbage = folderGarbage.getMessageCount();
+
+                if(totalGarbage > 0)
+                {
+                    Message message = folderGarbage.getMessage(totalGarbage);
+                    emailData.setGarbageMaxMessageId(folderGarbage.getUID(message));
+                    emailData.setGarbageMinMessageId(folderGarbage.getUID(message));
+                }else{
+                    emailData.setGarbageMaxMessageId(0);
+                    emailData.setGarbageMinMessageId(0);
+                }
+                emailData.setGarbageCount(totalGarbage);
+                int sizeGarbage = folderGarbage.getUnreadMessageCount();
+                emailData.setGarbageUnReadCount(sizeGarbage);
+                folderGarbage.close(false);
+            }
+
+
+            if(!menuList.get(4).equals(""))
+            {
+                IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
+                folderDelete.open(Folder.READ_ONLY);
+                int totalDelete = folderDelete.getMessageCount();
+                if(totalDelete > 0)
+                {
+                    Message message = folderDelete.getMessage(totalDelete);
+                    emailData.setDeleteMaxMessageId(folderDelete.getUID(message));
+                    emailData.setDeleteMinMessageId(folderDelete.getUID(message));
+                }else{
+                    emailData.setDeleteMaxMessageId(0);
+                    emailData.setDeleteMinMessageId(0);
+                }
+                emailData.setDeleteTotalCount(totalDelete);
+                int sizeDelete = folderDelete.getUnreadMessageCount();
+                emailData.setDeleteUnReadCount(sizeDelete);
+                folderDelete.close(false);
+            }
+            folder.close(false);
+
+
+
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+
+        }finally {
+            imapStore.close();
+            emailMessageList.add(emailData);
+            return emailMessageList;
+        }
+
+    }
+    /**
      * 使用IMAP协议接收服务器上的新邮件
      * @return
      * @throws MessagingException

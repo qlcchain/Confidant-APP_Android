@@ -73,7 +73,7 @@ public class GmailQuickstart {
 
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
-    public static Gmail getGmailService(Context context)
+    public static Gmail getGmailService(Context context,String accout)
     {
         try {
             //final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
@@ -81,7 +81,7 @@ public class GmailQuickstart {
 
             credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPESSTRING))
                     .setBackOff(new ExponentialBackOff())
-                    .setSelectedAccountName("owen.peng.wang@gmail.com");
+                    .setSelectedAccountName(accout);
             if (credential.getSelectedAccountName() == null) {
                 String aa = "";
             }
