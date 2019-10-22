@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetCountCallback
+import com.smailnet.eamil.Callback.GetGmailReceiveCallback
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailCount
@@ -379,7 +380,19 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                           AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullMailList))*/
                     }else{
                         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()
-                        pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
+
+                        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                        {
+                            pullMoreMessageList(if (localMessageList!= null){localMessageList.size}else{0})
+                        }else{
+                            var pageToken = ""
+                            var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                            if(emailConfigEntityChooseList.size > 0) {
+                                var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                                pageToken = emailConfigEntityChoose.pageToken
+                            }
+                            pullMoreGmailMessageList(pageToken)
+                        }
                     }
 
                 }else{
@@ -516,7 +529,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     if (localMessageList== null || localMessageList.size == 0)
                     {
                         showProgressDialog()
-                        pullMoreMessageList(0)
+                        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                        {
+                            pullMoreMessageList(0)
+                        }else{
+                            pullMoreGmailMessageList("")
+                        }
                     }else{
                         showProgressDialog()
                         pullNewMessageList(0L)
@@ -526,7 +544,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     if (localMessageList== null || localMessageList.size == 0)
                     {
                         showProgressDialog()
-                        pullMoreMessageList(0)
+                        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                        {
+                            pullMoreMessageList(0)
+                        }else{
+                            pullMoreGmailMessageList("")
+                        }
                     }else{
                         runOnUiThread {
                             emaiMessageChooseAdapter!!.setNewData(localMessageList);
@@ -588,7 +611,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         if (localMessageList== null || localMessageList.size == 0)
                         {
                             showProgressDialog()
-                            pullMoreMessageList(0)
+                            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                            {
+                                pullMoreMessageList(0)
+                            }else{
+                                pullMoreGmailMessageList("")
+                            }
                         }else{
                             showProgressDialog()
                             pullNewMessageList(0L)
@@ -598,7 +626,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         if (localMessageList== null || localMessageList.size == 0)
                         {
                             showProgressDialog()
-                            pullMoreMessageList(0)
+                            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                            {
+                                pullMoreMessageList(0)
+                            }else{
+                                pullMoreGmailMessageList("")
+                            }
                         }else{
                             runOnUiThread {
                                 emaiMessageChooseAdapter!!.setNewData(localMessageList);
@@ -613,9 +646,14 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     showProgressDialog()
                     if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
                     {
-                        pullMoreMessageList(0)
+                        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                        {
+                            pullMoreMessageList(0)
+                        }else{
+                            pullMoreGmailMessageList("")
+                        }
                     }else{
-                        pullMoreGmailMessageList(0)
+                        pullMoreGmailMessageList("")
                     }
                 }else{
                     runOnUiThread {
@@ -1186,14 +1224,13 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }
 
     }
-    fun pullMoreGmailMessageList(localSize:Int) {
+    fun pullMoreGmailMessageList(pageToken :String) {
         var root_ = this.activity;
         var account= AppConfig.instance.emailConfig().account
         var smtpHost = AppConfig.instance.emailConfig().smtpHost
         Log.i("pullMoreMessageList",account +":"+smtpHost)
 
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        var beginIndex = localSize
         var lastTotalCount = 0;
         if(emailConfigEntityChoose.size > 0)
         {
@@ -1233,8 +1270,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     .run { progressDialog ->
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
-                                .gmailReceiveMoreAsyn(gmailService,"me",this.activity, object : GetReceiveCallback {
-                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String) {
+                                .gmailReceiveMoreAsyn(gmailService,"me",this.activity, object : GetGmailReceiveCallback {
+                                    override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String,pageToken:String) {
                                         if(noMoreData)
                                         {
                                             runOnUiThread {
@@ -1284,6 +1321,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
                                                     }
                                                 }
+                                                emailConfigEntity.pageToken = pageToken;
                                                 AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                                             }
                                             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu),EmailMessageEntityDao.Properties.MsgId.eq(item.id)).list()
@@ -1371,7 +1409,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                             refreshLayout.finishLoadMore()
                                         }
                                     }
-                                },menu,beginIndex,7,lastTotalCount)
+                                },menu,pageToken,1L,lastTotalCount)
                     }
         }else{
             var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.TimeStamp).list()

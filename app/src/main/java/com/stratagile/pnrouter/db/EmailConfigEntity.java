@@ -77,7 +77,8 @@ public class EmailConfigEntity implements Parcelable{
 
     private String imapEncrypted;    //加密类型
     private String smtpEncrypted;    //加密类型
-    private String userId;        //gmai所用的id，如果走着走gmail API
+    private String userId;        //gmai所用的id，如果有则走gmail API
+    private String pageToken;        //gmai所用的pageToken，拉取历史邮件
 
     public EmailConfigEntity() {
 
@@ -154,10 +155,11 @@ public class EmailConfigEntity implements Parcelable{
         imapEncrypted = in.readString();
         smtpEncrypted = in.readString();
         userId = in.readString();
+        pageToken = in.readString();
     }
 
 
-    @Generated(hash = 1278140260)
+    @Generated(hash = 960518480)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
             String popHost, String imapHost, String account, String name, String emailType,
             String password, int totalCount, int unReadCount, int nodeTotalCount, int nodeUReadCount,
@@ -172,7 +174,7 @@ public class EmailConfigEntity implements Parcelable{
             long garbageMaxMessageId, long deleteMaxMessageId, long nodeMinMessageId,
             long starMinMessageId, long drafMinMessageId, long sendMinMessageId,
             long garbageMinMessageId, long deleteMinMessageId, Boolean isChoose, String imapEncrypted,
-            String smtpEncrypted, String userId) {
+            String smtpEncrypted, String userId, String pageToken) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -230,6 +232,7 @@ public class EmailConfigEntity implements Parcelable{
         this.imapEncrypted = imapEncrypted;
         this.smtpEncrypted = smtpEncrypted;
         this.userId = userId;
+        this.pageToken = pageToken;
     }
 
     public static final Creator<EmailConfigEntity> CREATOR = new Creator<EmailConfigEntity>() {
@@ -710,6 +713,14 @@ public class EmailConfigEntity implements Parcelable{
         this.userId = userId;
     }
 
+    public String getPageToken() {
+        return pageToken;
+    }
+
+    public void setPageToken(String pageToken) {
+        this.pageToken = pageToken;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -779,5 +790,6 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(imapEncrypted);
         dest.writeString(smtpEncrypted);
         dest.writeString(userId);
+        dest.writeString(pageToken);
     }
 }

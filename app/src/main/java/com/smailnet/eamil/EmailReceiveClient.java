@@ -21,6 +21,7 @@ import android.app.Activity;
 import com.google.api.services.gmail.Gmail;
 import com.smailnet.eamil.Callback.GetAttachCallback;
 import com.smailnet.eamil.Callback.GetCountCallback;
+import com.smailnet.eamil.Callback.GetGmailReceiveCallback;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.Callback.MarkCallback;
 
@@ -200,12 +201,12 @@ public class EmailReceiveClient {
      * 使用imap协议接收历史邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void gmailReceiveMoreAsyn(final Gmail gmailService,final String userId,final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final int beginIndex, final int pageSize,final int lastTotalCount){
+    public void gmailReceiveMoreAsyn(final Gmail gmailService, final String userId, final Activity activity, final GetGmailReceiveCallback getReceiveCallback, final String menu, final String pageToken, final long pageSize, final int lastTotalCount){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).gmailReceiveMoreMail(gmailService,userId,menu,beginIndex,pageSize,lastTotalCount);
+                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).gmailReceiveMoreMail(gmailService,userId,menu,pageToken,pageSize,lastTotalCount);
                     final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
                    /* messageMap.put("totalCount",totalSize);
                     messageMap.put("totalUnreadCount",totalUnreadCount);*/
@@ -214,10 +215,11 @@ public class EmailReceiveClient {
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
                     final String errorMsg = (String)messageMap.get("errorMsg");
                     final String menuFlag = (String)messageMap.get("menu");
+                    final String pageToken = (String)messageMap.get("pageToken");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag,pageToken);
                         }
                     });
                 } catch (final MessagingException e) {

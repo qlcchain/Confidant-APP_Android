@@ -1161,21 +1161,20 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> gmailReceiveMoreMail(Gmail gmailService,String userId,String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
+    public HashMap<String, Object> gmailReceiveMoreMail(Gmail gmailService,String userId,String menu, final String pageToken, final long pageSize,final int lastTotalCount) throws MessagingException, IOException {
 
 
         List<String> selectedMesLable = new ArrayList<String>();
         selectedMesLable.add(menu);
-
-
-        ListMessagesResponse listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).execute();
+        ListMessagesResponse listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize).setPageToken(pageToken).execute();
         List<com.google.api.services.gmail.model.Message> messagesGmail = new ArrayList<com.google.api.services.gmail.model.Message>();
+        String pageTokenTemp = "";
         while (listMesResponse.getMessages() != null) {
             messagesGmail.addAll(listMesResponse.getMessages());
             if (listMesResponse.getNextPageToken() != null) {
-                String pageToken = listMesResponse.getNextPageToken();
-                listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable)
-                        .setPageToken(pageToken).execute();
+                pageTokenTemp = listMesResponse.getNextPageToken();
+                listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize)
+                        .setPageToken(pageTokenTemp).execute();
             } else {
                 break;
             }
@@ -1318,6 +1317,7 @@ class EmailCore {
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",0);//totalSize
         messageMap.put("totalUnreadCount",0);//totalUnreadCount
+        messageMap.put("pageToken",pageTokenTemp);//gmail下拉翻页参数
         messageMap.put("noMoreData",true);
         messageMap.put("errorMsg",errorMsg);
         messageMap.put("menu",menu);
