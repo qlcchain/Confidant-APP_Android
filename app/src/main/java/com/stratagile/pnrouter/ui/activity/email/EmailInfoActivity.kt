@@ -2030,8 +2030,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     },menu,msgId,flag,true,menuTo)
         }else{
             var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
-            var labelsToAdd = listOf<String>(menuTo)
-            var labelsToRemove = listOf<String>(from)
+            var labelsToAdd = listOf<String>(menuTo.toUpperCase())
+            var labelsToRemove = listOf<String>(from.toUpperCase())
             val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
             emailReceiveClient
                     .gmailMarkEmail(this@EmailInfoActivity, object : MarkCallback {
@@ -2095,44 +2095,22 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         var menuArray = arrayListOf<String>()
         var iconArray = arrayListOf<String>()
 
-        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        when(menu)
         {
-            when(menu)
+            ConstantValue.currentEmailConfigEntity!!.inboxMenu->
             {
-                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
-                    iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
-                }
-                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
-                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
-                }
-                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
-                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
-                }
+                menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
+                iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
             }
-        }else{
-            when(menu)
+            ConstantValue.currentEmailConfigEntity!!.garbageMenu->
             {
-                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Trash))
-                    iconArray = arrayListOf<String>("tabbar_deleted")
-                }
-                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
-                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
-                }
-                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
-                {
-                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
-                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
-                }
+                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
+                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
+            }
+            ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+            {
+                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
+                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
             }
         }
 
