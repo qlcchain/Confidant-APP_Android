@@ -151,6 +151,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     private val methodContext = MethodContext()
     private val methodContextCc = MethodContext()
     private val methodContextBcc = MethodContext()
+    var needSize = 0;
     var contactMapList = HashMap<String, String>()
     internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
     var replayAll = true
@@ -184,26 +185,46 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         if(jCheckmailUkeyRsp.params.retCode == 0)
         {
             var data = jCheckmailUkeyRsp.params.payload
+            needSize = data.size;
             for (item in data)
             {
-                var value = item.pubKey;
-                val dst_public_MiKey_Friend = ByteArray(32)
-                val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
-                if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
-                    contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                if(item.pubKey !="")
+                {
+                    var value = item.pubKey;
+                    val dst_public_MiKey_Friend = ByteArray(32)
+                    val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
+                    if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                        contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                    }
+                }else{
+                    var aa = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().list()
+                    var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.Mails.`in`(item.user)).list()
+                    if (localFriendList.size > 0)
+                    {
+                        var it = localFriendList.get(0)
+                        var value = it.signPublicKey;
+                        val dst_public_MiKey_Friend = ByteArray(32)
+                        val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
+                        if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                            contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                        }
+                    }
+
                 }
+
             }
             if(isSendCheck)
             {
                 sendEmail(true);
             }
            runOnUiThread {
-               if(contactMapList.size > 0)
+               if(contactMapList.size == needSize)
                {
                    lockTips.visibility = View.VISIBLE
                }
            }
         }else{
+            needSize = 0;
             contactMapList = HashMap<String, String>()
             if(isSendCheck)
             {
@@ -1309,7 +1330,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 showProgressDialog(getString(R.string.waiting))
             }
         }
-        var checkmailUkey = CheckmailUkey(num,addressBase64)
+        var checkmailUkey = CheckmailUkey(num,1,addressBase64)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
     }
     /**
@@ -1390,7 +1411,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
                 if(item.localPath != null)
                 {
-                    if(contactMapList.size >0)
+                    if(contactMapList.size == needSize)
                     {
                         val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
                         val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
@@ -1416,7 +1437,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
 
-        if(contactMapList.size >0)
+        if(contactMapList.size == needSize)
         {
             val contentBuffer = contentHtml.toByteArray()
             var fileKey16 = fileKey.substring(0,16)
@@ -1442,7 +1463,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             confidantKey += myAccountBase64+"&&"+dstKey;
         }
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        if(contactMapList.size >0)
+        if(contactMapList.size == needSize)
         {
             contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
         }
@@ -1601,7 +1622,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             if(item.localPath != null)
             {
-                if(contactMapList.size >0)
+                if(contactMapList.size == needSize)
                 {
                     val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
                     val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))

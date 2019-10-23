@@ -771,7 +771,7 @@ data class GetCapactiy(var UserId :String,var Action : String = "GetCapactiy")
  * 98.	邮件加密时用户根据邮箱名查询目标公钥
  * (2)	响应（APP->Router）
  */
-data class CheckmailUkey(var Unum:Int ,var Users :String,var Action : String = "CheckmailUkey")
+data class CheckmailUkey(var Unum:Int ,var Type:Int,var Users :String,var Action : String = "CheckmailUkey")
 /**
  * 99.	用户查询自己账户下备份的邮件数量
  * (2)	响应（APP->Router）
