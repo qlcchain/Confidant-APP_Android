@@ -218,12 +218,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             {
                 sendEmail(true);
             }
-           runOnUiThread {
-               if(contactMapList.size == needSize)
-               {
-                   lockTips.visibility = View.VISIBLE
-               }
-           }
+            runOnUiThread {
+                if(contactMapList.size == needSize)
+                {
+                    lockTips.visibility = View.VISIBLE
+                }
+            }
         }else{
             needSize = 0;
             contactMapList = HashMap<String, String>()
@@ -581,12 +581,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
 
             //title_info.setText(fromName.trim()+"...")
-           /* if(fromAdress.indexOf(",") > -1)
-            {
-                draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
-            }else{
-                draft_info.setText(fromAdress.trim()+"...")
-            }*/
+            /* if(fromAdress.indexOf(",") > -1)
+             {
+                 draft_info.setText(fromAdress.trim().substring(0,fromAdress.indexOf(","))+"...")
+             }else{
+                 draft_info.setText(fromAdress.trim()+"...")
+             }*/
 
         }else{
             //title_info.setText(fromName.trim())
@@ -1338,10 +1338,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
      * 发送邮件
      */
     private fun sendEmail(send: Boolean) {
-       /*if(BuildConfig.DEBUG)
-        {
-            contactMapList = HashMap<String, String>()
-        }*/
+        /*if(BuildConfig.DEBUG)
+         {
+             contactMapList = HashMap<String, String>()
+         }*/
         var fileKey = RxEncryptTool.generateAESKey()
         var contentHtml = re_main_editor.html
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
@@ -1836,36 +1836,72 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             runOnUiThread {
                 showProgressDialog(getString(R.string.Saving))
             }
-            emailSendClient
-                    .setTo(toAdress)                //收件人的邮箱地址
-                    .setCc(ccAdress)
-                    .setBcc(bccAdress)
-                    .setNickname(name)                                    //发件人昵称
-                    .setSubject(subject.getText().toString())             //邮件标题
-                    .setContent(contentHtml)              //邮件正文
-                    .setCidPath(cidNameList)                 //cid资源
-                    .setCid(cidList)
-                    .setUUID(uuid)
-                    .setAttach(attachList)
-                    .saveDraftsAsyn(this, object : GetSendCallback {
-                        override fun sendSuccess() {
-                            runOnUiThread {
-                                closeProgressDialog()
-                                Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
-                                finish()
+            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+            {
+                emailSendClient
+                        .setTo(toAdress)                //收件人的邮箱地址
+                        .setCc(ccAdress)
+                        .setBcc(bccAdress)
+                        .setNickname(name)                                    //发件人昵称
+                        .setSubject(subject.getText().toString())             //邮件标题
+                        .setContent(contentHtml)              //邮件正文
+                        .setCidPath(cidNameList)                 //cid资源
+                        .setCid(cidList)
+                        .setUUID(uuid)
+                        .setAttach(attachList)
+                        .saveDraftsAsyn(this, object : GetSendCallback {
+                            override fun sendSuccess() {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
                             }
-                        }
 
-                        override fun sendFailure(errorMsg: String) {
-                            runOnUiThread {
-                                closeProgressDialog()
+                            override fun sendFailure(errorMsg: String) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
+                                Islands.ordinaryDialog(this@EmailSendActivity)
+                                        .setText(null, getString(R.string.error))
+                                        .setButton(getString(R.string.close), null, null)
+                                        .click().show()
                             }
-                            Islands.ordinaryDialog(this@EmailSendActivity)
-                                    .setText(null, getString(R.string.error))
-                                    .setButton(getString(R.string.close), null, null)
-                                    .click().show()
-                        }
-                    },ConstantValue.currentEmailConfigEntity!!.drafMenu,"draf")
+                        },ConstantValue.currentEmailConfigEntity!!.drafMenu,"draf")
+            }else{
+                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                emailSendClient
+                        .setTo(toAdress)                //收件人的邮箱地址
+                        .setCc(ccAdress)
+                        .setBcc(bccAdress)
+                        .setNickname(name)                                    //发件人昵称
+                        .setSubject(subject.getText().toString())             //邮件标题
+                        .setContent(contentHtml)              //邮件正文
+                        .setCidPath(cidNameList)                 //cid资源
+                        .setCid(cidList)
+                        .setUUID(uuid)
+                        .setAttach(attachList)
+                        .gmailSaveDraftsAsyn(this, object : GetSendCallback {
+                            override fun sendSuccess() {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                            }
+
+                            override fun sendFailure(errorMsg: String) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
+                                Islands.ordinaryDialog(this@EmailSendActivity)
+                                        .setText(null, getString(R.string.error))
+                                        .setButton(getString(R.string.close), null, null)
+                                        .click().show()
+                            }
+                        },ConstantValue.currentEmailConfigEntity!!.drafMenu,"draf",gmailService,"me")
+            }
+
         }
 
     }

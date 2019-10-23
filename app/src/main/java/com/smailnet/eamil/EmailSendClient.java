@@ -336,6 +336,50 @@ public class EmailSendClient {
         }).start();
     }
     /**
+     * 异步发送邮件，发送完毕回调并切回到主线程
+     * @param activity
+     * @param getSendCallback
+     * @return
+     */
+    public void gmailSaveDraftsAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu, final String flag, final Gmail gmailService,final String userId){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Message message = Operator.Core(emailConfig)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
+                            .saveDrafts();
+                    try {
+                        Operator.Core(emailConfig).gmailSaveMail(message,gmailService,userId);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendSuccess();
+                            }
+                        });
+                    }catch (Exception e)
+                    {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getSendCallback.sendFailure("");
+                            }
+                        });
+                    }
+
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSendCallback.sendFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
      * 异步发送邮件，发送完毕回调不切回到主线程
      * @param getSendCallback
      * @return

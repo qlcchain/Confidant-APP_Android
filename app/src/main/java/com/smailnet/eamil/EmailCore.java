@@ -32,7 +32,7 @@ import com.stratagile.pnrouter.BuildConfig;
 import com.stratagile.pnrouter.utils.UIUtils;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
-
+import com.google.api.services.gmail.model.Draft;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -1920,6 +1920,28 @@ class EmailCore {
                 folder.close(false);
             }
             imapStore.close();
+        }
+        return false;
+    }
+    /**
+     * 使用gmail API保存已发送或者草稿箱
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean gmailSaveMail(Message message,Gmail service, String userId) throws MessagingException, IOException {
+        try
+        {
+            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage)message);
+            Draft draft = new Draft();
+            draft.setMessage(messageGmail);
+            draft = service.users().drafts().create(userId, draft).execute();
+            System.out.println("draft id: " + draft.getId());
+            System.out.println(draft.toPrettyString());
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
         return false;
     }
