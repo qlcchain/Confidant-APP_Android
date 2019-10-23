@@ -190,7 +190,7 @@ class EmailCore {
                 //properties.put("mail.smtp.ssl.enable", "false");
               /*  MailSSLSocketFactory sf = new MailSSLSocketFactory();
                 sf.setTrustAllHosts(true);*/
-               // properties.put("mail.smtp.ssl.checkserveridentity", "false");
+                // properties.put("mail.smtp.ssl.checkserveridentity", "false");
                 //properties.put("mail.smtp.ssl.socketFactory", sf);
             }else if(smtpEncrypted != null && smtpEncrypted.equals("None")){
                 //properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
@@ -324,7 +324,7 @@ class EmailCore {
             System.out.println(messageGmail.toPrettyString());
         }catch (Exception e)
         {
-          e.printStackTrace();
+            e.printStackTrace();
         }
         return message;
     }
@@ -1186,6 +1186,193 @@ class EmailCore {
         messageMap.put("totalCount",totalSize);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
+        messageMap.put("errorMsg",errorMsg);
+        messageMap.put("menu",menu);
+        return messageMap;
+    }
+
+    /**
+     * 使用gmail API接收服务器上的新邮件
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public HashMap<String, Object> gmailReceiveNewMail(Gmail gmailService,String userId,String menu, final String pageToken, final long pageSize,final String firstMessageId) throws MessagingException, IOException {
+
+
+        List<String> selectedMesLable = new ArrayList<String>();
+        selectedMesLable.add(menu);
+        ListMessagesResponse listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize).setPageToken(pageToken).execute();
+        List<com.google.api.services.gmail.model.Message> messagesGmail = new ArrayList<com.google.api.services.gmail.model.Message>();
+        String pageTokenTemp = "";
+        while (listMesResponse.getMessages() != null) {
+            messagesGmail.addAll(listMesResponse.getMessages());
+            boolean isStop = false;
+            for(com.google.api.services.gmail.model.Message messageTemp : listMesResponse.getMessages())
+            {
+                if(messageTemp.getThreadId().equals(firstMessageId))
+                {
+                    isStop = true;
+                    break;
+                }
+            }
+            if(!isStop)
+            {
+                if (listMesResponse.getNextPageToken() != null) {
+                    pageTokenTemp = listMesResponse.getNextPageToken();
+                    listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize)
+                            .setPageToken(pageTokenTemp).execute();
+                }else{
+                    break;
+                }
+            }else{
+                break;
+            }
+
+        }
+        Message[] messagesAll = new Message[messagesGmail.size()];
+        int i = 0;
+        HashMap<String, String> messageMapId = new HashMap<>();
+        for (com.google.api.services.gmail.model.Message message : messagesGmail) {
+            System.out.println(message.toPrettyString());
+            com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, message.getId()).setFormat("raw").execute();
+
+            Base64 base64Url = new Base64(true);
+            byte[] emailBytes = base64Url.decodeBase64(messageData.getRaw());
+
+            Properties props = new Properties();
+            Session session = Session.getDefaultInstance(props, null);
+
+            MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+            messageMapId.put(email.getMessageID(),messageData.getId());
+            messagesAll[i] = email;
+            i++;
+        }
+
+
+        HashMap<String, Object> messageMap = new HashMap<>();
+        List<Message> list  = Arrays.asList(messagesAll);
+        Collections.reverse(list);
+        List<EmailMessage> emailMessageList = new ArrayList<>();
+        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
+        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        int attachmentCount;
+        int index = 0;
+        PraseMimeMessage pmm = null;
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        long beginTime = System.currentTimeMillis();
+        String errorMsg = "";
+        for (Message message : list){
+            try {
+                String messageId = ((MimeMessage)message).getMessageID();
+                uuid = messageMapId.get(messageId)+"";
+                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                subject = "";
+                try {
+                    subject = getSubject((MimeMessage)message);
+                }catch (Exception e)
+                {
+                    errorMsg += e.getMessage();
+                }
+
+                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                from = getFrom((MimeMessage)message);
+                if("".equals(from))
+                {
+                    from = this.account;
+                }
+                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
+                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
+                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
+                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                date = TimeUtil.getDate(message.getSentDate());
+                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                isSeen = isSeen((MimeMessage)message);
+                isStar = isStar((MimeMessage)message);
+                //设置标记
+                /*if(!isSeen)
+                {
+                    Flags flags=message.getFlags();
+                    if(flags.contains(Flags.Flag.SEEN))
+                    {
+                        message.setFlag(Flags.Flag.SEEN,false);
+                        message.saveChanges();
+                    }
+
+                }*/
+                isReplySign = isReplySign((MimeMessage)message);
+
+                List<MailAttachment> mailAttachments = new ArrayList<>();
+                boolean hasAttachment = false;
+                try {
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                }catch (Exception e)
+                {
+                    errorMsg += e.getMessage();
+                }
+                System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                attachmentCount = mailAttachments.size();
+                isContainerAttachment = hasAttachment;
+                StringBuffer contentTemp = new StringBuffer(30);
+                content = "";
+                contentText = "";
+                try {
+                    String contentType = message.getContentType();
+                    if (contentType.toLowerCase().startsWith("text/plain")) {
+                        getMailTextContent2(message, contentTemp,true);
+                    } else
+                        getMailTextContent2(message,contentTemp, false);
+                    StringBuffer contentTemp2 = new StringBuffer(30);
+                    content = contentTemp.toString();
+                    if(content.contains("<body>"))
+                    {
+                        int beginFlag = content.indexOf("<body>")+6;
+                        int endFlag =  content.indexOf("</body>");
+                        content = content.substring(beginFlag,endFlag);
+                        String regFormat = "\\t|\r|\n";
+                        content = content.replaceAll(regFormat,"");
+                        String regFormat2 = "&#43;";
+                        content = content.replaceAll(regFormat2,"+");
+                    }
+                    contentText = getHtmlText(contentTemp.toString());
+                }catch (Exception e)
+                {
+                    errorMsg += e.getMessage();
+                }
+                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                emailMessage.setMailAttachmentList(mailAttachments);
+                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                emailMessageList.add(emailMessage);
+                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+
+              /*  if(!file.exists()){
+                    file.mkdirs();
+                }
+                pmm.setAttachPath(file.toString()+"/");
+                try {
+                    pmm.saveAttachMent((Part)message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+                errorMsg += e.getMessage();
+            }
+
+            index ++;
+        }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        messageMap.put("emailMessageList",emailMessageList);
+        messageMap.put("totalCount",0);//totalSize
+        messageMap.put("totalUnreadCount",0);//totalUnreadCount
+        messageMap.put("pageToken",pageTokenTemp);//gmail下拉翻页参数
+        messageMap.put("noMoreData",true);
         messageMap.put("errorMsg",errorMsg);
         messageMap.put("menu",menu);
         return messageMap;

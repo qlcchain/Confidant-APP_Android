@@ -201,6 +201,51 @@ public class EmailReceiveClient {
      * 使用imap协议接收历史邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
+    public void gmailReceiveNewAsyn(final Gmail gmailService, final String userId, final Activity activity, final GetGmailReceiveCallback getReceiveCallback, final String menu, final String pageToken, final long pageSize, final String firstMessageId){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).gmailReceiveNewMail(gmailService,userId,menu,pageToken,pageSize,firstMessageId);
+                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                   /* messageMap.put("totalCount",totalSize);
+                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
+                    final int totalCount = (int)messageMap.get("totalCount");
+                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
+                    final String pageToken = (String)messageMap.get("pageToken");
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag,pageToken);
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
+     * 使用imap协议接收历史邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
     public void gmailReceiveMoreAsyn(final Gmail gmailService, final String userId, final Activity activity, final GetGmailReceiveCallback getReceiveCallback, final String menu, final String pageToken, final long pageSize, final int lastTotalCount){
         new Thread(new Runnable() {
             @Override
