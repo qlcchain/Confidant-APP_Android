@@ -69,6 +69,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.SendEmailSuccess
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.ui.activity.email.view.SemicolonTokenizer
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
@@ -1662,43 +1663,61 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 drafts = ConstantValue.currentEmailConfigEntity!!.drafMenu
                 draftsId = emailMeaasgeInfoData!!.msgId
             }
-            emailSendClient
-                    .setTo(toAdress)                //收件人的邮箱地址
-                    .setCc(ccAdress)
-                    .setBcc(bccAdress)
-                    .setNickname(name)                                    //发件人昵称
-                    .setSubject(subject.getText().toString())             //邮件标题
-                    .setContent(contentHtml)              //邮件正文
-                    .setCidPath(cidNameList)                 //cid资源
-                    .setCid(cidList)
-                    .setUUID(uuid)
-                    .setAttach(attachList)              //附件
-                    .sendAsyn(this, object : GetSendCallback {
-                        override fun sendSuccess() {
-                            runOnUiThread {
-                                closeProgressDialog()
-                                var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                                if(emailConfigEntityChooseList.size > 0) {
-                                    var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
-                                    emailConfigEntityChoose.sendMenuRefresh = true
-                                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
-                                }
-
-                                if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
-                                {
-                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-
-                                    var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                                    var msg= "I'm"+ nickName
-                                    msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
-                                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                                    var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
-                                    var sendData = BaseData(addFriendReq);
-                                    if(ConstantValue.encryptionType.equals( "1"))
-                                    {
-                                        addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
-                                        sendData = BaseData(4,addFriendReq);
+            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+            {
+                emailSendClient
+                        .setTo(toAdress)                //收件人的邮箱地址
+                        .setCc(ccAdress)
+                        .setBcc(bccAdress)
+                        .setNickname(name)                                    //发件人昵称
+                        .setSubject(subject.getText().toString())             //邮件标题
+                        .setContent(contentHtml)              //邮件正文
+                        .setCidPath(cidNameList)                 //cid资源
+                        .setCid(cidList)
+                        .setUUID(uuid)
+                        .setAttach(attachList)              //附件
+                        .sendAsyn(this, object : GetSendCallback {
+                            override fun sendSuccess() {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                                    if(emailConfigEntityChooseList.size > 0) {
+                                        var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                                        emailConfigEntityChoose.sendMenuRefresh = true
+                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
+
+                                    if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
+                                    {
+                                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+                                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                                        var msg= "I'm"+ nickName
+                                        msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
+                                        val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                                        var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
+                                        var sendData = BaseData(addFriendReq);
+                                        if(ConstantValue.encryptionType.equals( "1"))
+                                        {
+                                            addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                                            sendData = BaseData(4,addFriendReq);
+                                        }
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                        }else if (ConstantValue.isToxConnected) {
+                                            var baseData = sendData
+                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                            if (ConstantValue.isAntox) {
+                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            }else{
+                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                            }
+                                        }
+                                    }
+
+                                    var addFriendReq = MailSendNotice(addressBase64)
+                                    var sendData = BaseData(6,addFriendReq);
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                                     }else if (ConstantValue.isToxConnected) {
@@ -1711,38 +1730,107 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                     }
+                                    EventBus.getDefault().post(SendEmailSuccess(positionIndex))
+                                    Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                    finish()
                                 }
+                            }
 
-                                var addFriendReq = MailSendNotice(addressBase64)
-                                var sendData = BaseData(6,addFriendReq);
-                                if (ConstantValue.isWebsocketConnected) {
-                                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                }else if (ConstantValue.isToxConnected) {
-                                    var baseData = sendData
-                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                    if (ConstantValue.isAntox) {
-                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                    }else{
-                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            override fun sendFailure(errorMsg: String) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
+                                Islands.ordinaryDialog(this@EmailSendActivity)
+                                        .setText(null, getString(R.string.error)+":"+errorMsg)
+                                        .setButton(getString(R.string.close), null, null)
+                                        .click().show()
+                            }
+                        },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId)
+            }else{
+                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                emailSendClient
+                        .setTo(toAdress)                //收件人的邮箱地址
+                        .setCc(ccAdress)
+                        .setBcc(bccAdress)
+                        .setNickname(name)                                    //发件人昵称
+                        .setSubject(subject.getText().toString())             //邮件标题
+                        .setContent(contentHtml)              //邮件正文
+                        .setCidPath(cidNameList)                 //cid资源
+                        .setCid(cidList)
+                        .setUUID(uuid)
+                        .setAttach(attachList)              //附件
+                        .gmailSendAsyn(this, object : GetSendCallback {
+                            override fun sendSuccess() {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                                    if(emailConfigEntityChooseList.size > 0) {
+                                        var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
+                                        emailConfigEntityChoose.sendMenuRefresh = true
+                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
-                                }
-                                EventBus.getDefault().post(SendEmailSuccess(positionIndex))
-                                Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
-                                finish()
-                            }
-                        }
 
-                        override fun sendFailure(errorMsg: String) {
-                            runOnUiThread {
-                                closeProgressDialog()
+                                    if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
+                                    {
+                                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+                                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                                        var msg= "I'm"+ nickName
+                                        msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
+                                        val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                                        var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
+                                        var sendData = BaseData(addFriendReq);
+                                        if(ConstantValue.encryptionType.equals( "1"))
+                                        {
+                                            addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                                            sendData = BaseData(4,addFriendReq);
+                                        }
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                        }else if (ConstantValue.isToxConnected) {
+                                            var baseData = sendData
+                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                            if (ConstantValue.isAntox) {
+                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            }else{
+                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                            }
+                                        }
+                                    }
+
+                                    var addFriendReq = MailSendNotice(addressBase64)
+                                    var sendData = BaseData(6,addFriendReq);
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                    }else if (ConstantValue.isToxConnected) {
+                                        var baseData = sendData
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }
+                                    }
+                                    EventBus.getDefault().post(SendEmailSuccess(positionIndex))
+                                    Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
                             }
-                            Islands.ordinaryDialog(this@EmailSendActivity)
-                                    .setText(null, getString(R.string.error)+":"+errorMsg)
-                                    .setButton(getString(R.string.close), null, null)
-                                    .click().show()
-                        }
-                    },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId)
+
+                            override fun sendFailure(errorMsg: String) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
+                                Islands.ordinaryDialog(this@EmailSendActivity)
+                                        .setText(null, getString(R.string.error)+":"+errorMsg)
+                                        .setButton(getString(R.string.close), null, null)
+                                        .click().show()
+                            }
+                        },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId,gmailService,"me")
+            }
+
 
         }else{
             runOnUiThread {

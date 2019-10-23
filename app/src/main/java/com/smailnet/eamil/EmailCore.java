@@ -36,6 +36,7 @@ import com.sun.mail.imap.IMAPStore;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -310,7 +311,40 @@ class EmailCore {
         transport.close();
         return message;
     }
-
+    /**
+     * 使用SMTP协议发送邮件
+     * @throws MessagingException
+     */
+    public Message gmailSendMail(Gmail service, String userId) throws MessagingException {
+        try
+        {
+            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage)message);
+            messageGmail = service.users().messages().send(userId, messageGmail).execute();
+            System.out.println("Message id: " + messageGmail.getId());
+            System.out.println(messageGmail.toPrettyString());
+        }catch (Exception e)
+        {
+          e.printStackTrace();
+        }
+        return message;
+    }
+    /**
+     * Create a Message from an email
+     *
+     * @param email Email to be set to raw of message
+     * @return Message containing base64url encoded email.
+     * @throws IOException
+     * @throws MessagingException
+     */
+    public com.google.api.services.gmail.model.Message createMessageWithEmail(MimeMessage email)
+            throws MessagingException, IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        email.writeTo(baos);
+        String encodedEmail = Base64.encodeBase64URLSafeString(baos.toByteArray());
+        com.google.api.services.gmail.model.Message message = new com.google.api.services.gmail.model.Message();
+        message.setRaw(encodedEmail);
+        return message;
+    }
     /**
      * 组装邮件的信息
      * @param nickname
