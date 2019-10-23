@@ -559,6 +559,7 @@ val credentialsProvider: CredentialsProvider, private
                 "SaveEmailConf" -> {
                     val jSaveEmailConfRsp = gson.fromJson(text, JSaveEmailConfRsp::class.java)
                     saveEmailConfCallback?.saveEmailConf(jSaveEmailConfRsp)
+                    saveEmailConfChooseCallback?.saveEmailConf(jSaveEmailConfRsp)
                 }
                 "CheckmailUkey" -> {
                     val jCheckmailUkeyRsp = gson.fromJson(text, JCheckmailUkeyRsp::class.java)
@@ -673,6 +674,8 @@ val credentialsProvider: CredentialsProvider, private
     var removeMemberCallBack:RemoveMemberCallBack ? = null
 
     var saveEmailConfCallback: SaveEmailConfCallback? = null
+
+    var saveEmailConfChooseCallback: SaveEmailConfCallback? = null
 
     var checkmailUkeyCallback: CheckmailUkeyCallback? = null
 

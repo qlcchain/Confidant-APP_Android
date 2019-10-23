@@ -46,6 +46,7 @@ import com.stratagile.pnrouter.entity.events.ChangEmailStar
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
@@ -139,25 +140,25 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     override fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp) {
 
-       if(jBakupEmailRsp.params.retCode == 0)
-       {
-          runOnUiThread {
-              closeProgressDialog()
-              toast(R.string.success)
-          }
-
-       }else if(jBakupEmailRsp.params.retCode == 1)
+        if(jBakupEmailRsp.params.retCode == 0)
         {
-           runOnUiThread {
-               closeProgressDialog()
-               toast(R.string.It_already_exists)
-           }
-       }else{
-           runOnUiThread {
-               closeProgressDialog()
-               toast(R.string.fail)
-           }
-       }
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.success)
+            }
+
+        }else if(jBakupEmailRsp.params.retCode == 1)
+        {
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.It_already_exists)
+            }
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.fail)
+            }
+        }
     }
     override fun initView() {
         setContentView(R.layout.email_info_view)
@@ -785,8 +786,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     toName = toItem.substring(0,itemEndIndex)
                     toAdress = toItem.substring(0,toItem.length)
                 }
-               /* toName =toName.replace("\"","")
-                toName =toName.replace("\"","")*/
+                /* toName =toName.replace("\"","")
+                 toName =toName.replace("\"","")*/
                 if(toName != "")
                 {
                     toNameStr += toName+","
@@ -834,8 +835,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     ccName = ccItem.substring(0,itemEndIndex)
                     ccAdress = ccItem.substring(0,ccItem.length)
                 }
-               /* ccName =ccName.replace("\"","")
-                ccName =ccName.replace("\"","")*/
+                /* ccName =ccName.replace("\"","")
+                 ccName =ccName.replace("\"","")*/
                 if(ccName != "")
                 {
                     toNameStr += ccName+","
@@ -945,7 +946,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                             var delEmail = DelEmail(AppConfig.instance.emailConfig().emailType.toInt(),emailMeaasgeData!!.msgId.toInt())
                             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,delEmail))
                         }else{
-                            deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                            deleteEmailOp(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2,true)
                         }
                     }.setCancelClickListener {
 
@@ -980,48 +981,96 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         {
             if(!emailMeaasgeData!!.isSeen())
             {
-                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                emailReceiveClient
-                        .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                            override fun gainSuccess(result: Boolean) {
+                if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                {
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                    emailReceiveClient
+                            .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                override fun gainSuccess(result: Boolean) {
 
-                                when(menu)
-                                {
-                                    ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                    when(menu)
                                     {
-                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
-                                        var EmailMessage = false
-                                        if(emailConfigEntityList.size > 0)
+                                        ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
                                         {
-                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                            emailConfigEntity.unReadCount -= 1   //Inbox未读数量
-                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.unReadCount -= 1   //Inbox未读数量
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                EventBus.getDefault().post(ChangeEmailConfig())
+                                            }
                                         }
-                                    }
-                                    ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
-                                    {
-                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
-                                        var EmailMessage = false
-                                        if(emailConfigEntityList.size > 0)
+                                        ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
                                         {
-                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                            emailConfigEntity.garbageCount -= 1   //Inbox未读数量
-                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.garbageCount -= 1   //Inbox未读数量
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                EventBus.getDefault().post(ChangeEmailConfig())
+                                            }
                                         }
+
                                     }
+                                }
+                                override fun gainFailure(errorMsg: String) {
 
                                 }
-                            }
-                            override fun gainFailure(errorMsg: String) {
+                            },menu,msgId,32,true,"")
+                }else{
+                    var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                    var labelsToAdd = listOf<String>()
+                    var labelsToRemove = listOf<String>("UNREAD")
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                    emailReceiveClient
+                            .gmailMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                override fun gainSuccess(result: Boolean) {
 
-                            }
-                        },menu,msgId,32,true,"")
+                                    when(menu)
+                                    {
+                                        ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                        {
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.unReadCount -= 1   //Inbox未读数量
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                EventBus.getDefault().post(ChangeEmailConfig())
+                                            }
+                                        }
+                                        ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
+                                        {
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.garbageCount -= 1   //Inbox未读数量
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                EventBus.getDefault().post(ChangeEmailConfig())
+                                            }
+                                        }
+
+                                    }
+                                }
+                                override fun gainFailure(errorMsg: String) {
+
+                                }
+                            },gmailService,"me",msgId,labelsToAdd,labelsToRemove)
+                }
+
             }
-            }
+        }
 
         moreMenu.setOnClickListener {
 
@@ -1074,80 +1123,172 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                         "Mark Unread" -> {
                             showProgressDialog(getString(R.string.waiting))
                             /*tipDialog.show()*/
-                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                            {
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
-                            emailReceiveClient
-                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                                        override fun gainSuccess(result: Boolean) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                            emailMeaasgeData!!.setIsSeen(false)
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
-                                            when(menu)
-                                            {
-                                                ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                emailReceiveClient
+                                        .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                            override fun gainSuccess(result: Boolean) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                emailMeaasgeData!!.setIsSeen(false)
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                                when(menu)
                                                 {
-                                                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
-                                                    if(emailConfigEntityList.size > 0)
+                                                    ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
                                                     {
-                                                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                                        emailConfigEntity.unReadCount += 1   //Inbox未读数量
-                                                        ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                        if(emailConfigEntityList.size > 0)
+                                                        {
+                                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                            emailConfigEntity.unReadCount += 1   //Inbox未读数量
+                                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                                        }
                                                     }
-                                                }
-                                                ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
-                                                {
-                                                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
-                                                    if(emailConfigEntityList.size > 0)
+                                                    ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
                                                     {
-                                                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                                        emailConfigEntity.garbageCount += 1   //Inbox未读数量
-                                                        ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                        if(emailConfigEntityList.size > 0)
+                                                        {
+                                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                            emailConfigEntity.garbageCount += 1   //Inbox未读数量
+                                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                                        }
                                                     }
-                                                }
 
+                                                }
+                                                EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
                                             }
-                                            EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
-                                        }
-                                        override fun gainFailure(errorMsg: String) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
-                                        }
-                                    },menu,msgId,32,false,"")
+                                            override fun gainFailure(errorMsg: String) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                            }
+                                        },menu,msgId,32,false,"")
+                            }else{
+                                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                                var labelsToAdd = listOf<String>("UNREAD")
+                                var labelsToRemove = listOf<String>()
+                                emailReceiveClient
+                                        .gmailMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                            override fun gainSuccess(result: Boolean) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                emailMeaasgeData!!.setIsSeen(false)
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                                when(menu)
+                                                {
+                                                    ConstantValue.currentEmailConfigEntity!!.inboxMenu ->
+                                                    {
+                                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                        if(emailConfigEntityList.size > 0)
+                                                        {
+                                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                            emailConfigEntity.unReadCount += 1   //Inbox未读数量
+                                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                                        }
+                                                    }
+                                                    ConstantValue.currentEmailConfigEntity!!.garbageMenu ->
+                                                    {
+                                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                                        if(emailConfigEntityList.size > 0)
+                                                        {
+                                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                            emailConfigEntity.garbageCount += 1   //Inbox未读数量
+                                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                                        }
+                                                    }
+
+                                                }
+                                                EventBus.getDefault().post(ChangEmailMessage(positionIndex,0))
+                                            }
+                                            override fun gainFailure(errorMsg: String) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                            }
+                                        },gmailService,"me",msgId,labelsToAdd,labelsToRemove)
+                            }
+
                         }
-                        "Star" -> {
+                        "Star", "Starred" -> {
                             showProgressDialog(getString(R.string.waiting))
                             /*tipDialog.show()*/
-                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                            {
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
 
-                            emailReceiveClient
-                                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                                        override fun gainSuccess(result: Boolean) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                            emailMeaasgeData!!.setIsStar(!starFlag)
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
-                                            if(emailMeaasgeData!!.isStar())
-                                            {
-                                                inboxStar.visibility =View.VISIBLE
-                                                EventBus.getDefault().post(ChangEmailStar(positionIndex,1))
-                                            }else{
-                                                inboxStar.visibility =View.INVISIBLE
-                                                EventBus.getDefault().post(ChangEmailStar(positionIndex,0))
+                                emailReceiveClient
+                                        .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                            override fun gainSuccess(result: Boolean) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                emailMeaasgeData!!.setIsStar(!starFlag)
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                                if(emailMeaasgeData!!.isStar())
+                                                {
+                                                    inboxStar.visibility =View.VISIBLE
+                                                    EventBus.getDefault().post(ChangEmailStar(positionIndex,1))
+                                                }else{
+                                                    inboxStar.visibility =View.INVISIBLE
+                                                    EventBus.getDefault().post(ChangEmailStar(positionIndex,0))
+                                                }
+
                                             }
+                                            override fun gainFailure(errorMsg: String) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                            }
+                                        },menu,msgId,8,!starFlag,"")
+                            }else{
+                                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                                var labelsToAdd = listOf<String>("STARRED")
+                                var labelsToRemove = listOf<String>()
+                                if(starFlag)
+                                {
+                                    labelsToAdd = listOf<String>()
+                                    labelsToRemove = listOf<String>("STARRED")
+                                }else{
+                                    labelsToAdd = listOf<String>("STARRED")
+                                    labelsToRemove = listOf<String>()
+                                }
+                                emailReceiveClient
+                                        .gmailMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                                            override fun gainSuccess(result: Boolean) {
+                                                //tipDialog.dismiss()
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                emailMeaasgeData!!.setIsStar(!starFlag)
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(emailMeaasgeData)
+                                                if(emailMeaasgeData!!.isStar())
+                                                {
+                                                    inboxStar.visibility =View.VISIBLE
+                                                    EventBus.getDefault().post(ChangEmailStar(positionIndex,1))
+                                                }else{
+                                                    inboxStar.visibility =View.INVISIBLE
+                                                    EventBus.getDefault().post(ChangEmailStar(positionIndex,0))
+                                                }
+                                            }
+                                            override fun gainFailure(errorMsg: String) {
+                                                //tipDialog.dismiss()
+                                                closeProgressDialog()
+                                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                                            }
+                                        },gmailService,"me",msgId,labelsToAdd,labelsToRemove)
+                            }
 
-                                        }
-                                        override fun gainFailure(errorMsg: String) {
-                                            //tipDialog.dismiss()
-                                            closeProgressDialog()
-                                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
-                                        }
-                                    },menu,msgId,8,!starFlag,"")
                         }
                         "Node back up" -> {
                             doBackUp()
@@ -1812,29 +1953,107 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             startActivity(intentPicturePreviewActivity)
         }
     }
-    fun deleteAndMoveEmailSend(menuTo:String,flag:Int)
+    fun deleteEmailOp(menuTo:String,flag:Int,delete:Boolean)
     {
         /*tipDialog.show()*/
-        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-        emailReceiveClient
-                .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
-                    override fun gainSuccess(result: Boolean) {
-                        //tipDialog.dismiss()
-                        closeProgressDialog()
-                        if(result)
-                        {
-                            deleteEmail()
-                            finish()
-                        }else{
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        {
+            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+            emailReceiveClient
+                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                        override fun gainSuccess(result: Boolean) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            if(result)
+                            {
+                                deleteEmail()
+                                finish()
+                            }else{
+                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun gainFailure(errorMsg: String) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
                             Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
                         }
-                    }
-                    override fun gainFailure(errorMsg: String) {
-                        //tipDialog.dismiss()
-                        closeProgressDialog()
-                        Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
-                    }
-                },menu,msgId,flag,true,menuTo)
+                    },menu,msgId,flag,true,menuTo)
+        }else{
+            var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+            emailReceiveClient
+                    .gmailDeleteEmail(gmailService,"me",this@EmailInfoActivity, object : MarkCallback {
+                        override fun gainSuccess(result: Boolean) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            if(result)
+                            {
+                                deleteEmail()
+                                finish()
+                            }else{
+                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun gainFailure(errorMsg: String) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
+                    },msgId,delete)
+        }
+
+    }
+    fun moveEmailOp(menuTo:String,flag:Int,from:String)
+    {
+        /*tipDialog.show()*/
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        {
+            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+            emailReceiveClient
+                    .imapMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                        override fun gainSuccess(result: Boolean) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            if(result)
+                            {
+                                deleteEmail()
+                                finish()
+                            }else{
+                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun gainFailure(errorMsg: String) {
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
+                    },menu,msgId,flag,true,menuTo)
+        }else{
+            var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+            var labelsToAdd = listOf<String>(menuTo)
+            var labelsToRemove = listOf<String>(from)
+            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+            emailReceiveClient
+                    .gmailMarkEmail(this@EmailInfoActivity, object : MarkCallback {
+                        override fun gainSuccess(result: Boolean) {
+
+                            //tipDialog.dismiss()
+                            closeProgressDialog()
+                            if(result)
+                            {
+                                deleteEmail()
+                                finish()
+                            }else{
+                                Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        override fun gainFailure(errorMsg: String) {
+                            closeProgressDialog()
+                            Toast.makeText(this@EmailInfoActivity, getString(R.string.fail), Toast.LENGTH_SHORT).show()
+                        }
+                    },gmailService,"me",msgId,labelsToAdd,labelsToRemove)
+        }
+
     }
     fun deleteEmail()
     {
@@ -1876,24 +2095,47 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         var menuArray = arrayListOf<String>()
         var iconArray = arrayListOf<String>()
 
-        when(menu)
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
         {
-            ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+            when(menu)
             {
-                menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
-                iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
+                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Spam),getString(R.string.Trash))
+                    iconArray = arrayListOf<String>("tabbar_trash","tabbar_deleted")
+                }
+                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
+                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
+                }
+                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
+                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
+                }
             }
-            ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+        }else{
+            when(menu)
             {
-                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
-                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
-            }
-            ConstantValue.currentEmailConfigEntity!!.deleteMenu->
-            {
-                menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
-                iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
+                ConstantValue.currentEmailConfigEntity!!.inboxMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Trash))
+                    iconArray = arrayListOf<String>("tabbar_deleted")
+                }
+                ConstantValue.currentEmailConfigEntity!!.garbageMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Trash))
+                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_deleted")
+                }
+                ConstantValue.currentEmailConfigEntity!!.deleteMenu->
+                {
+                    menuArray = arrayListOf<String>(getString(R.string.Inbox),getString(R.string.Spam))
+                    iconArray = arrayListOf<String>("tabbar_inbox","tabbar_trash")
+                }
             }
         }
+
         PopWindowUtil.showPopMoveMenuWindow(this@EmailInfoActivity, moreMenu,title,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
             override fun onSelect(position: Int, obj: Any) {
                 KLog.i("" + position)
@@ -1901,15 +2143,15 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 when (data.name) {
                     "Inbox" -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.inboxMenu,2)
+                        moveEmailOp(ConstantValue.currentEmailConfigEntity!!.inboxMenu,2,menu)
                     }
                     "Spam" -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.garbageMenu,2)
+                        moveEmailOp(ConstantValue.currentEmailConfigEntity!!.garbageMenu,2,menu)
                     }
                     "Trash" -> {
                         showProgressDialog(getString(R.string.waiting))
-                        deleteAndMoveEmailSend(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2)
+                        moveEmailOp(ConstantValue.currentEmailConfigEntity!!.deleteMenu,2,menu)
                     }
 
 

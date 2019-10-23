@@ -22,6 +22,7 @@ import android.util.Log;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Label;
 import com.google.api.services.gmail.model.ListMessagesResponse;
+import com.google.api.services.gmail.model.ModifyMessageRequest;
 import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.MailUtil;
@@ -1181,6 +1182,7 @@ class EmailCore {
         }
         Message[] messagesAll = new Message[messagesGmail.size()];
         int i = 0;
+        HashMap<String, String> messageMapId = new HashMap<>();
         for (com.google.api.services.gmail.model.Message message : messagesGmail) {
             System.out.println(message.toPrettyString());
             com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, message.getId()).setFormat("raw").execute();
@@ -1192,6 +1194,7 @@ class EmailCore {
             Session session = Session.getDefaultInstance(props, null);
 
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+            messageMapId.put(email.getMessageID(),messageData.getId());
             messagesAll[i] = email;
             i++;
         }
@@ -1211,7 +1214,8 @@ class EmailCore {
         String errorMsg = "";
         for (Message message : list){
             try {
-                uuid = System.currentTimeMillis()+"";
+                String messageId = ((MimeMessage)message).getMessageID();
+                uuid = messageMapId.get(messageId)+"";
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
@@ -1804,6 +1808,54 @@ class EmailCore {
 
 
 
+        }
+        return false;
+    }
+    /**
+     * 使用gmail API标记已读未读
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean gmailMarkMail(Gmail service, String userId, String messageId,
+                                 List<String> labelsToAdd, List<String> labelsToRemove) throws MessagingException, IOException {
+
+        try {
+            ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd)
+                    .setRemoveLabelIds(labelsToRemove);
+            com.google.api.services.gmail.model.Message message = service.users().messages().modify(userId, messageId, mods).execute();
+            System.out.println("Message id: " + message.getId());
+            System.out.println(message.toPrettyString());
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+        }
+        return false;
+    }
+    /**
+     * 使用IMAP协议接收服务器上的邮件附件
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public boolean gmailDeleteMail(Gmail gmailService,String userId,String threadId,Boolean delete) throws MessagingException, IOException {
+        try {
+            if(delete)
+            {
+                //彻底删除
+                gmailService.users().threads().delete(userId, threadId).execute();
+            }else{
+                //移动到“已删除”
+                gmailService.users().messages().trash(userId, threadId).execute();
+            }
+            System.out.println("Thread with id: " + threadId + " deleted successfully.");
+            return true;
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
         }
         return false;
     }

@@ -281,7 +281,7 @@
             android:gravity="center"
             android:textColor="@color/color_2B2B2B"
             android:textSize="@dimen/commemTextSize"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/miniScanIconLogin"
             tools:layout_editor_absoluteX="242dp" />

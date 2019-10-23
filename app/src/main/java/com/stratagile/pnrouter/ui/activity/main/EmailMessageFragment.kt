@@ -1315,8 +1315,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                         if(emailConfigEntity.inboxMaxMessageId == 0L)
                                                         {
                                                             emailConfigEntity.totalCount = minUUID.toInt()
-                                                            emailConfigEntity.inboxMaxMessageId = item.id.toLong()
-                                                            emailConfigEntity.inboxMinMessageId = item.id.toLong()
+                                                           /* emailConfigEntity.inboxMaxMessageId = item.id.toLong()
+                                                            emailConfigEntity.inboxMinMessageId = item.id.toLong()*/
                                                         }
 
                                                     }

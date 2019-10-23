@@ -113,7 +113,13 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         if(AppConfig.instance.emailConfig().account != null)
         {
             accountOld = AppConfig.instance.emailConfig().account
-            passwordOld = AppConfig.instance.emailConfig().password
+            if(AppConfig.instance.emailConfig().password != null)
+            {
+                passwordOld = AppConfig.instance.emailConfig().password
+            }else{
+                passwordOld = ""
+            }
+
         }
        if(intent.hasExtra("settings"))
        {

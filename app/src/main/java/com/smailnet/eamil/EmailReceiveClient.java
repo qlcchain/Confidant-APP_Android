@@ -469,32 +469,77 @@ public class EmailReceiveClient {
         }).start();
     }
     /**
-     * 使用imap协议接收邮件，接收完毕但不切回主线程
+     * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveMoreAsyn(final GetReceiveCallback getReceiveCallback){
+    public void gmailMarkEmail(final Activity activity, final MarkCallback getReceiveCallback, Gmail service, String userId, String messageId,
+                               List<String> labelsToAdd, List<String> labelsToRemove){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveMoreMail("INBOX",0,10,10);
-                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
-                   /* messageMap.put("totalCount",totalSize);
-                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
-                    final int totalCount = (int)messageMap.get("totalCount");
-                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
-                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
-                    final String errorMsg = (String)messageMap.get("errorMsg");
-                    final String menuFlag = (String)messageMap.get("menu");
-                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
+                    final boolean result = Operator.Core(emailConfig).gmailMarkMail(service,userId,messageId,labelsToAdd,labelsToRemove);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(result);
+                        }
+                    });
                 } catch (final MessagingException e) {
                     e.printStackTrace();
-                    getReceiveCallback.gainFailure(e.toString());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
                 } catch (final IOException e) {
                     e.printStackTrace();
-                    getReceiveCallback.gainFailure(e.toString());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
                 }
             }
         }).start();
     }
+    /**
+     * 使用gmail API 删除邮件
+     * @param getReceiveCallback
+     */
+    public void gmailDeleteEmail(final Gmail gmailService, final String userId,final Activity activity, final MarkCallback getReceiveCallback, final String threadId,final Boolean delete){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final boolean result = Operator.Core(emailConfig).gmailDeleteMail(gmailService,userId,threadId,delete);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(result);
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
 }
