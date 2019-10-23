@@ -1026,80 +1026,158 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 {
                     showProgressDialog(getString(R.string.Attachmentdownloading))
                     val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                    if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                    {
+                        emailReceiveClient
+                                .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        //tipDialog.dismiss()
+                                        closeProgressDialog()
+                                        runOnUiThread {
 
-                    emailReceiveClient
-                            .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
-                                override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                    //tipDialog.dismiss()
-                                    closeProgressDialog()
-                                    runOnUiThread {
-
-                                        var iFlag = 0;
-                                        for (attachItem in messageList)
-                                        {
-                                            var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
-                                            if(attachListTemp.size == 0)
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
                                             {
-                                                attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
+                                                {
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
-                                            }
-                                            if(attachListTemp == null || attachListTemp.size == 0)
-                                            {
-                                                var eamilAttach = EmailAttachEntity()
-                                                eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
-                                                eamilAttach.name = attachItem.name
-                                                eamilAttach.data = attachItem.byt
-                                                eamilAttach.hasData = true
-                                                eamilAttach.isCanDelete = false
-                                                var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
-                                                eamilAttach.localPath = savePath
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
-
-                                                var fileName =  eamilAttach.name
-                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                                                    val localMedia = LocalMedia()
-                                                    localMedia.isCompressed = false
-                                                    localMedia.duration = 0
-                                                    localMedia.height = 100
-                                                    localMedia.width = 100
-                                                    localMedia.isChecked = false
-                                                    localMedia.isCut = false
-                                                    localMedia.mimeType = 0
-                                                    localMedia.num = 0
-                                                    localMedia.path = eamilAttach.localPath
-                                                    localMedia.pictureType = "image/jpeg"
-                                                    localMedia.setPosition(iFlag)
-                                                    localMedia.sortIndex = iFlag
-                                                    previewImages.add(localMedia)
-                                                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
                                                 }
+                                                if(attachListTemp == null || attachListTemp.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    eamilAttach.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
 
-                                                iFlag++
+                                                    var fileName =  eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                        val localMedia = LocalMedia()
+                                                        localMedia.isCompressed = false
+                                                        localMedia.duration = 0
+                                                        localMedia.height = 100
+                                                        localMedia.width = 100
+                                                        localMedia.isChecked = false
+                                                        localMedia.isCut = false
+                                                        localMedia.mimeType = 0
+                                                        localMedia.num = 0
+                                                        localMedia.path = eamilAttach.localPath
+                                                        localMedia.pictureType = "image/jpeg"
+                                                        localMedia.setPosition(iFlag)
+                                                        localMedia.sortIndex = iFlag
+                                                        previewImages.add(localMedia)
+                                                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                    }
+
+                                                    iFlag++
+                                                }
                                             }
-                                        }
 
-                                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-                                        if(attachListData.size == 0)
-                                        {
-                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                                            if(attachListData.size == 0)
+                                            {
+                                                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
+                                            }
+                                            for (item in attachListData)
+                                            {
+                                                item.isHasData = true
+                                                item.isCanDelete = true
+                                            }
+                                            attachListEntity.addAll(attachListData)
+                                            updataAttachUI()
                                         }
-                                        for (item in attachListData)
-                                        {
-                                            item.isHasData = true
-                                            item.isCanDelete = true
-                                        }
-                                        attachListEntity.addAll(attachListData)
-                                        updataAttachUI()
                                     }
-                                }
-                                override fun gainFailure(errorMsg: String) {
-                                    //tipDialog.dismiss()
-                                    closeProgressDialog()
-                                    Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
-                                }
-                            },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        closeProgressDialog()
+                                        Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
+                    }else{
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                        emailReceiveClient
+                                .gmailDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        //tipDialog.dismiss()
+                                        closeProgressDialog()
+                                        runOnUiThread {
+
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
+                                            {
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
+                                                {
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
+                                                }
+                                                if(attachListTemp == null || attachListTemp.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    eamilAttach.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+
+                                                    var fileName =  eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                        val localMedia = LocalMedia()
+                                                        localMedia.isCompressed = false
+                                                        localMedia.duration = 0
+                                                        localMedia.height = 100
+                                                        localMedia.width = 100
+                                                        localMedia.isChecked = false
+                                                        localMedia.isCut = false
+                                                        localMedia.mimeType = 0
+                                                        localMedia.num = 0
+                                                        localMedia.path = eamilAttach.localPath
+                                                        localMedia.pictureType = "image/jpeg"
+                                                        localMedia.setPosition(iFlag)
+                                                        localMedia.sortIndex = iFlag
+                                                        previewImages.add(localMedia)
+                                                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                    }
+
+                                                    iFlag++
+                                                }
+                                            }
+
+                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
+                                            if(attachListData.size == 0)
+                                            {
+                                                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+
+                                            }
+                                            for (item in attachListData)
+                                            {
+                                                item.isHasData = true
+                                                item.isCanDelete = true
+                                            }
+                                            attachListEntity.addAll(attachListData)
+                                            updataAttachUI()
+                                        }
+                                    }
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        closeProgressDialog()
+                                        Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey,gmailService,"me")
+                    }
+
                 }else{
                     attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
                     if(attachListData.size == 0)

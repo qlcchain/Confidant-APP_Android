@@ -1725,7 +1725,7 @@ class EmailCore {
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
-            pmm = new PraseMimeMessage((MimeMessage)message);
+            //pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getAttachment(message, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
             System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
@@ -1744,6 +1744,41 @@ class EmailCore {
         System.out.println("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
+        return mailAttachments;
+    }
+
+    /**
+     * 使用IMAP协议接收服务器上的邮件附件
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<MailAttachment> gmailDownloadMailAttch(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
+        PraseMimeMessage pmm = null;
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        List<MailAttachment> mailAttachments = new ArrayList<>();
+        try {
+            com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, uid).setFormat("raw").execute();
+
+            Base64 base64Url = new Base64(true);
+            byte[] emailBytes = base64Url.decodeBase64(messageData.getRaw());
+
+            Properties props = new Properties();
+            Session session = Session.getDefaultInstance(props, null);
+
+            MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+            MailUtil.getAttachment(email, mailAttachments,uid,this.account);
+            //pmm.setAttachPath(file.toString()+"/");
+            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            long aa = System.currentTimeMillis();
+            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
+            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
         return mailAttachments;
     }
     /**
@@ -1769,6 +1804,42 @@ class EmailCore {
         try {
             pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getCid(message, mailAttachments,uid,this.account);
+            //pmm.setAttachPath(file.toString()+"/");
+            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            long aa = System.currentTimeMillis();
+            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
+            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        folder.close(false);
+        imapStore.close();
+        return mailAttachments;
+    }
+    /**
+     * 使用IMAP协议接收服务器上的邮件cid资源
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<MailAttachment> gmailDownloadMailCid(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        List<MailAttachment> mailAttachments = new ArrayList<>();
+        try {
+
+            com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, uid).setFormat("raw").execute();
+
+            Base64 base64Url = new Base64(true);
+            byte[] emailBytes = base64Url.decodeBase64(messageData.getRaw());
+
+            Properties props = new Properties();
+            Session session = Session.getDefaultInstance(props, null);
+
+            MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+            MailUtil.getCid(email, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
             System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();

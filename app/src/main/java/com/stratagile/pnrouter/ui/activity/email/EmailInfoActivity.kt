@@ -336,99 +336,196 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     loadingTips.visibility = View.VISIBLE
                     //showProgressDialog(getString(R.string.Attachmentdownloading))
                     /*tipDialog.show()*/
-                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-
-                    emailReceiveClient
-                            .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
-                                override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                    //tipDialog.dismiss()
-                                    loadingBar.visibility = View.GONE
-                                    loadingTips.visibility = View.GONE
-                                    needWaitAttach = false
-                                    runOnUiThread {
-                                        var iFlag = 0;
-                                        for (attachItem in messageList)
-                                        {
-                                            var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
-                                            if(attachListTemp.size == 0)
+                    if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                    {
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        //tipDialog.dismiss()
+                                        loadingBar.visibility = View.GONE
+                                        loadingTips.visibility = View.GONE
+                                        needWaitAttach = false
+                                        runOnUiThread {
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
                                             {
-                                                attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
+                                                {
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
 
-                                            }
-                                            if(attachListTemp == null || attachListTemp.size == 0)
-                                            {
-                                                var eamilAttach = EmailAttachEntity()
-                                                eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                eamilAttach.msgId = emailMeaasgeData!!.menu+"_"+msgId
-                                                eamilAttach.name = attachItem.name
-                                                eamilAttach.data = attachItem.byt
-                                                eamilAttach.hasData = true
-                                                eamilAttach.isCanDelete = false
-                                                var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
-                                                eamilAttach.localPath = savePath
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
-
-                                                var fileName =  eamilAttach.name
-                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                                                    val localMedia = LocalMedia()
-                                                    localMedia.isCompressed = false
-                                                    localMedia.duration = 0
-                                                    localMedia.height = 100
-                                                    localMedia.width = 100
-                                                    localMedia.isChecked = false
-                                                    localMedia.isCut = false
-                                                    localMedia.mimeType = 0
-                                                    localMedia.num = 0
-                                                    localMedia.path = eamilAttach.localPath
-                                                    localMedia.pictureType = "image/jpeg"
-                                                    localMedia.setPosition(iFlag)
-                                                    localMedia.sortIndex = iFlag
-                                                    previewImages.add(localMedia)
-                                                    ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
                                                 }
+                                                if(attachListTemp == null || attachListTemp.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = emailMeaasgeData!!.menu+"_"+msgId
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    eamilAttach.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
 
-                                                iFlag++
+                                                    var fileName =  eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                        val localMedia = LocalMedia()
+                                                        localMedia.isCompressed = false
+                                                        localMedia.duration = 0
+                                                        localMedia.height = 100
+                                                        localMedia.width = 100
+                                                        localMedia.isChecked = false
+                                                        localMedia.isCut = false
+                                                        localMedia.mimeType = 0
+                                                        localMedia.num = 0
+                                                        localMedia.path = eamilAttach.localPath
+                                                        localMedia.pictureType = "image/jpeg"
+                                                        localMedia.setPosition(iFlag)
+                                                        localMedia.sortIndex = iFlag
+                                                        previewImages.add(localMedia)
+                                                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                    }
+
+                                                    iFlag++
+                                                }
                                             }
-                                        }
-                                        attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
-                                        if(attachList.size == 0)
-                                        {
-                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
-
-                                        }
-                                        emaiAttachAdapter = EmaiAttachAdapter(attachList)
-                                        emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-
-                                            true
-                                        }
-                                        recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
-                                        recyclerViewAttach.adapter = emaiAttachAdapter
-                                        emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
-                                            var emaiAttach = emaiAttachAdapter!!.getItem(position)
-                                            var fileName = emaiAttach!!.name
-                                            if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
-                                                showImagList(position)
-                                            }else if(fileName.contains("mp4"))
+                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                            if(attachList.size == 0)
                                             {
-                                                val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
-                                                intent.putExtra("path", emaiAttach.localPath)
-                                                startActivity(intent)
-                                            }else{
-                                                OpenFileUtil.getInstance(AppConfig.instance)
-                                                val intent = OpenFileUtil.openFile(emaiAttach.localPath)
-                                                startActivity(intent)
+                                                attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                            }
+                                            emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                                            emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                                                true
+                                            }
+                                            recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                                            recyclerViewAttach.adapter = emaiAttachAdapter
+                                            emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                                                var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                                                var fileName = emaiAttach!!.name
+                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    showImagList(position)
+                                                }else if(fileName.contains("mp4"))
+                                                {
+                                                    val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                                    intent.putExtra("path", emaiAttach.localPath)
+                                                    startActivity(intent)
+                                                }else{
+                                                    OpenFileUtil.getInstance(AppConfig.instance)
+                                                    val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                                                    startActivity(intent)
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                override fun gainFailure(errorMsg: String) {
-                                    //tipDialog.dismiss()
-                                    //closeProgressDialog()
-                                    loadingBar.visibility = View.GONE
-                                    loadingTips.visibility = View.GONE
-                                    Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
-                                }
-                            },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        //closeProgressDialog()
+                                        loadingBar.visibility = View.GONE
+                                        loadingTips.visibility = View.GONE
+                                        Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                    }else{
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .gmailDownloadEmailAttach(this@EmailInfoActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        //tipDialog.dismiss()
+                                        loadingBar.visibility = View.GONE
+                                        loadingTips.visibility = View.GONE
+                                        needWaitAttach = false
+                                        runOnUiThread {
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
+                                            {
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
+                                                {
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                                }
+                                                if(attachListTemp == null || attachListTemp.size == 0)
+                                                {
+                                                    var eamilAttach = EmailAttachEntity()
+                                                    eamilAttach.account = AppConfig.instance.emailConfig().account
+                                                    eamilAttach.msgId = emailMeaasgeData!!.menu+"_"+msgId
+                                                    eamilAttach.name = attachItem.name
+                                                    eamilAttach.data = attachItem.byt
+                                                    eamilAttach.hasData = true
+                                                    eamilAttach.isCanDelete = false
+                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    eamilAttach.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
+
+                                                    var fileName =  eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                        val localMedia = LocalMedia()
+                                                        localMedia.isCompressed = false
+                                                        localMedia.duration = 0
+                                                        localMedia.height = 100
+                                                        localMedia.width = 100
+                                                        localMedia.isChecked = false
+                                                        localMedia.isCut = false
+                                                        localMedia.mimeType = 0
+                                                        localMedia.num = 0
+                                                        localMedia.path = eamilAttach.localPath
+                                                        localMedia.pictureType = "image/jpeg"
+                                                        localMedia.setPosition(iFlag)
+                                                        localMedia.sortIndex = iFlag
+                                                        previewImages.add(localMedia)
+                                                        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+                                                    }
+
+                                                    iFlag++
+                                                }
+                                            }
+                                            attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                            if(attachList.size == 0)
+                                            {
+                                                attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                            }
+                                            emaiAttachAdapter = EmaiAttachAdapter(attachList)
+                                            emaiAttachAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+
+                                                true
+                                            }
+                                            recyclerViewAttach.setLayoutManager(GridLayoutManager(AppConfig.instance, 2));
+                                            recyclerViewAttach.adapter = emaiAttachAdapter
+                                            emaiAttachAdapter!!.setOnItemClickListener { adapter, view, position ->
+                                                var emaiAttach = emaiAttachAdapter!!.getItem(position)
+                                                var fileName = emaiAttach!!.name
+                                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    showImagList(position)
+                                                }else if(fileName.contains("mp4"))
+                                                {
+                                                    val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                                    intent.putExtra("path", emaiAttach.localPath)
+                                                    startActivity(intent)
+                                                }else{
+                                                    OpenFileUtil.getInstance(AppConfig.instance)
+                                                    val intent = OpenFileUtil.openFile(emaiAttach.localPath)
+                                                    startActivity(intent)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        //closeProgressDialog()
+                                        loadingBar.visibility = View.GONE
+                                        loadingTips.visibility = View.GONE
+                                        Toast.makeText(this@EmailInfoActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,msgId,save_dir,emailMeaasgeData!!.aesKey,gmailService,"me")
+                    }
+
                 }else{
                     attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                     if(attachList.size == 0)
@@ -497,95 +594,190 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 }
                 if(!isDownload)
                 {
-                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                    emailReceiveClient
-                            .imapDownloadEmailCid(this@EmailInfoActivity, object : GetAttachCallback {
-                                override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
-                                    needWaitCid = false
-                                    runOnUiThread {
-                                        var iFlag = 0;
-                                        for (attachItem in messageList)
-                                        {
-                                            var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailCidEntityDao.Properties.Name.eq(attachItem.name)).list()
-                                            if(attachListTemp.size == 0)
+                    if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+                    {
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapDownloadEmailCid(this@EmailInfoActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        needWaitCid = false
+                                        runOnUiThread {
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
                                             {
-                                                attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
-
-                                            }
-                                            if(attachListTemp == null || attachListTemp.size == 0)
-                                            {
-                                                var eamilCid = EmailCidEntity()
-                                                eamilCid.account = AppConfig.instance.emailConfig().account
-                                                eamilCid.msgId = emailMeaasgeData!!.menu+"_"+msgId
-                                                eamilCid.name = attachItem.name
-                                                eamilCid.cid = attachItem.cid
-                                                eamilCid.data = attachItem.byt
-                                                eamilCid.hasData = true
-                                                eamilCid.isCanDelete = false
-                                                var savePath = save_dir+eamilCid.account+"_"+eamilCid.msgId+"_"+eamilCid.name
-                                                eamilCid.localPath = savePath
-                                                AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.insert(eamilCid)
-                                            }
-                                        }
-                                        var cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
-                                        if(cidList.size == 0)
-                                        {
-                                            cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
-
-                                        }
-                                        for (cidItem in cidList)
-                                        {
-                                            val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-                                            var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeData!!.menu+"_"+msgId+"_"+cidItem.name
-                                            if(cidItem.cid == null && cidItem.cid =="")
-                                            {
-                                                cidItem.cid = cidItem.name
-                                            }
-                                            if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
-                                            {
-                                                emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.cid ,savePath )
-                                            }else{
-                                                emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.cid ,savePath )
-                                            }
-
-                                        }
-                                        if(menu != "node")
-                                        {
-                                            var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
-                                            var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
-                                            iframeStr = ""
-                                            var URLText = "";
-                                            if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
-                                            {
-                                                var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
-                                                if(originalTextCun.length > 50)
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailCidEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
                                                 {
-                                                    originalTextCun = originalTextCun.substring(0,50)
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
+
                                                 }
-                                                mailInfo.content = originalTextCun
-                                                URLText = "<html>"+headStr+emailMeaasgeData!!.originalText+"</body>"+iframeStr+"</html>";
-                                                contentHtml = URLText
-                                                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-                                            }else{
-                                                var contentText =  emailMeaasgeData!!.contentText
-                                                if(contentText.length > 50)
+                                                if(attachListTemp == null || attachListTemp.size == 0)
                                                 {
-                                                    contentText = contentText.substring(0,50)
+                                                    var eamilCid = EmailCidEntity()
+                                                    eamilCid.account = AppConfig.instance.emailConfig().account
+                                                    eamilCid.msgId = emailMeaasgeData!!.menu+"_"+msgId
+                                                    eamilCid.name = attachItem.name
+                                                    eamilCid.cid = attachItem.cid
+                                                    eamilCid.data = attachItem.byt
+                                                    eamilCid.hasData = true
+                                                    eamilCid.isCanDelete = false
+                                                    var savePath = save_dir+eamilCid.account+"_"+eamilCid.msgId+"_"+eamilCid.name
+                                                    eamilCid.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.insert(eamilCid)
                                                 }
-                                                mailInfo.content = contentText
-                                                URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</div></body>"+iframeStr+"</html>";
-                                                contentHtml = URLText
-                                                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+                                            }
+                                            var cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                            if(cidList.size == 0)
+                                            {
+                                                cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                            }
+                                            for (cidItem in cidList)
+                                            {
+                                                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                                var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeData!!.menu+"_"+msgId+"_"+cidItem.name
+                                                if(cidItem.cid == null && cidItem.cid =="")
+                                                {
+                                                    cidItem.cid = cidItem.name
+                                                }
+                                                if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+                                                {
+                                                    emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.cid ,savePath )
+                                                }else{
+                                                    emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.cid ,savePath )
+                                                }
+
+                                            }
+                                            if(menu != "node")
+                                            {
+                                                var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
+                                                var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
+                                                iframeStr = ""
+                                                var URLText = "";
+                                                if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+                                                {
+                                                    var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
+                                                    if(originalTextCun.length > 50)
+                                                    {
+                                                        originalTextCun = originalTextCun.substring(0,50)
+                                                    }
+                                                    mailInfo.content = originalTextCun
+                                                    URLText = "<html>"+headStr+emailMeaasgeData!!.originalText+"</body>"+iframeStr+"</html>";
+                                                    contentHtml = URLText
+                                                    webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+                                                }else{
+                                                    var contentText =  emailMeaasgeData!!.contentText
+                                                    if(contentText.length > 50)
+                                                    {
+                                                        contentText = contentText.substring(0,50)
+                                                    }
+                                                    mailInfo.content = contentText
+                                                    URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</div></body>"+iframeStr+"</html>";
+                                                    contentHtml = URLText
+                                                    webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                override fun gainFailure(errorMsg: String) {
-                                    //tipDialog.dismiss()
-                                    //closeProgressDialog()
-                                    Toast.makeText(this@EmailInfoActivity, getString(R.string.picture_download_failed), Toast.LENGTH_SHORT).show()
-                                }
-                            },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        //closeProgressDialog()
+                                        Toast.makeText(this@EmailInfoActivity, getString(R.string.picture_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,msgId,save_dir,emailMeaasgeData!!.aesKey)
+                    }else{
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .gmailDownloadEmailCid(this@EmailInfoActivity, object : GetAttachCallback {
+                                    override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
+                                        needWaitCid = false
+                                        runOnUiThread {
+                                            var iFlag = 0;
+                                            for (attachItem in messageList)
+                                            {
+                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId),EmailCidEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if(attachListTemp.size == 0)
+                                                {
+                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                                }
+                                                if(attachListTemp == null || attachListTemp.size == 0)
+                                                {
+                                                    var eamilCid = EmailCidEntity()
+                                                    eamilCid.account = AppConfig.instance.emailConfig().account
+                                                    eamilCid.msgId = emailMeaasgeData!!.menu+"_"+msgId
+                                                    eamilCid.name = attachItem.name
+                                                    eamilCid.cid = attachItem.cid
+                                                    eamilCid.data = attachItem.byt
+                                                    eamilCid.hasData = true
+                                                    eamilCid.isCanDelete = false
+                                                    var savePath = save_dir+eamilCid.account+"_"+eamilCid.msgId+"_"+eamilCid.name
+                                                    eamilCid.localPath = savePath
+                                                    AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.insert(eamilCid)
+                                                }
+                                            }
+                                            var cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
+                                            if(cidList.size == 0)
+                                            {
+                                                cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(msgId)).list()
+
+                                            }
+                                            for (cidItem in cidList)
+                                            {
+                                                val save_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                                var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeData!!.menu+"_"+msgId+"_"+cidItem.name
+                                                if(cidItem.cid == null && cidItem.cid =="")
+                                                {
+                                                    cidItem.cid = cidItem.name
+                                                }
+                                                if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+                                                {
+                                                    emailMeaasgeData!!.originalText = replaceLocalPathByImgCid(emailMeaasgeData!!.originalText ,cidItem.cid ,savePath )
+                                                }else{
+                                                    emailMeaasgeData!!.content = replaceLocalPathByImgCid(emailMeaasgeData!!.content ,cidItem.cid ,savePath )
+                                                }
+
+                                            }
+                                            if(menu != "node")
+                                            {
+                                                var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
+                                                var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
+                                                iframeStr = ""
+                                                var URLText = "";
+                                                if(emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "")
+                                                {
+                                                    var originalTextCun = StringUitl.StripHT(emailMeaasgeData!!.originalText)
+                                                    if(originalTextCun.length > 50)
+                                                    {
+                                                        originalTextCun = originalTextCun.substring(0,50)
+                                                    }
+                                                    mailInfo.content = originalTextCun
+                                                    URLText = "<html>"+headStr+emailMeaasgeData!!.originalText+"</body>"+iframeStr+"</html>";
+                                                    contentHtml = URLText
+                                                    webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+                                                }else{
+                                                    var contentText =  emailMeaasgeData!!.contentText
+                                                    if(contentText.length > 50)
+                                                    {
+                                                        contentText = contentText.substring(0,50)
+                                                    }
+                                                    mailInfo.content = contentText
+                                                    URLText = "<html>"+headStr+emailMeaasgeData!!.content+"</div></body>"+iframeStr+"</html>";
+                                                    contentHtml = URLText
+                                                    webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    override fun gainFailure(errorMsg: String) {
+                                        //tipDialog.dismiss()
+                                        //closeProgressDialog()
+                                        Toast.makeText(this@EmailInfoActivity, getString(R.string.picture_download_failed), Toast.LENGTH_SHORT).show()
+                                    }
+                                },menu,msgId,save_dir,emailMeaasgeData!!.aesKey,gmailService,"me")
+                    }
+
                 }else{
                     var cidList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
                     if(cidList.size == 0)
