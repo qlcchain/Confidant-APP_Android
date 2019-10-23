@@ -1208,11 +1208,10 @@ class EmailCore {
             messagesGmail.addAll(listMesResponse.getMessages());
             if (listMesResponse.getNextPageToken() != null) {
                 pageTokenTemp = listMesResponse.getNextPageToken();
-                listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize)
-                        .setPageToken(pageTokenTemp).execute();
-            } else {
-                break;
+               /* listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize)
+                        .setPageToken(pageToken).execute();*/
             }
+            break;
         }
         Message[] messagesAll = new Message[messagesGmail.size()];
         int i = 0;
@@ -1850,8 +1849,6 @@ class EmailCore {
             e.printStackTrace();
         }
         System.out.println("time_"+"end:"+System.currentTimeMillis());
-        folder.close(false);
-        imapStore.close();
         return mailAttachments;
     }
     /**
