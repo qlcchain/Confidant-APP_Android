@@ -1764,14 +1764,14 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     {
         var contactMapList = HashMap<String, String>()
         var userID = ""
-        if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
+        if(emailMeaasgeData!!.content.contains("confidantKey=") || emailMeaasgeData!!.content.contains("confidantkey="))
         {
 
             try {
                 var endStr = ""
                 if(emailMeaasgeData!!.content.contains("myconfidantbegin"))
                 {
-                    endStr =  "<div myconfidantbegin=''>"+
+                    endStr =  "<div id=\"myconfidantbegin\">"+
                             "<br />"+
                             " <br />"+
                             " <br />"+
@@ -1832,6 +1832,155 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     {
                         userIDBeginStr = "confidantuserid=\""
                         userIDBeginIndex = confidantkeyBefore.indexOf("confidantuserid=\"")
+                    }
+                    var userIDEndIndex = confidantkeyBefore.lastIndexOf("'></span>")
+                    if(userIDEndIndex < 0)
+                    {
+                        userIDEndIndex = confidantkeyBefore.lastIndexOf("\"></span>")
+                    }
+                    userID = confidantkeyBefore.substring(userIDBeginIndex+userIDBeginStr.length,userIDEndIndex)
+                    var aa = ""
+                }
+                var endIndex = confidantkeyBefore.indexOf("'></span>")
+                if(endIndex < 0)
+                {
+                    endIndex = confidantkeyBefore.indexOf("\"></span>")
+                }
+                if(endIndex < 14)
+                {
+                    endIndex = 14
+                }
+                var confidantkey = confidantkeyBefore.substring(14,endIndex)
+
+                var confidantkeyArr = listOf<String>()
+                var accountMi = ""
+                var shareMiKey = ""
+                var account =  String(RxEncodeTool.base64Decode(accountMi))
+                if(confidantkey!!.contains("##"))
+                {
+                    var confidantkeyList = confidantkey.split("##")
+                    for(item in confidantkeyList)
+                    {
+                        if(item.contains("&&"))
+                        {
+                            confidantkeyArr = item.split("&&")
+                        }else{
+                            confidantkeyArr = item.split("&amp;&amp;")
+                        }
+
+                        accountMi = confidantkeyArr.get(0)
+                        shareMiKey = confidantkeyArr.get(1)
+                        account =  String(RxEncodeTool.base64Decode(accountMi))
+                        if(account != "" && account.toLowerCase().contains(AppConfig.instance.emailConfig().account.toLowerCase()))
+                        {
+                            break;
+                        }
+                    }
+
+                }else{
+                    if(confidantkey.contains("&&"))
+                    {
+                        confidantkeyArr = confidantkey.split("&&")
+                    }else{
+                        confidantkeyArr = confidantkey.split("&amp;&amp;")
+                    }
+                    accountMi = confidantkeyArr.get(0)
+                    shareMiKey = confidantkeyArr.get(1)
+                }
+                var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!);
+                var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
+                val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
+                var sourceContent = ""
+                try{
+                    sourceContent = String(miContent)
+                    contactMapList.put("originalText",sourceContent + endStr)
+                    contactMapList.put("aesKey",aesKey)
+                    contactMapList.put("userId",userID)
+                }catch (e:Exception)
+                {
+                    contactMapList.put("originalText","")
+                    contactMapList.put("aesKey","")
+                    contactMapList.put("userId",userID)
+                }finally {
+                    return contactMapList
+                }
+            }catch (e:Exception)
+            {
+                contactMapList.put("originalText","")
+                contactMapList.put("aesKey","")
+                contactMapList.put("userId",userID)
+            }finally {
+                return contactMapList
+            }
+
+        }else if(emailMeaasgeData!!.content.contains("newconfidantKey") || emailMeaasgeData!!.content.contains("newconfidantkey"))
+        {
+
+            try {
+                var endStr = ""
+                if(emailMeaasgeData!!.content.contains("newmyconfidantbegin"))
+                {
+                    endStr =  "<div id=\"newmyconfidantbegin\">"+
+                            "<br />"+
+                            " <br />"+
+                            " <br />"+
+                            "<span>"+
+                            getString(R.string.sendfromconfidant)+
+                            "</span>"+
+                            "</div>"
+                }
+                var miContentSoucreBgeinIndex= 0
+                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' id=\"newconfidantKey")
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' id=\"newconfidantkey")
+                }
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
+                }
+                if(miContentSoucreEndIndex == -1)
+                {
+                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" id=\"newconfidantKey")
+                }
+                var beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey'")
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey'")
+                }
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey\"")
+                }
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey\"")
+                }
+                if(beginIndex < 0)
+                {
+                    beginIndex = 0;
+                }
+                if(miContentSoucreEndIndex < 0)
+                {
+                    miContentSoucreEndIndex = 0;
+                }
+                var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
+                var endIndexd = emailMeaasgeData!!.content.length
+                if(endIndexd < beginIndex)
+                {
+                    endIndexd = beginIndex
+                }
+                var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,endIndexd)
+
+                if(confidantkeyBefore.contains("newconfidantuserid"))
+                {
+                    var userIDBeginStr = "newconfidantuserid'"
+                    userID = ""
+                    var userIDBeginIndex = confidantkeyBefore.indexOf(userIDBeginStr)
+                    if(userIDBeginIndex == -1)
+                    {
+                        userIDBeginStr = "newconfidantuserid\""
+                        userIDBeginIndex = confidantkeyBefore.indexOf("newconfidantuserid\"")
                     }
                     var userIDEndIndex = confidantkeyBefore.lastIndexOf("'></span>")
                     if(userIDEndIndex < 0)

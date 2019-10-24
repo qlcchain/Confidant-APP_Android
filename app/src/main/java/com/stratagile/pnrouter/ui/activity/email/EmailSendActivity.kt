@@ -1445,12 +1445,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }else{
                 contentHtml +=emailMeaasgeInfoData!!.content
             }
-            if(contentHtml.contains("confidantkey"))
+            if(contentHtml.contains("id=\"newconfidantkey"))
             {
-                var beginFlag = contentHtml.indexOf("<span style='display:none' confidantkey=")
+                var beginFlag = contentHtml.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
                 if(beginFlag < 0)
                 {
-                    beginFlag = contentHtml.indexOf("<span style=\"display:none\" confidantkey=")
+                    beginFlag = contentHtml.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
                 }
                 if(beginFlag >= 0)
                 {
@@ -1460,9 +1460,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
         var needTipsShow = true;
-        if(contentHtml.contains("myconfidantbegin"))
+        if(contentHtml.contains("id=\"newmyconfidantbegin"))
         {
-            var endIndex = contentHtml.indexOf("<div myconfidantbegin=")
+            var endIndex = contentHtml.indexOf("<div id=\"newmyconfidantbegin")
             if(endIndex > 0)
             {
                 contentHtml = contentHtml.substring(0,endIndex)
@@ -1544,10 +1544,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         if(contactMapList.size == needSize)
         {
-            contentHtml += "<span style=\'display:none\' confidantkey=\'"+confidantKey+"\'></span>";
+            contentHtml += "<span style=\"display:none\" id=\""+"newconfidantkey"+confidantKey+"\"></span>"; //confidantkey
         }
-        contentHtml += "<span style=\'display:none\' confidantuserid=\'"+userId+"\'></span>";
-        var endStr =  "<div myconfidantbegin=''>"+
+        contentHtml += "<span style=\"display:none\" id=\"newconfidantuserid"+userId+"\"></span>";
+        var endStr =  "<div id=\"newmyconfidantbegin\">"+
                 "<br />"+
                 " <br />"+
                 " <br />"+
