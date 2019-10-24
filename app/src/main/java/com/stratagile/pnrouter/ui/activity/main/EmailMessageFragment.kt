@@ -1781,18 +1781,20 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                             "</div>"
                 }
                 var miContentSoucreBgeinIndex= 0
-                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
+                var newconfidantKeyIndex = emailMeaasgeData!!.content.indexOf("confidantkey=")
+                var emailMeaasgeDataTemp = emailMeaasgeData!!.content.substring(0,newconfidantKeyIndex)
+                var miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style='display:none'")
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style='display:none'")
                 }
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantkey=")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style=\"display:none\"")
                 }
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" confidantKey=")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style=\"display:none\"")
                 }
                 var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
                 if(beginIndex == -1)
@@ -1930,31 +1932,33 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                             "</div>"
                 }
                 var miContentSoucreBgeinIndex= 0
-                var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' id=\"newconfidantKey")
+                var newconfidantKeyIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey")
+                var emailMeaasgeDataTemp = emailMeaasgeData!!.content.substring(0,newconfidantKeyIndex)
+                var miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style='display:none'")
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' id=\"newconfidantkey")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style='display:none'")
                 }
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style=\"display:none\"")
                 }
                 if(miContentSoucreEndIndex == -1)
                 {
-                    miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style=\"display:none\" id=\"newconfidantKey")
+                    miContentSoucreEndIndex = emailMeaasgeDataTemp.indexOf("<span style=\"display:none\"")
                 }
-                var beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey'")
+                var beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey")
                 if(beginIndex == -1)
                 {
-                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey'")
-                }
-                if(beginIndex == -1)
-                {
-                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey\"")
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey")
                 }
                 if(beginIndex == -1)
                 {
-                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey\"")
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantkey")
+                }
+                if(beginIndex == -1)
+                {
+                    beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantKey")
                 }
                 if(beginIndex < 0)
                 {
@@ -1979,8 +1983,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                     var userIDBeginIndex = confidantkeyBefore.indexOf(userIDBeginStr)
                     if(userIDBeginIndex == -1)
                     {
-                        userIDBeginStr = "newconfidantuserid\""
-                        userIDBeginIndex = confidantkeyBefore.indexOf("newconfidantuserid\"")
+                        userIDBeginStr = "newconfidantuserid"
+                        userIDBeginIndex = confidantkeyBefore.indexOf("newconfidantuserid")
                     }
                     var userIDEndIndex = confidantkeyBefore.lastIndexOf("'></span>")
                     if(userIDEndIndex < 0)
@@ -1995,11 +1999,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 {
                     endIndex = confidantkeyBefore.indexOf("\"></span>")
                 }
-                if(endIndex < 14)
+                if(endIndex < 15)
                 {
-                    endIndex = 14
+                    endIndex = 15
                 }
-                var confidantkey = confidantkeyBefore.substring(14,endIndex)
+                var confidantkey = confidantkeyBefore.substring(15,endIndex)
 
                 var confidantkeyArr = listOf<String>()
                 var accountMi = ""
