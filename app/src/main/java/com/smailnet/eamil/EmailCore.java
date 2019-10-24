@@ -21,6 +21,7 @@ import android.util.Log;
 
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Label;
+import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 import com.smailnet.eamil.Utils.AddressUtil;
@@ -758,6 +759,19 @@ class EmailCore {
             return emailMessageList;
         }
 
+    }
+    /**
+     * 使用gmai API接收服务器上的邮件属性
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<EmailCount> gmailMailToken(final ArrayList<String> menuList,final Gmail gmailService ,final String userId) throws  IOException {
+
+        List<EmailCount> emailMessageList = new ArrayList<>();
+        ListLabelsResponse listResponse =
+                gmailService.users().labels().list(userId).execute(); // this way just execute and get the label list
+        return emailMessageList;
     }
     /**
      * 使用gmai API接收服务器上的邮件属性

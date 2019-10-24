@@ -12,6 +12,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.ExponentialBackOff
+import com.google.api.services.gmail.GmailRequestInitializer
+import com.google.api.services.gmail.GmailScopes
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetCountCallback
 import com.smailnet.eamil.EmailCount
@@ -43,6 +49,7 @@ import kotlinx.android.synthetic.main.email_login_activity.*
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.emailpassword_bar.*
 import org.greenrobot.eventbus.EventBus
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -108,6 +115,16 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     var account =""
     var userId = "";
     var password =""
+    private var PREF_ACCOUNT_NAME = "accountName"
+    internal var mService: com.google.api.services.gmail.Gmail? = null
+    private val SCOPES = arrayOf(GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY)
+    internal val transport = AndroidHttp.newCompatibleTransport()
+    internal val jsonFactory = GsonFactory.getDefaultInstance()
+    internal val REQUEST_ACCOUNT_PICKER = 1000
+    internal val REQUEST_AUTHORIZATION = 1001
+    internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+
+     var credential: GoogleAccountCredential? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,6 +135,18 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfChooseCallback = this
+        val settings = getPreferences(Context.MODE_PRIVATE)
+        credential = GoogleAccountCredential.usingOAuth2(
+                applicationContext, Arrays.asList(*SCOPES))
+                .setBackOff(ExponentialBackOff())
+                .setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))
+        mService = com.google.api.services.gmail.Gmail.Builder(
+                transport, jsonFactory, credential)
+                .setApplicationName("com.stratagile.pnrouter")
+                .setGmailRequestInitializer(GmailRequestInitializer("873428561545-i01gqi3hsp0rkjs2u21ql0msjgu0qgnv.apps.googleusercontent.com"))
+                .build()
+
+
         var gso = GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -196,9 +225,11 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                     .setSmtpEncrypted("SSL/TLS")
             if(ConstantValue.isGooglePlayServicesAvailable)
             {
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                startActivityForResult(
+                        credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
+                /*Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
+                startActivityForResult(signInIntent, RC_SIGN_IN);*/
             }else{
                 var Intent = Intent(this, EmailLoginActivity::class.java)
                 Intent.putExtra("emailType","4")
