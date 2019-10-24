@@ -1206,14 +1206,17 @@ class EmailCore {
         List<com.google.api.services.gmail.model.Message> messagesGmail = new ArrayList<com.google.api.services.gmail.model.Message>();
         String pageTokenTemp = "";
         while (listMesResponse.getMessages() != null) {
-            messagesGmail.addAll(listMesResponse.getMessages());
+            //messagesGmail.addAll(listMesResponse.getMessages());
             boolean isStop = false;
             for(com.google.api.services.gmail.model.Message messageTemp : listMesResponse.getMessages())
             {
+                System.out.println("getThreadId:"+ messageTemp.getThreadId() +"--old:"+firstMessageId);
                 if(messageTemp.getThreadId().equals(firstMessageId))
                 {
                     isStop = true;
                     break;
+                }else{
+                    messagesGmail.add(messageTemp);
                 }
             }
             if(!isStop)
