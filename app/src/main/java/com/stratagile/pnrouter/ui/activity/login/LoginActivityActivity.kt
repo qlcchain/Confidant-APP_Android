@@ -1100,7 +1100,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     .enableAutoManage(this, this)//* FragmentActivity *//**//* OnConnectionFailedListener *//*
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build();
-
             sign_in_button.setSize(SignInButton.SIZE_STANDARD);
             sign_in_button.setScopes(gso.getScopeArray());
             sign_in_button.setOnClickListener {

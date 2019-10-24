@@ -6,10 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.tasks.OnCompleteListener
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetCountCallback
 import com.smailnet.eamil.EmailCount
@@ -162,6 +164,12 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             finish()
         }
         wangyi.setOnClickListener {
+            /*val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build()
+            var mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+             mGoogleSignInClient.signOut()
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient);*/
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.163.com")
                     .setSmtpPort(465)
@@ -188,7 +196,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                     .setSmtpEncrypted("SSL/TLS")
             if(ConstantValue.isGooglePlayServicesAvailable)
             {
-
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }else{
@@ -263,7 +271,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     private fun handleSignInResult(result: GoogleSignInResult){
         KLog.i("robin"+ "handleSignInResult:" + result.isSuccess());
         if(result.isSuccess()){
-            toast("成功")
+            //toast("成功")
             KLog.i("robin"+ "成功");
             var acct = result.getSignInAccount();
             if(acct!=null){
@@ -272,7 +280,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                 KLog.i("robin"+"用户email是:" + acct.getEmail());
                 KLog.i("robin"+ "用户头像是:" + acct.getPhotoUrl());
                 KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
-                toast("用户Id是:" + acct.getId())
+                //toast("用户Id是:" + acct.getId())
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
                 account = acct!!.getEmail()!!
                 userId = acct!!.getId()!!
