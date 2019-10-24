@@ -276,7 +276,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             var acct = result.getSignInAccount();
             if(acct!=null){
                 KLog.i("robin"+"用户名是:" + acct.getDisplayName());
-                toast("用户email是:" + acct.getEmail())
+                //toast("用户email是:" + acct.getEmail())
                 KLog.i("robin"+"用户email是:" + acct.getEmail());
                 KLog.i("robin"+ "用户头像是:" + acct.getPhotoUrl());
                 KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
@@ -284,6 +284,9 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
                 account = acct!!.getEmail()!!
                 userId = acct!!.getId()!!
+                runOnUiThread {
+                    showProgressDialog(getString(R.string.waiting))
+                }
                 var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
                 var accountBase64 = String(RxEncodeTool.base64Encode(account))
                 var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
@@ -299,7 +302,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
 
             }
         }else{
-            toast("失败")
+            toast(getString(R.string.fail))
             KLog.i("robin"+ "没有成功"+result.getStatus());
         }
     }

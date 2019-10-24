@@ -43,6 +43,7 @@ import com.stratagile.pnrouter.ui.adapter.conversation.EmaiMessageAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import kotlinx.android.synthetic.main.email_otherconfig_activity.*
 import kotlinx.android.synthetic.main.email_search_bar.*
 import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
@@ -682,48 +683,115 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     fun getMailUnReadCount()
     {
         var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
-        Islands.circularProgress(AppConfig.instance)
-                .setCancelable(false)
-                .setMessage(getString(R.string.waiting))
-                .run { progressDialog ->
-                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                    emailReceiveClient
-                            .imapReceiveAsynCount(activity, object : GetCountCallback {
-                                override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
-                                    progressDialog.dismiss()
-                                    if(messageList.size >0)
-                                    {
-                                        var emailMessage = messageList.get(0)
-                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
-                                        var EmailMessage = false
-                                        if(emailConfigEntityList.size > 0)
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        {
+            Islands.circularProgress(AppConfig.instance)
+                    .setCancelable(false)
+                    .setMessage(getString(R.string.waiting))
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapReceiveAsynCount(activity, object : GetCountCallback {
+                                    override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                        progressDialog.dismiss()
+                                        if(messageList.size >0)
                                         {
-                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                            emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
-                                            emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
-                                            emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
-                                            emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
-                                            emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
-                                            emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
-                                            emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
-                                            emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
-                                            emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
-                                            emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
-                                            emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
-                                            emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
-                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            var emailMessage = messageList.get(0)
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                                emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                                emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                                emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                                emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                                emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                                emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                                emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                                emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                                emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                                emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                                emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            }
                                         }
+                                        EventBus.getDefault().post(ChangeEmailConfig())
                                     }
-                                    EventBus.getDefault().post(ChangeEmailConfig())
-                                }
 
-                                override fun gainFailure(errorMsg: String) {
-                                    progressDialog.dismiss()
-                                    //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
-                                }
-                            },menuList)
-                }
+                                    override fun gainFailure(errorMsg: String) {
+                                        progressDialog.dismiss()
+                                        //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                    }
+                                },menuList)
+                    }
+        }else{
+            var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+            Islands.circularProgress(AppConfig.instance)
+                    .setCancelable(false)
+                    .setMessage(getString(R.string.waiting))
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .gmaiApiAsynCount(activity, object : GetCountCallback {
+                                    override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                        if(messageList.size >0)
+                                        {
+                                            var emailMessage = messageList.get(0)
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(ConstantValue.currentEmailConfigEntity!!.account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                                emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                                emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                                emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                                emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                                emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                                emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                                emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                                emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                                emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                                emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                                emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+
+                                                emailConfigEntity.inboxMaxMessageId = emailMessage.inboxMaxMessageId
+                                                emailConfigEntity.inboxMinMessageId = emailMessage.inboxMinMessageId
+                                                emailConfigEntity.nodeMaxMessageId = emailMessage.nodeMaxMessageId
+                                                emailConfigEntity.nodeMinMessageId = emailMessage.nodeMinMessageId
+
+                                                emailConfigEntity.starMaxMessageId = emailMessage.starMaxMessageId
+                                                emailConfigEntity.starMinMessageId = emailMessage.starMinMessageId
+                                                emailConfigEntity.drafMaxMessageId = emailMessage.drafMaxMessageId
+                                                emailConfigEntity.drafMinMessageId = emailMessage.drafMinMessageId
+                                                emailConfigEntity.sendMaxMessageId = emailMessage.sendMaxMessageId
+                                                emailConfigEntity.sendMinMessageId = emailMessage.sendMinMessageId
+                                                emailConfigEntity.garbageMaxMessageId = emailMessage.garbageMaxMessageId
+                                                emailConfigEntity.garbageMinMessageId = emailMessage.garbageMinMessageId
+                                                emailConfigEntity.deleteMaxMessageId = emailMessage.deleteMaxMessageId
+                                                emailConfigEntity.deleteMinMessageId = emailMessage.deleteMinMessageId
+
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            }
+                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                        }else{
+                                            progressDialog.dismiss()
+                                        }
+
+                                    }
+
+                                    override fun gainFailure(errorMsg: String) {
+                                        progressDialog.dismiss()
+                                        //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                    }
+                                },menuList,gmailService,"me")
+                    }
+        }
+
     }
     override fun onResume() {
         super.onResume()
@@ -859,21 +927,21 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 refreshLayout.resetNoMoreData()
                                             }
                                         }
-                                       /* if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
-                                        {
-                                            runOnUiThread {
-                                                SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
-                                                        .setCancelText(getString(R.string.close))
-                                                        .setConfirmText(getString(R.string.yes))
-                                                        .setContentText(errorMs)
-                                                        .setConfirmClickListener {
+                                        /* if(errorMs != null && errorMs  != "" && "susan.zhou@qlink.mobi" == AppConfig.instance.emailConfig().account)
+                                         {
+                                             runOnUiThread {
+                                                 SweetAlertDialog(root_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                         .setCancelText(getString(R.string.close))
+                                                         .setConfirmText(getString(R.string.yes))
+                                                         .setContentText(errorMs)
+                                                         .setConfirmClickListener {
 
-                                                        }.setCancelClickListener {
+                                                         }.setCancelClickListener {
 
-                                                        }
-                                                        .show()
-                                            }
-                                        }*/
+                                                         }
+                                                         .show()
+                                             }
+                                         }*/
                                         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
                                         if(emailConfigEntityChoose.size > 0)
                                         {
@@ -930,7 +998,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.cc = item.cc
                                                 eamilMessage.bcc = item.bcc
                                                 eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                                eamilMessage.setIsSeen(item.isSeen)
+                                                if(menu =="Starred" || menu =="Drafts" || menu =="Sent" )
+                                                {
+                                                    eamilMessage.setIsSeen(true)
+                                                }else{
+                                                    eamilMessage.setIsSeen(item.isSeen)
+                                                }
                                                 eamilMessage.setIsStar(item.isStar)
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)
@@ -1168,7 +1241,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.cc = item.cc
                                                 eamilMessage.bcc = item.bcc
                                                 eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                                eamilMessage.setIsSeen(item.isSeen)
+                                                if(menu =="Starred" || menu =="Drafts" || menu =="Sent" )
+                                                {
+                                                    eamilMessage.setIsSeen(true)
+                                                }else{
+                                                    eamilMessage.setIsSeen(item.isSeen)
+                                                }
                                                 eamilMessage.setIsStar(item.isStar)
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)
@@ -1396,7 +1474,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.cc = item.cc
                                                 eamilMessage.bcc = item.bcc
                                                 eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                                eamilMessage.setIsSeen(item.isSeen)
+                                                if(menu =="Starred" || menu =="Drafts" || menu =="Sent" )
+                                                {
+                                                    eamilMessage.setIsSeen(true)
+                                                }else{
+                                                    eamilMessage.setIsSeen(item.isSeen)
+                                                }
                                                 eamilMessage.setIsStar(item.isStar)
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)
@@ -1568,8 +1651,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                         if(emailConfigEntity.inboxMaxMessageId == 0L)
                                                         {
                                                             emailConfigEntity.totalCount = minUUID.toInt()
-                                                           /* emailConfigEntity.inboxMaxMessageId = item.id.toLong()
-                                                            emailConfigEntity.inboxMinMessageId = item.id.toLong()*/
+                                                            /* emailConfigEntity.inboxMaxMessageId = item.id.toLong()
+                                                             emailConfigEntity.inboxMinMessageId = item.id.toLong()*/
                                                         }
 
                                                     }
@@ -1591,7 +1674,12 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                                                 eamilMessage.cc = item.cc
                                                 eamilMessage.bcc = item.bcc
                                                 eamilMessage.setIsContainerAttachment(item.isContainerAttachment)
-                                                eamilMessage.setIsSeen(item.isSeen)
+                                                if(menu =="Starred" || menu =="Drafts" || menu =="Sent" )
+                                                {
+                                                    eamilMessage.setIsSeen(true)
+                                                }else{
+                                                    eamilMessage.setIsSeen(item.isSeen)
+                                                }
                                                 eamilMessage.setIsStar(item.isStar)
                                                 eamilMessage.setIsReplySign(item.isReplySign)
                                                 eamilMessage.setAttachmentCount(item.attachmentCount)

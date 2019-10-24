@@ -366,6 +366,7 @@ class EmailCore {
         }
         String fromName = account.substring(0,account.indexOf("@"));
         message.setFrom(new InternetAddress(fromName + "<" + account + ">"));
+        message.setHeader("confidantkey","1234566");
         String subjectNew = subject;
        /* try {
             subjectNew = (MimeUtility.encodeText(subject,MimeUtility.mimeCharset("gb2312"), null));
@@ -904,6 +905,7 @@ class EmailCore {
                 {
 
                 }
+
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
@@ -1086,7 +1088,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-
+                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1277,7 +1279,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-
+                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1447,7 +1449,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-
+                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1577,10 +1579,11 @@ class EmailCore {
         int len = 0;
         int lengFlag = 0;
         int pageFlag = 1;
+        int k = 0;
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
-            while (messagesAll.length == 0)
+            while (messagesAll.length == 0 || k == 0)
             {
                 long[] uuidList = new long[pageSize];
                 lengFlag = 0;
@@ -1602,6 +1605,17 @@ class EmailCore {
                 }
                 pageFlag ++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
+
+                Message[] messagesAllTemp = new Message[]{};
+                k = 0;
+                for (Message message : messagesAll)
+                {
+                    if(message != null)
+                    {
+                        k ++;
+                    }
+
+                }
             }
         }else{
             noMoreData = true;
@@ -1635,6 +1649,7 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
+                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))

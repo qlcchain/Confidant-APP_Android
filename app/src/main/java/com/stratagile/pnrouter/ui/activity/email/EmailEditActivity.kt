@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.email
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -84,6 +85,12 @@ class EmailEditActivity : BaseActivity(), EmailEditContract.View , PNRouterServi
 
             ivAvatar.setText(accountName)
             nickName.tvContent.text = accountName
+        }
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        {
+            updatePassword.visibility =  View.VISIBLE;
+        }else{
+            updatePassword.visibility = View.GONE;
         }
         title.text = getString(R.string.EmailSettings)
         deleteBtn.setOnClickListener {

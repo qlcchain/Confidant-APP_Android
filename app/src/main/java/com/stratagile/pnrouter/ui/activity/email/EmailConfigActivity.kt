@@ -36,6 +36,7 @@ import com.stratagile.pnrouter.entity.JSaveEmailConfRsp
 import com.stratagile.pnrouter.entity.OtherEmailConfig
 import com.stratagile.pnrouter.entity.SaveEmailConf
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailConfigComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailConfigContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailConfigModule
@@ -551,71 +552,145 @@ class EmailConfigActivity : BaseActivity(), EmailConfigContract.View , PNRouterS
             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
         }
         var menuList = arrayListOf<String>( ConstantValue.currentEmailConfigEntity!!.inboxMenu,ConstantValue.currentEmailConfigEntity!!.drafMenu,ConstantValue.currentEmailConfigEntity!!.sendMenu,ConstantValue.currentEmailConfigEntity!!.garbageMenu,ConstantValue.currentEmailConfigEntity!!.deleteMenu)
-        Islands.circularProgress(this)
-                .setCancelable(false)
-                .setMessage(getString(R.string.waiting))
-                .run { progressDialog ->
-                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                    emailReceiveClient
-                            .imapReceiveAsynCount(this, object : GetCountCallback {
-                                override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
-                                    //progressDialog.dismiss()
-                                    runOnUiThread {
-                                        closeProgressDialog()
-                                        //toast(R.string.Over_configure)
-                                    }
-                                    if(messageList.size >0)
-                                    {
-                                        var emailMessage = messageList.get(0)
-                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
-                                        var EmailMessage = false
-                                        if(emailConfigEntityList.size > 0)
-                                        {
-                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                                            emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
-                                            emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
-                                            emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
-                                            emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
-                                            emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
-                                            emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
-                                            emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
-                                            emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
-                                            emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
-                                            emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
-                                            emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
-                                            emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
-
-                                            emailConfigEntity.inboxMaxMessageId = emailMessage.inboxMaxMessageId
-                                            emailConfigEntity.inboxMinMessageId = emailMessage.inboxMinMessageId
-                                            emailConfigEntity.nodeMaxMessageId = emailMessage.nodeMaxMessageId
-                                            emailConfigEntity.nodeMinMessageId = emailMessage.nodeMinMessageId
-
-                                            emailConfigEntity.starMaxMessageId = emailMessage.starMaxMessageId
-                                            emailConfigEntity.starMinMessageId = emailMessage.starMinMessageId
-                                            emailConfigEntity.drafMaxMessageId = emailMessage.drafMaxMessageId
-                                            emailConfigEntity.drafMinMessageId = emailMessage.drafMinMessageId
-                                            emailConfigEntity.sendMaxMessageId = emailMessage.sendMaxMessageId
-                                            emailConfigEntity.sendMinMessageId = emailMessage.sendMinMessageId
-                                            emailConfigEntity.garbageMaxMessageId = emailMessage.garbageMaxMessageId
-                                            emailConfigEntity.garbageMinMessageId = emailMessage.garbageMinMessageId
-                                            emailConfigEntity.deleteMaxMessageId = emailMessage.deleteMaxMessageId
-                                            emailConfigEntity.deleteMinMessageId = emailMessage.deleteMinMessageId
-
-                                            ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+        if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
+        {
+            Islands.circularProgress(this)
+                    .setCancelable(false)
+                    .setMessage(getString(R.string.waiting))
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .imapReceiveAsynCount(this, object : GetCountCallback {
+                                    override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                        //progressDialog.dismiss()
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                            //toast(R.string.Over_configure)
                                         }
-                                    }
-                                    EventBus.getDefault().post(ChangeEmailConfig())
-                                    finish()
-                                }
+                                        if(messageList.size >0)
+                                        {
+                                            var emailMessage = messageList.get(0)
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                                emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                                emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                                emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                                emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                                emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                                emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                                emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                                emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                                emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                                emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                                emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
 
-                                override fun gainFailure(errorMsg: String) {
-                                    progressDialog.dismiss()
-                                    //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }
-                            },menuList)
-                }
+                                                emailConfigEntity.inboxMaxMessageId = emailMessage.inboxMaxMessageId
+                                                emailConfigEntity.inboxMinMessageId = emailMessage.inboxMinMessageId
+                                                emailConfigEntity.nodeMaxMessageId = emailMessage.nodeMaxMessageId
+                                                emailConfigEntity.nodeMinMessageId = emailMessage.nodeMinMessageId
+
+                                                emailConfigEntity.starMaxMessageId = emailMessage.starMaxMessageId
+                                                emailConfigEntity.starMinMessageId = emailMessage.starMinMessageId
+                                                emailConfigEntity.drafMaxMessageId = emailMessage.drafMaxMessageId
+                                                emailConfigEntity.drafMinMessageId = emailMessage.drafMinMessageId
+                                                emailConfigEntity.sendMaxMessageId = emailMessage.sendMaxMessageId
+                                                emailConfigEntity.sendMinMessageId = emailMessage.sendMinMessageId
+                                                emailConfigEntity.garbageMaxMessageId = emailMessage.garbageMaxMessageId
+                                                emailConfigEntity.garbageMinMessageId = emailMessage.garbageMinMessageId
+                                                emailConfigEntity.deleteMaxMessageId = emailMessage.deleteMaxMessageId
+                                                emailConfigEntity.deleteMinMessageId = emailMessage.deleteMinMessageId
+
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            }
+                                        }
+                                        EventBus.getDefault().post(ChangeEmailConfig())
+                                        finish()
+                                    }
+
+                                    override fun gainFailure(errorMsg: String) {
+                                        progressDialog.dismiss()
+                                        //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    }
+                                },menuList)
+                    }
+        }else{
+            var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,AppConfig.instance.emailConfig().account);
+            Islands.circularProgress(this)
+                    .setCancelable(false)
+                    .setMessage(getString(R.string.waiting))
+                    .run { progressDialog ->
+                        val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                        emailReceiveClient
+                                .gmaiApiAsynCount(this, object : GetCountCallback {
+                                    override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                        //progressDialog.dismiss()
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                            //toast(R.string.Over_configure)
+                                        }
+                                        if(messageList.size >0)
+                                        {
+                                            var emailMessage = messageList.get(0)
+                                            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                                            var EmailMessage = false
+                                            if(emailConfigEntityList.size > 0)
+                                            {
+                                                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                                emailConfigEntity.totalCount = emailMessage.totalCount     //Inbox消息总数
+                                                emailConfigEntity.unReadCount = emailMessage.unReadCount    //Inbox未读数量
+                                                emailConfigEntity.starTotalCount= emailMessage.starTotalCount       //star消息总数
+                                                emailConfigEntity.starunReadCount= emailMessage.starunReadCount       //star未读数量
+                                                emailConfigEntity.drafTotalCount= emailMessage.drafTotalCount       //draf消息总数
+                                                emailConfigEntity.drafUnReadCount= emailMessage.drafUnReadCount       //draf未读数量
+                                                emailConfigEntity.sendTotalCount= emailMessage.sendTotalCount       //send消息总数
+                                                emailConfigEntity.sendunReadCount= emailMessage.sendunReadCount       //send未读数量
+                                                emailConfigEntity.garbageCount= emailMessage.garbageCount         //garbage未读邮件总数
+                                                emailConfigEntity.garbageUnReadCount= emailMessage.garbageUnReadCount       //garbage未读数量
+                                                emailConfigEntity.deleteTotalCount= emailMessage.deleteTotalCount       //delete消息总数
+                                                emailConfigEntity.deleteUnReadCount= emailMessage.deleteUnReadCount       //delete未读数量
+
+                                                emailConfigEntity.inboxMaxMessageId = emailMessage.inboxMaxMessageId
+                                                emailConfigEntity.inboxMinMessageId = emailMessage.inboxMinMessageId
+                                                emailConfigEntity.nodeMaxMessageId = emailMessage.nodeMaxMessageId
+                                                emailConfigEntity.nodeMinMessageId = emailMessage.nodeMinMessageId
+
+                                                emailConfigEntity.starMaxMessageId = emailMessage.starMaxMessageId
+                                                emailConfigEntity.starMinMessageId = emailMessage.starMinMessageId
+                                                emailConfigEntity.drafMaxMessageId = emailMessage.drafMaxMessageId
+                                                emailConfigEntity.drafMinMessageId = emailMessage.drafMinMessageId
+                                                emailConfigEntity.sendMaxMessageId = emailMessage.sendMaxMessageId
+                                                emailConfigEntity.sendMinMessageId = emailMessage.sendMinMessageId
+                                                emailConfigEntity.garbageMaxMessageId = emailMessage.garbageMaxMessageId
+                                                emailConfigEntity.garbageMinMessageId = emailMessage.garbageMinMessageId
+                                                emailConfigEntity.deleteMaxMessageId = emailMessage.deleteMaxMessageId
+                                                emailConfigEntity.deleteMinMessageId = emailMessage.deleteMinMessageId
+
+                                                ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                                                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                            }
+                                            EventBus.getDefault().post(ChangeEmailConfig())
+                                            finish()
+                                        }else{
+                                            progressDialog.dismiss()
+                                        }
+
+                                    }
+
+                                    override fun gainFailure(errorMsg: String) {
+                                        progressDialog.dismiss()
+                                        //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    }
+                                },menuList,gmailService,"me")
+                    }
+        }
+
     }
     override fun setupActivityComponent() {
         DaggerEmailConfigComponent

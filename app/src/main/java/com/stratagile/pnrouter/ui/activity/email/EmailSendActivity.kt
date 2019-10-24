@@ -1818,10 +1818,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 runOnUiThread {
                                     closeProgressDialog()
                                 }
-                                Islands.ordinaryDialog(this@EmailSendActivity)
-                                        .setText(null, getString(R.string.error)+":"+errorMsg)
-                                        .setButton(getString(R.string.close), null, null)
-                                        .click().show()
+                                try {
+                                    Islands.ordinaryDialog(this@EmailSendActivity)
+                                            .setText(null, getString(R.string.error)+":"+errorMsg)
+                                            .setButton(getString(R.string.close), null, null)
+                                            .click().show()
+                                }catch (e:Exception)
+                                {
+
+                                }
+
                             }
                         },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId)
             }else{
