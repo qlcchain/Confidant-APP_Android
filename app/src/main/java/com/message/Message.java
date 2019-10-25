@@ -181,6 +181,11 @@ public class Message {
     }
 
     public void setTimeStamp(long TimeStatmp) {
+        String TimeStatmpStr = TimeStatmp +"";
+        if(TimeStatmpStr.length() > 10)
+        {
+            TimeStatmp = Long.valueOf(TimeStatmp / 1000);
+        }
         this.TimeStamp = TimeStatmp;
     }
 
