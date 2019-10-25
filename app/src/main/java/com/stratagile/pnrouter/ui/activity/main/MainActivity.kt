@@ -32,6 +32,8 @@ import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
 import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
 import com.huawei.android.hms.agent.HMSAgent
 import com.huawei.android.hms.agent.common.handler.ConnectHandler
@@ -56,8 +58,12 @@ import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Callback.GmailAuthCallback
+import com.smailnet.eamil.EmailCount
+import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.eamil.Utils.AESToolsCipher
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -73,6 +79,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
 import com.stratagile.pnrouter.ui.activity.add.addFriendOrGroupActivity
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
@@ -160,6 +167,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         const val REQUEST_ACCOUNT_PICKER = 1000
         const val REQUEST_AUTHORIZATION = 1001
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        var isGmailToken = false;
     }
     private lateinit var standaloneCoroutine : Job
     var routerId = ""
@@ -206,6 +214,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var chatAndEmailFragment:ChatAndEmailFragment? = null
     private var contactFragment: ContactFragment? = null
     private var isAddEmail = true
+    var this_:Activity? = null;
 
 
     override fun registerBack(registerRsp: JRegisterRsp) {
@@ -3001,7 +3010,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             })
             getToken()
         }
-        var this_ = this
+        this_ = this
         var isStartWebsocket = false
         handler = object : Handler() {
             override fun handleMessage(msg: android.os.Message) {
@@ -3881,6 +3890,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
                         {
                             AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
+                            isGmailToken = false;
                         }
                         emailConfigEntity.choose = true
                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
@@ -4039,6 +4049,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changFragmentMenu(changFragmentMenu: ChangFragmentMenu) {
 
+
         var menu = changFragmentMenu.menu
         ConstantValue.chooseFragMentMenu = menu
         rootTitle.text = menu;
@@ -4061,6 +4072,44 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
             initLeftSubMenuName()
+        }
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0) {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+            {
+                if(menu== "Email" &&  !isGmailToken)
+                {
+                    isGmailToken = false;
+                    var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"");
+                    Islands.circularProgress(this)
+                            .setCancelable(false)
+                            .setMessage(getString(R.string.waiting))
+                            .run { progressDialog ->
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                                emailReceiveClient
+                                        .gmaiApiToken(this, object : GmailAuthCallback {
+                                            override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
+                                                progressDialog.dismiss()
+                                            }
+                                            override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
+                                                progressDialog.dismiss()
+                                                this_!!.startActivityForResult(
+                                                        userRecoverableException!!.getIntent(),
+                                                        REQUEST_AUTHORIZATION);
+                                            }
+
+                                            override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                                progressDialog.dismiss()
+                                            }
+
+                                            override fun gainFailure(errorMsg: String) {
+                                                progressDialog.dismiss()
+                                            }
+                                        },gmailService,"me")
+                            }
+                }
+            }
         }
 
         initLeftMenu(menu,true,true)
@@ -4822,9 +4871,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else if (requestCode == REQUEST_AUTHORIZATION) {
             if(resultCode == Activity.RESULT_OK)//授权成功
             {
-                toast(R.string.Authorizedfail)
-            }else{//授权成功
                 toast(R.string.Authorizedsuccess)
+            }else{//授权失败
+                toast(R.string.Authorizedfail)
             }
         }
 
