@@ -3781,6 +3781,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             editBtn.visibility = View.VISIBLE
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+            {
+                AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
+            }
             AppConfig.instance.emailConfig()
                     .setSmtpHost(emailConfigEntity.smtpHost)
                     .setSmtpPort(emailConfigEntity.smtpPort)
@@ -3874,6 +3878,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
                         }
                         var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+                        {
+                            AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
+                        }
                         emailConfigEntity.choose = true
                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
                         AppConfig.instance.emailConfig()

@@ -129,7 +129,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     internal val REQUEST_ACCOUNT_PICKER = 1000
     internal val REQUEST_AUTHORIZATION = 1001
     internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-    var accountNameChoose = ""
+    var gmailAccountNameChoose = ""
 
     //var credential: GoogleAccountCredential? = null
 
@@ -142,7 +142,10 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfChooseCallback = this
-        accountNameChoose = AppConfig.instance.emailConfig!!.account
+        if(AppConfig.instance.credential!!.selectedAccountName != null)
+        {
+            gmailAccountNameChoose =  AppConfig.instance.credential!!.selectedAccountName
+        }
        /* val settings = getPreferences(Context.MODE_PRIVATE)
         AppConfig.instance.credential!!.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))*/
         /* credential = GoogleAccountCredential.usingOAuth2(
@@ -407,13 +410,13 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
         }else{
             if(requestCode == REQUEST_AUTHORIZATION)//授权失败
             {
+                AppConfig.instance.credential!!.setSelectedAccountName(gmailAccountNameChoose)
                 closeProgressDialog()
                 startActivityForResult(
                         AppConfig.instance.credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
             }else if(requestCode == REQUEST_ACCOUNT_PICKER)//取消选择
             {
-                val settings = getPreferences(Context.MODE_PRIVATE)
-                AppConfig.instance.credential!!.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))
+                AppConfig.instance.credential!!.setSelectedAccountName(gmailAccountNameChoose)
             }
         }
     }
