@@ -1024,15 +1024,20 @@ class EmailCore {
         Message[] messagesAll = null;
         int totalSize =   folder.getMessageCount();
         int newSize=  totalSize - lastTotalCount;
-        boolean noMoreData = false;
+        int lastTotalCountTemp = lastTotalCount;
         if(newSize < 0)
+        {
+            lastTotalCountTemp = totalSize;
+        }
+        boolean noMoreData = false;
+        if(false)
         {
             noMoreData = true;
             messagesAll = new Message[]{};
         }else {
             if(totalSize > 0)
             {
-                if(lastTotalCount == 0)
+                if(lastTotalCountTemp == 0)
                 {
                     if(totalSize >= pageSize)
                     {
@@ -1050,7 +1055,7 @@ class EmailCore {
                     }
 
                 }else{
-                    if(lastTotalCount - beginIndex >=pageSize)
+                    if(lastTotalCountTemp - beginIndex >=pageSize)
                     {
                         noMoreData = false;
                         int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
@@ -1059,7 +1064,7 @@ class EmailCore {
                         messagesAll = folder.getMessages(startIndex,endIndex);
                     }else{
                         noMoreData = true;
-                        int addSize = lastTotalCount - beginIndex;
+                        int addSize = lastTotalCountTemp - beginIndex;
                         int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
                         int endIndex = totalSize - beginIndex - newSize;
                         System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);

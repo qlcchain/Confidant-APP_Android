@@ -395,10 +395,11 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
                                                     },gmailService,"me")
                                         }
                             }else{
-                                var Intent = Intent(this, EmailLoginActivity::class.java)
+                                toast(R.string.gmail_com_email_only)
+                               /* var Intent = Intent(this, EmailLoginActivity::class.java)
                                 Intent.putExtra("emailType","4")
                                 startActivity(Intent)
-                                finish()
+                                finish()*/
                             }
 
                         }

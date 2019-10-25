@@ -856,5 +856,7 @@ Then enter your Email address and password to log in.</string>
     <string name="Incorrect_account_or_password">Incorrect account or password</string>
     <string name="Authorizedsuccess">Authorized success</string>
     <string name="Authorizedfail">Authorized fail</string>
+    <string name="gmail_com_email_only">gmail.com email only</string>
+
 
 </resources>

@@ -490,6 +490,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String LogIdIdResult = fileTransformStatus.getLogIdIdResult();
         int status = fileTransformStatus.getStatus();
         if (status == 1) {
+            if(fileTransformStatus.getServerTime() !=0)
+            {
+                String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                Gson gson = new Gson();
+                sendMessageData.setTimeStamp(fileTransformStatus.getServerTime());
+                String baseDataJson = gson.toJson(sendMessageData);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            }
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

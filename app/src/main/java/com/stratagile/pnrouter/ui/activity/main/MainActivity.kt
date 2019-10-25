@@ -4056,6 +4056,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainTitle.text = menu;
         if(menu== "Circle")
         {
+            if(unread_count.text == "")
+            {
+                unread_count.visibility = View.INVISIBLE
+            }else{
+                unread_count.visibility = View.VISIBLE
+            }
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             routerList.forEach {
                 if (it.lastCheck) {
@@ -4068,7 +4074,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newAccount.visibility = View.GONE
             newCricle.visibility = View.VISIBLE
         }else{
-
+            unread_count.visibility = View.INVISIBLE
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
             initLeftSubMenuName()
