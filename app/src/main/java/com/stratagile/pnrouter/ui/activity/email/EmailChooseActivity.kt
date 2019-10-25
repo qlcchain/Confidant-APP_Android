@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.email
 
+import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,12 +15,15 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.gmail.GmailRequestInitializer
 import com.google.api.services.gmail.GmailScopes
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetCountCallback
+import com.smailnet.eamil.Callback.GmailAuthCallback
 import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.islands.Islands
@@ -43,11 +47,13 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailChooseComp
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailChooseContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailChooseModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailChoosePresenter
+import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import kotlinx.android.synthetic.main.email_choose_activity.*
 import kotlinx.android.synthetic.main.email_login_activity.*
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.emailpassword_bar.*
+import kotlinx.android.synthetic.main.fragment_mail_list.*
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
@@ -116,15 +122,16 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     var userId = "";
     var password =""
     private var PREF_ACCOUNT_NAME = "accountName"
-    internal var mService: com.google.api.services.gmail.Gmail? = null
+    //internal var mService: com.google.api.services.gmail.Gmail? = null
     private val SCOPES = arrayOf(GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY)
     internal val transport = AndroidHttp.newCompatibleTransport()
     internal val jsonFactory = GsonFactory.getDefaultInstance()
     internal val REQUEST_ACCOUNT_PICKER = 1000
     internal val REQUEST_AUTHORIZATION = 1001
     internal val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+    var accountNameChoose = ""
 
-     var credential: GoogleAccountCredential? = null
+    //var credential: GoogleAccountCredential? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,16 +142,19 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.saveEmailConfChooseCallback = this
-        val settings = getPreferences(Context.MODE_PRIVATE)
-        credential = GoogleAccountCredential.usingOAuth2(
-                applicationContext, Arrays.asList(*SCOPES))
-                .setBackOff(ExponentialBackOff())
-                .setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))
-        mService = com.google.api.services.gmail.Gmail.Builder(
+        accountNameChoose = AppConfig.instance.emailConfig!!.account
+       /* val settings = getPreferences(Context.MODE_PRIVATE)
+        AppConfig.instance.credential!!.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))*/
+        /* credential = GoogleAccountCredential.usingOAuth2(
+                 applicationContext, Arrays.asList(*SCOPES))
+                 .setBackOff(ExponentialBackOff())
+                 .setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))*/
+
+        /*mService = com.google.api.services.gmail.Gmail.Builder(
                 transport, jsonFactory, credential)
                 .setApplicationName("com.stratagile.pnrouter")
                 .setGmailRequestInitializer(GmailRequestInitializer("873428561545-i01gqi3hsp0rkjs2u21ql0msjgu0qgnv.apps.googleusercontent.com"))
-                .build()
+                .build()*/
 
 
         var gso = GoogleSignInOptions
@@ -163,6 +173,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
         title.text = getString(R.string.NewAccount)
         //邮件类型  //1：qq企业邮箱   //2：qq邮箱   //3：163邮箱   //4：gmail邮箱
         qqCompany.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.exmail.qq.com")
                     .setSmtpPort(465)
@@ -178,6 +189,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             finish()
         }
         qq.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.qq.com")
                     .setSmtpPort(465)
@@ -199,6 +211,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             var mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
              mGoogleSignInClient.signOut()
             Auth.GoogleSignInApi.signOut(mGoogleApiClient);*/
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.163.com")
                     .setSmtpPort(465)
@@ -214,6 +227,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             finish()
         }
         gmail.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.gmail.com")
                     .setSmtpPort(465)
@@ -226,10 +240,10 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             if(ConstantValue.isGooglePlayServicesAvailable)
             {
                 startActivityForResult(
-                        credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
-                /*Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);*/
+                        AppConfig.instance.credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
+                /* Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                 var signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                 startActivityForResult(signInIntent, RC_SIGN_IN);*/
             }else{
                 var Intent = Intent(this, EmailLoginActivity::class.java)
                 Intent.putExtra("emailType","4")
@@ -238,6 +252,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             }
         }
         outlook.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.office365.com")
                     .setSmtpPort(587)
@@ -255,6 +270,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
         icloud.visibility = View.GONE
         otherEmail.visibility = View.VISIBLE
         icloud.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.mail.me.com")
                     .setSmtpPort(587)
@@ -270,6 +286,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             finish()
         }
         exchange.setOnClickListener {
+            userId = "";
             AppConfig.instance.emailConfig()
                     .setSmtpHost("smtp.office365.com")
                     .setSmtpPort(587)
@@ -285,6 +302,7 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
             finish()
         }
         otherEmail.setOnClickListener {
+            userId = "";
             var Intent = Intent(this, EmailConfigActivity::class.java)
             Intent.putExtra("emailType","255")
             startActivity(Intent)
@@ -294,9 +312,109 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View ,GoogleApiC
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         var this_ = this
-        if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
-            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                RC_SIGN_IN ->
+                {
+                    var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    handleSignInResult(result);
+                }
+                REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
+                    //isGooglePlayServicesAvailable()
+                }
+                REQUEST_ACCOUNT_PICKER -> {
+                    if (resultCode == Activity.RESULT_OK && data != null &&
+                            data.extras != null) {
+                        val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                        if (accountName != null) {
+                            AppConfig.instance.credential!!.setSelectedAccountName(accountName)
+                            val settings = getPreferences(Context.MODE_PRIVATE)
+                            val editor = settings.edit()
+                            editor.putString(PREF_ACCOUNT_NAME, accountName)
+                            editor.commit()
+                        }
+                        showProgressDialog(getString(R.string.waiting))
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"");
+                        Islands.circularProgress(this)
+                                .setCancelable(false)
+                                .setMessage(getString(R.string.waiting))
+                                .run { progressDialog ->
+                                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                                    emailReceiveClient
+                                            .gmaiApiToken(this, object : GmailAuthCallback {
+                                                override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
+                                                    progressDialog.dismiss()
+                                                    runOnUiThread {
+                                                        toast(getString(R.string.fail) + " code:" + availabilityException!!.connectionStatusCode)
+                                                        closeProgressDialog()
+                                                    }
+                                                }
+                                                override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
+                                                    progressDialog.dismiss()
+                                                    runOnUiThread {
+                                                        closeProgressDialog()
+                                                    }
+                                                    this_!!.startActivityForResult(
+                                                            userRecoverableException!!.getIntent(),
+                                                            REQUEST_AUTHORIZATION);
+                                                }
+
+                                                override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                                    progressDialog.dismiss()
+                                                    val settings = getPreferences(Context.MODE_PRIVATE)
+                                                    account = settings.getString(PREF_ACCOUNT_NAME, "")
+                                                    userId = account
+                                                    var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+                                                    var accountBase64 = String(RxEncodeTool.base64Encode(account))
+                                                    var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                                                }
+
+                                                override fun gainFailure(errorMsg: String) {
+                                                    progressDialog.dismiss()
+                                                    runOnUiThread {
+                                                        toast(R.string.fail)
+                                                        closeProgressDialog()
+                                                    }
+                                                }
+                                            },gmailService,"me")
+                                }
+                    } else if (resultCode == Activity.RESULT_CANCELED) {
+                        //mStatusText.setText("Account unspecified.")
+                    }else if (resultCode == Activity.RESULT_CANCELED) {
+                        //mStatusText.setText("Account unspecified.")
+                    }
+                    /* if (isDeviceOnline()) {
+                         mProgress.show()
+                         ApiAsyncTask(this).execute()
+                     } else {
+                         mStatusText.setText("No network connection available.")
+                     }*/
+                }
+                REQUEST_AUTHORIZATION-> {//授权成功
+                    val settings = getPreferences(Context.MODE_PRIVATE)
+                    account = settings.getString(PREF_ACCOUNT_NAME, "")
+                    userId = account
+                    runOnUiThread {
+                        showProgressDialog(getString(R.string.waiting))
+                    }
+                    var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
+                    var accountBase64 = String(RxEncodeTool.base64Encode(account))
+                    var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+                }
+            }
+        }else{
+            if(requestCode == REQUEST_AUTHORIZATION)//授权失败
+            {
+                closeProgressDialog()
+                startActivityForResult(
+                        AppConfig.instance.credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
+            }else if(requestCode == REQUEST_ACCOUNT_PICKER)//取消选择
+            {
+                val settings = getPreferences(Context.MODE_PRIVATE)
+                AppConfig.instance.credential!!.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null))
+            }
         }
     }
     private fun handleSignInResult(result: GoogleSignInResult){

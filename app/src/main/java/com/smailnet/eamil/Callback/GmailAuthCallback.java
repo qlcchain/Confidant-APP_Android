@@ -18,15 +18,15 @@ package com.smailnet.eamil.Callback;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.smailnet.eamil.EmailMessage;
+import com.smailnet.eamil.EmailCount;
 
 import java.util.List;
 
 /**
- * 获取邮件结果回调
+ * 获取邮件数量结果回调
  */
-public interface GetGmailReceiveCallback {
-    void gainSuccess(List<EmailMessage> messageList, long totalCount, long totalUnreadCount, Boolean noMoreData, String error, String menu,String pageToken);
+public interface GmailAuthCallback {
+    void gainSuccess(List<EmailCount> messageList, int count);
     void gainFailure(String errorMsg);
     void authFailure(UserRecoverableAuthIOException errorMsg);
     void googlePlayFailure(GooglePlayServicesAvailabilityIOException errorMsg);

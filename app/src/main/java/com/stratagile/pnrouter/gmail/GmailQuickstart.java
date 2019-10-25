@@ -21,6 +21,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.Label;
 import com.google.api.services.gmail.model.ListLabelsResponse;
+import com.stratagile.pnrouter.application.AppConfig;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class GmailQuickstart {
     }
     public static Gmail getGmailService(Context context,String accout)
     {
-        try {
+        /*try {
             //final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             //credential = GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPESSTRING));
 
@@ -92,7 +93,8 @@ public class GmailQuickstart {
         }catch (Exception e)
         {
             return  null;
-        }
+        }*/
+        return AppConfig.instance.getMService();
     }
 
     public static void main(String... args) throws IOException, GeneralSecurityException {

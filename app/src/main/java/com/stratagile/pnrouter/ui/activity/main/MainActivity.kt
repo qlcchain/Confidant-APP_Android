@@ -157,6 +157,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         val MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION"
         val KEY_MESSAGE = "message"
         val KEY_EXTRAS = "extras"
+        const val REQUEST_ACCOUNT_PICKER = 1000
+        const val REQUEST_AUTHORIZATION = 1001
+        const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     }
     private lateinit var standaloneCoroutine : Job
     var routerId = ""
@@ -203,6 +206,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var chatAndEmailFragment:ChatAndEmailFragment? = null
     private var contactFragment: ContactFragment? = null
     private var isAddEmail = true
+
+
     override fun registerBack(registerRsp: JRegisterRsp) {
         if(!isScanSwitch)
         {
@@ -4806,8 +4811,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
 
             }
+        }else if (requestCode == REQUEST_AUTHORIZATION) {
+            if(resultCode == Activity.RESULT_OK)//授权成功
+            {
+                toast(R.string.Authorizedfail)
+            }else{//授权成功
+                toast(R.string.Authorizedsuccess)
+            }
         }
-
 
     }
     private fun startToxAndRecovery() {

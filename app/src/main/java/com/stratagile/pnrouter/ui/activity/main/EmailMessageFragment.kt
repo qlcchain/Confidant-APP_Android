@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.reflect.TypeToken
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
@@ -395,7 +397,11 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                             var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
                             if(emailConfigEntityChooseList.size > 0) {
                                 var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
-                                pageToken = emailConfigEntityChoose.pageToken
+                                if(emailConfigEntityChoose.pageToken != null)
+                                {
+                                    pageToken = emailConfigEntityChoose.pageToken
+                                }
+
                             }
                             pullMoreGmailMessageList(pageToken)
                         }
@@ -1153,6 +1159,26 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .gmailReceiveNewAsyn(gmailService,"me",this.activity, object : GetGmailReceiveCallback {
+                                    override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
+                                        progressDialog.dismiss()
+                                        runOnUiThread {
+                                            toast(getString(R.string.Failedmail)+" code:"+availabilityException!!.connectionStatusCode)
+                                            closeProgressDialog()
+                                            refreshLayout.finishRefresh()
+                                            refreshLayout.resetNoMoreData()
+                                        }
+                                    }
+                                    override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                            refreshLayout.finishRefresh()
+                                            refreshLayout.resetNoMoreData()
+                                        }
+                                        root_!!.startActivityForResult(
+                                                userRecoverableException!!.getIntent(),
+                                                MainActivity.REQUEST_AUTHORIZATION);
+                                    }
+
                                     override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String, pageToken:String) {
                                         if(noMoreData)
                                         {
@@ -1607,6 +1633,23 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                         val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
                         emailReceiveClient
                                 .gmailReceiveMoreAsyn(gmailService,"me",this.activity, object : GetGmailReceiveCallback {
+                                    override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
+                                        progressDialog.dismiss()
+                                        runOnUiThread {
+                                            toast(getString(R.string.Failedmail)+" code:"+availabilityException!!.connectionStatusCode)
+                                            closeProgressDialog()
+                                            refreshLayout.finishLoadMore()
+                                        }
+                                    }
+                                    override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                            refreshLayout.finishLoadMore()
+                                        }
+                                        root_!!.startActivityForResult(
+                                                userRecoverableException!!.getIntent(),
+                                                MainActivity.REQUEST_AUTHORIZATION);
+                                    }
                                     override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String,menuFlag:String,pageToken:String) {
                                         if(noMoreData)
                                         {

@@ -854,4 +854,7 @@ Then enter your Email address and password to log in.</string>
     <string name="Stay">Stay in touch with the ones who matter</string>
     <string name="Exchangeentry">Please select Exchange entry</string>
     <string name="Incorrect_account_or_password">Incorrect account or password</string>
+    <string name="Authorizedsuccess">Authorized success</string>
+    <string name="Authorizedfail">Authorized fail</string>
+
 </resources>

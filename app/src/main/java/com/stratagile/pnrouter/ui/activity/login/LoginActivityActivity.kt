@@ -2519,14 +2519,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("robin"+ "用户Id是:" + acct.getId());//之后就可以更新UI了
                 toast("用户Id是:" + acct.getId())
                 KLog.i("robin"+ "用户IdToken是:" + acct.getIdToken());
-                Thread(Runnable() {
+               /* Thread(Runnable() {
                     run() {
                         val settings = getPreferences(Context.MODE_PRIVATE)
                         var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"owen.peng.wang@gmail.com");
                         var mailList = GmailHelper.listMessagesMatchingQuery(gmailService,"me","")
                         var cc = ""
                     }}
-                ).start()
+                ).start()*/
 
             }
         }else{

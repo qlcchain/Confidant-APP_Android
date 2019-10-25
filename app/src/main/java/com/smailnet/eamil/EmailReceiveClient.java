@@ -18,11 +18,14 @@ package com.smailnet.eamil;
 
 import android.app.Activity;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.gmail.Gmail;
 import com.smailnet.eamil.Callback.GetAttachCallback;
 import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetGmailReceiveCallback;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
+import com.smailnet.eamil.Callback.GmailAuthCallback;
 import com.smailnet.eamil.Callback.MarkCallback;
 
 import java.io.IOException;
@@ -230,7 +233,23 @@ public class EmailReceiveClient {
                             getReceiveCallback.gainFailure(e.toString());
                         }
                     });
-                } catch (final IOException e) {
+                } catch (final GooglePlayServicesAvailabilityIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.googlePlayFailure(e);
+                        }
+                    });
+                }catch (final UserRecoverableAuthIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.authFailure(e);
+                        }
+                    });
+                }catch (final IOException e) {
                     e.printStackTrace();
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -273,6 +292,22 @@ public class EmailReceiveClient {
                         @Override
                         public void run() {
                             getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }catch (final GooglePlayServicesAvailabilityIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.googlePlayFailure(e);
+                        }
+                    });
+                } catch (final UserRecoverableAuthIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.authFailure(e);
                         }
                     });
                 } catch (final IOException e) {
@@ -409,16 +444,32 @@ public class EmailReceiveClient {
      * 使用gmail api 接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void gmaiApiToken(final Activity activity, final GetCountCallback getReceiveCallback,final ArrayList<String> menuList,final Gmail gmailService,final String userId){
+    public void gmaiApiToken(final Activity activity, final GmailAuthCallback getReceiveCallback, final Gmail gmailService, final String userId){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final List<EmailCount> messageList = Operator.Core(emailConfig).gmailMailToken(menuList,gmailService,userId);
+                    final List<EmailCount> messageList = Operator.Core(emailConfig).gmailMailToken(gmailService,userId);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                }catch (final GooglePlayServicesAvailabilityIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.googlePlayFailure(e);
+                        }
+                    });
+                }catch (final UserRecoverableAuthIOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.authFailure(e);
                         }
                     });
                 }catch (final IOException e) {

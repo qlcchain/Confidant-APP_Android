@@ -766,19 +766,6 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailCount> gmailMailToken(final ArrayList<String> menuList,final Gmail gmailService ,final String userId) throws  IOException {
-
-        List<EmailCount> emailMessageList = new ArrayList<>();
-        ListLabelsResponse listResponse =
-                gmailService.users().labels().list(userId).execute(); // this way just execute and get the label list
-        return emailMessageList;
-    }
-    /**
-     * 使用gmai API接收服务器上的邮件属性
-     * @return
-     * @throws MessagingException
-     * @throws IOException
-     */
     public List<EmailCount> gmailReceiveMailCountAndMenu(final ArrayList<String> menuList,final Gmail gmailService ,final String userId) throws MessagingException, IOException {
 
         List<EmailCount> emailMessageList = new ArrayList<>();
@@ -857,6 +844,19 @@ class EmailCore {
             return emailMessageList;
         }
 
+    }
+    /**
+     * 使用gmai API接收服务器上的邮件属性
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<EmailCount> gmailMailToken(final Gmail gmailService ,final String userId) throws  IOException {
+
+        List<EmailCount> emailMessageList = new ArrayList<>();
+        ListLabelsResponse listResponse =
+                gmailService.users().labels().list(userId).execute(); // this way just execute and get the label list
+        return emailMessageList;
     }
     /**
      * 使用IMAP协议接收服务器上的新邮件

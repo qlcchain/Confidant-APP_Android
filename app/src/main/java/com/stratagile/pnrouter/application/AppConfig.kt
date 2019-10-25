@@ -18,6 +18,12 @@ import cn.jpush.android.api.JPushInterface
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.ExponentialBackOff
+import com.google.api.services.gmail.GmailRequestInitializer
+import com.google.api.services.gmail.GmailScopes
 import com.huawei.android.hms.agent.HMSAgent
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
@@ -94,10 +100,25 @@ class AppConfig : MultiDexApplication() {
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .priority(Priority.HIGH)
 
+    var credential: GoogleAccountCredential? = null
+
+    var mService: com.google.api.services.gmail.Gmail? = null
+    var SCOPES = arrayOf(GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY)
+    var transport = AndroidHttp.newCompatibleTransport()
+    var jsonFactory = GsonFactory.getDefaultInstance()
+
     override fun onCreate() {
         super.onCreate()
         KLog.i("超时调试：10"+this)
 //        CrashHandler.instance.init(this)
+        credential = GoogleAccountCredential.usingOAuth2(
+                applicationContext, Arrays.asList(*SCOPES))
+                .setBackOff(ExponentialBackOff())
+        mService = com.google.api.services.gmail.Gmail.Builder(
+                transport, jsonFactory, credential)
+                .setApplicationName("com.stratagile.pnrouter")
+                .setGmailRequestInitializer(GmailRequestInitializer("873428561545-i01gqi3hsp0rkjs2u21ql0msjgu0qgnv.apps.googleusercontent.com"))
+                .build()
         emailConfig = EmailConfig()
         name = System.currentTimeMillis()
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
@@ -397,4 +418,5 @@ class AppConfig : MultiDexApplication() {
         this.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
         this.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
     }
+
 }
