@@ -164,7 +164,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var adminUserSn:String?  = null
     var hasFinger = false
     var name:Long  = 0;
-    var openNewOnPow = true
+    var openNewOnPow = false
     var needAutoClickLogin = false
     var mGoogleApiClient: GoogleApiClient? = null;
     var RC_SIGN_IN= 10001

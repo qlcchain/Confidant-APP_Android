@@ -551,6 +551,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                 if(time.length() == 10)
                                 {
                                     message.setMsgTime(Message.getTimeStamp()*1000);
+                                }else if(time.length() == 16){
+                                    message.setMsgTime(Long.valueOf(Message.getTimeStamp() /1000));
+                                }else{
+                                    message.setMsgTime(Message.getTimeStamp());
                                 }
                                 message.setMsgId(Message.getMsgId() + "");
                                 if(Message.getChatType() != null)
@@ -576,10 +580,13 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             }
             synchronized (conversations) {
                 for (UnReadEMMessage conversation : conversations.values()) {
-                    if (conversation.getEmMessage().getMsgTime() / 1000000000 > 2) {
+                    String time = conversation.getEmMessage().getMsgTime() + "";
+                    if (time.length() == 10) {
                         LogUtil.addLog("用户最后一条的时间为：" + conversation.getEmMessage().getMsgTime());
-                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() / 1000, conversation));
-                    } else {
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() * 1000, conversation));
+                    }else if (time.length() == 16) {
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() /1000, conversation));
+                    } else{
                         sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime(), conversation));
                     }
                 }

@@ -759,7 +759,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val Code = ByteArray(2)
         val FromId = ByteArray(76)
         val ToId = ByteArray(76)
-        //val serverTime = ByteArray(4)
+        val serverTime = ByteArray(4)
         System.arraycopy(retMsg, 0, Action, 0, 4)
         System.arraycopy(retMsg, 4, FileId, 0, 4)
         System.arraycopy(retMsg, 8, LogId, 0, 4)
@@ -768,7 +768,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         System.arraycopy(retMsg, 18, Code, 0, 2)
         System.arraycopy(retMsg, 20, FromId, 0, 76)
         System.arraycopy(retMsg, 97, ToId, 0, 76)
-        //System.arraycopy(retMsg, 173, serverTime, 0, 4)
+        System.arraycopy(retMsg, 176, serverTime, 0, 4)
         val ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action))
         val FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId))
         val LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId))
@@ -777,8 +777,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code)).toInt()
         val FromIdResult = String(FromId)
         val ToIdResult = String(ToId)
-        //val serverTimeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(serverTime)).toInt()
-        val serverTimeResult = 0;
+        val serverTimeResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(serverTime))
         KLog.i("CodeResult:$CodeResult" +"FileIdResult:$FileIdResult")
 
         //val msgId = sendMsgIdMap.get(FileIdResult.toString() + "")
