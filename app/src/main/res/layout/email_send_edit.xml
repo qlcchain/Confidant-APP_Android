@@ -326,6 +326,41 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/addKeyImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingTop="@dimen/x20"
+                    android:paddingBottom="@dimen/x20"
+                    android:src="@mipmap/tabbar_email1_unselected"/>
+                <View
+                    android:layout_width="@dimen/x1"
+                    android:layout_toRightOf="@id/avatar_container"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/color_f2f2f2"/>
+                <ImageView
+                    android:id="@+id/addSubjectImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingTop="@dimen/x20"
+                    android:paddingBottom="@dimen/x20"
+                    android:src="@mipmap/tabbar_attach1_unselected"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/avatar_container"
+                android:layout_height="@dimen/x1"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dp"
+                android:background="@color/color_f2f2f2"/>
             <com.stratagile.pnrouter.ui.activity.email.view.RichEditor
                 android:layout_marginTop="@dimen/x40"
                 android:layout_marginLeft="@dimen/x30"

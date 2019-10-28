@@ -64,6 +64,7 @@ public class CustomPopWindow {
     public static boolean isShowing = false;
     private static CustomPopWindow instance;
     public View contentView;
+    private boolean clickClose = true;
 
     /**
      *
@@ -146,24 +147,26 @@ public class CustomPopWindow {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                if( clickClose)
+                {
+                    onBackPressed();
+                }
             }
         });
 
         if(mWidth != 0 && mHeight!=0 ){
-            mPopupWindow = new PopupWindow(mContentView,mWidth,mHeight);
+            mPopupWindow = new PopupWindow(mContentView,mWidth,mHeight,mIsFocusable);
         }else{
-            mPopupWindow = new PopupWindow(mContentView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mPopupWindow = new PopupWindow(mContentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,mIsFocusable);
         }
+
         if(mAnimationStyle!=-1){
             mPopupWindow.setAnimationStyle(mAnimationStyle);
         }
-
-        apply(mPopupWindow);//设置一些属性
-
-        mPopupWindow.setFocusable(mIsFocusable);
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mPopupWindow.setFocusable(mIsFocusable);
         mPopupWindow.setOutsideTouchable(mIsOutside);
+        apply(mPopupWindow);//设置一些属性
 
         if(mWidth == 0 || mHeight == 0){
             mPopupWindow.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -301,7 +304,10 @@ public class CustomPopWindow {
             mCustomPopWindow.mClippEnable =enable;
             return this;
         }
-
+        public PopupWindowBuilder setClickCloseEnable(boolean enable){
+            mCustomPopWindow.clickClose  =enable;
+            return this;
+        }
 
         public PopupWindowBuilder setIgnoreCheekPress(boolean ignoreCheekPress){
             mCustomPopWindow.mIgnoreCheekPress = ignoreCheekPress;

@@ -7,10 +7,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -365,6 +367,45 @@ object PopWindowUtil {
                 .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
                 .create()
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showPopKeyMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.email_key_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
+        /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+         list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+        maskView.setOnSystemUiVisibilityChangeListener {
+            KLog.i("改变了。。。")
+        }
+        //对具体的view的事件的处理
+        var titleSetPassClose= maskView.findViewById<View>(R.id.titleSetPassClose)
+        titleSetPassClose.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
+//对具体的view的事件的处理
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(true)
+                .setContenView(contentView)
+                .setFocusable(true)
+                .setClickCloseEnable(false)
+                .setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED)
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                .create()
+                .showAtLocation(showView, Gravity.BOTTOM, 0, 0)
     }
     /**
      * @param activity 上下文

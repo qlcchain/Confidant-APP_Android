@@ -1235,9 +1235,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emaiAttachAdapter!!.notifyDataSetChanged();
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
                         addSubject.visibility = View.VISIBLE
                     }else{
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.INVISIBLE
                     }
@@ -2235,7 +2237,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         addBcc.setOnClickListener(this)
 
         sendBtn.setOnClickListener(this)
-
+        addKeyImg.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
@@ -2433,6 +2435,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             allSpan(bccAdressEdit)
             sendCheck(true);
             //sendEmail()
+        }else if (id == R.id.addKeyImg ) {
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
+            iconArray = arrayListOf<String>("sheet_mark","statusbar_download_node","sheet_move","statusbar_delete")
+            PopWindowUtil.showPopKeyMenuWindow(this@EmailSendActivity, addKeyImg,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+
+                }
+            })
         }
 
     }
@@ -2530,9 +2542,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emaiAttachAdapter!!.notifyDataSetChanged();
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
                         addSubject.visibility = View.VISIBLE
                     }else{
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.INVISIBLE
                     }
@@ -2557,9 +2571,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     emaiAttachAdapter!!.notifyDataSetChanged();
                     if( emaiAttachAdapter!!.itemCount > 1)
                     {
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
                         addSubject.visibility = View.VISIBLE
                     }else{
+                        addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.INVISIBLE
                     }
@@ -2583,9 +2599,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             emaiAttachAdapter!!.notifyDataSetChanged();
                             if( emaiAttachAdapter!!.itemCount > 1)
                             {
+                                addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                                 addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
                                 addSubject.visibility = View.VISIBLE
                             }else{
+                                addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                                 addSubject.text = ""
                                 addSubject.visibility = View.INVISIBLE
                             }

@@ -1269,7 +1269,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             /*list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
             list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
             list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
-            var starIcon = "tabbar_attach_selected"
+            var starIcon = "tabbar_stars_unselected"
             var starFlag = false;
             if(emailMeaasgeData!!.isStar())
             {
