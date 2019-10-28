@@ -79,7 +79,7 @@
             android:layout_marginBottom="@dimen/x40"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/bt_cancal"
+                android:id="@+id/bt_remove"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x80"
                 android:layout_marginLeft="@dimen/x20"

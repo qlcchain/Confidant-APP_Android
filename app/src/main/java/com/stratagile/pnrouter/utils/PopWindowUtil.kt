@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -34,6 +35,7 @@ import com.stratagile.pnrouter.ui.adapter.popwindow.FileMenuOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
+import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 import kotlinx.android.synthetic.main.email_send_edit.*
 
 import java.util.ArrayList
@@ -392,6 +394,29 @@ object PopWindowUtil {
         //对具体的view的事件的处理
         var titleSetPassClose= maskView.findViewById<View>(R.id.titleSetPassClose)
         titleSetPassClose.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
+
+        var bt_remove= maskView.findViewById<View>(R.id.bt_remove)
+        var password_editText= maskView.findViewById<EditText>(R.id.password_editText)
+        var password_editText2= maskView.findViewById<EditText>(R.id.password_editText2)
+        var passTips_editText= maskView.findViewById<EditText>(R.id.passTips_editText)
+        bt_remove.setOnClickListener {
+            password_editText!!.setText("")
+            password_editText2!!.setText("")
+            passTips_editText!!.setText("")
+            CustomPopWindow.onBackPressed()
+        }
+        var bt_set= maskView.findViewById<View>(R.id.bt_set)
+        bt_set.setOnClickListener {
+            var password1= password_editText.text
+            var password2= password_editText2.text
+            var passTips_editText= passTips_editText.text
+            if(password1!= password2)
+            {
+                activity.toast(R.string.error)
+                return@setOnClickListener
+            }
             CustomPopWindow.onBackPressed()
         }
 //对具体的view的事件的处理
