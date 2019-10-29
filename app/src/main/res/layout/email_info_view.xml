@@ -752,7 +752,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="16dp"
-                    app:background_color="#795548"
+                    app:background_color="#FFFFFF"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:offset="-80dp"
@@ -763,7 +763,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
                         android:text="@string/passwordTips"
-                        android:textColor="#ffffff" />
+                        android:textColor="#1E1E24" />
                 </com.stratagile.pnrouter.ui.activity.email.view.BubbleLayout>
                 <LinearLayout
                     android:visibility="visible"
