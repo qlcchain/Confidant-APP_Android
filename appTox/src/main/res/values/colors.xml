@@ -41,5 +41,5 @@
 
     <color name="tab_selected">@color/white</color>
     <color name="tab_highlight">#aaaaaaaa</color>
-
+    <color name="app_color_description">#1E1E24</color>
 </resources>

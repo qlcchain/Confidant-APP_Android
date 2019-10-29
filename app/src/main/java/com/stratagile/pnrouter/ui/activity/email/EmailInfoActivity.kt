@@ -8,14 +8,20 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.text.TextUtils
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.webkit.*
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
@@ -27,6 +33,8 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.toast
+import com.qmuiteam.qmui.util.QMUIDisplayHelper
+import com.qmuiteam.qmui.widget.popup.QMUIPopup
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.MarkCallback
 import com.smailnet.eamil.EmailReceiveClient
@@ -137,6 +145,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var newconfidantpassOp = true;
     var userPassWord ="";
     var clickDecryptBtn = false
+    var isShow = false
+    private var mNormalPopup: QMUIPopup? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -224,6 +234,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         if(emailMeaasgeData!!.content.contains("newconfidantpass") && !hasPassWord)
         {
+
+            var miTxtEndAllIndex  = emailMeaasgeData!!.content.indexOf("newconfidantpass")
+            var newconfidantpassAllText = emailMeaasgeData!!.content.substring(miTxtEndAllIndex,emailMeaasgeData!!.content.length)
+            var newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("\"");
+            var newconfidantpassText = newconfidantpassAllText.substring("newconfidantpass".length,newconfidantpassTextEndIndex);
+            if(newconfidantpassText !="")
+            {
+                passwordTips.text = getString(R.string.PasswordHint)+newconfidantpassText;
+                passwordTips.visibility = View.VISIBLE;
+            }else{
+                passwordTips.visibility = View.GONE;
+            }
+            backMenu.visibility = View.GONE
+            moreMenu.visibility = View.GONE
             jiemiRoot.visibility = View.VISIBLE
             inputPassWordParent.visibility = View.GONE
             webViewParent.visibility = View.GONE
@@ -231,8 +255,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             attachListParent.visibility = View.GONE
             newconfidantpassOp = false;
         }else{
+            backMenu.visibility = View.VISIBLE
+            moreMenu.visibility = View.VISIBLE
             webViewParent.visibility = View.VISIBLE
             llOperate.visibility = View.VISIBLE
+            jiemiRoot.visibility = View.GONE
+            inputPassWordParent.visibility = View.GONE
             hasPassWord = true;
         }
         var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
@@ -246,8 +274,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             moreMenu.visibility = View.GONE
             backMenu.visibility =  View.GONE
         }else{
-            moreMenu.visibility = View.VISIBLE
-            backMenu.visibility =  View.VISIBLE
+            if(hasPassWord)
+            {
+                moreMenu.visibility = View.VISIBLE
+                backMenu.visibility =  View.VISIBLE
+            }
         }
         zipSavePathTemp = emailMeaasgeData!!.account+"_"+ menu + "_"+ emailMeaasgeData!!.msgId
         msgId = emailMeaasgeData!!.msgId
@@ -285,12 +316,20 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         {
             ConstantValue.currentEmailConfigEntity!!.inboxMenu->
             {
-                moreMenu.visibility = View.VISIBLE
+                if(hasPassWord)
+                {
+                    moreMenu.visibility = View.VISIBLE
+                }
+
 
             }
             ConstantValue.currentEmailConfigEntity!!.starMenu->
             {
-                moreMenu.visibility = View.VISIBLE
+                if(hasPassWord)
+                {
+                    moreMenu.visibility = View.VISIBLE
+                }
+
             }
             ConstantValue.currentEmailConfigEntity!!.drafMenu->
             {
@@ -298,16 +337,28 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
             ConstantValue.currentEmailConfigEntity!!.sendMenu->
             {
-                moreMenu.visibility = View.VISIBLE
+                if(hasPassWord)
+                {
+                    moreMenu.visibility = View.VISIBLE
+                }
+
             }
             ConstantValue.currentEmailConfigEntity!!.garbageMenu->
             {
-                moreMenu.visibility = View.VISIBLE
+                if(hasPassWord)
+                {
+                    moreMenu.visibility = View.VISIBLE
+                }
+
 
             }
             ConstantValue.currentEmailConfigEntity!!.deleteMenu->
             {
-                moreMenu.visibility = View.VISIBLE
+                if(hasPassWord)
+                {
+                    moreMenu.visibility = View.VISIBLE
+                }
+
             }
         }
         if(emailMeaasgeData!!.isStar())
@@ -323,8 +374,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         {
             if(isContainerAttachment)
             {
-                attachListParent.visibility =View.VISIBLE
-
+                if(hasPassWord)
+                {
+                    attachListParent.visibility =View.VISIBLE
+                }
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
                 var addMenu = false
                 var attachList =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu+"_"+msgId)).list()
@@ -999,6 +1052,25 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 details.visibility = View.GONE
             }
         }
+        showandhide.setOnClickListener {
+
+            isShow = !isShow
+            if (isShow) {
+                //如果选中，显示密码
+                password_editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_shut)
+            }
+        }
+        passwordHelp.setOnClickListener {
+           /* initNormalPopupIfNeed();
+            mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+            mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)
+            mNormalPopup!!.show(it)*/
+        }
         var menuFrom = emailMeaasgeData!!.menu
         if(menuFrom.contains("Sent") || menuFrom.contains("已发") || menuFrom.contains("Drafts")|| menuFrom.contains("草稿"))
         {
@@ -1015,6 +1087,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         }
         mailInfo.fromName = fromName
         mailInfo.fromEmailBox = fromAdress
+        formEmailAdress.text = fromAdress.replace("<","").replace(">","")
         var emailConfigEntityList = ArrayList<EmailInfoData>()
         //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
         var emailContactList = mutableListOf<EmailContact>()
@@ -2498,6 +2571,24 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     fun  replaceLocalPathByImgCid(content:String ,fileName:String ,filePath:String ):String {
         return content.replace("cid:" + fileName + "\"","file://" + filePath+"\"").toString();
+    }
+
+    private fun initNormalPopupIfNeed() {
+        if (mNormalPopup == null) {
+            mNormalPopup = QMUIPopup(applicationContext, QMUIPopup.DIRECTION_NONE)
+            val textView = TextView(applicationContext)
+            textView.layoutParams = mNormalPopup!!.generateLayoutParam(QMUIDisplayHelper.dp2px(applicationContext, 250),WRAP_CONTENT)
+            textView.setLineSpacing(QMUIDisplayHelper.dp2px(applicationContext, 4).toFloat(), 1.0f)
+            val padding = QMUIDisplayHelper.dp2px(applicationContext, 20)
+            textView.setPadding(padding, padding, padding, padding)
+            //textView.text = getString(R.string.passwordSetTips)
+            textView.text = "test"
+            //textView.setTextColor(resources.getColor(R.color.app_color_description))
+            mNormalPopup!!.setContentView(textView)
+            mNormalPopup!!.setOnDismissListener(PopupWindow.OnDismissListener {
+
+            })
+        }
     }
     override fun onDestroy() {
         AppConfig.instance.messageReceiver!!.bakupEmailCallback = null

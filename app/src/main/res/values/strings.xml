@@ -871,5 +871,5 @@ Then enter your Email address and password to log in.</string>
     <string name="Decrypt_Email">Decrypt Email</string>
     <string name="Decrypt">Decrypt</string>
     <string name="Decryption_failed">Decryption failed</string>
-
+    <string name="passwordTips">The password is set by the sender to encrypt this email.</string>
 </resources>
