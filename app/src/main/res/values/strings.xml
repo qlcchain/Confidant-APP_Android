@@ -863,5 +863,13 @@ Then enter your Email address and password to log in.</string>
     <string name="SetPassword">Set Password</string>
     <string name="Encrypt_for_non_Confidant_users">Encrypt for non-Confidant users</string>
     <string name="PassworkHint">&#160;&#160;Passwork Hint (optional)</string>
+    <string name="Encrypted_Email">Encrypted Email</string>
+    <string name="Encrypted_client">Encrypted Email client and beyond - your comprehensive privacy protection tool</string>
+    <string name="You_have_received_a_secure_message_from">You have received a secure message from</string>
+    <string name="imusering">I’m using Confidant to send and receive secure emails.Click the link below to decrypt and view my message.</string>
+    <string name="View_Encrypted_Message">View Encrypted Message</string>
+    <string name="Decrypt_Email">Decrypt Email</string>
+    <string name="Decrypt">Decrypt</string>
+    <string name="Decryption_failed">Decryption failed</string>
 
 </resources>
