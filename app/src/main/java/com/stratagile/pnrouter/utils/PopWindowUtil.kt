@@ -4,6 +4,8 @@ import android.app.Activity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +13,7 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
+import android.widget.*
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.pawegio.kandroid.toast
@@ -37,6 +36,7 @@ import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 import kotlinx.android.synthetic.main.email_send_edit.*
+import kotlinx.android.synthetic.main.emailpassword_bar.*
 
 import java.util.ArrayList
 
@@ -374,7 +374,9 @@ object PopWindowUtil {
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
      */
-    fun showPopKeyMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
+    fun showPopKeyMenuWindow(activity: Activity, showView: View,password: String,passTips: String, onRouterSelectListener : OnSelectListener) {
+        var isShow = false
+        var isShow2 = false
         val maskView = LayoutInflater.from(activity).inflate(R.layout.email_key_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
@@ -396,27 +398,64 @@ object PopWindowUtil {
         titleSetPassClose.setOnClickListener {
             CustomPopWindow.onBackPressed()
         }
-
         var bt_remove= maskView.findViewById<View>(R.id.bt_remove)
         var password_editText= maskView.findViewById<EditText>(R.id.password_editText)
         var password_editText2= maskView.findViewById<EditText>(R.id.password_editText2)
         var passTips_editText= maskView.findViewById<EditText>(R.id.passTips_editText)
+
+        var showandhide= maskView.findViewById<ImageButton>(R.id.showandhide)
+        showandhide.setOnClickListener {
+            isShow = !isShow
+            if (isShow) {
+                //如果选中，显示密码
+                password_editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_shut)
+            }
+        }
+        var showandhide2= maskView.findViewById<ImageButton>(R.id.showandhide2)
+        showandhide2.setOnClickListener {
+            isShow2 = !isShow2
+            if (isShow2) {
+                //如果选中，显示密码
+                password_editText2.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide2.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password_editText2.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide2.setImageResource(R.mipmap.tabbar_shut)
+            }
+        }
+        password_editText!!.setText(password)
+        password_editText2!!.setText(password)
+        passTips_editText!!.setText(passTips)
         bt_remove.setOnClickListener {
             password_editText!!.setText("")
             password_editText2!!.setText("")
             passTips_editText!!.setText("")
+            var map = HashMap<String,String>()
+            map.put("password","")
+            map.put("passTips","")
+            onRouterSelectListener.onSelect(0, map)
             CustomPopWindow.onBackPressed()
         }
         var bt_set= maskView.findViewById<View>(R.id.bt_set)
         bt_set.setOnClickListener {
-            var password1= password_editText.text
-            var password2= password_editText2.text
-            var passTips_editText= passTips_editText.text
+            var password1= password_editText.text.toString()
+            var password2= password_editText2.text.toString()
+            var passTips_editText= passTips_editText.text.toString()
             if(password1!= password2)
             {
-                activity.toast(R.string.error)
+                activity.toast(R.string.Password_inconsistent)
                 return@setOnClickListener
             }
+            var map = HashMap<String,String>()
+            map.put("password",password1)
+            map.put("passTips",passTips_editText)
+            onRouterSelectListener.onSelect(0, map)
             CustomPopWindow.onBackPressed()
         }
 //对具体的view的事件的处理

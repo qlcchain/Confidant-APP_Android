@@ -1807,6 +1807,20 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     {
         var contactMapList = HashMap<String, String>()
         var userID = ""
+        if(emailMeaasgeData!!.content.contains("newconfidantpass"))
+        {
+            contactMapList.put("originalText","")
+            contactMapList.put("aesKey","")
+            if(emailMeaasgeData!!.content.contains("newconfidantuserid"))
+            {
+                var userIDBeginStr = "newconfidantuserid'"
+                var beginIndex = emailMeaasgeData!!.content.indexOf("newconfidantuserid") +userIDBeginStr.length - 1;
+                var endIndex = beginIndex +76;
+                userID = emailMeaasgeData!!.content.substring(beginIndex,endIndex)
+            }
+            contactMapList.put("userId",userID)
+            return contactMapList
+        }
         if(emailMeaasgeData!!.content.contains("confidantKey=") || emailMeaasgeData!!.content.contains("confidantkey="))
         {
 

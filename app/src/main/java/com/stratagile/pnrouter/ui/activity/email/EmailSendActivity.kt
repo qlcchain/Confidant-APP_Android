@@ -159,6 +159,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
     var dataTips = arrayListOf<String>()
     var addressBase64 = ""
+    var userPassWord = ""
+    var userPassWordTips = ""
 
     private val users = arrayListOf(
             User("1", "激浊扬清",""),
@@ -222,6 +224,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 if(contactMapList.size == needSize)
                 {
                     lockTips.visibility = View.VISIBLE
+                }else{
+                    lockTips.visibility = View.GONE
                 }
             }
         }else{
@@ -1423,6 +1427,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
              contactMapList = HashMap<String, String>()
          }*/
         var fileKey = RxEncryptTool.generateAESKey()
+        if(userPassWord != "")
+        {
+            var len = userPassWord.length
+            if(len > 32)
+            {
+                userPassWord = userPassWord.substring(0,32)
+            }else if(len < 32)
+            {
+               var need = 32- len;
+                for (index in 1..need){
+                    userPassWord += "0"
+                }
+            }
+            fileKey = userPassWord;
+        }
         var contentHtml = re_main_editor.html
         if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
         {
@@ -1529,24 +1548,30 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 contentHtml = contentBufferMiStr;
             }
         }
-        var confidantKey = "";
-        for(item in contactMapList)
-        {
-            var account = item.key
-            var friendMiPublicKey = item.value
-            var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, friendMiPublicKey)))
-            confidantKey += account+"&&"+dstKey+"##";
-        }
-        if(confidantKey != "")
-        {
-            var myAccountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-            var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
-            confidantKey += myAccountBase64+"&&"+dstKey;
-        }
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        if(contactMapList.size == needSize)
+        if(userPassWord == "")
         {
-            contentHtml += "<span style=\"display:none\" id=\""+"newconfidantkey"+confidantKey+"\"></span>"; //confidantkey
+            var confidantKey = "";
+            for(item in contactMapList)
+            {
+                var account = item.key
+                var friendMiPublicKey = item.value
+                var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, friendMiPublicKey)))
+                confidantKey += account+"&&"+dstKey+"##";
+            }
+            if(confidantKey != "")
+            {
+                var myAccountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
+                confidantKey += myAccountBase64+"&&"+dstKey;
+            }
+
+            if(contactMapList.size == needSize)
+            {
+                contentHtml += "<span style=\"display:none\" id=\""+"newconfidantkey"+confidantKey+"\"></span>"; //confidantkey
+            }
+        }else{
+            contentHtml += "<span style=\"display:none\" id=\""+"newconfidantpass"+userPassWordTips+"\"></span>"; //手动加密标记
         }
         contentHtml += "<span style=\"display:none\" id=\"newconfidantuserid"+userId+"\"></span>";
         var endStr =  "<div id=\"newmyconfidantbegin\">"+
@@ -2436,14 +2461,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             sendCheck(true);
             //sendEmail()
         }else if (id == R.id.addKeyImg ) {
-            var menuArray = arrayListOf<String>()
-            var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-            iconArray = arrayListOf<String>("sheet_mark","statusbar_download_node","sheet_move","statusbar_delete")
-            PopWindowUtil.showPopKeyMenuWindow(this@EmailSendActivity, addKeyImg,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+            PopWindowUtil.showPopKeyMenuWindow(this@EmailSendActivity, addKeyImg,userPassWord,userPassWordTips, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
-
-                }
+                    var map = obj as HashMap<String,String>
+                    userPassWord = map.get("password") as String
+                    userPassWordTips = map.get("passTips") as String
+                    if(userPassWord != "")
+                    {
+                        addKeyImg.setImageResource(R.mipmap.tabbar_email1_selected)
+                        lockTips.visibility = View.VISIBLE
+                    }else{
+                        addKeyImg.setImageResource(R.mipmap.tabbar_email1_unselected)
+                        if(contactMapList.size == needSize)
+                        {
+                            lockTips.visibility = View.VISIBLE
+                        }else{
+                            lockTips.visibility = View.GONE
+                        }
+                    }
+               }
             })
         }
 
