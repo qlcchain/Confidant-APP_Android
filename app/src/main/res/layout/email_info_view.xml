@@ -747,24 +747,6 @@
                 android:id="@+id/inputPassWordParent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <com.stratagile.pnrouter.ui.activity.email.view.BubbleLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:padding="16dp"
-                    app:background_color="#FFFFFF"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:offset="-80dp"
-                    app:radius="4dp"
-                    app:shadow_color="#999999">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:text="@string/passwordTips"
-                        android:textColor="#1E1E24" />
-                </com.stratagile.pnrouter.ui.activity.email.view.BubbleLayout>
                 <LinearLayout
                     android:visibility="visible"
                     android:layout_width="match_parent"
@@ -833,6 +815,27 @@
                         android:text="@string/Decrypt"
                         android:layout_height="@dimen/x85" />
                 </LinearLayout>
+                <com.stratagile.pnrouter.ui.activity.email.view.BubbleLayout
+                    android:id="@+id/passwordTipsBubble"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/x45"
+                    android:layout_centerHorizontal="true"
+                    android:padding="16dp"
+                    app:background_color="#FFFFFF"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:offset="-78dp"
+                    app:radius="4dp"
+                    app:shadow_color="#999999">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:text="@string/passwordTips"
+                        android:textColor="#1E1E24" />
+                </com.stratagile.pnrouter.ui.activity.email.view.BubbleLayout>
             </FrameLayout>
 
             <LinearLayout

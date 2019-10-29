@@ -1066,10 +1066,18 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
         }
         passwordHelp.setOnClickListener {
+            passwordTipsBubble.visibility = View.VISIBLE
            /* initNormalPopupIfNeed();
             mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
             mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)
             mNormalPopup!!.show(it)*/
+        }
+        passwordTipsBubble.setOnClickListener {
+            passwordTipsBubble.visibility = View.GONE
+            /* initNormalPopupIfNeed();
+             mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+             mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)
+             mNormalPopup!!.show(it)*/
         }
         var menuFrom = emailMeaasgeData!!.menu
         if(menuFrom.contains("Sent") || menuFrom.contains("已发") || menuFrom.contains("Drafts")|| menuFrom.contains("草稿"))
