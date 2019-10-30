@@ -238,6 +238,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             var miTxtEndAllIndex  = emailMeaasgeData!!.content.indexOf("newconfidantpass")
             var newconfidantpassAllText = emailMeaasgeData!!.content.substring(miTxtEndAllIndex,emailMeaasgeData!!.content.length)
             var newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("\"");
+            if(newconfidantpassTextEndIndex == -1)
+            {
+                newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("'");
+            }
             var newconfidantpassText = newconfidantpassAllText.substring("newconfidantpass".length,newconfidantpassTextEndIndex);
             if(newconfidantpassText !="")
             {
