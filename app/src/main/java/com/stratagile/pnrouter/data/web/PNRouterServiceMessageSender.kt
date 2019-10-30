@@ -2,14 +2,11 @@ package com.stratagile.pnrouter.data.web
 
 import android.graphics.BitmapFactory
 import android.util.Log
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
-import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
@@ -19,7 +16,6 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -948,8 +944,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         val baseData = BaseData(4, GroupSendFileDoneReq)
                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                         if (ConstantValue.isAntox) {
-                                            val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                           // val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                         } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }

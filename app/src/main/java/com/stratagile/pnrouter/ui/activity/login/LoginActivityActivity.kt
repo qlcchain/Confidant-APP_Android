@@ -15,25 +15,16 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
@@ -73,23 +64,17 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Logger
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
-import com.google.api.services.gmail.Gmail;
-import com.stratagile.pnrouter.gmail.GmailHelper
-import com.stratagile.pnrouter.gmail.GmailQuickstart
 
 
 /**
@@ -265,8 +250,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    /*//var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
                 }
@@ -359,8 +344,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var baseData = BaseData(4,regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                      /*  //var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
                     }else{
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
@@ -435,8 +420,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var baseData = BaseData(4,regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                       /* //var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
                     }else{
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
@@ -484,8 +469,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         var baseData = BaseData(4,regeister)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            /*//var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                         }
@@ -794,8 +779,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            /*//var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)*/
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -830,7 +815,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()
@@ -959,7 +944,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 {
 
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                        //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
                     }
@@ -1002,7 +987,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     isFromScan = false
                 }else{
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend(routerId,this)
+                        //InterfaceScaleUtil.addFriend(routerId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
@@ -1058,7 +1043,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
                         ConstantValue.unSendMessageSendCount.put("login",0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
 
@@ -1177,7 +1162,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 ConstantValue.lastNetworkType =""
                 isClickLogin = false
                 try {
-                    MessageHelper.clearAllMessage()
+                    //MessageHelper.clearAllMessage()
                 }catch (e:Exception)
                 {
                     e.printStackTrace()
@@ -1590,8 +1575,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     })
                 }
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                   /* //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
@@ -1615,8 +1600,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                 if(ConstantValue.isAntox)
                 {
-                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)
+                   /* var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)*/
                 }else{
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
@@ -1969,7 +1954,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         }else{
@@ -2549,13 +2534,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
+            /*if(ConstantValue.isAntox)
             {
                 intent = Intent(AppConfig.instance, ToxService::class.java)
-            }
+            }*/
             startService(intent)
         } else {
-            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            ////var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -2567,7 +2552,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             KLog.i("没有初始化。。设置loginBackListener")
             AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
-                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
             }else{
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
@@ -2576,8 +2561,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                /*//var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)*/
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }
@@ -2839,12 +2824,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             ConstantValue.lastRouterSN=""
                             ConstantValue.lastNetworkType =""
                             isClickLogin = false
-                            try {
+                           /* try {
                                 MessageHelper.clearAllMessage()
                             }catch (e:Exception)
                             {
                                 e.printStackTrace()
-                            }
+                            }*/
                             isStartLogin = true
 //                            getServer(routerId,userSn,false,false)
                             if(AppConfig.instance.messageReceiver != null)

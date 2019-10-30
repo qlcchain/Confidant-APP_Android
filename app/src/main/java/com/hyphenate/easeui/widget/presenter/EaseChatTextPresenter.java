@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -46,10 +45,6 @@ import com.yanzhenjie.permission.PermissionListener;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
 
 
 /**
@@ -210,8 +205,8 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                             {
                                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                   // FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                 }else{
                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 }
@@ -226,8 +221,8 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                                 BaseData baseData = new BaseData(msgData);
                                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                    //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                 }else{
                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 }

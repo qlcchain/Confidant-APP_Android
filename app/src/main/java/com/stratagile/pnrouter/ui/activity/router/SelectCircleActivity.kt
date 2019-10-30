@@ -7,15 +7,11 @@ import android.os.Handler
 import android.os.Message
 import android.view.KeyEvent
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -42,8 +38,6 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_select_circle.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -53,9 +47,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
-import java.util.ArrayList
-
-import javax.inject.Inject;
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -406,8 +399,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -442,7 +435,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()
@@ -561,7 +554,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 {
 
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                        //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
                     }
@@ -606,7 +599,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     isFromScan = false
                 }else{
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend(routerId,this)
+                        //InterfaceScaleUtil.addFriend(routerId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
@@ -663,7 +656,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
                         ConstantValue.unSendMessageSendCount.put("login",0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
 
@@ -931,8 +924,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 val baseData = BaseData(2,msgData)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerEntity!!.routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(routerEntity!!.routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity!!.routerId.substring(0, 64))
                 }
@@ -1007,7 +1000,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             ConstantValue.lastNetworkType =""
             isClickLogin = true
             try {
-                MessageHelper.clearAllMessage()
+                //MessageHelper.clearAllMessage()
             }catch (e:Exception)
             {
                 e.printStackTrace()
@@ -1306,8 +1299,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     })
                 }
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
@@ -1332,8 +1325,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
                 if(ConstantValue.isAntox)
                 {
-                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)
+                    /*var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)*/
                 }else{
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
@@ -1446,7 +1439,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         }else{

@@ -4,12 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -21,17 +18,12 @@ import com.stratagile.pnrouter.ui.activity.file.component.DaggerSelectFileCompon
 import com.stratagile.pnrouter.ui.activity.file.contract.SelectFileContract
 import com.stratagile.pnrouter.ui.activity.file.module.SelectFileModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.SelectFilePresenter
-import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
 import com.stratagile.pnrouter.ui.adapter.file.FileSelectAdapter
-import com.stratagile.pnrouter.utils.Base58
-import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_file.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -142,8 +134,8 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

@@ -1,17 +1,10 @@
 package com.stratagile.pnrouter.ui.activity.user
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
-import com.pawegio.kandroid.startActivity
-import com.pawegio.kandroid.startActivityForResult
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -21,7 +14,6 @@ import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.ResetAvatar
-import com.stratagile.pnrouter.ui.activity.email.EmailLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
@@ -31,11 +23,9 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_my_detail.*
 import org.greenrobot.eventbus.EventBus
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -146,8 +136,8 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
                             val baseData = BaseData(2,msgData)
                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(routerEntity.routerId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(routerEntity.routerId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
                             }

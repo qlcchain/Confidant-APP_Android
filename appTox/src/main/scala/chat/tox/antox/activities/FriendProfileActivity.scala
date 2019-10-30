@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity
 
 class FriendProfileActivity extends AppCompatActivity {
 
-  /*var friendKey: FriendKey = null
+  /*//var friendKey: FriendKey = null
   var nickChanged: Boolean = false
 
   override def onCreate(savedInstanceState: Bundle) {

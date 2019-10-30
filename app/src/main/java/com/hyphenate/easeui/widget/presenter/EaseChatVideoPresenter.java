@@ -2,7 +2,6 @@ package com.hyphenate.easeui.widget.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -20,18 +19,13 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVideo;
 import com.hyphenate.util.EMLog;
 import com.message.Message;
-import com.noober.menu.FloatMenu;
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
-import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JPullFileListRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
-import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.DeleteUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
@@ -42,10 +36,6 @@ import com.stratagile.tox.toxcore.ToxCoreJni;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
 
 /**
  * Created by zhangsong on 17-10-12.
@@ -111,8 +101,8 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
                 BaseData baseData = new BaseData(msgData);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
-                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }

@@ -420,8 +420,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     var baseData = BaseData(2,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }else{
 
                         ConstantValue.unSendMessage.put("recovery",baseDataJson)
@@ -460,8 +460,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -913,8 +913,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
              var baseData = BaseData(2, recovery)
              var baseDataJson = baseData.baseDataToJson().replace("\\", "")
              if (ConstantValue.isAntox) {
-                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                 //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
              }else{
                  ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
              }

@@ -1,8 +1,6 @@
 package com.stratagile.pnrouter.application
 
 import android.app.ActivityManager
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,9 +9,6 @@ import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
 import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import chat.tox.antox.tox.ToxService
-import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.jpush.android.api.JPushInterface
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -35,7 +30,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
-import com.stratagile.pnrouter.data.service.MyService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.data.web.Optional
@@ -45,17 +39,11 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp
 import com.stratagile.pnrouter.entity.JPushMsgRsp
-import com.stratagile.pnrouter.entity.events.BackgroudEvent
-import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
-import com.stratagile.pnrouter.qmui.QMUISwipeBackActivityManager
-import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
-import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -232,8 +220,8 @@ class AppConfig : MultiDexApplication() {
         val intent = Intent(this, MessageRetrievalService::class.java)
         this.stopService(intent)
         if (ConstantValue.isAntox) {
-            val intentAnTox = Intent(this, ToxService::class.java)
-            this.stopService(intentAnTox)
+            /*val intentAnTox = Intent(this, ToxService::class.java)
+            this.stopService(intentAnTox)*/
         } else {
             val intentTox = Intent(this, KotlinToxService::class.java)
             this.stopService(intentTox)

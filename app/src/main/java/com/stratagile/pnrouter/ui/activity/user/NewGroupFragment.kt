@@ -1,43 +1,37 @@
 package com.stratagile.pnrouter.ui.activity.user
 
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewGroupComponent
-import com.stratagile.pnrouter.ui.activity.user.contract.NewGroupContract
-import com.stratagile.pnrouter.ui.activity.user.module.NewGroupModule
-import com.stratagile.pnrouter.ui.activity.user.presenter.NewGroupPresenter
-
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupVerifyEntity
 import com.stratagile.pnrouter.db.GroupVerifyEntityDao
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.GroupVerifyReq
+import com.stratagile.pnrouter.entity.JGroupVerifyPushRsp
+import com.stratagile.pnrouter.entity.JGroupVerifyRsp
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SetBadge
-import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
+import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewGroupComponent
+import com.stratagile.pnrouter.ui.activity.user.contract.NewGroupContract
+import com.stratagile.pnrouter.ui.activity.user.module.NewGroupModule
+import com.stratagile.pnrouter.ui.activity.user.presenter.NewGroupPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewGroupMemberAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.layout_fragment_recyclerview.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -143,8 +137,8 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
             var baseData = sendgroupVerifyReq
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

@@ -3,8 +3,6 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -12,7 +10,9 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterUserEntity
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.DelUserReq
+import com.stratagile.pnrouter.entity.JRemoveMemberRsp
 import com.stratagile.pnrouter.ui.activity.router.UserQRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerCircleMemberDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.CircleMemberDetailContract
@@ -24,8 +24,6 @@ import com.stratagile.pnrouter.utils.TimeUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
-import kotlinx.android.synthetic.main.activity_adduser.*
 import kotlinx.android.synthetic.main.activity_circlemember_detail.*
 import javax.inject.Inject
 
@@ -167,8 +165,8 @@ class CircleMemberDetailActivity : BaseActivity(), CircleMemberDetailContract.Vi
                             var baseData = BaseData(4,regeister)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                             }

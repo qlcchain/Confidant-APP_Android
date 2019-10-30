@@ -4,11 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -23,12 +20,9 @@ import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminLoginPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterAliasSetActivity
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import com.stratagile.pnrouter.utils.baseDataToJson
-import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminlogin.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -126,8 +120,8 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
                 var baseData = BaseData(2,createNormalUser)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }

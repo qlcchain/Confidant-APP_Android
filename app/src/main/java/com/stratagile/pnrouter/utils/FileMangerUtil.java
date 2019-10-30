@@ -20,7 +20,6 @@ import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 import com.message.Message;
-import com.smailnet.eamil.Utils.AESCipher;
 import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -48,10 +47,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
 
 
 public class FileMangerUtil {
@@ -443,8 +438,8 @@ public class FileMangerUtil {
                             BaseData baseData = new BaseData(4,uploadAvatarReq);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -629,8 +624,8 @@ public class FileMangerUtil {
                 BaseData baseData = new BaseData(4,uploadAvatarReq);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
-                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
@@ -653,8 +648,8 @@ public class FileMangerUtil {
                     String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                     if(ConstantValue.INSTANCE.isAntox())
                     {
-                        FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                        //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                     }else{
                         ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                     }
@@ -793,13 +788,13 @@ public class FileMangerUtil {
 
         if(ConstantValue.INSTANCE.isAntox())
         {
-            FriendKey friendKey = new FriendKey(key);
+            /*FriendKey friendKey = new FriendKey(key);
             if(friendKey != null)
             {
                 receiveToxFileNameMap.put(fileNumber+"",fileName);
 
                 MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
-            }
+            }*/
         }else{
             receiveToxFileNameMap.put(fileNumber+"",fileName);
         }
@@ -909,8 +904,8 @@ public class FileMangerUtil {
                         String fileNumber = "";
                         if(ConstantValue.INSTANCE.isAntox())
                         {
-                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                            /*FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);*/
                         }else{
                             fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                         }
@@ -1120,8 +1115,8 @@ public class FileMangerUtil {
                                 String fileNumber = "";
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                   /* FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);*/
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
@@ -1283,8 +1278,8 @@ public class FileMangerUtil {
                                 String fileNumber = "";
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,imagePath,friendKey);
+                                    /*FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,imagePath,friendKey);*/
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
@@ -1446,8 +1441,8 @@ public class FileMangerUtil {
                                 String fileNumber = "";
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,emailPath,friendKey);
+                                   /* FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,emailPath,friendKey);*/
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
@@ -1644,8 +1639,8 @@ public class FileMangerUtil {
                                 String fileNumber  = "";
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                   /* FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);*/
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
@@ -1833,8 +1828,8 @@ public class FileMangerUtil {
                                 String fileNumber = "";
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                   /* FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);*/
                                 }else {
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }

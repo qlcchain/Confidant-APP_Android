@@ -10,49 +10,43 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
 import com.message.Message
-import com.message.UserProvider
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
-
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactComponent
-import com.stratagile.pnrouter.ui.activity.main.contract.ContactContract
-import com.stratagile.pnrouter.ui.activity.main.module.ContactModule
-import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
-
-import javax.inject.Inject;
-
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.PullFriendReq_V4
-import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.events.FriendAvatarChange
+import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.RouterChange
+import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.group.GroupChatsActivity
+import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactComponent
+import com.stratagile.pnrouter.ui.activity.main.contract.ContactContract
+import com.stratagile.pnrouter.ui.activity.main.module.ContactModule
+import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
-import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.ui.adapter.user.UserItem
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
@@ -60,6 +54,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -343,8 +338,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

@@ -153,10 +153,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
-
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
  * You need call setArguments to pass chatType and userId
@@ -1122,11 +1118,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     public void onAgreeReceivwFileStart(int fileNumber, String key, String fileName) {
         if (ConstantValue.INSTANCE.isAntox()) {
-            FriendKey friendKey = new FriendKey(key);
+            /*FriendKey friendKey = new FriendKey(key);
             if (friendKey != null) {
                 receiveToxFileNameMap.put(fileNumber + "", fileName);
                 MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance, fileNumber, friendKey);
-            }
+            }*/
         } else {
             receiveToxFileNameMap.put(fileNumber + "", fileName);
         }
@@ -1475,8 +1471,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1515,8 +1511,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1561,8 +1557,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1606,8 +1602,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 BaseData baseData = new BaseData(msgData);
                                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                    //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                 } else {
                                     ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 }
@@ -1647,8 +1643,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -2111,8 +2107,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
             if (ConstantValue.INSTANCE.isAntox()) {
-                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
             } else {
                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
             }
@@ -2141,8 +2137,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
             if (ConstantValue.INSTANCE.isAntox()) {
-                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
             } else {
                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
             }
@@ -3313,8 +3309,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
                         String fileNumber = "";
                         if (ConstantValue.INSTANCE.isAntox()) {
-                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                            /*FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                         } else {
                             String groupIdPre = UserDataManger.currentGroupData.getGId();
                             groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3499,8 +3495,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3667,8 +3663,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3886,8 +3882,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -4103,8 +4099,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                    /*FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -4314,8 +4310,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         BaseData baseData = new BaseData(4,fileForwardReq);
                         String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                         if (ConstantValue.INSTANCE.isAntox()) {
-                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                            //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                         }

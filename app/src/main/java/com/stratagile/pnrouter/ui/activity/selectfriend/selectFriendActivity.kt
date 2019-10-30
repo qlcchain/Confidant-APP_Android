@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import butterknife.ButterKnife
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.utils.EaseImageUtils
@@ -21,7 +19,9 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
+import com.stratagile.pnrouter.entity.events.SelectGroupChange
 import com.stratagile.pnrouter.ui.activity.main.ContactAndGroupFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendContract
@@ -30,7 +30,6 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.selectFriendPr
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -166,8 +165,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     var baseData = BaseData(3,msgData)
                                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                     if (ConstantValue.isAntox) {
-                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                     }else{
                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
@@ -186,8 +185,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     var baseData = BaseData(msgData)
                                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                     if (ConstantValue.isAntox) {
-                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                     }else{
                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
@@ -314,8 +313,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 var fileNumber = ""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                    /*val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
@@ -459,8 +458,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.dstKey = String(DstKey)
                                                 var fileNumber = ""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                    /*val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
@@ -591,8 +590,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.dstKey = String(DstKey)
                                                 var fileNumber =""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                   /* val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
@@ -756,8 +755,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 var fileNumber = ""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                   /* val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
@@ -882,8 +881,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.dstKey = i.userKey
                                                 var fileNumber = ""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                   /* val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
@@ -999,8 +998,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.dstKey = i.userKey
                                                 var fileNumber =""
                                                 if (ConstantValue.isAntox) {
-                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                   /* val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)*/
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
