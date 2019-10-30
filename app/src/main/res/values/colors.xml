@@ -68,7 +68,8 @@
     <color name="a1A757380">#1A757380</color>
     <color name="FF999999">#FF999999</color>
     <color name="FFCCCCCC">#FFCCCCCC</color>
-
+    <color name="material_red_a700">#d50000</color>
+    <color name="grey">#dcdcdc</color>
 
 
 </resources>

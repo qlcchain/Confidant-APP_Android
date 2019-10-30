@@ -12,7 +12,7 @@ import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage
 import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.utils.FileMangerUtil
-import events.*
+import com.stratagile.pnrouter.entity.events.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

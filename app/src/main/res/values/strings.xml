@@ -873,5 +873,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Decryption_failed">Decryption failed</string>
     <string name="passwordTips">The password is set by the sender to encrypt this email.</string>
     <string name="The_body_cannot_be_empty">The body cannot be empty</string>
+    <string name="PasswordHint">Passwork Hint: </string>
 
 </resources>

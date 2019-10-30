@@ -32,7 +32,7 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxSendInfoEvent
+import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job

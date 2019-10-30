@@ -4,15 +4,10 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Looper
 import android.provider.MediaStore
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -21,30 +16,24 @@ import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.AllFileStatus
+import com.stratagile.pnrouter.entity.JUploadAvatarRsp
 import com.stratagile.pnrouter.entity.events.ResetAvatar
+import com.stratagile.pnrouter.entity.events.UpdataAvatrrEvent
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerModifyAvatarComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.ModifyAvatarContract
 import com.stratagile.pnrouter.ui.activity.user.module.ModifyAvatarModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.ModifyAvatarPresenter
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxStatusEvent
-import events.UpdataAvatrrEvent
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_modify_avatar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp

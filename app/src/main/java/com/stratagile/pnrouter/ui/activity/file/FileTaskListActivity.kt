@@ -31,8 +31,8 @@ import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxStatusEvent
+import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
+import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_file_task_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

@@ -36,7 +36,7 @@ import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxStatusEvent
+import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_router_management.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

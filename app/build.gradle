@@ -205,9 +205,10 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'com.alibaba:fastjson:1.2.37'
 
-    //implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation files('libs/klogLibrary-release.aar')
     implementation files('libs/MagicIndicator-1.5.0.aar')
+    implementation files('libs/libsodium-jni-aar-2.0.1-SNAPSHOT.aar')
     implementation 'com.github.qlcchain:qlc-java-sdk:1.8'
 
     // Rx
@@ -228,7 +229,7 @@ dependencies {
     //implementation project(':easeui')
     implementation project(':library')
     implementation project(':brvaLibrary')
-    implementation project(':appTox')
+    /*implementation project(':appTox')*/
     implementation project(':zxing')
     implementation project(':picture_library')
     implementation project(':zbar')

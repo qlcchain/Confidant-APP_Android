@@ -459,7 +459,7 @@
             android:background="#f2f1f6"
             app:indicatorColor="#fff"
             app:indicatorEnable="true"
-            app:orientation="horizontal" />
+             />
     </LinearLayout>
 
     <RelativeLayout
