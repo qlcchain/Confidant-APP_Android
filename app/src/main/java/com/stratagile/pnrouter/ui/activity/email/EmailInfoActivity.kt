@@ -1066,7 +1066,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
         }
         passwordHelp.setOnClickListener {
-            passwordTipsBubble.visibility = View.VISIBLE
+            if(passwordTipsBubble.visibility == View.VISIBLE)
+            {
+                passwordTipsBubble.visibility = View.GONE
+            }else{
+                passwordTipsBubble.visibility = View.VISIBLE
+            }
            /* initNormalPopupIfNeed();
             mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
             mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)

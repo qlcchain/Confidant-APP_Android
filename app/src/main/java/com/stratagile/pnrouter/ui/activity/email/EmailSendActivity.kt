@@ -1722,6 +1722,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             toast(R.string.The_recipient_cant_be_empty)
             return
         }
+        if(userPassWord != "" && contentHtml== "")
+        {
+            toast(R.string.The_body_cannot_be_empty)
+            return
+        }
         var attachList = ""
         var emaiAttachAdapterList = emaiAttachAdapter!!.data
         for(item in emaiAttachAdapterList)
