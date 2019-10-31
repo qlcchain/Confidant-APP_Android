@@ -2495,6 +2495,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }else if(id == R.id.addSubjectImg)
         {
             sendRoot.fullScroll(NestedScrollView.FOCUS_DOWN)
+            addSubjectImg.requestFocus()
         }
 
     }
