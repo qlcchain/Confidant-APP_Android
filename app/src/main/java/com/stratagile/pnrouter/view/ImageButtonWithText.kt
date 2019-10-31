@@ -1,7 +1,6 @@
 package com.stratagile.pnrouter.view
 
 import android.content.Context
-import android.os.Environment
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,10 +16,8 @@ import com.hyphenate.easeui.utils.PathUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.utils.GlideCircleTransform
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
-import com.stratagile.pnrouter.utils.SpUtil
 import java.io.File
 import java.util.*
 

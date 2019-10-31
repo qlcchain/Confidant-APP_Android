@@ -3,12 +3,9 @@ package com.stratagile.pnrouter.ui.activity.email
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.EmailConfig
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -18,7 +15,6 @@ import com.stratagile.pnrouter.db.EmailConfigEntity
 import com.stratagile.pnrouter.db.EmailConfigEntityDao
 import com.stratagile.pnrouter.db.EmailMessageEntityDao
 import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.ChangeRemarksReq
 import com.stratagile.pnrouter.entity.DelEmailConf
 import com.stratagile.pnrouter.entity.JDelEmailConfRsp
 import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
@@ -27,16 +23,11 @@ import com.stratagile.pnrouter.ui.activity.email.contract.EmailEditContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailEditModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailEditPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_email_detail.*
 import org.greenrobot.eventbus.EventBus
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl

@@ -106,10 +106,6 @@ import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.mipush.sdk.MiPushClient
-import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
-import com.stratagile.pnrouter.entity.events.ToxSendFileFinishedEvent
-import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
-import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_menu.*
@@ -2489,7 +2485,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()

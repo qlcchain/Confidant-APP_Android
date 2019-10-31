@@ -8,14 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -29,25 +26,22 @@ import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupInfoCompon
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupInfoContract
 import com.stratagile.pnrouter.ui.activity.group.module.GroupInfoModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.GroupInfoPresenter
-import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import com.stratagile.pnrouter.ui.adapter.group.GroupUserAdapter
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.LibsodiumUtil
+import com.stratagile.pnrouter.utils.MutableListToArrayList
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CommonDialog
-import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
-import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import kotlinx.android.synthetic.main.activity_group_info.*
-import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
 import java.util.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp

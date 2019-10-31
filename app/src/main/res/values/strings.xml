@@ -874,5 +874,5 @@ Then enter your Email address and password to log in.</string>
     <string name="passwordTips">The password is set by the sender to encrypt this email.</string>
     <string name="The_body_cannot_be_empty">The body cannot be empty</string>
     <string name="PasswordHint">Passwork Hint: </string>
-
+    <string name="waitamoment">Generation failure</string>
 </resources>
