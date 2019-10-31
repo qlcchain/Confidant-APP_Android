@@ -90,7 +90,29 @@ import javax.inject.Inject
  */
 
 class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback{
-
+    override fun addFriendsAuto(jAddFriendsAutoRsp: JAddFriendsAutoRsp) {
+        if(jAddFriendsAutoRsp.params.retCode == 0)
+        {
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+            var pullFriend = PullFriendReq_V4(selfUserId!!)
+            var sendData = BaseData(pullFriend)
+            if (ConstantValue.encryptionType.equals("1")) {
+                sendData = BaseData(6, pullFriend)
+            }
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = sendData
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }
+    }
 
 
     @Inject
@@ -1797,14 +1819,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         emailConfigEntityChoose.sendMenuRefresh = true
                                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
-
-                                    if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
+                                    if(foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
                                     {
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-
-                                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                                         var emailId= RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
-                                        val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
                                         var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId,emailId)
                                         var sendData = BaseData(6,AddFriendsAutoReq);
                                         if (ConstantValue.isWebsocketConnected) {
@@ -1881,21 +1899,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
 
-                                    if(emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
+                                    if(foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
                                     {
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-
-                                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                                        var msg= "I'm"+ nickName
-                                        msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
-                                        val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                                        var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
-                                        var sendData = BaseData(addFriendReq);
-                                        if(ConstantValue.encryptionType.equals( "1"))
-                                        {
-                                            addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
-                                            sendData = BaseData(4,addFriendReq);
-                                        }
+                                        var emailId= RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
+                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId,emailId)
+                                        var sendData = BaseData(6,AddFriendsAutoReq);
                                         if (ConstantValue.isWebsocketConnected) {
                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                                         }else if (ConstantValue.isToxConnected) {

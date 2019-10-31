@@ -594,7 +594,10 @@ val credentialsProvider: CredentialsProvider, private
                     val JSysMsgPushRsp = gson.fromJson(text, JSysMsgPushRsp::class.java)
                     mainInfoBack?.sysMsgPushRsp(JSysMsgPushRsp)
                 }
-
+                "AddFriendsAuto" -> {
+                    val JAddFriendsAutoRsp = gson.fromJson(text, JAddFriendsAutoRsp::class.java)
+                    checkmailUkeyCallback?.addFriendsAuto(JAddFriendsAutoRsp)
+                }
             }
         }
 
@@ -1066,6 +1069,7 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface CheckmailUkeyCallback {
         fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp)
+        fun addFriendsAuto(jAddFriendsAutoRsp: JAddFriendsAutoRsp)
     }
     interface BakupEmailCallback {
         fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp)
