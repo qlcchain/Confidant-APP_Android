@@ -1242,11 +1242,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
-                        addSubject.visibility = View.VISIBLE
+                        addSubject.visibility = View.GONE
                     }else{
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
-                        addSubject.visibility = View.INVISIBLE
+                        addSubject.visibility = View.GONE
                     }
                 }
                 R.id.iv_add -> {
@@ -1803,16 +1803,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
 
                                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                                        var msg= "I'm"+ nickName
-                                        msg = RxEncodeTool.base64Encode2String(msg.toByteArray())
+                                        var emailId= RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
                                         val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                                        var addFriendReq = AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.publicRAS!!,msg)
-                                        var sendData = BaseData(addFriendReq);
-                                        if(ConstantValue.encryptionType.equals( "1"))
-                                        {
-                                            addFriendReq =  AddFriendReq( selfUserId!!, strBase64, emailMeaasgeInfoData!!.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
-                                            sendData = BaseData(4,addFriendReq);
-                                        }
+                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId,emailId)
+                                        var sendData = BaseData(6,AddFriendsAutoReq);
                                         if (ConstantValue.isWebsocketConnected) {
                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                                         }else if (ConstantValue.isToxConnected) {
@@ -2586,11 +2580,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
-                        addSubject.visibility = View.VISIBLE
+                        addSubject.visibility = View.GONE
                     }else{
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
-                        addSubject.visibility = View.INVISIBLE
+                        addSubject.visibility = View.GONE
                     }
                 }
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
@@ -2615,11 +2609,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                         addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
-                        addSubject.visibility = View.VISIBLE
+                        addSubject.visibility = View.GONE
                     }else{
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
-                        addSubject.visibility = View.INVISIBLE
+                        addSubject.visibility = View.GONE
                     }
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
@@ -2643,11 +2637,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             {
                                 addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
                                 addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
-                                addSubject.visibility = View.VISIBLE
+                                addSubject.visibility = View.GONE
                             }else{
                                 addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                                 addSubject.text = ""
-                                addSubject.visibility = View.INVISIBLE
+                                addSubject.visibility = View.GONE
                             }
                         }
                     }

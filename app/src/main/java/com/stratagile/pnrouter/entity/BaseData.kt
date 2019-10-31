@@ -794,3 +794,8 @@ data class MailSendNotice(var MailsTo :String,var Action : String = "MailSendNot
  * (2)	响应（APP->Router）
  */
 data class SysMsgPush(var Retcode :Int,var ToId:String,var Action : String = "SysMsgPush")
+/**
+ * 95.	自动添加好友
+ * (1)	请求（APP-->Router）
+ */
+data class AddFriendsAutoReq(var Type : Int, var UserId :String, var Friends : String,var EmailId:String ,var Action : String = "AddFriendsAuto")
