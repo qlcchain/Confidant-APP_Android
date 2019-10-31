@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -2272,6 +2273,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         sendBtn.setOnClickListener(this)
         addKeyImg.setOnClickListener(this)
+        addSubjectImg.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
@@ -2490,6 +2492,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     }
                }
             })
+        }else if(id == R.id.addSubjectImg)
+        {
+            sendRoot.fullScroll(NestedScrollView.FOCUS_DOWN)
         }
 
     }

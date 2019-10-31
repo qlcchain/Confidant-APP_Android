@@ -1704,6 +1704,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                 return false
             }
         })
+
         val webSettings = webView.getSettings()
         //允许webview对文件的操作
         webSettings.setAllowUniversalAccessFromFileURLs(true);

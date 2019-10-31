@@ -367,7 +367,6 @@ class EmailCore {
         }
         String fromName = account.substring(0,account.indexOf("@"));
         message.setFrom(new InternetAddress(fromName + "<" + account + ">"));
-        message.setHeader("confidantkey","1234566");
         String subjectNew = subject;
        /* try {
             subjectNew = (MimeUtility.encodeText(subject,MimeUtility.mimeCharset("gb2312"), null));
@@ -1107,7 +1106,6 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1298,7 +1296,6 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1468,7 +1465,6 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
@@ -1668,7 +1664,6 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                String[] confidantkey = message.getHeader("confidantkey");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
