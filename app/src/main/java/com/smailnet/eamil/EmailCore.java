@@ -1607,7 +1607,7 @@ class EmailCore {
             Boolean noDataLoad = false;
             while (k < pageSize && !noDataLoad)
             {
-                pageSizeTemp = pageSize * pageFlag;
+                pageSizeTemp = pageSize + (pageFlag -1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
                 for(int i = 0 ; i < pageSizeTemp ;i++)
@@ -1637,7 +1637,11 @@ class EmailCore {
                     {
                         k ++;
                     }
-
+                    if(k >= pageSize)
+                    {
+                        noDataLoad = true;
+                        break;
+                    }
                 }
             }
         }else{
@@ -1821,7 +1825,7 @@ class EmailCore {
             Boolean noDataLoad = false;
             while (k < pageSize && !noDataLoad)
             {
-                pageSizeTemp = pageSize * pageFlag;
+                pageSizeTemp = pageSize + (pageFlag -1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
                 for(int i = 0 ; i < pageSizeTemp ;i++)
@@ -1850,7 +1854,11 @@ class EmailCore {
                     {
                         k ++;
                     }
-
+                    if(k >= pageSize)
+                    {
+                        noDataLoad = true;
+                        break;
+                    }
                 }
             }
         }else{
