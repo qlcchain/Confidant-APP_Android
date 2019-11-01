@@ -1787,8 +1787,7 @@ class EmailCore {
         Message[] messagesAll = new Message[]{};
         int totalSize =   folder.getMessageCount();
         Message messageMin = folder.getMessage(1);
-        String subjecttt = getSubject((MimeMessage)messageMin);
-        long endMinUUID = 0L;
+        long endMinUUID = -1L;
         if(messageMin != null)
         {
             endMinUUID = folder.getUID(messageMin);

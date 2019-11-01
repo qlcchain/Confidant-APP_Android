@@ -904,8 +904,14 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }
         var firstMessageEntity =  emaiMessageChooseAdapter!!.getItem(0)
         var lastMessageEntity =  emaiMessageChooseAdapter!!.getItem(emaiMessageChooseAdapter!!.data.size -1)
-        minUUID = lastMessageEntity!!.msgId.toLong();
-        maxUUID = firstMessageEntity!!.msgId.toLong();
+        if(firstMessageEntity != null)
+        {
+            minUUID = lastMessageEntity!!.msgId.toLong();
+            maxUUID = firstMessageEntity!!.msgId.toLong();
+        }else{
+            minUUID = 0L;
+            maxUUID = 0L;
+        }
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
 
         if(true)
@@ -1427,8 +1433,18 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
         var firstMessageEntity =  emaiMessageChooseAdapter!!.getItem(0)
         var lastMessageEntity =  emaiMessageChooseAdapter!!.getItem(emaiMessageChooseAdapter!!.data.size -1)
-        var minUUID = lastMessageEntity!!.msgId.toLong();
-        var maxUUID = firstMessageEntity!!.msgId.toLong();
+
+        var minUUID = 0L;
+        var maxUUID = 0L;
+        if(firstMessageEntity != null)
+        {
+            minUUID = lastMessageEntity!!.msgId.toLong();
+            maxUUID = firstMessageEntity!!.msgId.toLong();
+        }else{
+            minUUID = 0L;
+            maxUUID = 0L;
+        }
+
         if(true)
         {
 /*  AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
