@@ -2496,6 +2496,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         {
             sendRoot.fullScroll(NestedScrollView.FOCUS_DOWN)
             subject.requestFocus()
+            iv_add.performClick()
         }
 
     }
