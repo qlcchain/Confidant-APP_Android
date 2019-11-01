@@ -1024,6 +1024,7 @@ class EmailCore {
         int totalSize =   folder.getMessageCount();
         int newSize=  totalSize - lastTotalCount;
         int lastTotalCountTemp = lastTotalCount;
+        System.out.println("newSize_"+newSize+"lastTotalCount:"+lastTotalCount+"totalSize:"+totalSize);
         if(newSize < 0)
         {
             lastTotalCountTemp = totalSize;
@@ -1777,41 +1778,70 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveMoreMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
+        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
         System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = new Message[]{};
+        int totalSize =   folder.getMessageCount();
+        Message messageMin = folder.getMessage(1);
+        String subjecttt = getSubject((MimeMessage)messageMin);
+        long endMinUUID = 0L;
+        if(messageMin != null)
+        {
+            endMinUUID = folder.getUID(messageMin);
+        }
         boolean noMoreData = false;
         int len = 0;
-        if(maxUUID != 0 && minUIID != 0)
+        int lengFlag = 0;
+        int pageFlag = 1;
+        int k = 0;
+        if(endMinUUID >=0 && minUIID > endMinUUID)
         {
             noMoreData = false;
-            long[] uuidList = new long[pageSize];
-            for(int i = 0 ; i < pageSize ;i++)
+            while (messagesAll.length == 0 || k == 0)
             {
-                long index = minUIID - i - 1;
-                uuidList[i] = index;
-                if(index <= 0)
+                long[] uuidList = new long[pageSize];
+                lengFlag = 0;
+                for(int i = 0 ; i < pageSize ;i++)
                 {
-                    break;
+                    long index = minUIID - i - 1 - (pageFlag -1) * pageSize;
+                    if(index < endMinUUID)
+                    {
+                        break;
+                    }
+                    uuidList[i] = index;
+                    len  ++;
+                    lengFlag ++;
                 }
-                len  ++;
+                long[] uuidListNew = new long[lengFlag];
+                for(int i = 0 ; i< lengFlag ;i++)
+                {
+                    uuidListNew[i] = uuidList[i];
+                }
+                pageFlag ++;
+                messagesAll = folder.getMessagesByUID(uuidListNew);
+
+                Message[] messagesAllTemp = new Message[]{};
+                k = 0;
+                for (Message message : messagesAll)
+                {
+                    if(message != null)
+                    {
+                        k ++;
+                    }
+
+                }
             }
-            long[] uuidListNew = new long[len];
-            for(int i = 0 ; i< len ;i++)
-            {
-                uuidListNew[i] = uuidList[i];
-            }
-            messagesAll = folder.getMessagesByUID(uuidListNew);
         }else{
             noMoreData = true;
             messagesAll = new Message[]{};
         }
-        int totalSize =   folder.getMessageCount();
+
         List<Message> list  = Arrays.asList(messagesAll);
+        Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
         String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
         Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
@@ -1822,18 +1852,27 @@ class EmailCore {
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
-            uuid = folder.getUID(message) +"";
+            if(message == null)
+            {
+                index++;
+                continue;
+            }
             try {
+                uuid = folder.getUID(message) +"";
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
                 }catch (Exception e)
                 {
-                    errorMsg += e.getMessage();
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
+                if("".equals(from))
+                {
+                    from = this.account;
+                }
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
@@ -1863,7 +1902,7 @@ class EmailCore {
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
                 }catch (Exception e)
                 {
-                    errorMsg += e.getMessage();
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
@@ -1878,10 +1917,20 @@ class EmailCore {
                     } else
                         getMailTextContent2(message,contentTemp, false);
                     content = contentTemp.toString();
+                    if(content.contains("<body>"))
+                    {
+                        int beginFlag = content.indexOf("<body>")+6;
+                        int endFlag =  content.indexOf("</body>");
+                        content = content.substring(beginFlag,endFlag);
+                        String regFormat = "\\t|\r|\n";
+                        content = content.replaceAll(regFormat,"");
+                        String regFormat2 = "&#43;";
+                        content = content.replaceAll(regFormat2,"+");
+                    }
                     contentText = getHtmlText(contentTemp.toString());
                 }catch (Exception e)
                 {
-                    errorMsg += e.getMessage();
+                    errorMsg+=e.getMessage();
                 }
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
@@ -1890,20 +1939,10 @@ class EmailCore {
                 emailMessageList.add(emailMessage);
                 System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
-
-              /*  if(!file.exists()){
-                    file.mkdirs();
-                }
-                pmm.setAttachPath(file.toString()+"/");
-                try {
-                    pmm.saveAttachMent((Part)message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             }catch (Exception e)
             {
                 e.printStackTrace();
-                errorMsg += e.getMessage();
+                errorMsg+=e.getMessage();
             }
 
             index ++;
@@ -1914,8 +1953,8 @@ class EmailCore {
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",totalSize);
-        messageMap.put("minUIID",minUIID -len);
-        messageMap.put("maxUUID",maxUUID);
+        messageMap.put("minUIID",minUIID);
+        messageMap.put("maxUUID",maxUUID +len);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
         messageMap.put("errorMsg",errorMsg);
