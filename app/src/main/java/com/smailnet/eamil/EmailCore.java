@@ -1585,7 +1585,11 @@ class EmailCore {
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = new Message[]{};
         int totalSize =   folder.getMessageCount();
-        Message messageMax = folder.getMessage(totalSize);
+        Message messageMax = null;
+        if(totalSize > 0)
+        {
+            messageMax = folder.getMessage(totalSize);
+        }
         long fromMaxUUID = 0L;
         if(messageMax != null)
         {
@@ -1599,15 +1603,19 @@ class EmailCore {
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
-            while (messagesAll.length == 0 || k == 0)
+            int pageSizeTemp = pageSize;
+            Boolean noDataLoad = false;
+            while (k < pageSize && !noDataLoad)
             {
-                long[] uuidList = new long[pageSize];
+                pageSizeTemp = pageSize * pageFlag;
+                long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
-                for(int i = 0 ; i < pageSize ;i++)
+                for(int i = 0 ; i < pageSizeTemp ;i++)
                 {
-                    long index = maxUUID + i + 1 + (pageFlag -1) * pageSize;
+                    long index = maxUUID + i + 1 ;
                     if(index > fromMaxUUID)
                     {
+                        noDataLoad = true;
                         break;
                     }
                     uuidList[i] = index;
@@ -1622,8 +1630,7 @@ class EmailCore {
                 pageFlag ++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
 
-                Message[] messagesAllTemp = new Message[]{};
-                k = 0;
+                 k = 0;
                 for (Message message : messagesAll)
                 {
                     if(message != null)
@@ -1786,7 +1793,17 @@ class EmailCore {
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = new Message[]{};
         int totalSize =   folder.getMessageCount();
-        Message messageMin = folder.getMessage(1);
+        Message messageMin = null;
+        Long minUUIDTemp = minUIID;
+        if(totalSize > 0)
+        {
+            messageMin = folder.getMessage(1);
+            Message messageMax = folder.getMessage(totalSize);
+            if(minUUIDTemp == 0L)
+            {
+                minUUIDTemp = folder.getUID(messageMax) +1;
+            }
+        }
         long endMinUUID = -1L;
         if(messageMin != null)
         {
@@ -1797,18 +1814,22 @@ class EmailCore {
         int lengFlag = 0;
         int pageFlag = 1;
         int k = 0;
-        if(endMinUUID >=0 && minUIID > endMinUUID)
+        if(endMinUUID >=0 && minUUIDTemp > endMinUUID)
         {
             noMoreData = false;
-            while (messagesAll.length == 0 || k == 0)
+            int pageSizeTemp = pageSize;
+            Boolean noDataLoad = false;
+            while (k < pageSize && !noDataLoad)
             {
-                long[] uuidList = new long[pageSize];
+                pageSizeTemp = pageSize * pageFlag;
+                long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
-                for(int i = 0 ; i < pageSize ;i++)
+                for(int i = 0 ; i < pageSizeTemp ;i++)
                 {
-                    long index = minUIID - i - 1 - (pageFlag -1) * pageSize;
+                    long index = minUUIDTemp - i - 1 ;
                     if(index < endMinUUID)
                     {
+                        noDataLoad = true;
                         break;
                     }
                     uuidList[i] = index;
@@ -1822,8 +1843,6 @@ class EmailCore {
                 }
                 pageFlag ++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
-
-                Message[] messagesAllTemp = new Message[]{};
                 k = 0;
                 for (Message message : messagesAll)
                 {
@@ -1952,7 +1971,7 @@ class EmailCore {
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",totalSize);
-        messageMap.put("minUIID",minUIID);
+        messageMap.put("minUIID",minUUIDTemp);
         messageMap.put("maxUUID",maxUUID +len);
         messageMap.put("totalUnreadCount",totalUnreadCount);
         messageMap.put("noMoreData",noMoreData);
