@@ -72,6 +72,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
@@ -3270,7 +3271,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            mPresenter.getScanPermission()
         }
         ivNewGroup.setOnClickListener {
-            startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+            //startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
+            iconArray = arrayListOf<String>("sheet_mark","statusbar_download_node","sheet_move","statusbar_delete")
+            PopWindowUtil.showPopAddMenuWindow(this@MainActivity, ivNewGroup,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    var data = obj as FileOpreateType
+                    when (data.name) {
+                        "Mark Unread" -> {
+
+                        }
+                    }
+                }
+
+            })
             /* var list = arrayListOf<GroupEntity>()
              startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)*/
         }

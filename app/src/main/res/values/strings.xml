@@ -620,11 +620,11 @@
     <string name="no_choice">no choice</string>
     <string name="Too_long_name">The file name is too long.</string>
     <string name="select_a_file">Select a File</string>
-    <string name="Create_a_Group">Create a Group</string>
+    <string name="Create_a_Group">New Chat</string>
     <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
     <string name="New_Email">New Email</string>
     <string name="Communication">Communication via Email adress</string>
-    <string name="Scan_to_add_contacts">Scan</string>
+    <string name="Scan_to_add_contacts">Scan QR Code</string>
     <string name="Scan_to_add_contacts_code">Add contacts, join a circle or activate a Station</string>
     <string name="Share_My_Contact_Card">Share My Contact Card</string>
     <string name="Scan_my_Contact_Card_QR_Code">Scan my Contact Card QR Code</string>
@@ -875,4 +875,8 @@ Then enter your Email address and password to log in.</string>
     <string name="The_body_cannot_be_empty">The body cannot be empty</string>
     <string name="PasswordHint">Passwork Hint: </string>
     <string name="waitamoment">Generation failure</string>
+    <string name="Invite_Friends_to_Confidant">Invite Friends to Confidant</string>
+    <string name="Add_Members">Add Members</string>
+    <string name="Add_Contacts"> Add Contacts</string>
+
 </resources>
