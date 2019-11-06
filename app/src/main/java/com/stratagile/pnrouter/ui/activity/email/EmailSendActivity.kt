@@ -1797,6 +1797,41 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 drafts = ConstantValue.currentEmailConfigEntity!!.drafMenu
                 draftsId = emailMeaasgeInfoData!!.msgId
             }
+            var myAccount = ConstantValue.currentEmailConfigEntity!!.account
+            var addBefore = "<div id=\"box\">"+
+                    "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}div:last-child {    padding-left: 16px;    font-size: 14px;}.h3logo {\n" +
+                    "            position: relative;\n" +
+                    "            top: 5px;\n" +
+                    "            width: 24px;\n" +
+                    "            margin-right: 5px;\n" +
+                    "        }/*]]>*/</style>"+
+                    "   <section>"+
+                    "    <div class=\"rowDiv\">"+
+                    "    <h3><img class='h3logo' src='https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_n.png'>Encrypted Email</h3>"+
+                    "     <p>Encrypted Email client and beyond - your comprehensive privacyprotection tool</p>"+
+                    "    </div>"+
+                    "    <div class=\"rowDiv\" style=\"border: 0;\">"+
+                    "     <p style=\"font-size: 14px;\">You have received a secure message from</p>"+
+                    "     <h3 style=\"color:#6646F7\">"+myAccount+"</h3>"+
+                    "     <p>I’m using Confidant to send and receive secure emails.Click thelink below to decrypt and view mymessage.</p>"+
+                    "    </div>"+
+                    "    <div class=\"rowDiv\" style=\"padding-bottom: 50px;\">"+
+                    "     <a href= \'https://www.myconfidant.io\' id=\'Encrypted\' class=\'rowDiv3Btn\'style=\'color:#fff\'>View Encrypted Message"+
+                    "     </a>"+
+                    "    </div>"+
+                    "   </section>"+
+                    "  </div> ";
+            if(userPassWord == "")
+            {
+                if(contactMapList.size == needSize)//需要加密
+                {
+                    var contentHtmlBase64 = String(RxEncodeTool.base64Encode(contentHtml))
+                    contentHtml = addBefore+ "<span style=\"display:none\" id=\""+"newconfidantcontent"+contentHtmlBase64+"\"></span>";
+                }
+            }else{//手动加密
+                var contentHtmlBase64 = String(RxEncodeTool.base64Encode(contentHtml))
+                contentHtml = addBefore+ "<span style=\"display:none\" id=\""+"newconfidantcontent"+contentHtmlBase64+"\"></span>";
+            }
             if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
             {
                 emailSendClient

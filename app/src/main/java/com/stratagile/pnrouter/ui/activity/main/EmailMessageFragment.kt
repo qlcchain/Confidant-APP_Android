@@ -1980,6 +1980,20 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     }
     fun getOriginalText(emailMeaasgeData:EmailMessageEntity): HashMap<String, String>
     {
+        if(emailMeaasgeData!!.content.contains("newconfidantcontent"))
+        {
+            var newconfidantcontent= "newconfidantcontent";
+            var newconfidantcontentBeginIndex = emailMeaasgeData!!.content.indexOf("newconfidantcontent")+newconfidantcontent.length ;
+            var newconfidantcontentLeft = emailMeaasgeData!!.content.substring(newconfidantcontentBeginIndex,emailMeaasgeData!!.content.length)
+            var newconfidantcontentEndIndex = newconfidantcontentLeft.indexOf("\"")
+            if(newconfidantcontentEndIndex == -1)
+            {
+                newconfidantcontentEndIndex = newconfidantcontentLeft.indexOf("'")
+            }
+            var newconfidantcontentGet = newconfidantcontentLeft.substring(0,newconfidantcontentEndIndex);
+            var newconfidantcontentSouce = String(RxEncodeTool.base64Decode(newconfidantcontentGet))
+            emailMeaasgeData!!.content = newconfidantcontentSouce;
+        }
         var contactMapList = HashMap<String, String>()
         var userID = ""
         if(emailMeaasgeData!!.content.contains("newconfidantpass"))

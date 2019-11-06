@@ -764,7 +764,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         System.arraycopy(retMsg, 18, Code, 0, 2)
         System.arraycopy(retMsg, 20, FromId, 0, 76)
         System.arraycopy(retMsg, 97, ToId, 0, 76)
-        System.arraycopy(retMsg, 176, serverTime, 0, 4)
+        try {
+            System.arraycopy(retMsg, 176, serverTime, 0, 4)
+        }catch (E:Exception)
+        {
+
+        }
+
         val ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action))
         val FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId))
         val LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId))
