@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileMenuOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
+import com.stratagile.pnrouter.ui.adapter.popwindow.MenuOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
@@ -376,7 +377,7 @@ object PopWindowUtil {
      */
     fun showPopAddMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_addmenu_layout, null)
-        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        val contentView = maskView.findViewById<View>(R.id.parent)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
         contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val translate = TranslateAnimation(
@@ -386,8 +387,6 @@ object PopWindowUtil {
         translate.duration = 200
         contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
-        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
-        ll_file.visibility = View.GONE
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
         var list = arrayListOf<FileOpreateType>();
@@ -398,7 +397,7 @@ object PopWindowUtil {
         /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
          list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
          list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
-        val selecRouterAdapter = FileChooseOpreateAdapter(list)
+        val selecRouterAdapter = MenuOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             CustomPopWindow.onBackPressed()
