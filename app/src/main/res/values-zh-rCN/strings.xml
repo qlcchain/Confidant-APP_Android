@@ -412,9 +412,9 @@
     <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
-    <string name="guest_viewpager_1">Complete ownership of a communication network</string>
-    <string name="guest_viewpager_2">Complete ownership of the data</string>
-    <string name="guest_viewpager_3">Unique ID and complete ownership of the account</string>
+    <string name="guest_viewpager_1">Full ownership of a communication network</string>
+    <string name="guest_viewpager_2">Full ownership of the data</string>
+    <string name="guest_viewpager_3">Unique ID and full ownership of the account</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>

@@ -201,6 +201,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var toAdressEditLastContent = ""
     var ccAdressEditLastContent = ""
     var bccAdressEditLastContent = ""
+    var InviteURLText = ""
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
         if(isSendCheck)
@@ -245,7 +246,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 sendEmail(true);
             }
             runOnUiThread {
-                if(contactMapList.size == needSize)
+                if(contactMapList.size == needSize && InviteURLText == "")
                 {
                     lockTips.visibility = View.VISIBLE
                 }else{
@@ -274,6 +275,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         setContentView(R.layout.email_send_edit)
     }
     override fun initData() {
+        InviteURLText = ""
         addressBase64 = ""
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
         var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.notEq("")).orderDesc(EmailContactsEntityDao.Properties.CreateTime).list()
@@ -336,6 +338,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 sentTitle.visibility = View.VISIBLE
             }
 
+        }else if(flag == 100)
+        {
+            addKeyImgParent.visibility = View.GONE
+            attachList.visibility = View.GONE
+            re_main_editor.visibility = View.GONE
+            subject.setText(getString(R.string.Invitation))
+            val lp = LinearLayout.LayoutParams(webViewParent.getLayoutParams())
+            lp.setMargins(0, 0, 0, 0)
+            webViewParent.setLayoutParams(lp);
+            initWebviewUI()
         }else if(flag == 255)
         {
             var emailAdress = intent.getStringExtra("emailAdress")
@@ -560,6 +572,331 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
             }
             i += str.length+1
+        }
+    }
+    fun initWebviewUI()
+    {
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView, title1: String?) {
+                super.onReceivedTitle(view, title1)
+                if (title1 != null) {
+                    //title.text = title1
+                }
+            }
+
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                if (newProgress == 100) {
+                    progressBar.visibility = View.GONE
+                } else {
+                    KLog.i("进度：" + newProgress)
+                    progressBar.visibility = View.VISIBLE
+                    progressBar.progress = newProgress
+                }
+                super.onProgressChanged(view, newProgress)
+            }
+
+        }
+        webView.webViewClient = object  : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                //view.loadUrl(url)
+                val intent = Intent()
+                intent.action = "android.intent.action.VIEW"
+                val url = Uri.parse(url)
+                intent.data = url
+                startActivity(intent)
+                return true
+            }
+
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
+                if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
+                        || error.getPrimaryError() == SslError.SSL_EXPIRED
+                        || error.getPrimaryError() == SslError.SSL_INVALID
+                        || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
+                    handler.proceed();
+                } else {
+                    handler.cancel();
+                }
+                super.onReceivedSslError(view, handler, error)
+            }
+
+            override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
+                KLog.i("ddddddd")
+                super.onReceivedHttpError(view, request, errorResponse)
+            }
+
+            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                KLog.i("ddddddd")
+                super.onReceivedError(view, request, error)
+            }
+        }
+        var myAccount = ConstantValue.currentEmailConfigEntity!!.account
+        InviteURLText = "<!DOCTYPE html>"+
+                "<html>"+
+                "<head>"+
+                "    <meta charset=\'utf-8\'>"+
+                "    <meta name=\'renderer\' content=\'webkit\'>"+
+                "    <meta name=\'force-rendering\' content=\'webkit\' />"+
+                "    <meta http-equiv=\'X-UA-Compatible\' content=\'IE=edge,chrome=1\'>"+
+                "    <meta name=\'apple-mobile-web-app-capable\' content=\'yes\' />"+
+                "    <meta name=\'apple-touch-fullscreen\' content=\'yes\' />"+
+                "    <meta name=\'format-detection\' content=\'telephone=no\' />"+
+                "    <meta name=\'apple-mobile-web-app-status-bar-style\' content=\'black\' />"+
+                "    <meta name=\'format-detection\' content=\'telephone=no\' />"+
+                "    <meta name=\'msapplication-tap-highlight\' content=\'no\' />"+
+                "    <meta name=\'format-detection\' content=\'telephone = no\' />"+
+                "    <meta name=\'viewport\' content=\'initial-scale=1,maximum-scale=1,minimum-scale=1\' />"+
+                "    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->"+
+                "    <meta name=\'description\' content=\'\'>"+
+                "    <meta name=\'author\' content=\'\'>"+
+                "    <title>收到-邮件-2</title>"+
+                "    </script>"+
+                "    <style type=\'text/css\'>"+
+                "        * {"+
+                "            padding: 0;"+
+                "            border: 0;"+
+                "            outline: 0;"+
+                "            margin: 0;"+
+                "        }"+
+                "        a {"+
+                "            text-decoration: none;"+
+                "            background-color: transparent"+
+                "        }"+
+                "        a:hover,"+
+                "        a:active {"+
+                "            outline-width: 0;"+
+                "            text-decoration: none"+
+                "        }"+
+                "        #box {"+
+                "            width: 100vw;"+
+                "            box-sizing: border-box;"+
+                "        }"+
+                "        #box section {"+
+                "            padding: 16px;"+
+                "        }"+
+                "        #box header .Star {"+
+                "            float: right;"+
+                "        }"+
+                "        .userHead {"+
+                "            display: flex;"+
+                "            width: 100%;"+
+                "            box-sizing: border-box;"+
+                "            border-bottom: 1px solid #e6e6e6;"+
+                "        }"+
+                "        .userHeadA {"+
+                "            width: 44px;"+
+                "            height: 44px;"+
+                "            padding: 16px 0;"+
+                "        }"+
+                "        .userHeadB {"+
+                "            width: 240px;"+
+                "            height: 44px;"+
+                "            padding: 16px 0;"+
+                "            outline: 0px solid #ccc;"+
+                "        }"+
+                "        .userHeadC {"+
+                "            flex: 1;"+
+                "            text-align: right;"+
+                "            height: 44px;"+
+                "            padding: 18px 0;"+
+                "            outline: 0px solid #ccc;"+
+                "        }"+
+                "        .userHeadAimg {"+
+                "            width: 44px;"+
+                "            height: 44px;"+
+                "            border-radius: 22px;"+
+                "        }"+
+                "        .userHeadBdate {"+
+                "            color: #ccc;"+
+                "            margin-left: 8px;"+
+                "        }"+
+                "        .rowDiv {"+
+                "            padding: 20px 0;"+
+                "        }"+
+                "        button {"+
+                "            background: rgba(102, 70, 247, 1);"+
+                "            border-radius: 7px;"+
+                "            color: #fff;"+
+                "        }"+
+                "        .rowDiv3Btn {"+
+                "            padding: 12px 34px;"+
+                "            background: rgba(102, 70, 247, 1);"+
+                "            border-radius: 7px;"+
+                "            color: #fff;"+
+                "        }"+
+                "        .rowDiv h3 {"+
+                "            font-size: 16px;"+
+                "            line-height: 16px;"+
+                "        }"+
+                "        #box p {"+
+                "            line-height: 20px;"+
+                "            font-size: 12px;"+
+                "        }"+
+                "        #box h3 {"+
+                "            line-height: 40px;"+
+                "        }"+
+                "        .qrcodeDIV {"+
+                "            width: 84px;"+
+                "            margin: 0 30px;"+
+                "        }"+
+                "        .qrcodeDIV img {"+
+                "            width: 84px;"+
+                "        }"+
+                "        .btn {"+
+                "            width: 84px;"+
+                "            height: 22px;"+
+                "            display: block;"+
+                "        }"+
+                "        .btn img {"+
+                "            width: 100%;"+
+                "            height: 100%;"+
+                "        }"+
+                "        .h3logo {"+
+                "            position: relative;"+
+                "            top: 5px;"+
+                "            width: 24px;"+
+                "            margin-right: 5px;"+
+                "        }"+
+                "        .includePng {"+
+                "            float: right;"+
+                "            width: 110px;"+
+                "            position: relative;"+
+                "            top: -24px;"+
+                "            /* margin: 0 16px 0 0; */"+
+                "        }"+
+                "        .rowDivBtn {"+
+                "            display: flex;"+
+                "            width: 100%;"+
+                "            justify-content: space-between;"+
+                "        }"+
+                "        .rowDivBtn div {"+
+                "            width: 158px;"+
+                "            height: 42px;"+
+                "            outline: 1px solid #ccc;"+
+                "            /* margin: 5px 25px 5px 0px; */"+
+                "        }"+
+                "        .rowDivBtn .rowDivBtnAddlong {"+
+                "            width: 179px;"+
+                "        }"+
+                "        .rowDivBtn img {"+
+                "            width: 100%;"+
+                "        }"+
+                "        .jusCenter {"+
+                "            display: flex;"+
+                "            justify-content: center;"+
+                "            align-items: center;"+
+                "        }"+
+                "        .rowDivFooter {"+
+                "            background: #292B33;"+
+                "            color: #fff;"+
+                "            text-align: center;"+
+                "        }"+
+                "        #box .rowDivFooter p {"+
+                "            line-height: 30px;"+
+                "            text-indent: 0;"+
+                "            margin-block-start: 0;"+
+                "            margin-block-end: 0;"+
+                "        }"+
+                "        .rowDivFooter i {"+
+                "            outline: 0px solid red;"+
+                "            font-style: normal;"+
+                "            overflow: hidden;"+
+                "            height: 9px;"+
+                "            width: 15px;"+
+                "            display: inline-block;"+
+                "            line-height: 15px;"+
+                "            position: relative;"+
+                "            top: -6px;"+
+                "            color: #6646F7;"+
+                "        }"+
+                "        .rowDivFooter i:last-child {"+
+                "            top: 0px;"+
+                "            height: 7px;"+
+                "            line-height: 0px;"+
+                "            top: 2px;"+
+                "        }"+
+                "        .rowDivSave {"+
+                "            text-align: center;"+
+                "            border-bottom: 1px solid #E6E6E6;"+
+                "            padding: 0 0 30px 0;"+
+                "        }"+
+                "    </style>"+
+                "</head>"+
+                "    <div id=\'box\'>"+
+                "        <section>"+
+                "            <div class=\'rowDiv\'>"+
+                "                <h3>Dear dido@qlink.mobi, Greetings from "+myAccount+"!</h3>"+
+                "                <p>This invitation was sent to you from your friend using Confidant, which is the platform for secure"+
+                "                    encrypted Email and message communication. </p>"+
+                "                <p>You are invited to join him/her to stay in touch in a private and secure manner.</p>"+
+                "                <p style=\'font-size: 14px;\'>To instantly access Confidant full services</p>"+
+                "            </div>"+
+                "            <div class=\'rowDiv\' style=\'padding: 8px 0;\'>"+
+                "                <p style=\'color: #757380;\'>1. Download the app via </p>"+
+                "            </div>"+
+                "            <div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
+                "                <div class=\'qrcodeDIV\'>"+
+                "                    <img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_play.png\'>"+
+                "                    <a class=\'btn\' href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
+                "                </div>"+
+                "                <div class=\'qrcodeDIV\'>"+
+                "                    <img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_play.png\'>"+
+                "                    <a class=\'btn\' href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
+                "                </div>"+
+                "            </div>"+
+                "            <div class=\'rowDiv\' style=\'padding: 8px 0;\'>"+
+                "                <p style=\'color: #757380;\'> 2. Scan the QR code below to start chatting</p>"+
+                "            </div>"+
+                "            <div class=\'rowDiv jusCenter rowDivSave\'>"+
+                "                <div class=\'qrcodeDIV\'>"+
+                "                    <img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_play.png\'>"+
+                "                    <a class=\'btn\' href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_save.png\'></a>"+
+                "                </div>"+
+                "            </div>"+
+                "            <div class=\'rowDiv\'>"+
+                "                <h3 style=\'color: #757380;\'><img class=\'h3logo\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_n.png\'>Confidant</h3>"+
+                "                <p>"+
+                "                    <img class=\'includePng\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/include.png\'>"+
+                "                    Confidant is the one-stop decentralized privacy management and protection platform, with a focus on"+
+                "                    securing digital social relationships. Its key features include."+
+                "                </p>"+
+                "            </div>"+
+                "            <div class=\'rowDiv rowDivBtn\'>"+
+                "                <div><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_centred.png\'></div>"+
+                "                <div class=\'rowDivBtnAddlong\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/encrypted_Email.png\'></div>"+
+                "            </div>"+
+                "            <div class=\'rowDiv rowDivBtn\'>"+
+                "                <div><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_centred.png\'></div>"+
+                "                <div class=\'rowDivBtnAddlong\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/on_premise.png\'></div>"+
+                "            </div>"+
+                "            <div class=\'rowDiv\'>"+
+                "                <p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your"+
+                "                    friend.</p>"+
+                "                <p style=\'color: #757380;\'>Stay safe and secured!</p>"+
+                "            </div>"+
+                "            <div class=\'rowDiv rowDivFooter\'>"+
+                "                <p style=\'font-size: 14px;\'>"+
+                "                    <img class=\'h3logo\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_b.png\'>"+
+                "                    Confidant Team"+
+                "                </p>"+
+                "                <p><i>[</i> With Confidant, stay in touch with the ones who matter! <i>]</i> </p>"+
+                "            </div>"+
+                "        </section>"+
+                "    </div>"+
+                "    <script>"+
+                "            window.onload = function () {"+
+                "                let abc = document.querySelectorAll(\'div\')"+
+                "                abc[abc.length - 1].style.cssText = \'padding:10px\'"+
+                "            }"+
+                "        </script>"+
+                "    <div myconfidantbegin=\'\'><br /><br /><br /><span>Sent from MyConfidant, the app for encrypted email.</span>"+
+                "    </div>"+
+                "</body>"+
+                "</html>";
+        try {
+            webView.loadDataWithBaseURL(null,InviteURLText,"text/html","utf-8",null);
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
         }
     }
     fun initBaseUI(emailMessageEntity:EmailMessageEntity)
@@ -1832,6 +2169,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 var contentHtmlBase64 = String(RxEncodeTool.base64Encode(contentHtml))
                 contentHtml = addBefore+ "<span style=\"display:none\" id=\""+"newconfidantcontent"+contentHtmlBase64+"\"></span>";
             }
+            if(InviteURLText!= "")
+            {
+                contentHtml = InviteURLText;
+            }
             if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
             {
                 emailSendClient
@@ -2490,7 +2831,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var re_main_editorStr = re_main_editor.html
             if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
             {
-                if(foward != 3)
+                if(foward != 3 && InviteURLText == "")
                 {
                     showDialog()
                 }else{
@@ -2512,13 +2853,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var map = obj as HashMap<String,String>
                     userPassWord = map.get("password") as String
                     userPassWordTips = map.get("passTips") as String
-                    if(userPassWord != "")
+                    if(userPassWord != ""&& InviteURLText == "")
                     {
                         addKeyImg.setImageResource(R.mipmap.tabbar_email1_selected)
                         lockTips.visibility = View.VISIBLE
                     }else{
                         addKeyImg.setImageResource(R.mipmap.tabbar_email1_unselected)
-                        if(contactMapList.size == needSize)
+                        if(contactMapList.size == needSize && InviteURLText == "")
                         {
                             lockTips.visibility = View.VISIBLE
                         }else{
@@ -2813,7 +3154,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var re_main_editorStr = re_main_editor.html
             if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
             {
-                if(foward != 3)
+                if(foward != 3 && InviteURLText == "")
                 {
                     showDialog()
                 }else{

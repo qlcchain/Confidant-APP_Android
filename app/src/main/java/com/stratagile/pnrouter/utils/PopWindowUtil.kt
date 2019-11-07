@@ -375,10 +375,10 @@ object PopWindowUtil {
      * @param showView 从activity中传进来的view,用于让popWindow附着的
      */
     fun showPopAddMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
-        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_addmenu_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
-//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val translate = TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
                 Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f

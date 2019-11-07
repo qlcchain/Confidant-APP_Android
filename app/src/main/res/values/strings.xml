@@ -877,6 +877,8 @@ Then enter your Email address and password to log in.</string>
     <string name="waitamoment">Generation failure</string>
     <string name="Invite_Friends_to_Confidant">Invite Friends to Confidant</string>
     <string name="Add_Members">Add Members</string>
-    <string name="Add_Contacts"> Add Contacts</string>
-
+    <string name="Add_Contacts">Add Contacts</string>
+    <string name="Invite_Friends">Invite Friends</string>
+    <string name="Invitation">Invitation</string>
+    Invitation
 </resources>

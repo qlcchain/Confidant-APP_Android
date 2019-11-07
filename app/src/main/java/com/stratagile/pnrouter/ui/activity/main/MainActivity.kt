@@ -61,6 +61,7 @@ import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.R.id.ivNewGroup
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -94,6 +95,7 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
+import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
@@ -204,6 +206,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var contactFragment: ContactFragment? = null
     private var isAddEmail = true
     var this_:Activity? = null;
+    var routerEntityAddMembers : RouterEntity? = null
 
 
     override fun registerBack(registerRsp: JRegisterRsp) {
@@ -3275,15 +3278,43 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.Mark_Unread),getString(R.string.Node_back_up),getString(R.string.Move_to),getString(R.string.Delete))
-            iconArray = arrayListOf<String>("sheet_mark","statusbar_download_node","sheet_move","statusbar_delete")
+            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            routerList.forEach {
+                if (it.lastCheck) {
+                    routerEntityAddMembers = it
+                    if(ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntityAddMembers!!.userSn))
+                    {
+                        menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                        iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                    }else{
+                        menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                        iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                    }
+                    return@forEach
+                }
+            }
             PopWindowUtil.showPopAddMenuWindow(this@MainActivity, ivNewGroup,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     var data = obj as FileOpreateType
                     when (data.name) {
-                        "Mark Unread" -> {
-
+                        "New Email" -> {
+                            onClickSendEmail()
+                        }
+                        "New Chat" -> {
+                            onClickCreateGroup()
+                        }
+                        "Add Contacts" -> {
+                            mPresenter.getScanPermission()
+                        }
+                        "Invite Friends" -> {
+                            onClickInviteFriendEmail()
+                        }
+                        "Add Members" -> {
+                            onClickAddMembers()
                         }
                     }
                 }
@@ -3787,6 +3818,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             ConstantValue.shareFromLocalPath = ""
         }
         initEvent()
+    }
+    fun onClickSendEmail()
+    {
+        var intent = Intent(this, EmailSendActivity::class.java)
+        intent.putExtra("flag",0)
+        intent.putExtra("menu","")
+        startActivity(intent)
+    }
+    fun onClickInviteFriendEmail()
+    {
+        var intent = Intent(this, EmailSendActivity::class.java)
+        intent.putExtra("flag",100)
+        intent.putExtra("menu","")
+        startActivity(intent)
+    }
+    fun onClickCreateGroup()
+    {
+        var list = arrayListOf<GroupEntity>()
+        startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+    }
+    fun onClickAddMembers()
+    {
+        var intent = Intent(this, RouterCreateUserActivity::class.java)
+        intent.putExtra("routerUserEntity", routerEntityAddMembers!!)
+        startActivity(intent)
     }
     fun initLeftMenu(fragmentMenu:String,sort:Boolean,refresh:Boolean)
     {
@@ -4857,8 +4913,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 {
                     "0" ->
                     {
-                        var list = arrayListOf<GroupEntity>()
-                        startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+                        onClickCreateGroup()
                     }
                     "1" ->
                     {
@@ -4872,10 +4927,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                     "3" ->
                     {
-                        var intent = Intent(this, EmailSendActivity::class.java)
-                        intent.putExtra("flag",0)
-                        intent.putExtra("menu","")
-                        startActivity(intent)
+                        onClickSendEmail()
                     }
                 }
 

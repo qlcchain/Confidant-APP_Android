@@ -65,7 +65,7 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
 
     override fun initView() {
         setContentView(R.layout.layout_add)
-        setTitle(getString(R.string.button_add))
+        setTitle(getString(R.string.Add_Contacts))
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.pullTmpAccountBack = this

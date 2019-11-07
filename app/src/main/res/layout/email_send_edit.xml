@@ -328,6 +328,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
             <LinearLayout
+                android:id="@+id/addKeyImgParent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -379,6 +380,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
             <LinearLayout
+                android:id="@+id/webViewParent"
                 android:layout_marginTop="@dimen/x60"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
