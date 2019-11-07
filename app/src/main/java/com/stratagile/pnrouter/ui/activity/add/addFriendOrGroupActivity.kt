@@ -98,6 +98,12 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
             setResult(RESULT_OK, intent)
             finish()
         }
+        InviteFriends.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra("result", "4")
+            setResult(RESULT_OK, intent)
+            finish()
+        }
         var routerEntity : RouterEntity
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         routerList.forEach {
