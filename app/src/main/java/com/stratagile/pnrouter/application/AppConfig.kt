@@ -325,6 +325,8 @@ class AppConfig : MultiDexApplication() {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!, 0)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq))
                 }
+                MiPushClient.clearNotification(this@AppConfig)
+                JPushInterface.clearAllNotifications(this@AppConfig);
             }
 
             override fun onBecameBackground() {
