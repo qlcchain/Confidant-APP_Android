@@ -326,6 +326,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         oldtitle.visibility = View.GONE
         list_itease_layout_info.visibility = View.GONE
         sentTitle.visibility = View.VISIBLE
+        re_main_editor.visibility = View.VISIBLE
         if(flag == 1)
         {
             initBaseUI(emailMeaasgeInfoData!!)

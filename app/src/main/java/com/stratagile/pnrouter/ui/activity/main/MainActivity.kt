@@ -3289,15 +3289,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     {
                         //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                        if(AppConfig.instance.emailConfig().account != null)
+                        {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_add_members")
+                        }else{
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_add_members")
+                        }
 
-                        menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Add_Members))
-                        iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_add_members")
                     }else{
                         //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                        if(AppConfig.instance.emailConfig().account != null)
+                        {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected")
+                        }else{
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected")
+                        }
 
-                        menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts))
-                        iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected")
                     }
                     return@forEach
                 }
