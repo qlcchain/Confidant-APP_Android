@@ -377,12 +377,12 @@ object PopWindowUtil {
      */
     fun showPopAddMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_addmenu_layout, null)
-        val contentView = maskView.findViewById<View>(R.id.parent)
+        val contentView = maskView.findViewById<View>(R.id.cardView)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        //contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val translate = TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f
         )
         translate.duration = 200
         contentView.animation = translate

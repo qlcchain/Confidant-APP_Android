@@ -1056,6 +1056,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+        /*var libsodiumpublicSignKey = ConstantValue.libsodiumpublicSignKey
+        var aa = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey);
+        var bb = ""
+        for(id in aa)
+        {
+            bb += id.toString() +","
+        }*/
         /*var aa = RxEncodeTool.base64Decode("MQ==")
         var bb = ""
         for(id in aa)
