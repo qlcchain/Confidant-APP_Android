@@ -16,8 +16,9 @@
         android:layout_marginRight="@dimen/x20"
         android:layout_gravity="center"
         android:alpha="0.93"
+        app:cardElevation="3dp"
         android:orientation="vertical"
-        app:cardCornerRadius="@dimen/x20">
+        app:cardCornerRadius="@dimen/x25">
         <LinearLayout
             android:id="@+id/ll_popup"
             android:layout_width="match_parent"
