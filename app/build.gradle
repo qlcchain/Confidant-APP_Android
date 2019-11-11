@@ -8,6 +8,8 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'service_agency'
+
 //apply plugin: 'com.google.protobuf'
 
 kapt {
@@ -204,7 +206,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'com.alibaba:fastjson:1.2.37'
-
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation files('libs/klogLibrary-release.aar')
     implementation files('libs/MagicIndicator-1.5.0.aar')
@@ -229,11 +230,13 @@ dependencies {
     //implementation project(':easeui')
     implementation project(':library')
     implementation project(':brvaLibrary')
+
     /*implementation project(':appTox')*/
     implementation project(':zxing')
     implementation project(':picture_library')
     implementation project(':zbar')
     implementation project(':qmui')
+    implementation project(':FloatBalllibrary')
 
     //api project(':eamil')
     implementation 'org.greenrobot:greendao:3.2.2'
@@ -260,7 +263,7 @@ dependencies {
     implementation files('libs/wowoviewpager.aar')
 
     /* implementation 'cn.bingoogolapple:bga-qrcode-zxing:1.2.6'
-                                                implementation 'cn.bingoogolapple:bga-qrcode-zbar:1.3.6'*/
+                                                    implementation 'cn.bingoogolapple:bga-qrcode-zbar:1.3.6'*/
     implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation 'com.google.android.gms:play-services-base:11.4.0'
