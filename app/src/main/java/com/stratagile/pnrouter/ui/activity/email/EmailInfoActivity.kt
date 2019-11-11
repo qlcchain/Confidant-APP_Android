@@ -1089,7 +1089,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
              mNormalPopup!!.show(it)*/
         }
         var menuFrom = emailMeaasgeData!!.menu
-        if(menuFrom.contains("Sent") || menuFrom.contains("已发") || menuFrom.contains("Drafts")|| menuFrom.contains("草稿"))
+        /*if(menuFrom.contains("Sent") || menuFrom.contains("已发") || menuFrom.contains("Drafts")|| menuFrom.contains("草稿"))
         {
             draft_info.text = getString(R.string.From_me)
             detail_from_From.text = getString(R.string.To)
@@ -1101,7 +1101,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             detail_from_From.text = getString(R.string.From)
             fromName_From.text = fromName
             fromEmailAdress_From.text = fromAdress
-        }
+        }*/
+
+        draft_info.text = getString(R.string.To_me)
+        detail_from_From.text = getString(R.string.From)
+        fromName_From.text = fromName
+        fromEmailAdress_From.text = fromAdress
         mailInfo.fromName = fromName
         mailInfo.fromEmailBox = fromAdress
         formEmailAdress.text = fromAdress.replace("<","").replace(">","")
