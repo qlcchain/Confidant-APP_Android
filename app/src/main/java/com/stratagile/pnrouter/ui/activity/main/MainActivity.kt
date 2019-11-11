@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.app.Notification.BADGE_ICON_SMALL
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -2817,7 +2818,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             handler = null
         }
         //注册ActivityLifeCyclelistener以后要记得注销，以防内存泄漏。
-        application.unregisterActivityLifecycleCallbacks(mActivityLifeCycleListener)
+        //application.unregisterActivityLifecycleCallbacks(mActivityLifeCycleListener)
         EventBus.getDefault().unregister(this)
 //        exitToast()
         super.onDestroy()
@@ -2931,7 +2932,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             mFloatballManager!!.setOnFloatBallClickListener(FloatBallManager.OnFloatBallClickListener { toast("点击了悬浮球") })
         }
         //6 如果想做成应用内悬浮球，可以添加以下代码。
-        application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
+        //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
     }
     override fun initData() {
         standaloneCoroutine = launch(CommonPool) {
@@ -5265,6 +5266,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weibo", this)) {
             override fun action() {
                 toast("打开微博")
+                goToApp(AppConfig.instance)
+                mFloatballManager!!.closeMenu()
             }
         }
         val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_email", this)) {
@@ -5312,5 +5315,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         intent.addCategory(Intent.CATEGORY_HOME)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         context.startActivity(intent)
+    }
+    /**
+     * 跳转到桌面
+     */
+    fun goToApp(context: Context) {
+        val intent = Intent("android.intent.action.MAIN")
+        intent.component = ComponentName(applicationContext.packageName, MainActivity::class.java.name)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        applicationContext.startActivity(intent)
     }
 }
