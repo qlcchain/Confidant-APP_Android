@@ -83,11 +83,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <!--协议部分，随便设置-->
+                <data android:scheme="xl" android:host="pnrouter" android:path="/openpnrouter" android:port="8888"/>
+                <!--下面这几行也必须得设置-->
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
         </activity>
-        <service
+        <!--<service
             android:name="chat.tox.antox.tox.ToxService"
             android:exported="false"
-            android:label="ToxService" />
+            android:label="ToxService" />-->
 
         <activity
             android:name=".ui.activity.login.LoginActivityActivity"
@@ -310,6 +318,9 @@
             android:name=".ui.activity.user.ImportAccountActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".screencapture.PreviewPictureActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.router.RouterAliasSetActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -422,6 +433,9 @@
         <service
             android:name="com.hyphenate.chat.EMChatService"
             android:exported="true" />
+        <service
+            android:name=".screencapture.FloatWindowsService" android:exported="false"/>
+
         <!-- 声明sdk所需的receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
             <intent-filter>

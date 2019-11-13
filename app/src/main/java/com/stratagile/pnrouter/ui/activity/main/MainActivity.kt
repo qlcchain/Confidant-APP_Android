@@ -8,28 +8,34 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.Image
+import android.media.ImageReader
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
+import android.os.*
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
-import android.view.KeyEvent
-import android.view.View
-import android.view.WindowManager
+import android.util.DisplayMetrics
+import android.util.Log
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
+import com.stratagile.pnrouter.screencapture.FloatWindowsService
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
@@ -129,6 +135,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -165,7 +174,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         var isGmailToken = false;
     }
-
+    var REQUEST_MEDIA_PROJECTION = 1008
     private lateinit var standaloneCoroutine: Job
     var routerId = ""
     var userSn = ""
@@ -218,6 +227,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var mFloatPermissionManager: FloatPermissionManager? = null
     private val mActivityLifeCycleListener = ActivityLifeCycleListener()
     private var resumed: Int = 0
+
+
+    private var mMediaProjection: MediaProjection? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+
+    private var mResultData: Intent? = null
+
+
+    private var mImageReader: ImageReader? = null
+    private var mWindowManager: WindowManager? = null
+    private var mLayoutParams: WindowManager.LayoutParams? = null
+    private var mGestureDetector: GestureDetector? = null
+
+
+    private var mScreenWidth: Int = 0
+    private var mScreenHeight: Int = 0
+    private var mScreenDensity: Int = 0
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (!isScanSwitch) {
@@ -2817,6 +2843,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (handler != null) {
             handler = null
         }
+        stopVirtual()
+
+        tearDownMediaProjection()
         //注册ActivityLifeCyclelistener以后要记得注销，以防内存泄漏。
         //application.unregisterActivityLifecycleCallbacks(mActivityLifeCycleListener)
         EventBus.getDefault().unregister(this)
@@ -2902,6 +2931,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
         initFlatBall()
+        createFloatView()
+        createImageReader()
     }
 
     fun initFlatBall()
@@ -2933,6 +2964,225 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         //6 如果想做成应用内悬浮球，可以添加以下代码。
         //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
+    }
+
+    private fun createFloatView() {
+        mGestureDetector = GestureDetector(applicationContext, FloatGestrueTouchListener())
+        mLayoutParams = WindowManager.LayoutParams()
+        mWindowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val metrics = DisplayMetrics()
+        mWindowManager!!.getDefaultDisplay().getMetrics(metrics)
+        mScreenDensity = metrics.densityDpi
+        mScreenWidth = metrics.widthPixels
+        mScreenHeight = metrics.heightPixels
+
+        mLayoutParams!!.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        mLayoutParams!!.format = PixelFormat.RGBA_8888
+        // 设置Window flag
+        mLayoutParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        mLayoutParams!!.gravity = Gravity.LEFT or Gravity.TOP
+        mLayoutParams!!.x = mScreenWidth
+        mLayoutParams!!.y = 100
+        mLayoutParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
+        mLayoutParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
+
+
+        //startScreenShot();
+    }
+
+    private inner class FloatGestrueTouchListener : GestureDetector.OnGestureListener {
+        internal var lastX: Int = 0
+        internal var lastY: Int = 0
+        internal var paramX: Int = 0
+        internal var paramY: Int = 0
+
+        override fun onDown(event: MotionEvent): Boolean {
+            lastX = event.rawX.toInt()
+            lastY = event.rawY.toInt()
+            paramX = mLayoutParams!!.x
+            paramY = mLayoutParams!!.y
+            return true
+        }
+
+        override fun onShowPress(e: MotionEvent) {
+
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            startScreenShot()
+            return true
+        }
+
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            val dx = e2.rawX.toInt() - lastX
+            val dy = e2.rawY.toInt() - lastY
+            mLayoutParams!!.x = paramX + dx
+            mLayoutParams!!.y = paramY + dy
+            // 更新悬浮窗位置
+            // 更新悬浮窗位置
+
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+
+        }
+
+        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            return false
+        }
+    }
+    private fun createImageReader() {
+
+        mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1)
+
+    }
+
+    fun startScreenShot() {
+
+
+        val handler1 = Handler()
+        handler1.postDelayed({
+            //start virtual
+            startVirtual()
+        }, 5)
+
+        handler1.postDelayed({
+            //capture the screen
+            startCapture()
+        }, 30)
+    }
+
+    fun startVirtual() {
+        if (mMediaProjection != null) {
+            virtualDisplay()
+        } else {
+            setUpMediaProjection()
+            virtualDisplay()
+        }
+    }
+
+    fun setUpMediaProjection() {
+        if (mResultData == null) {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            startActivity(intent)
+        } else {
+            mMediaProjection = getMediaProjectionManager().getMediaProjection(Activity.RESULT_OK, mResultData)
+        }
+    }
+
+    private fun getMediaProjectionManager(): MediaProjectionManager {
+
+        return getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    }
+
+    private fun virtualDisplay() {
+        if (mMediaProjection != null) {
+            mVirtualDisplay = mMediaProjection!!.createVirtualDisplay("screen-mirror",
+                    mScreenWidth, mScreenHeight, mScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    mImageReader!!.getSurface(), null, null)
+        }
+    }
+
+    private fun startCapture() {
+
+        val image = mImageReader!!.acquireLatestImage()
+
+        if (image == null) {
+            startScreenShot()
+        } else {
+            val mSaveTask = SaveTask()
+            mSaveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, image)
+            //AsyncTaskCompat.executeParallel(mSaveTask, image);
+        }
+    }
+
+
+    inner class SaveTask : AsyncTask<Image, Void, Bitmap>() {
+
+        override fun doInBackground(vararg params: Image): Bitmap? {
+
+            if (params == null || params.size < 1 || params[0] == null) {
+
+                return null
+            }
+
+            val image = params[0]
+
+            val width = image.width
+            val height = image.height
+            val planes = image.planes
+            val buffer = planes[0].buffer
+            //每个像素的间距
+            val pixelStride = planes[0].pixelStride
+            //总的间距
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * width
+            var bitmap: Bitmap? = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
+            bitmap!!.copyPixelsFromBuffer(buffer)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+            image.close()
+            var fileImage: File? = null
+            if (bitmap != null) {
+                try {
+                    fileImage = File(com.stratagile.pnrouter.screencapture.FileUtil.getScreenShotsName(applicationContext))
+                    if (!fileImage.exists()) {
+                        fileImage.createNewFile()
+                    }
+                    val out = FileOutputStream(fileImage)
+                    if (out != null) {
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        out.flush()
+                        out.close()
+                        val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                        val contentUri = Uri.fromFile(fileImage)
+                        media.data = contentUri
+                        sendBroadcast(media)
+                    }
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    fileImage = null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    fileImage = null
+                }
+
+            }
+
+            return if (fileImage != null) {
+                bitmap
+            } else null
+        }
+
+        override fun onPostExecute(bitmap: Bitmap?) {
+            super.onPostExecute(bitmap)
+            //预览图片
+            if (bitmap != null) {
+
+                (application as AppConfig).setmScreenCaptureBitmap(bitmap)
+                Log.e("ryze", "获取图片成功")
+                //startActivity(PreviewPictureActivity.newIntent(applicationContext))
+            }
+
+        }
+    }
+
+
+    private fun tearDownMediaProjection() {
+        if (mMediaProjection != null) {
+            mMediaProjection!!.stop()
+            mMediaProjection = null
+        }
+    }
+
+    private fun stopVirtual() {
+        if (mVirtualDisplay == null) {
+            return
+        }
+        mVirtualDisplay!!.release()
+        mVirtualDisplay = null
     }
     override fun initData() {
         standaloneCoroutine = launch(CommonPool) {
@@ -4947,6 +5197,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }else{//授权失败
                 toast(R.string.Authorizedfail)
             }
+        }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
+            mResultData = data;
+            startScreenShot()
+           /* FloatWindowsService.setResultData(data)
+            startService(Intent(applicationContext, FloatWindowsService::class.java))*/
         }
 
     }
@@ -5258,21 +5513,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private fun addFloatMenuItem() {
         val personItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weixin", this)) {
             override fun action() {
-                toast("打开微信")
                 goToDesktop(AppConfig.instance)
                 mFloatballManager!!.closeMenu()
             }
         }
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weibo", this)) {
             override fun action() {
-                toast("打开微博")
                 goToApp(AppConfig.instance)
                 mFloatballManager!!.closeMenu()
             }
         }
         val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_email", this)) {
             override fun action() {
-                toast("打开邮箱")
+                var dView = getWindow().getDecorView();
+                requestCapturePermission()
                 mFloatballManager!!.closeMenu()
             }
         }
@@ -5284,6 +5538,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 .buildMenu()
     }
 
+    fun requestCapturePermission() {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            //5.0 之后才允许使用屏幕截图
+
+            return
+        }
+
+        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(
+                mediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_MEDIA_PROJECTION)
+    }
     private fun setFloatballVisible(visible: Boolean) {
         if (visible) {
             mFloatballManager!!.show()
@@ -5299,7 +5566,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         mFloatballManager!!.show()
-        mFloatballManager!!.onFloatBallClick()
+        //mFloatballManager!!.onFloatBallClick()
     }
 
     override fun onDetachedFromWindow() {

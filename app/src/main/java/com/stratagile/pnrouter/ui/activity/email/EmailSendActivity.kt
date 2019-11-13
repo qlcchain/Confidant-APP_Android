@@ -2154,11 +2154,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     "     <p>I’m using Confidant to send and receive secure emails.Click thelink below to decrypt and view mymessage.</p>"+
                     "    </div>"+
                     "    <div class=\"rowDiv\" style=\"padding-bottom: 50px;\">"+
-                    "     <a href= \'https://www.myconfidant.io\' id=\'Encrypted\' class=\'rowDiv3Btn\'style=\'color:#fff\'>View Encrypted Message"+
+                    "     <a onclick=\"openPnRouter()\" id=\'Encrypted\' class=\'rowDiv3Btn\'style=\'color:#fff\'>View Encrypted Message"+
                     "     </a>"+
                     "    </div>"+
                     "   </section>"+
-                    "  </div> ";
+                    "  </div> "+
+                    " <script type=\"text/javascript\">"+
+                    "             function openPnRouter()"+
+                    "			 {"+
+                    "			  window.location.href = \"xl://pnrouter:8888/openpnrouter?goodsId=10011002\";window.setTimeout(function(){window.location.href = \"http://www.baidu.com\";},2000);  "+
+                    "			 }"+
+                    "    </script>";
             if(userPassWord == "")
             {
                 if(contactMapList.size == needSize)//需要加密

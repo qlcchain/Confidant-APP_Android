@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.IBinder
 import android.os.Process
@@ -94,6 +95,7 @@ class AppConfig : MultiDexApplication() {
     var SCOPES = arrayOf(GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY)
     var transport = AndroidHttp.newCompatibleTransport()
     var jsonFactory = GsonFactory.getDefaultInstance()
+    private var mScreenCaptureBitmap: Bitmap? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -148,6 +150,13 @@ class AppConfig : MultiDexApplication() {
         return messageReceiver
     }
 
+    fun getmScreenCaptureBitmap(): Bitmap {
+        return mScreenCaptureBitmap!!
+    }
+
+    fun setmScreenCaptureBitmap(mScreenCaptureBitmap: Bitmap) {
+        this.mScreenCaptureBitmap = mScreenCaptureBitmap
+    }
     fun getPNRouterServiceMessageToxReceiver(): PNRouterServiceMessageReceiver {
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
