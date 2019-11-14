@@ -2930,7 +2930,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        //initFlatBall()
+        initFlatBall()
 
     }
 
@@ -3164,6 +3164,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 (application as AppConfig).setmScreenCaptureBitmap(bitmap)
                 Log.e("ryze", "获取图片成功")
+                toast(R.string.screenshots_success)
                 //startActivity(PreviewPictureActivity.newIntent(applicationContext))
             }
 
@@ -5511,30 +5512,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         })
     }
     private fun addFloatMenuItem() {
-        val personItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weixin", this)) {
+        val personItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_desktop", this)) {
             override fun action() {
                 goToDesktop(AppConfig.instance)
                 mFloatballManager!!.closeMenu()
             }
         }
-        val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weibo", this)) {
+        val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
             override fun action() {
                 //goToApp(AppConfig.instance)
                 startScreenShot()
                 mFloatballManager!!.closeMenu()
             }
         }
-        val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_email", this)) {
+        val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_return", this)) {
             override fun action() {
                 requestCapturePermission()
                 mFloatballManager!!.closeMenu()
             }
         }
         mFloatballManager!!.addMenuItem(personItem)
-                .addMenuItem(walletItem)
-                .addMenuItem(personItem)
-                .addMenuItem(walletItem)
                 .addMenuItem(settingItem)
+                .addMenuItem(walletItem)
                 .buildMenu()
     }
 
