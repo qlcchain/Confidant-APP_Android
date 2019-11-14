@@ -252,8 +252,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
             backMenu.visibility = View.GONE
             moreMenu.visibility = View.GONE
-            jiemiRoot.visibility = View.VISIBLE
-            inputPassWordParent.visibility = View.GONE
+            jiemiRoot.visibility = View.GONE
+            inputPassWordParent.visibility = View.VISIBLE
             webViewParent.visibility = View.GONE
             llOperate.visibility = View.GONE
             attachListParent.visibility = View.GONE

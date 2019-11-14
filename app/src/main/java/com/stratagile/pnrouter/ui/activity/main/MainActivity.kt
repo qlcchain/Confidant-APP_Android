@@ -2930,9 +2930,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        initFlatBall()
-        createFloatView()
-        createImageReader()
+        //initFlatBall()
+
     }
 
     fun initFlatBall()
@@ -2964,6 +2963,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         //6 如果想做成应用内悬浮球，可以添加以下代码。
         //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
+        createFloatView()
+        createImageReader()
     }
 
     private fun createFloatView() {
@@ -5199,7 +5200,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
             mResultData = data;
-            startScreenShot()
            /* FloatWindowsService.setResultData(data)
             startService(Intent(applicationContext, FloatWindowsService::class.java))*/
         }
@@ -5519,13 +5519,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_weibo", this)) {
             override fun action() {
-                goToApp(AppConfig.instance)
+                //goToApp(AppConfig.instance)
+                startScreenShot()
                 mFloatballManager!!.closeMenu()
             }
         }
         val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("ic_email", this)) {
             override fun action() {
-                var dView = getWindow().getDecorView();
                 requestCapturePermission()
                 mFloatballManager!!.closeMenu()
             }
@@ -5565,13 +5565,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        mFloatballManager!!.show()
+        //mFloatballManager!!.show()
         //mFloatballManager!!.onFloatBallClick()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mFloatballManager!!.hide()
+       // mFloatballManager!!.hide()
     }
 
     /**

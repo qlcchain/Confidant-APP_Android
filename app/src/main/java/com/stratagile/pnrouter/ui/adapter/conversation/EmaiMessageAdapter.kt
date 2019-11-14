@@ -136,7 +136,14 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         {
             lockPic.visibility = View.VISIBLE
         }else{
-            lockPic.visibility = View.GONE
+            if(item.content.contains("newconfidantpass"))
+            {
+                lockPic.visibility = View.VISIBLE
+            }else
+            {
+                lockPic.visibility = View.GONE
+            }
+
         }
         var attach = helper.getView<TextView>(R.id.attach)
         /*if(item.attachmentCount >0)
