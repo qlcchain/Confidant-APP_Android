@@ -5565,13 +5565,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        //mFloatballManager!!.show()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.show()
+        }
         //mFloatballManager!!.onFloatBallClick()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-       // mFloatballManager!!.hide()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
     }
 
     /**

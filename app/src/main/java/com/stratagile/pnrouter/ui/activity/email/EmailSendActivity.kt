@@ -2146,25 +2146,20 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     "   <section>"+
                     "    <div class=\"rowDiv\">"+
                     "    <h3><img class='h3logo' src='https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_n.png'>Encrypted Email</h3>"+
-                    "     <p>Encrypted Email client and beyond - your comprehensive privacyprotection tool</p>"+
+                    "     <p>Encrypted email client and beyond - your comprehensive privacy&nbsp;protection tool</p>"+
                     "    </div>"+
                     "    <div class=\"rowDiv\" style=\"border: 0;\">"+
                     "     <p style=\"font-size: 14px;\">You have received a secure message from</p>"+
                     "     <h3 style=\"color:#6646F7\">"+myAccount+"</h3>"+
-                    "     <p>I’m using Confidant to send and receive secure emails.Click thelink below to decrypt and view mymessage.</p>"+
+                    "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p>"+
                     "    </div>"+
                     "    <div class=\"rowDiv\" style=\"padding-bottom: 50px;\">"+
-                    "     <a onclick=\"openPnRouter()\" id=\'Encrypted\' class=\'rowDiv3Btn\'style=\'color:#fff\'>View Encrypted Message"+
-                    "     </a>"+
+                    "<a href=\'https://www.myconfidant.io\' >" +
+                    "<img width=\'230\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/view_encrypted_messa_2x.png\' >" +
+                    "</a>";
                     "    </div>"+
                     "   </section>"+
-                    "  </div> "+
-                    " <script type=\"text/javascript\">"+
-                    "             function openPnRouter()"+
-                    "			 {"+
-                    "			  window.location.href = \"xl://pnrouter:8888/openpnrouter?goodsId=10011002\";window.setTimeout(function(){window.location.href = \"http://www.baidu.com\";},2000);  "+
-                    "			 }"+
-                    "    </script>";
+                    "  </div> ";
             if(userPassWord == "")
             {
                 if(contactMapList.size == needSize)//需要加密
