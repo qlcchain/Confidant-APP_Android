@@ -132,6 +132,7 @@ object ConstantValue {
         var currentEmailConfigEntity:EmailConfigEntity ?= null
         var isNewUser = false
         var isGooglePlayServicesAvailable = true; //是否支持googleypaly
+        var waitAddFreind = "";
         //1：qq企业邮箱
         //2：qq邮箱
         //3：163邮箱

@@ -3475,6 +3475,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 startActivity(intent)
             }
         })
+        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
+        {
+            doWaitAddFreind(ConstantValue.waitAddFreind)
+            ConstantValue.waitAddFreind = "";
+        }
         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
         if (messageEntityList != null) {
             KLog.i("开始添加本地数据到重发列表" + messageEntityList.size)
@@ -4087,6 +4092,38 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             ConstantValue.shareFromLocalPath = ""
         }
         initEvent()
+    }
+    fun doWaitAddFreind(waitAddFreind:String)
+    {
+
+            var userId = waitAddFreind!!.substring(0, waitAddFreind!!.indexOf(","))
+            var nickName = SpUtil.getString(this, ConstantValue.username, "")
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+            if (waitAddFreind!!.contains(selfUserId!!)) {
+                return
+            }
+            var msg= RxEncodeTool.base64Encode2String("".toByteArray())
+
+            val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+            var addFriendReq = AddFriendReq( selfUserId!!, strBase64, userId,ConstantValue.publicRAS!!,msg)
+            var sendData = BaseData(addFriendReq);
+            if(ConstantValue.encryptionType.equals( "1"))
+            {
+                addFriendReq =  AddFriendReq( selfUserId!!, strBase64, userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                sendData = BaseData(4,addFriendReq);
+            }
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = sendData
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
     }
     fun onClickSendEmail()
     {
@@ -5039,7 +5076,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             toast(R.string.code_error)
                         }
                     }
-                }else if (type!!.contains("type_3")) {
+                }else if (type!!.contains("type_3"))
+                {
                     var left = result.substring(7,result.length)
                     var signprivatek = left.substring(0,left.indexOf(","))
                     left = left.substring(signprivatek.length+1,left.length)
@@ -5130,6 +5168,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .show()
                         }
                     }
+
+                }else if(type.equals("type_4"))
+                {
 
                 }else{
                     runOnUiThread {
