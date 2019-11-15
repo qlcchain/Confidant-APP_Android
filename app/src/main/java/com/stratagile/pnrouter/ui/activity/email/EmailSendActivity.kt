@@ -933,11 +933,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>"+
-                "<a href=\'javascript:void(0)\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
+                "<a href=\'https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
                 "</div>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>"+
-                "<a href=\'javascript:void(0)\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
+                "<a href=\'https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
                 "</div>"+
                 "</div>"+
                 "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>"+
@@ -946,29 +946,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "friend.</p>"+
                 "<p style=\'color: #757380;\'>Stay safe and secured!</p>"+
                 "</div>"+
-                "<div class=\'rowDiv rowDivBtn\' style=\'padding: 0px;\'>"+
-                "<div>"+
-                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_p2p.png\'>"+
+                "<div class=\'rowDiv\'>"+
+                "< img  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\' />"+
                 "</div>"+
-                "<div class=\'rowDivBtnAddlong\'>"+
-                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/encrypted_Email.png\'>"+
-                "</div>"+
-                "</div>"+
-                "<div class=\'rowDiv rowDivBtn\' style=\'padding: 5px 0 20px 0;\'>"+
-                "<div>"+
-                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_centred.png\'>"+
-                "</div>"+
-                "<div class=\'rowDivBtnAddlong\'>"+
-                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/on_premise.png\'>"+
-                "</div>"+
-                "</div>"+
-                "<div class=\'rowDiv rowDivFooter\'>"+
-                "<p style=\'font-size: 14px;\'>"+
-                "<img class=\'h3logo\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_b.png\'>"+
-                "Confidant Team"+
-                "</p>"+
-                "<p><i>[</i> With Confidant, stay in touch with the ones who matter! <i>]</i> </p>"+
-                "</div>"+
+                "<div class=\'rowDiv\'>"+
+                "< img  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\' />"+
+                "</div>";
                 "</section>"+
                 "</div>\"";
         try {
