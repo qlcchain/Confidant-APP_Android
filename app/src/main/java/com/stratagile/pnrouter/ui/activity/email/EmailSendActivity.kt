@@ -947,10 +947,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "<p style=\'color: #757380;\'>Stay safe and secured!</p>"+
                 "</div>"+
                 "<div class=\'rowDiv\'>"+
-                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\'>"+
+                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\' />"+
                 "</div>"+
                 "<div class=\'rowDiv\'>"+
-                "<img  style='width: 100%;' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\'>"+
+                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\' />"+
                 "</div>"+
                 "</section>"+
                 "</div>";
