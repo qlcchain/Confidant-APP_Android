@@ -2930,7 +2930,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        initFlatBall()
+        //initFlatBall()
 
     }
 
@@ -2965,6 +2965,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
         createFloatView()
         createImageReader()
+        requestCapturePermission()
     }
 
     private fun createFloatView() {
@@ -3041,9 +3042,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun startScreenShot() {
-
-
-        val handler1 = Handler()
+        /*val handler1 = Handler()
         handler1.postDelayed({
             //start virtual
             startVirtual()
@@ -3052,7 +3051,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         handler1.postDelayed({
             //capture the screen
             startCapture()
-        }, 30)
+        }, 30)*/
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
+        val handler1 = Handler()
+        handler1.postDelayed({
+            startVirtual()
+            startCapture()
+        }, 5)
+
     }
 
     fun startVirtual() {
@@ -3164,6 +3173,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 (application as AppConfig).setmScreenCaptureBitmap(bitmap)
                 Log.e("ryze", "获取图片成功")
+                if(mFloatballManager != null)
+                {
+                    mFloatballManager!!.show()
+                }
                 toast(R.string.screenshots_success)
                 //startActivity(PreviewPictureActivity.newIntent(applicationContext))
             }
@@ -3529,11 +3542,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
                         if(AppConfig.instance.emailConfig().account != null)
                         {
-                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Add_Members))
-                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_add_members")
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
                         }else{
-                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Add_Members))
-                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_add_members")
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
                         }
 
                     }else{
@@ -3541,11 +3554,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
                         if(AppConfig.instance.emailConfig().account != null)
                         {
-                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts))
-                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected")
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
                         }else{
-                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts))
-                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected")
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
                         }
 
                     }
@@ -5520,14 +5533,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
             override fun action() {
-                //goToApp(AppConfig.instance)
+
                 startScreenShot()
                 mFloatballManager!!.closeMenu()
             }
         }
         val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_return", this)) {
             override fun action() {
-                requestCapturePermission()
+                goToApp(AppConfig.instance)
                 mFloatballManager!!.closeMenu()
             }
         }

@@ -363,6 +363,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
+
             <com.stratagile.pnrouter.ui.activity.email.view.RichEditor
                 android:layout_marginTop="@dimen/x40"
                 android:layout_marginLeft="@dimen/x30"
@@ -415,6 +416,92 @@
                     android:progressDrawable="@drawable/webview_progress_bg"
                     android:visibility="gone" />
             </LinearLayout>
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardView2"
+                android:visibility="gone"
+                android:layout_width="@dimen/x400"
+                android:layout_marginTop="@dimen/x25"
+                android:layout_marginLeft="@dimen/x50"
+                app:cardCornerRadius="@dimen/x25"
+                app:cardElevation="@dimen/x5"
+                android:layout_marginRight="@dimen/x50"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:text="Circle Login QR Code"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/color_2c2c2c"
+                        android:layout_height="wrap_content" />
+                    <View
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_width="match_parent"
+                        android:background="@color/color_ebebeb"
+                        android:layout_height="@dimen/x1" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_marginBottom="@dimen/x10"
+                        android:layout_height="wrap_content">
+
+
+                        <com.stratagile.pnrouter.view.ImageButtonWithText
+                            android:layout_width="@dimen/x55"
+
+                            android:layout_marginTop="@dimen/x8"
+                            android:layout_marginLeft="@dimen/x40"
+                            app:imageButtonTextSize="20"
+                            android:layout_height="@dimen/x55"
+                            android:id="@+id/ivAvatar2" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvRouterName"
+                                android:layout_width="wrap_content"
+                                android:textSize="13sp"
+                                android:text="@string/ok"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/color_2c2c2c"
+                                android:layout_marginLeft="@dimen/x120"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/adminName"
+                                android:layout_width="wrap_content"
+                                android:textSize="12sp"
+                                android:text="@string/ok"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/color_2c2c2c"
+                                android:layout_marginLeft="@dimen/x120"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                    </RelativeLayout>
+                    <!--<View
+                        android:layout_width="match_parent"
+                        android:background="@color/color_ebebeb"
+                        android:layout_height="@dimen/x1" />-->
+                    <ImageView
+                        android:id="@+id/ivQrCode2"
+                        android:layout_width="@dimen/x300"
+                        android:layout_marginTop="@dimen/x20"
+                        android:layout_marginBottom="@dimen/x35"
+                        android:layout_height="@dimen/x300" />
+                    <!-- <View
+                         android:layout_width="match_parent"
+                         android:background="@color/color_ebebeb"
+                         android:layout_height="@dimen/x1" />-->
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
             <LinearLayout
                 android:id="@+id/attachList"
                 android:layout_width="match_parent"

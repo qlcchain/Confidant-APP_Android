@@ -880,5 +880,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Add_Contacts">Add Contacts</string>
     <string name="Invite_Friends">Invite Friends</string>
     <string name="Invitation">Invitation</string>
-    Invitation
+    <string name="screenshots_success">screenshots success</string>
+    <string name="You_got_an_email_from_your_friend">You got an email from your friend </string>
 </resources>
