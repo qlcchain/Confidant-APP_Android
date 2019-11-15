@@ -350,7 +350,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }else if(flag == 100)
         {
-            cardView2.visibility = View.VISIBLE
+
+            addKeyImgParent.visibility = View.GONE
+            attachList.visibility = View.GONE
+            re_main_editor.visibility = View.GONE
+            var myAccount = ConstantValue.currentEmailConfigEntity!!.account
+            subject.setText(getString(R.string.You_got_an_email_from_your_friend) +" "+myAccount) //"You got an email from your friend xxxx@gmail.com"
+            val lp = LinearLayout.LayoutParams(webViewParent.getLayoutParams())
+            lp.setMargins(0, 0, 0, 0)
+            webViewParent.setLayoutParams(lp);
+            initWebviewUI()
+
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId)).list()
 
             if(routerList .size  > 0) {
@@ -372,8 +382,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var routerCodeDataByte = routerCodeData.toByteArray();
             var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
             codeStr += ","+base64Str;
+
             Thread(Runnable() {
                 run() {
+                    Thread.sleep(500)
+                    runOnUiThread {
+                        cardView2.visibility = View.VISIBLE
+                    }
                     var bitMapAvatar =  getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
                     var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(codeStr, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitMapAvatar)
                     runOnUiThread {
@@ -383,16 +398,6 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     saveQrCodeToPhone()
                 }
             }).start()
-
-            addKeyImgParent.visibility = View.GONE
-            attachList.visibility = View.GONE
-            re_main_editor.visibility = View.GONE
-            var myAccount = ConstantValue.currentEmailConfigEntity!!.account
-            subject.setText(getString(R.string.You_got_an_email_from_your_friend) +myAccount) //"You got an email from your friend xxxx@gmail.com"
-            val lp = LinearLayout.LayoutParams(webViewParent.getLayoutParams())
-            lp.setMargins(0, 0, 0, 0)
-            webViewParent.setLayoutParams(lp);
-            initWebviewUI()
         }else if(flag == 255)
         {
             var emailAdress = intent.getStringExtra("emailAdress")
@@ -636,10 +641,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         galleryPathFile.mkdir()
                     }
                     // 图片文件路径
-                    val filePath = galleryPath + ConstantValue.currentRouterId + ".png"
+                    val filePath = galleryPath + "circleCode.jpg"
                     val file = File(filePath)
                     val os = FileOutputStream(file)
-                    bitmap2.compress(Bitmap.CompressFormat.PNG, 100, os)
+                    bitmap2.compress(Bitmap.CompressFormat.JPEG, 100, os)
                     os.flush()
                     os.close()
                     AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, filePath, System.currentTimeMillis())
@@ -928,11 +933,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>"+
-                "<a href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
+                "<a href=\'javascript:void(0)\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
                 "</div>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>"+
-                "<a href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
+                "<a href=\'javascript:void(0)\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
                 "</div>"+
                 "</div>"+
                 "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>"+
@@ -2190,7 +2195,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         if(galleryPath!="")
         {
-            attachList = galleryPath + ConstantValue.currentRouterId + ".png"
+            attachList = galleryPath + "circleCode.jpg"
         }
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
         var myAccount = AppConfig.instance.emailConfig().account

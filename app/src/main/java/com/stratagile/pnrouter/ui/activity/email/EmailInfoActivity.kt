@@ -1685,8 +1685,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             {
                 needOp = true
             }
-
+            if(emailMeaasgeData!!.content.contains("Confidant full services"))
+            {
+                needOp = false
+            }
         }
+
         if(emailMeaasgeData!!.originalText!= null)
         {
             if(emailMeaasgeData!!.originalText.contains("<img"))
