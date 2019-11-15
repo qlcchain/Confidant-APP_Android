@@ -736,11 +736,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
         var myAccount = ConstantValue.currentEmailConfigEntity!!.account
-        InviteURLText = "<html>"+
-                " <head></head>"+
-                " <body>"+
-                "  <div id=\"box\"> "+
-                "   <style type=\"text/css\">"+
+        InviteURLText = "<div id=\'box\'>"+
+                "<style type=\'text/css\'>"+
                 "* {"+
                 "padding: 0;"+
                 "border: 0;"+
@@ -748,16 +745,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "margin: 0;"+
                 "}"+
                 "a {"+
-                "    text-decoration: none;"+
-                "    background-color: transparent"+
+                "text-decoration: none;"+
+                "background-color: transparent"+
                 "}"+
                 "a:hover,"+
                 "a:active {"+
-                "    outline-width: 0;"+
-                "    text-decoration: none"+
+                "outline-width: 0;"+
+                "text-decoration: none"+
                 "}"+
-                "#box {"+
-                "width: 100vw;"+
+                "#box{"+
+                "margin: 0 auto;"+
                 "box-sizing: border-box;"+
                 "}"+
                 "#box section {"+
@@ -769,8 +766,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 ".userHead {"+
                 "display: flex;"+
                 "width: 100%;"+
-                "    box-sizing: border-box;"+
-                "    border-bottom: 1px solid #e6e6e6;"+
+                "box-sizing: border-box;"+
+                "border-bottom: 1px solid #e6e6e6;"+
                 "}"+
                 ".userHeadA {"+
                 "width: 44px;"+
@@ -785,7 +782,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "}"+
                 ".userHeadC {"+
                 "flex: 1;"+
-                "    text-align: right;"+
+                "text-align: right;"+
                 "height: 44px;"+
                 "padding: 18px 0;"+
                 "outline: 0px solid #ccc;"+
@@ -793,29 +790,29 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 ".userHeadAimg {"+
                 "width: 44px;"+
                 "height: 44px;"+
-                "    border-radius: 22px;"+
+                "border-radius: 22px;"+
                 "}"+
                 ".userHeadBdate {"+
                 "color: #ccc;"+
-                "    margin-left: 8px;"+
+                "margin-left: 8px;"+
                 "}"+
                 ".rowDiv {"+
                 "padding: 20px 0;"+
                 "}"+
                 "button {"+
                 "background: rgba(102, 70, 247, 1);"+
-                "    border-radius: 7px;"+
+                "border-radius: 7px;"+
                 "color: #fff;"+
                 "}"+
                 ".rowDiv3Btn {"+
                 "padding: 12px 34px;"+
                 "background: rgba(102, 70, 247, 1);"+
-                "    border-radius: 7px;"+
+                "border-radius: 7px;"+
                 "color: #fff;"+
                 "}"+
                 ".rowDiv h3 {"+
-                "    font-size: 16px;"+
-                "    line-height: 16px;"+
+                "font-size: 16px;"+
+                "line-height: 16px;"+
                 "}"+
                 "#box p {"+
                 "line-height: 20px;"+
@@ -844,10 +841,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "position: relative;"+
                 "top: 5px;"+
                 "width: 24px;"+
-                "    margin-right: 5px;"+
+                "margin-right: 5px;"+
                 "}"+
                 ".includePng {"+
-                "    float: right;"+
+                "float: right;"+
                 "width: 110px;"+
                 "position: relative;"+
                 "top: -24px;"+
@@ -855,12 +852,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 ".rowDivBtn {"+
                 "display: flex;"+
                 "width: 100%;"+
-                "    justify-content: space-between;"+
+                "justify-content: space-between;"+
                 "}"+
                 ".rowDivBtn div {"+
                 "width: 158px;"+
                 "height: 42px;"+
-                "outline: 1px solid #ccc;"+
+                "margin:5px;"+
                 "}"+
                 ".rowDivBtn .rowDivBtnAddlong {"+
                 "width: 179px;"+
@@ -870,28 +867,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "}"+
                 ".jusCenter {"+
                 "display: flex;"+
-                "    justify-content: center;"+
-                "    align-items: center;"+
+                "justify-content: center;"+
+                "align-items: center;"+
                 "}"+
                 ".rowDivFooter {"+
                 "background: #292B33;"+
                 "color: #fff;"+
-                "    text-align: center;"+
+                "text-align: center;"+
                 "}"+
                 "#box .rowDivFooter p {"+
                 "line-height: 30px;"+
-                "text-indent: 0;"+
-                "margin-block-start: 0;"+
-                "margin-block-end: 0;"+
                 "}"+
                 ".rowDivFooter i {"+
                 "outline: 0px solid red;"+
-                "    font-style: normal;"+
+                "font-style: normal;"+
                 "overflow: hidden;"+
                 "height: 9px;"+
                 "width: 15px;"+
                 "display: inline-block;"+
-                "    line-height: 15px;"+
+                "line-height: 15px;"+
                 "position: relative;"+
                 "top: -6px;"+
                 "color: #6646F7;"+
@@ -899,66 +893,79 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 ".rowDivFooter i:last-child {"+
                 "top: 0px;"+
                 "height: 7px;"+
-                "    line-height: 0px;"+
+                "line-height: 0px;"+
                 "top: 2px;"+
                 "}"+
                 ".rowDivSave {"+
-                "    text-align: center;"+
-                "    border-bottom: 1px solid #E6E6E6;"+
+                "text-align: center;"+
+                "border-bottom: 1px solid #E6E6E6;"+
                 "padding: 0 0 30px 0;"+
                 "}"+
-                "</style> "+
-                "   <section> "+
-                "    <div class=\"rowDiv\"> "+
-                "     <h3>Dear,<br /> Greetings from "+myAccount+"</h3> "+
-                "     <p>This invitation was sent to you from your friend using Confidant, which is the platform for secure encrypted Email and message communication. </p> "+
-                "     <p>You are invited to join him/her to stay in touch in a private and secure manner.</p> "+
-                "     <p style=\"font-size: 14px;\">To instantly access Confidant full services</p> "+
-                "    </div> "+
-                "    <div class=\"rowDiv\" style=\"padding: 8px 0;\"> "+
-                "     <p style=\"color: #757380;\">1. Download the app via </p> "+
-                "    </div> "+
-                "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0\"> "+
-                "     <div class=\"qrcodeDIV\"> "+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\" /> "+
-                "      <a class=\"btn\" href=\"\"><img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\" /></a> "+
-                "     </div> "+
-                "     <div class=\"qrcodeDIV\"> "+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\" /> "+
-                "      <a class=\"btn\" href=\"\"><img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\" /></a> "+
-                "     </div> "+
-                "    </div> "+
-                "    <div class=\"rowDiv\">"+
-                "     <p style=\"color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\">2.Scan your friend\'s QR code in the attachment to start chatting</p>"+
-                "    </div> "+
-                "    <div class=\"rowDiv\"> "+
-                "     <p style=\"color: #757380;\">Once done, we highly encourage you to send back a thank you message to your friend.</p> "+
-                "     <p style=\"color: #757380;\">Stay safe and secured!</p> "+
-                "    </div> "+
-                "    <div class=\"rowDiv rowDivBtn\"> "+
-                "     <div>"+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_p2psd.png\" />"+
-                "     </div> "+
-                "     <div class=\"rowDivBtnAddlong\">"+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/encrypted_Email.png\" />"+
-                "     </div> "+
-                "    </div> "+
-                "    <div class=\"rowDiv rowDivBtn\"> "+
-                "     <div>"+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_centred.png\" />"+
-                "     </div> "+
-                "     <div class=\"rowDivBtnAddlong\">"+
-                "      <img src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/on_premise.png\" />"+
-                "     </div> "+
-                "    </div> "+
-                "    <div class=\"rowDiv rowDivFooter\"> "+
-                "     <p style=\"font-size: 14px;\"> <img class=\"h3logo\" src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/on_premise.png\" /> Confidant Team </p> "+
-                "     <p><i>[</i> With Confidant, stay in touch with the ones who matter! <i>]</i> </p> "+
-                "    </div> "+
-                "   </section> "+
-                "  </div>"+
-                " </body>"+
-                "</html>";
+                "@media only screen and (min-width: 992px) {"+
+                "#box{"+
+                "width:100%;"+
+                "}"+
+                "}"+
+                "@media only screen and (min-width: 1200px) {"+
+                "#box{"+
+                "width:680px;"+
+                "background: white;"+
+                "}"+
+                "}"+
+                "</style>"+
+                "<section>"+
+                "<div class=\'rowDiv\'>"+
+                "<h3>Dear,<br/> Greetings from "+myAccount+"</h3>"+
+                "<p>This invitation was sent to you from your friend using Confidant, which is the platform for secure"+
+                "encrypted Email and message communication. </p>"+
+                "<p>You are invited to join him/her to stay in touch in a private and secure manner.</p>"+
+                "<br/>"+
+                "<p style=\'font-size: 14px;\'>To instantly access Confidant full services</p>"+
+                "</div>"+
+                "<div class=\'rowDiv\' style=\'padding: 5px 0;\'>"+
+                "<p style=\'color: #757380;\'>1. Download the app via </p>"+
+                "</div>"+
+                "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
+                "<div class=\'qrcodeDIV\'>"+
+                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>"+
+                "<a href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
+                "</div>"+
+                "<div class=\'qrcodeDIV\'>"+
+                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>"+
+                "<a href=\'\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
+                "</div>"+
+                "</div>"+
+                "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>"+
+                "<div class=\'rowDiv\'>"+
+                "<p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your"+
+                "friend.</p>"+
+                "<p style=\'color: #757380;\'>Stay safe and secured!</p>"+
+                "</div>"+
+                "<div class=\'rowDiv rowDivBtn\' style=\'padding: 0px;\'>"+
+                "<div>"+
+                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_p2p.png\'>"+
+                "</div>"+
+                "<div class=\'rowDivBtnAddlong\'>"+
+                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/encrypted_Email.png\'>"+
+                "</div>"+
+                "</div>"+
+                "<div class=\'rowDiv rowDivBtn\' style=\'padding: 5px 0 20px 0;\'>"+
+                "<div>"+
+                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/owner_centred.png\'>"+
+                "</div>"+
+                "<div class=\'rowDivBtnAddlong\'>"+
+                "<img width=\'180\'  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/on_premise.png\'>"+
+                "</div>"+
+                "</div>"+
+                "<div class=\'rowDiv rowDivFooter\'>"+
+                "<p style=\'font-size: 14px;\'>"+
+                "<img class=\'h3logo\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_b.png\'>"+
+                "Confidant Team"+
+                "</p>"+
+                "<p><i>[</i> With Confidant, stay in touch with the ones who matter! <i>]</i> </p>"+
+                "</div>"+
+                "</section>"+
+                "</div>\"";
         try {
             webView.loadDataWithBaseURL(null,InviteURLText,"text/html","utf-8",null);
         }catch (e:Exception)

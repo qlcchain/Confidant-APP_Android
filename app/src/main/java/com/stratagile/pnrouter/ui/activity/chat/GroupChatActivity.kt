@@ -397,12 +397,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                                 try {
                                                                                     if (json != null) {
                                                                                         httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                                        if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                                         {
                                                                                             ConstantValue.curreantNetworkType = "WIFI"
-                                                                                            ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                            ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                            ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                            ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                            ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                             if(ConstantValue.isHasWebsocketInit)
@@ -459,12 +459,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                     try {
                                                                         if (json != null) {
                                                                             var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                             {
                                                                                 ConstantValue.curreantNetworkType = "WIFI"
-                                                                                ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                 if(ConstantValue.isHasWebsocketInit)
@@ -779,12 +779,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                                 try {
                                                                                     if (json != null) {
                                                                                         httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                                        if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                                         {
                                                                                             ConstantValue.curreantNetworkType = "WIFI"
-                                                                                            ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                            ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                            ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                            ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                            ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                             if(ConstantValue.isHasWebsocketInit)
@@ -841,12 +841,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                                                                     try {
                                                                         if (json != null) {
                                                                             var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                             {
                                                                                 ConstantValue.curreantNetworkType = "WIFI"
-                                                                                ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                 if(ConstantValue.isHasWebsocketInit)
