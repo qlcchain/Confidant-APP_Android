@@ -761,6 +761,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "#box{"+
                 "margin: 0 auto;"+
                 "box-sizing: border-box;"+
+                "max-width: 720px;"+
                 "}"+
                 "#box section {"+
                 "padding: 16px;"+
@@ -827,14 +828,14 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "line-height: 40px;"+
                 "}"+
                 ".qrcodeDIV {"+
-                "width: 84px;"+
+                "width: 120px;"+
                 "margin: 0 30px;"+
                 "}"+
                 ".qrcodeDIV img {"+
-                "width: 84px;"+
+                "width: 120px;"+
                 "}"+
                 ".btn {"+
-                "width: 84px;"+
+                "width: 120px;"+
                 "height: 22px;"+
                 "display: block;"+
                 "}"+
@@ -908,7 +909,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "}"+
                 "@media only screen and (min-width: 992px) {"+
                 "#box{"+
-                "width:100%;"+
+                "width:706px;"+
                 "}"+
                 "}"+
                 "@media only screen and (min-width: 1200px) {"+
@@ -920,9 +921,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "</style>"+
                 "<section>"+
                 "<div class=\'rowDiv\'>"+
-                "<h3>Dear,<br/> Greetings from "+myAccount+"</h3>"+
+                "<h3>Dear,<br/> Greetings "+myAccount+"</h3>"+
                 "<p>This invitation was sent to you from your friend using Confidant, which is the platform for secure"+
-                "encrypted Email and message communication. </p>"+
+                "&nbsp;encrypted Email and message communication. </p>"+
                 "<p>You are invited to join him/her to stay in touch in a private and secure manner.</p>"+
                 "<br/>"+
                 "<p style=\'font-size: 14px;\'>To instantly access Confidant full services</p>"+
@@ -933,7 +934,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>"+
-                "<a href=\'https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
+                "<a href=\'https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&ls=1\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
                 "</div>"+
                 "<div class=\'qrcodeDIV\'>"+
                 "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>"+
@@ -942,18 +943,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "</div>"+
                 "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>"+
                 "<div class=\'rowDiv\'>"+
-                "<p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your"+
-                "friend.</p>"+
+                "<p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your friend.</p>"+
                 "<p style=\'color: #757380;\'>Stay safe and secured!</p>"+
                 "</div>"+
                 "<div class=\'rowDiv\'>"+
-                "< img  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\' />"+
+                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\'>"+
                 "</div>"+
                 "<div class=\'rowDiv\'>"+
-                "< img  src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\' />"+
-                "</div>";
+                "<img  style='width: 100%;' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\'>"+
+                "</div>"+
                 "</section>"+
-                "</div>\"";
+                "</div>";
         try {
             webView.loadDataWithBaseURL(null,InviteURLText,"text/html","utf-8",null);
         }catch (e:Exception)
@@ -1858,7 +1858,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 userPassWord = userPassWord.substring(0,32)
             }else if(len < 32)
             {
-               var need = 32- len;
+                var need = 32- len;
                 for (index in 1..need){
                     userPassWord += "0"
                 }
@@ -2936,7 +2936,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             lockTips.visibility = View.GONE
                         }
                     }
-               }
+                }
             })
         }else if(id == R.id.addSubjectImg)
         {
