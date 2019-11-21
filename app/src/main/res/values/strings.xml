@@ -894,4 +894,5 @@ Then enter your Email address and password to log in.</string>
     <string name="msg_local">本地短信</string>
     <string name="nomsg_local">过滤短信</string>
     <string name="nodemsg_local">节点短信</string>
+    <string name="new_encryption">新建相册</string>
 </resources>

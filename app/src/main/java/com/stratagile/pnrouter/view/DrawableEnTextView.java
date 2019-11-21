@@ -42,7 +42,7 @@ public class DrawableEnTextView extends LinearLayout {
     }
 
     private void init(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.drawble_pictextview, this, true);
+        View view = LayoutInflater.from(context).inflate(R.layout.drawble_picencytextview, this, true);
         icon = view.findViewById(R.id.icon);
         titleText = view.findViewById(R.id.title);
         titleRightText = view.findViewById(R.id.righttitle);
@@ -54,9 +54,11 @@ public class DrawableEnTextView extends LinearLayout {
     private void initTypeArray(AttributeSet attrs) {
         TypedArray typedArray=getContext().obtainStyledAttributes(attrs, R.styleable.DrawableMyTextView);
         String text = typedArray.getString(R.styleable.DrawableMyTextView_textmy);
+        String textsub = typedArray.getString(R.styleable.DrawableMyTextView_subtitle);
         boolean isShowNext = typedArray.getBoolean(R.styleable.DrawableMyTextView_showNextmy, true);
         setShowNext(isShowNext);
         setTitleText(text);
+        setRightTitleText(textsub);
         Drawable d = typedArray.getDrawable(R.styleable.DrawableMyTextView_srcmy);
         if (d != null) {
             icon.setImageDrawable(d);
@@ -71,6 +73,13 @@ public class DrawableEnTextView extends LinearLayout {
         invalidate();
     }
     public void setRightTitleText(CharSequence text) {
+        if(text.toString().equals(""))
+        {
+            titleRightText.setVisibility(GONE);
+        }else{
+            titleRightText.setVisibility(VISIBLE);
+        }
+
         titleRightText.setText(text);
         invalidate();
     }
