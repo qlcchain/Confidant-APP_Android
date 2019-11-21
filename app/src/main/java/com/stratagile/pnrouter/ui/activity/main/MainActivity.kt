@@ -94,6 +94,7 @@ import com.stratagile.pnrouter.ui.activity.add.addFriendOrGroupActivity
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
+import com.stratagile.pnrouter.ui.activity.conversation.FileEncryptionFragment
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailEditActivity
@@ -2930,7 +2931,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        //initFlatBall()
+        initFlatBall()
 
     }
 
@@ -4005,7 +4006,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             return conversationListFragment!!
                         }
                     }
-                    1 -> return FileListFragment()
+                    1 -> return FileEncryptionFragment()
                     2 -> return contactFragment!!
                     else -> return MyFragment()
                 }
@@ -4197,8 +4198,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x110).toInt())
             }else if(emailConfigEntityList.size == 2){
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x220).toInt())
+            }else if(emailConfigEntityList.size == 3){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x330).toInt())
+            }else if(emailConfigEntityList.size == 4){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x440).toInt())
+            }else if(emailConfigEntityList.size == 5){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x550).toInt())
             }else{
-                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x270).toInt())
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x600).toInt())
             }
             if(refresh)
             {

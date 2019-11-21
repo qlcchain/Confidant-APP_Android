@@ -13,15 +13,30 @@
         android:src="@mipmap/rouermanagement"
         android:layout_marginLeft="@dimen/x30"
         />
-    <TextView
-        android:id="@+id/title"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/commemTextSize"
-        android:textColor="@color/color_2c2c2c"
-        tools:text=""
-        android:layout_marginLeft="15dp"
-        />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/color_2c2c2c"
+            tools:text="默认相册"
+            android:layout_marginLeft="15dp"
+            />
+        <TextView
+            android:id="@+id/num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/color_2c2c2c"
+            tools:text="35 Files"
+            android:layout_marginLeft="15dp"
+            />
+    </LinearLayout>
+
     <View
         android:layout_width="0dp"
         android:layout_height="match_parent"

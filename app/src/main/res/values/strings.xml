@@ -882,4 +882,16 @@ Then enter your Email address and password to log in.</string>
     <string name="Invitation">Invitation</string>
     <string name="screenshots_success">screenshots success</string>
     <string name="You_got_an_email_from_your_friend">You got an email from your friend </string>
+    <string name="album_encryption">相册加密</string>
+    <string name="album_encryption_des">加密相片视频保护隐私</string>
+    <string name="album_encryption_go">立即进入</string>
+    <string name="weixin_encryption">微信消息加密</string>
+    <string name="weixin_encryption_des">重要消息守护</string>
+    <string name="maillist_encryption">通讯录备份</string>
+    <string name="maillist_local">本地通讯录</string>
+    <string name="node_local">节点通讯录</string>
+    <string name="msg_encryption">短信备份</string>
+    <string name="msg_local">本地短信</string>
+    <string name="nomsg_local">过滤短信</string>
+    <string name="nodemsg_local">节点短信</string>
 </resources>
