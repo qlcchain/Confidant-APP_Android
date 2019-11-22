@@ -38,9 +38,45 @@ public class EmailMessageEntity implements Parcelable{
     private long messageTotalCount;
     private String emailAttachPath;
     private String userId;
+    private Long sortId;//用于排序
     
     public EmailMessageEntity() {
 
+    }
+
+
+    @Generated(hash = 119569384)
+    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject, String from, String to,
+            String cc, String bcc, String date, Long timeStamp, boolean isSeen, boolean isStar, String priority,
+            boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,
+            String contentText, String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
+            String userId, Long sortId) {
+        this.id = id;
+        this.account = account;
+        this.msgId = msgId;
+        this.menu = menu;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.date = date;
+        this.timeStamp = timeStamp;
+        this.isSeen = isSeen;
+        this.isStar = isStar;
+        this.priority = priority;
+        this.isReplySign = isReplySign;
+        this.size = size;
+        this.isContainerAttachment = isContainerAttachment;
+        this.attachmentCount = attachmentCount;
+        this.content = content;
+        this.contentText = contentText;
+        this.originalText = originalText;
+        this.aesKey = aesKey;
+        this.messageTotalCount = messageTotalCount;
+        this.emailAttachPath = emailAttachPath;
+        this.userId = userId;
+        this.sortId = sortId;
     }
 
 
@@ -78,41 +114,11 @@ public class EmailMessageEntity implements Parcelable{
         messageTotalCount = in.readLong();
         emailAttachPath = in.readString();
         userId = in.readString();
-    }
-
-
-    @Generated(hash = 1788327900)
-    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
-            String from, String to, String cc, String bcc, String date, Long timeStamp, boolean isSeen,
-            boolean isStar, String priority, boolean isReplySign, long size,
-            boolean isContainerAttachment, int attachmentCount, String content, String contentText,
-            String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
-            String userId) {
-        this.id = id;
-        this.account = account;
-        this.msgId = msgId;
-        this.menu = menu;
-        this.subject = subject;
-        this.from = from;
-        this.to = to;
-        this.cc = cc;
-        this.bcc = bcc;
-        this.date = date;
-        this.timeStamp = timeStamp;
-        this.isSeen = isSeen;
-        this.isStar = isStar;
-        this.priority = priority;
-        this.isReplySign = isReplySign;
-        this.size = size;
-        this.isContainerAttachment = isContainerAttachment;
-        this.attachmentCount = attachmentCount;
-        this.content = content;
-        this.contentText = contentText;
-        this.originalText = originalText;
-        this.aesKey = aesKey;
-        this.messageTotalCount = messageTotalCount;
-        this.emailAttachPath = emailAttachPath;
-        this.userId = userId;
+        if (in.readByte() == 0) {
+            sortId = null;
+        } else {
+            sortId = in.readLong();
+        }
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -343,6 +349,14 @@ public class EmailMessageEntity implements Parcelable{
         this.userId = userId;
     }
 
+    public Long getSortId() {
+        return sortId;
+    }
+
+    public void setSortId(Long sortId) {
+        this.sortId = sortId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -385,5 +399,11 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeLong(messageTotalCount);
         dest.writeString(emailAttachPath);
         dest.writeString(userId);
+        if (sortId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(sortId);
+        }
     }
 }

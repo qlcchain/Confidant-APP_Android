@@ -174,6 +174,11 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 item.setTimeStamp( DateUtil.getDateTimeStame(item.date))
                 AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
             }
+            if(item.sortId == null  || item.sortId == 0L)
+            {
+                item.sortId = item.msgId.toLong();
+                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+            }
         }
         if(!BuildConfig.DEBUG)
         {

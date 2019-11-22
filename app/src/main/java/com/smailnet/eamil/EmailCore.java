@@ -1654,8 +1654,9 @@ class EmailCore {
         }
 
         List<Message> list  = Arrays.asList(messagesAll);
-        LogUtil.addLogEmail("4_list size:"+list.size(),"EmailCore");
+        LogUtil.addLogEmail("5_list size:"+list.size(),"EmailCore");
         Collections.reverse(list);
+        LogUtil.addLogEmail("5_list reverse:","EmailCore");
         List<EmailMessage> emailMessageList = new ArrayList<>();
         String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
         Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
@@ -1665,9 +1666,11 @@ class EmailCore {
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
+        LogUtil.addLogEmail("6_list size:"+list.size(),"EmailCore");
         for (Message message : list){
             if(message == null)
             {
+                //LogUtil.addLogEmail("7_"+index+"_"+"_message == null:","EmailCore");
                 index++;
                 continue;
             }
@@ -1676,39 +1679,38 @@ class EmailCore {
                 System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
+                  /*  if(BuildConfig.DEBUG)
+                    {
+                        if(index == 0)
+                        {
+                            message = null;
+                        }
+                    }*/
                     subject = getSubject((MimeMessage)message);
                 }catch (Exception e)
                 {
                     errorMsg+=e.getMessage();
                 }
+                //LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
+                //LogUtil.addLogEmail("7_"+index+"_"+"_from:"+from,"EmailCore");
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
+                //LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
-                //设置标记
-                /*if(!isSeen)
-                {
-                    Flags flags=message.getFlags();
-                    if(flags.contains(Flags.Flag.SEEN))
-                    {
-                        message.setFlag(Flags.Flag.SEEN,false);
-                        message.saveChanges();
-                    }
-
-                }*/
                 isReplySign = isReplySign((MimeMessage)message);
-
+                //LogUtil.addLogEmail("7_"+index+"_"+"_isSeen:"+isSeen+"_isStar:"+isStar+"_isReplySign:"+isReplySign,"EmailCore");
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
@@ -1718,6 +1720,7 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
+                //LogUtil.addLogEmail("7_"+index+"_"+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
@@ -1746,6 +1749,29 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
+                String _content= "";
+                if(!content.equals(""))
+                {
+                    if(content.length() >10)
+                    {
+                        _content = content.substring(0,10);
+                    }else{
+                        _content = content;
+                    }
+
+                }
+                String _contentText= "";
+                if(!contentText.equals(""))
+                {
+
+                    if(contentText.length() >10)
+                    {
+                        _contentText = contentText.substring(0,10);
+                    }else{
+                        _contentText = contentText;
+                    }
+                }
+                LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_from:"+from+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc+"_content:"+_content+"_content:"+_content+"_contentText:"+_contentText+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
@@ -1767,6 +1793,7 @@ class EmailCore {
             {
                 e.printStackTrace();
                 errorMsg+=e.getMessage();
+                LogUtil.addLogEmail("8_"+index+"_"+"_errorMsg:"+errorMsg,"EmailCore");
             }
 
             index ++;
@@ -1775,6 +1802,7 @@ class EmailCore {
         System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
+        LogUtil.addLogEmail("9_"+index+"_"+"_emailMessageList size:"+emailMessageList.size(),"EmailCore");
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",totalSize);
         messageMap.put("minUIID",minUIID);

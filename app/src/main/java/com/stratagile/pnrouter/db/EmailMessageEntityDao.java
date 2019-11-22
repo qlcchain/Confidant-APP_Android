@@ -47,6 +47,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         public final static Property MessageTotalCount = new Property(22, long.class, "messageTotalCount", false, "MESSAGE_TOTAL_COUNT");
         public final static Property EmailAttachPath = new Property(23, String.class, "emailAttachPath", false, "EMAIL_ATTACH_PATH");
         public final static Property UserId = new Property(24, String.class, "userId", false, "USER_ID");
+        public final static Property SortId = new Property(25, Long.class, "sortId", false, "SORT_ID");
     }
 
 
@@ -86,7 +87,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
                 "\"AES_KEY\" TEXT," + // 21: aesKey
                 "\"MESSAGE_TOTAL_COUNT\" INTEGER NOT NULL ," + // 22: messageTotalCount
                 "\"EMAIL_ATTACH_PATH\" TEXT," + // 23: emailAttachPath
-                "\"USER_ID\" TEXT);"); // 24: userId
+                "\"USER_ID\" TEXT," + // 24: userId
+                "\"SORT_ID\" INTEGER);"); // 25: sortId
     }
 
     /** Drops the underlying database table. */
@@ -195,6 +197,11 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (userId != null) {
             stmt.bindString(25, userId);
         }
+ 
+        Long sortId = entity.getSortId();
+        if (sortId != null) {
+            stmt.bindLong(26, sortId);
+        }
     }
 
     @Override
@@ -297,6 +304,11 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         if (userId != null) {
             stmt.bindString(25, userId);
         }
+ 
+        Long sortId = entity.getSortId();
+        if (sortId != null) {
+            stmt.bindLong(26, sortId);
+        }
     }
 
     @Override
@@ -331,7 +343,8 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
             cursor.isNull(offset + 21) ? null : cursor.getString(offset + 21), // aesKey
             cursor.getLong(offset + 22), // messageTotalCount
             cursor.isNull(offset + 23) ? null : cursor.getString(offset + 23), // emailAttachPath
-            cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24) // userId
+            cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24), // userId
+            cursor.isNull(offset + 25) ? null : cursor.getLong(offset + 25) // sortId
         );
         return entity;
     }
@@ -363,6 +376,7 @@ public class EmailMessageEntityDao extends AbstractDao<EmailMessageEntity, Long>
         entity.setMessageTotalCount(cursor.getLong(offset + 22));
         entity.setEmailAttachPath(cursor.isNull(offset + 23) ? null : cursor.getString(offset + 23));
         entity.setUserId(cursor.isNull(offset + 24) ? null : cursor.getString(offset + 24));
+        entity.setSortId(cursor.isNull(offset + 25) ? null : cursor.getLong(offset + 25));
      }
     
     @Override
