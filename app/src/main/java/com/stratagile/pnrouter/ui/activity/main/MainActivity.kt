@@ -2864,8 +2864,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     fun setToNews() {
         rl1.setBackgroundResource(R.color.headmainColor)
-        tvTitle.visibility = View.GONE
-        tvTitle.text = getString(R.string.app_name)
+        tvTitle.visibility = View.VISIBLE
+        //tvTitle.text = getString(R.string.app_name)
+        tvTitle.text = "         "
         mainIv1.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.VISIBLE
@@ -2918,8 +2919,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun initView() {
         setContentView(R.layout.activity_main)
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
-        tvTitle.text = getString(R.string.news)
-        tvTitle.visibility = View.GONE
+        /* tvTitle.text = getString(R.string.news)
+         tvTitle.visibility = View.GONE*/
+        tvTitle.visibility = View.VISIBLE
+        tvTitle.text = "         "
 //        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
 //        statusBar.setLayoutParams(llp)
         val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
@@ -2931,7 +2934,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        initFlatBall()
+        //initFlatBall()
 
     }
 
@@ -3414,9 +3417,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         MessageProvider.getInstance().messageListenter = this
         EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
-        tvTitle.setOnClickListener {
+        /*tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
+        }*/
+        tvTitle.setOnLongClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
+            true
         }
+
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
@@ -4006,7 +4014,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             return conversationListFragment!!
                         }
                     }
-                    1 -> return FileEncryptionFragment()
+                    1 -> return FileListFragment()
                     2 -> return contactFragment!!
                     else -> return MyFragment()
                 }
