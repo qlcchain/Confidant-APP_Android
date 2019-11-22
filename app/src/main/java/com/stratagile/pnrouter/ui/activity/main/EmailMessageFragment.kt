@@ -916,6 +916,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
 
         if(true)
         {
+            LogUtil.addLogEmail("1_minUUID:"+minUUID+"  &&&  maxUUID"+maxUUID,"EmailMessageFragment");
             var beginIndex = localSize
             /*  AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
               AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()*/

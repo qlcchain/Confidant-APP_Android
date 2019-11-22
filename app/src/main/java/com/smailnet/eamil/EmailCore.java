@@ -30,6 +30,7 @@ import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
 import com.stratagile.pnrouter.BuildConfig;
+import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.UIUtils;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -1575,6 +1576,7 @@ class EmailCore {
      * @throws IOException
      */
     public HashMap<String, Object> imapReceiveNewMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
+        LogUtil.addLogEmail("2_minUUID:"+minUIID+"  &&&  maxUUID:"+maxUUID+"  &&&  pageSize:"+pageSize,"EmailCore");
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
@@ -1600,6 +1602,7 @@ class EmailCore {
         int lengFlag = 0;
         int pageFlag = 1;
         int k = 0;
+        LogUtil.addLogEmail("3_fromMaxUUID:"+fromMaxUUID+"  &&&  maxUUID:"+maxUUID+"  &&&  totalSize:"+totalSize,"EmailCore");
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
@@ -1610,6 +1613,7 @@ class EmailCore {
                 pageSizeTemp = pageSize + (pageFlag -1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
+                LogUtil.addLogEmail("4_pageSizeTemp:"+pageSizeTemp,"EmailCore");
                 for(int i = 0 ; i < pageSizeTemp ;i++)
                 {
                     long index = maxUUID + i + 1 ;
@@ -1650,6 +1654,7 @@ class EmailCore {
         }
 
         List<Message> list  = Arrays.asList(messagesAll);
+        LogUtil.addLogEmail("4_list size:"+list.size(),"EmailCore");
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
         String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
