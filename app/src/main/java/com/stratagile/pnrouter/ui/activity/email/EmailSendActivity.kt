@@ -3020,6 +3020,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile!!.exists()) {
                     var videoFilePath = cameraFile!!.getAbsolutePath()
+                    var file = File(videoFilePath);
+                    var isHas = file.exists();
+                    if (isHas) {
+                        if (file.length() > 1024 * 1024 * 100) {
+                            runOnUiThread {
+                                longToast(R.string.Files_100M)
+                            }
+                            return;
+                        }
+                    }
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
@@ -3031,6 +3041,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             } else if (requestCode == REQUEST_CODE_VIDEO) {
                 if (videoFile != null && videoFile!!.exists()) {
                     var videoFilePath = videoFile!!.getAbsolutePath()
+                    var file = File(videoFilePath);
+                    var isHas = file.exists();
+                    if (isHas) {
+                        if (file.length() > 1024 * 1024 * 100) {
+                            runOnUiThread {
+                                longToast(R.string.Files_100M)
+                            }
+                            return;
+                        }
+                    }
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
@@ -3058,6 +3078,16 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     //emaiAttachAdapter!!.remove(emaiAttachAdapter!!.itemCount)
                     var itemCount = emaiAttachAdapter!!.itemCount
                     for (i in 0 until len) {
+                        var file = File(list.get(i).path);
+                        var isHas = file.exists();
+                        if (isHas) {
+                            if (file.length() > 1024 * 1024 * 100) {
+                                runOnUiThread {
+                                    longToast(R.string.Files_100M)
+                                }
+                                continue;
+                            }
+                        }
                         var emailAttachEntity = EmailAttachEntity()
                         emailAttachEntity.isHasData = true
                         emailAttachEntity.localPath = list.get(i).path
@@ -3088,6 +3118,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         val file = File(filePath)
                         val md5Data = ""
                         if (file.exists()) {
+                            if (file.length() > 1024 * 1024 * 100) {
+                                runOnUiThread {
+                                    longToast(R.string.Files_100M)
+                                }
+                                return;
+                            }
                             var emailAttachEntity = EmailAttachEntity()
                             emailAttachEntity.isHasData = true
                             emailAttachEntity.localPath = file.path
