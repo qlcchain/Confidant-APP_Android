@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -99,6 +101,19 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /*if(intent != null)
+        {
+            val action = intent.action
+            val type = intent.type
+            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            val imageUris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+            var size = 0;
+            if(imageUris != null)
+            {
+                size = imageUris.size
+            }
+            KLog.i("微信,EmailLoginActivity" + action+"#####"+type+"#####"+sharedText +"#####"+ size)
+        }*/
         super.onCreate(savedInstanceState)
     }
 

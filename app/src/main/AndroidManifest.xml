@@ -106,7 +106,14 @@
             android:name=".ui.activity.main.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden" >
+        <!--<intent-filter>
+            <action android:name="android.intent.action.SEND"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+            <data android:mimeType="*/*"/>
+        </intent-filter>-->
+
+        </activity>
         <activity
             android:name=".ui.activity.register.RegisterActivity"
             android:screenOrientation="portrait"
@@ -342,8 +349,16 @@
 
         <activity
             android:name=".ui.activity.email.EmailLoginActivity"
-            android:screenOrientation="portrait" />
-
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+           <!-- <intent-filter>
+                <data android:mimeType="*/*"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.ALTERNATIVE"/>
+                <category android:name="android.intent.category.ALTERNATIVE_SELECTED"/>
+            </intent-filter>-->
+        </activity>
 
         <activity
             android:name=".ui.activity.email.EmailMainActivity"

@@ -2668,7 +2668,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         notificationManager?.cancelAll()
         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
         controlleMessageUnReadCount(UnReadMessageCount)
+        /*val action = intent.action
+        val type = intent.type
 
+        val sharedText = intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        KLog.i("微信," + action+"#####"+type+"#####"+sharedText)
+        if (sharedText != null) {
+            // 根据分享的文字更新UI
+        }
+        if (Intent.ACTION_SEND == action && type != null) {
+            if ("text/plain" == type) {
+
+            } else if (type.startsWith("image/")) {
+
+            }
+        } else if (Intent.ACTION_SEND_MULTIPLE == action && type != null) {
+            if (type.startsWith("image/")) {
+
+            }
+        } else {
+            // 处理其他intents，比如由主屏启动
+        }*/
     }
 
     override fun onPause() {
@@ -4589,6 +4609,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /*val action = intent.action
+        val type = intent.type
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+        KLog.i("微信," + action+"#####"+type+"#####"+sharedText)*/
         isScanSwitch = false
         if (savedInstanceState != null) {
             KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
