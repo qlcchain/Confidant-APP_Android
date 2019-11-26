@@ -589,7 +589,7 @@ class EmailCore {
             subject = message.getSubject();
             from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
-            date = TimeUtil.getDate(message.getSentDate());
+            date = TimeUtil.getDate(message.getReceivedDate());
             StringBuffer contentTemp = new StringBuffer(30);
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
@@ -927,7 +927,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1119,7 +1119,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1309,7 +1309,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1478,7 +1478,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1576,7 +1576,7 @@ class EmailCore {
      * @throws IOException
      */
     public HashMap<String, Object> imapReceiveNewMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
-        LogUtil.addLogEmail("2_minUUID:"+minUIID+"  &&&  maxUUID:"+maxUUID+"  &&&  pageSize:"+pageSize,"EmailCore");
+        //LogUtil.addLogEmail("2_minUUID:"+minUIID+"  &&&  maxUUID:"+maxUUID+"  &&&  pageSize:"+pageSize,"EmailCore");
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
         System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
@@ -1602,7 +1602,7 @@ class EmailCore {
         int lengFlag = 0;
         int pageFlag = 1;
         int k = 0;
-        LogUtil.addLogEmail("3_fromMaxUUID:"+fromMaxUUID+"  &&&  maxUUID:"+maxUUID+"  &&&  totalSize:"+totalSize,"EmailCore");
+        //LogUtil.addLogEmail("3_fromMaxUUID:"+fromMaxUUID+"  &&&  maxUUID:"+maxUUID+"  &&&  totalSize:"+totalSize,"EmailCore");
         if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
         {
             noMoreData = false;
@@ -1613,7 +1613,7 @@ class EmailCore {
                 pageSizeTemp = pageSize + (pageFlag -1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
-                LogUtil.addLogEmail("4_pageSizeTemp:"+pageSizeTemp,"EmailCore");
+                //LogUtil.addLogEmail("4_pageSizeTemp:"+pageSizeTemp,"EmailCore");
                 for(int i = 0 ; i < pageSizeTemp ;i++)
                 {
                     long index = maxUUID + i + 1 ;
@@ -1654,9 +1654,9 @@ class EmailCore {
         }
 
         List<Message> list  = Arrays.asList(messagesAll);
-        LogUtil.addLogEmail("5_list size:"+list.size(),"EmailCore");
+        //LogUtil.addLogEmail("5_list size:"+list.size(),"EmailCore");
         Collections.reverse(list);
-        LogUtil.addLogEmail("5_list reverse:","EmailCore");
+        //LogUtil.addLogEmail("5_list reverse:","EmailCore");
         List<EmailMessage> emailMessageList = new ArrayList<>();
         String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
         Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
@@ -1666,11 +1666,11 @@ class EmailCore {
         System.out.println("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        LogUtil.addLogEmail("6_list size:"+list.size(),"EmailCore");
+        //LogUtil.addLogEmail("6_list size:"+list.size(),"EmailCore");
         for (Message message : list){
             if(message == null)
             {
-                //LogUtil.addLogEmail("7_"+index+"_"+"_message == null:","EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_message == null:","EmailCore");
                 index++;
                 continue;
             }
@@ -1691,26 +1691,26 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                //LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_errorMsg:"+errorMsg,"EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                //LogUtil.addLogEmail("7_"+index+"_"+"_from:"+from,"EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_from:"+from,"EmailCore");
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                //LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 isReplySign = isReplySign((MimeMessage)message);
-                //LogUtil.addLogEmail("7_"+index+"_"+"_isSeen:"+isSeen+"_isStar:"+isStar+"_isReplySign:"+isReplySign,"EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_isSeen:"+isSeen+"_isStar:"+isStar+"_isReplySign:"+isReplySign,"EmailCore");
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
@@ -1720,7 +1720,7 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                //LogUtil.addLogEmail("7_"+index+"_"+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
+                ////LogUtil.addLogEmail("7_"+index+"_"+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
@@ -1771,7 +1771,7 @@ class EmailCore {
                         _contentText = contentText;
                     }
                 }
-                LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_from:"+from+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc+"_content:"+_content+"_content:"+_content+"_contentText:"+_contentText+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
+                //LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_from:"+from+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc+"_content:"+_content+"_content:"+_content+"_contentText:"+_contentText+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
@@ -1793,7 +1793,7 @@ class EmailCore {
             {
                 e.printStackTrace();
                 errorMsg+=e.getMessage();
-                LogUtil.addLogEmail("8_"+index+"_"+"_errorMsg:"+errorMsg,"EmailCore");
+                //LogUtil.addLogEmail("8_"+index+"_"+"_errorMsg:"+errorMsg,"EmailCore");
             }
 
             index ++;
@@ -1802,7 +1802,7 @@ class EmailCore {
         System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
-        LogUtil.addLogEmail("9_"+index+"_"+"_emailMessageList size:"+emailMessageList.size(),"EmailCore");
+        //LogUtil.addLogEmail("9_"+index+"_"+"_emailMessageList size:"+emailMessageList.size(),"EmailCore");
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",totalSize);
         messageMap.put("minUIID",minUIID);
@@ -1937,7 +1937,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
+                date = TimeUtil.getDate(message.getReceivedDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
