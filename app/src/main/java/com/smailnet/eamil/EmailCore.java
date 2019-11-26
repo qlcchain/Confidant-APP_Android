@@ -589,7 +589,7 @@ class EmailCore {
             subject = message.getSubject();
             from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
-            date = TimeUtil.getDate(message.getReceivedDate());
+            date = TimeUtil.getDate(message.getSentDate());
             StringBuffer contentTemp = new StringBuffer(30);
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
@@ -927,7 +927,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1119,7 +1119,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1309,7 +1309,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1478,7 +1478,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1705,7 +1705,7 @@ class EmailCore {
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
@@ -1937,7 +1937,7 @@ class EmailCore {
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getReceivedDate());
+                date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
