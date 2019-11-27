@@ -204,7 +204,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
     var emailConfigEntityChoose:EmailConfigEntity? = null
     var deleteEmailMeaasgeData:EmailMessageEntity? = null
     var positionDeleteIndex = 0;
-    var initSize = 5;
+    var initSize = 50;
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changEmailMenu(changEmailMenu: ChangEmailMenu) {
         name = changEmailMenu.name
@@ -1513,13 +1513,26 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }
 
         var emailMessageEntityNextList = mutableListOf<EmailMessageEntity>()
+
         var pageSize = 10;
         var pageFlag = 1
         var noDataLoad = false
         var pageSizeTemp = 10;
         var k = 0
         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.SortId).list()
-        var loaclMinUUIDData:EmailMessageEntity ? = null;
+        var uiDataSize = emaiMessageChooseAdapter!!.data.size;
+        if(uiDataSize < localEmailMessage.size)
+        {
+            for (index in 0 until pageSize){
+                var flagIndex = uiDataSize +index
+                if(flagIndex >= localEmailMessage.size)
+                {
+                    break;
+                }
+                emailMessageEntityNextList.add(index,localEmailMessage.get(flagIndex))
+            }
+        }
+       /* var loaclMinUUIDData:EmailMessageEntity ? = null;
         if(localEmailMessage != null && localEmailMessage.size  > 0)
         {
             loaclMinUUIDData = localEmailMessage.get(localEmailMessage.size -1);
@@ -1559,7 +1572,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 }
                 pageFlag ++;
             }
-        }
+        }*/
         if(emailMessageEntityNextList.size > 0)
         {
             runOnUiThread {
@@ -1936,7 +1949,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 }
             }
         }
-        var firstMessageEntity =  emaiMessageChooseAdapter!!.getItem(0)
+       /* var firstMessageEntity =  emaiMessageChooseAdapter!!.getItem(0)
         var lastMessageEntity =  emaiMessageChooseAdapter!!.getItem(emaiMessageChooseAdapter!!.data.size -1)
 
         var minUUID = 0L;
@@ -1948,7 +1961,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         }else{
             minUUID = 0L;
             maxUUID = 0L;
-        }
+        }*/
 
         var emailMessageEntityNextList = mutableListOf<EmailMessageEntity>()
         var pageSize = 10;
@@ -1957,7 +1970,20 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
         var pageSizeTemp = 10;
         var k = 0
         var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.SortId).list()
-        var loaclMinUUIDData:EmailMessageEntity ? = null;
+        var uiDataSize = emaiMessageChooseAdapter!!.data.size;
+        if(uiDataSize < localEmailMessage.size)
+        {
+            for (index in 0 until pageSize){
+                var flagIndex = uiDataSize +index
+                if(flagIndex >= localEmailMessage.size)
+                {
+                    break;
+                }
+                emailMessageEntityNextList.add(index,localEmailMessage.get(flagIndex))
+            }
+        }
+
+       /* var loaclMinUUIDData:EmailMessageEntity ? = null;
         if(localEmailMessage != null && localEmailMessage.size  > 0)
         {
             loaclMinUUIDData = localEmailMessage.get(localEmailMessage.size -1);
@@ -1997,7 +2023,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
                 }
                 pageFlag ++;
             }
-        }
+        }*/
         if(emailMessageEntityNextList.size > 0)
         {
             runOnUiThread {
