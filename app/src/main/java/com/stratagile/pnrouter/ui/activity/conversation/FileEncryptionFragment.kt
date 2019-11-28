@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.view.LayoutInflater
@@ -17,6 +18,8 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
+import kotlinx.android.synthetic.main.fragment_file_encryption.*
 
 /**
  * @author zl
@@ -44,7 +47,16 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
                 .build()
                 .inject(this)
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        albumMenu.setOnClickListener {
+            var intent =  Intent(activity!!, PicEncryptionActivity::class.java)
+            startActivity(intent);
+        }
+        wechatMenu.setOnClickListener {
 
+        }
+    }
     override fun setPresenter(presenter: FileEncryptionContract.FileEncryptionContractPresenter) {
         mPresenter = presenter as FileEncryptionPresenter
     }

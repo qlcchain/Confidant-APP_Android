@@ -11,6 +11,7 @@ include ':picture_library'
 include ':zbar'
 include ':qmui'
 include ':FloatBalllibrary'
+include ':swipemenulib'
 //include ':eamil'
 include ':PagerSlidingTabStrip'
 project(':PagerSlidingTabStrip').projectDir = new File('app/libs/PagerSlidingTabStrip')

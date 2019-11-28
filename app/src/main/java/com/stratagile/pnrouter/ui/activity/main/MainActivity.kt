@@ -4034,7 +4034,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             return conversationListFragment!!
                         }
                     }
-                    1 -> return FileListFragment()
+                    1 -> {
+                        if(BuildConfig.DEBUG)
+                        {
+                            return FileEncryptionFragment()
+                        }else{
+                            return FileListFragment()
+                        }
+
+                    }
                     2 -> return contactFragment!!
                     else -> return MyFragment()
                 }

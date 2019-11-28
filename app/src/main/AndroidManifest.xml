@@ -387,7 +387,18 @@
         <activity
             android:name=".ui.activity.add.addFriendOrGroupActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".ui.activity.encryption.PicEncryptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.encryption.PicEncryptionlListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.encryption.WeiXinEncryptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.encryption.WeXinEncryptionListActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Rich push 核心功能 since 2.0.6-->
         <activity

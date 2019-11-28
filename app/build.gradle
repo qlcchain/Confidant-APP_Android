@@ -237,6 +237,7 @@ dependencies {
     implementation project(':zbar')
     implementation project(':qmui')
     implementation project(':FloatBalllibrary')
+    implementation project(':swipemenulib')
 
     //api project(':eamil')
     implementation 'org.greenrobot:greendao:3.2.2'
@@ -286,6 +287,8 @@ dependencies {
     //1.1.0 （1.0.5及以前版本的老用户升级需谨慎，API改动过大）
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-32'
     compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-32'
+    //Adapter终结者 地址：https://github.com/mcxtzhang/all-base-adapter
+    compile 'com.github.mcxtzhang:all-base-adapter:V1.5.2'
     implementation 'com.google.android.gms:play-services-auth:16.0.0'
 
     //15.0.1

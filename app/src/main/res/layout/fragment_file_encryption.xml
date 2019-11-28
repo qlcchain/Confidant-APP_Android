@@ -26,6 +26,7 @@
             android:layout_marginTop="@dimen/x15"
             android:layout_marginBottom="@dimen/x30"
             android:layout_marginLeft="@dimen/x30"
+            android:id="@+id/albumMenu"
             android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="@dimen/x340"
@@ -66,6 +67,7 @@
         android:layout_marginRight="@dimen/x30"
         android:layout_marginTop="@dimen/x15"
         android:background="@color/white"
+        android:id="@+id/wechatMenu"
         android:layout_height="wrap_content">
         <com.stratagile.pnrouter.view.DrawableMyTextView
             android:layout_width="match_parent"

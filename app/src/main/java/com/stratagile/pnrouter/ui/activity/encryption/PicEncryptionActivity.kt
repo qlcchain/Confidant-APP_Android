@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.os.Bundle
+import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -28,7 +29,8 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     }
 
     override fun initView() {
-//        setContentView(R.layout.activity_picEncryption)
+        title.text = getString(R.string.setting_)
+        setContentView(R.layout.item_cst_swipe)
     }
     override fun initData() {
 
