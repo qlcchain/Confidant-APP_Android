@@ -1056,6 +1056,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+        var aa = Base58.encode("默认相册".toByteArray())
         /*var libsodiumpublicSignKey = ConstantValue.libsodiumpublicSignKey
         var aa = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey);
         var bb = ""

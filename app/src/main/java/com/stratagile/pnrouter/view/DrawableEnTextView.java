@@ -73,7 +73,7 @@ public class DrawableEnTextView extends LinearLayout {
         invalidate();
     }
     public void setRightTitleText(CharSequence text) {
-        if(text.toString().equals(""))
+        if(text!= null && text.toString().equals(""))
         {
             titleRightText.setVisibility(GONE);
         }else{

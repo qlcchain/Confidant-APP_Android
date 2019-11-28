@@ -3663,6 +3663,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
+                editBtn.visibility = View.GONE
                 if(AppConfig.instance.emailConfig().account != null)
                 {
                     var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
@@ -4484,7 +4485,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.visibility = View.VISIBLE
             emailMenu.visibility = View.GONE
             newAccount.visibility = View.GONE
-            newCricle.visibility = View.VISIBLE
+            newCricle.visibility = View.GONE
         }else{
             unread_count.visibility = View.INVISIBLE
             newAccount.visibility = View.VISIBLE
@@ -4539,6 +4540,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.visibility = View.VISIBLE
             rootName.text = AppConfig.instance.emailConfig().account
             emailMenu.visibility = View.VISIBLE
+            editBtn.visibility = View.VISIBLE
+            if( ConstantValue.chooseFragMentMenu == "Circle")
+            {
+                emailMenu.visibility = View.GONE
+                editBtn.visibility = View.GONE
+            }
             if(AppConfig.instance.emailConfig().emailType == "255" || AppConfig.instance.emailConfig().emailType == "6")
             {
                 drafts.visibility = View.GONE
