@@ -53,12 +53,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
 
     override fun getLastVersion() {
         Log.i("splash", "1")
-       /* if (SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0) !== VersionUtil.getAppVersionCode(AppConfig.instance)) {
-            KLog.i("需要跳转到guest.........................")
-            KLog.i(SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0))
-            KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
-            jumpToGuest = true
-        }*/
+        /* if (SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0) !== VersionUtil.getAppVersionCode(AppConfig.instance)) {
+             KLog.i("需要跳转到guest.........................")
+             KLog.i(SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0))
+             KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
+             jumpToGuest = true
+         }*/
         /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if(routerList.size == 0)
         {
@@ -140,7 +140,6 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/temp/")//删除外部查看文件的临时路径
             FileUtil.init()
             PathUtils.getInstance().initDirs("", "", AppConfig.instance)
-
             if(ConstantValue.encryptionType.equals("0"))
             {
                 ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
@@ -359,9 +358,9 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     private fun startTox()
     {
         ConstantValue.curreantNetworkType = "TOX"
-       /* LogUtil.addLog("P2P启动连接:","SplashActivity")
-        var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-        AppConfig.instance.startService(intent)*/
+        /* LogUtil.addLog("P2P启动连接:","SplashActivity")
+         var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+         AppConfig.instance.startService(intent)*/
     }
 
 }

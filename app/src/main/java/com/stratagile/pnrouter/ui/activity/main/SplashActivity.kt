@@ -7,6 +7,7 @@ import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
+import com.hyphenate.easeui.utils.PathUtils
 import com.jaeger.library.StatusBarUtil
 import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
@@ -15,6 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -25,6 +27,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -158,14 +161,14 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
              }
          }*/
-       /* var googleApiAvailability = GoogleApiAvailability.getInstance();
-        var resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
-        if(resultCode != ConnectionResult.SUCCESS) {
-            if(googleApiAvailability.isUserResolvableError(resultCode)) {
-                googleApiAvailability.getErrorDialog(this, resultCode, 2404).show();
-            }
-            ConstantValue.googleserviceFlag = false;
-        }*/
+        /* var googleApiAvailability = GoogleApiAvailability.getInstance();
+         var resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+         if(resultCode != ConnectionResult.SUCCESS) {
+             if(googleApiAvailability.isUserResolvableError(resultCode)) {
+                 googleApiAvailability.getErrorDialog(this, resultCode, 2404).show();
+             }
+             ConstantValue.googleserviceFlag = false;
+         }*/
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
         {
@@ -320,7 +323,20 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 
 
-
+        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultfolder"
+        var defaultfolderFile = File(defaultfolder)
+        if(!defaultfolderFile.exists())
+        {
+            defaultfolderFile.createNewFile();
+            var localFileMenu = LocalFileMenu();
+            localFileMenu.creatTime = System.currentTimeMillis();
+        }
+        var defaultwechatfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultwechatfolder"
+        var defaultwechatfolderFile = File(defaultwechatfolder)
+        if(!defaultwechatfolderFile.exists())
+        {
+            defaultwechatfolderFile.createNewFile();
+        }
         mPresenter.observeJump()
     }
 

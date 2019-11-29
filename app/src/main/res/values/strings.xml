@@ -895,4 +895,7 @@ Then enter your Email address and password to log in.</string>
     <string name="nomsg_local">Filter</string>
     <string name="nodemsg_local">Node</string>
     <string name="new_encryption">New Folder</string>
+    <string name="create_folder">Create Folder</string>
+    <string name="default_folder">Default Folder</string>
+    <string name="default_wechatfoldername">Default Wechat Folder</string>
 </resources>

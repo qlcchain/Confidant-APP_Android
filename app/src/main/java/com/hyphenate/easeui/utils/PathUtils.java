@@ -26,7 +26,7 @@ public class PathUtils {
     private File filePath;
     private File tempPath = null;
     private File emailPath = null;
-
+    private File encryptionPath = null;
     private PathUtils() {
     }
 
@@ -73,7 +73,10 @@ public class PathUtils {
         if(!this.filePath.exists()) {
             this.filePath.mkdirs();
         }
-
+        this.encryptionPath=  generateEncryptionPath(var1, var2, var3);
+        if(!this.encryptionPath.exists()) {
+            this.encryptionPath.mkdirs();
+        }
     }
 
     public File getImagePath() {
@@ -97,6 +100,8 @@ public class PathUtils {
     public File getHistoryPath() {
         return this.historyPath;
     }
+
+    public File getEncryptionPath(){return  this.encryptionPath;}
 
     private static File getStorageDir(Context var0) {
         if(storageDir == null) {
@@ -171,7 +176,16 @@ public class PathUtils {
 
         return new File(var3);
     }
+    private static File generateEncryptionPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/";
+        }
 
+        return new File(var3);
+    }
     private static File generateVideoPath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {

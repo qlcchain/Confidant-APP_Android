@@ -3663,7 +3663,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
-                editBtn.visibility = View.GONE
                 if(AppConfig.instance.emailConfig().account != null)
                 {
                     var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))

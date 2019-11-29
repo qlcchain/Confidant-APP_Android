@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionCont
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
+import com.stratagile.pnrouter.utils.PopWindowUtil
 import kotlinx.android.synthetic.main.picencry_menu_list.*
 
 import javax.inject.Inject;
@@ -56,7 +57,7 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
             when (view.id) {
                 R.id.menuItem ->
                 {
-                    view
+
                 }
                 R.id.btnDelete ->
                 {
@@ -69,6 +70,16 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
                     parentRoot.quickClose()
                 }
             }
+        }
+        addMenuItem.setOnClickListener()
+        {
+            PopWindowUtil.showCreateFolderWindow(this@PicEncryptionActivity, addMenuItem, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    var map = obj as HashMap<String,String>
+                    var foldername = map.get("foldername") as String
+
+                }
+            })
         }
     }
 
