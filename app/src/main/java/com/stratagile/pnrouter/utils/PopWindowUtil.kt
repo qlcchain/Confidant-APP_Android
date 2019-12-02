@@ -345,9 +345,9 @@ object PopWindowUtil {
         for (index in 0..size -1){
             list.add(FileOpreateType(iconList[index], menuList[index]))
         }
-       /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
-        list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
-        list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+        /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+         list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
         val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
@@ -529,6 +529,62 @@ object PopWindowUtil {
         var isShow = false
         var isShow2 = false
         val maskView = LayoutInflater.from(activity).inflate(R.layout.createfolder_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
+        /* list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+         list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
+         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))*/
+        maskView.setOnSystemUiVisibilityChangeListener {
+            KLog.i("改变了。。。")
+        }
+        //对具体的view的事件的处理
+        var titleSetPassClose= maskView.findViewById<View>(R.id.titleSetPassClose)
+        titleSetPassClose.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
+
+        var bt_set= maskView.findViewById<View>(R.id.bt_set)
+        var foldername= maskView.findViewById<EditText>(R.id.foldername)
+        bt_set.setOnClickListener {
+            var foldername= foldername.text.toString()
+            if(foldername == "")
+            {
+                activity.toast(R.string.Name_cannot_be_empty)
+                return@setOnClickListener
+            }
+            var map = HashMap<String,String>()
+            map.put("foldername",foldername)
+            onRouterSelectListener.onSelect(0, map)
+            CustomPopWindow.onBackPressed()
+        }
+//对具体的view的事件的处理
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(true)
+                .setContenView(contentView)
+                .setFocusable(true)
+                .setClickCloseEnable(false)
+                .setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED)
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                .create()
+                .showAtLocation(showView, Gravity.BOTTOM, 0, 0)
+    }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showRenameFolderWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
+        var isShow = false
+        var isShow2 = false
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.renamefolder_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
 //        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)

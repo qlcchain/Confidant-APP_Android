@@ -227,8 +227,6 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "6"->
                 {
-                    account_editText.setText("kzh1989@icloud.com")
-                    password_editText.setText("ewfj-edtl-ydhs-ehml")
                 }
                 "7"->
                 {

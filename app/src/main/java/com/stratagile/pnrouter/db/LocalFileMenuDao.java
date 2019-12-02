@@ -25,7 +25,9 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property CreatTime = new Property(1, Long.class, "creatTime", false, "CREAT_TIME");
         public final static Property FileName = new Property(2, String.class, "fileName", false, "FILE_NAME");
-        public final static Property FileNum = new Property(3, Long.class, "fileNum", false, "FILE_NUM");
+        public final static Property Path = new Property(3, String.class, "path", false, "PATH");
+        public final static Property FileNum = new Property(4, Long.class, "fileNum", false, "FILE_NUM");
+        public final static Property Type = new Property(5, String.class, "type", false, "TYPE");
     }
 
 
@@ -44,7 +46,9 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"CREAT_TIME\" INTEGER," + // 1: creatTime
                 "\"FILE_NAME\" TEXT," + // 2: fileName
-                "\"FILE_NUM\" INTEGER);"); // 3: fileNum
+                "\"PATH\" TEXT," + // 3: path
+                "\"FILE_NUM\" INTEGER," + // 4: fileNum
+                "\"TYPE\" TEXT);"); // 5: type
     }
 
     /** Drops the underlying database table. */
@@ -72,9 +76,19 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
             stmt.bindString(3, fileName);
         }
  
+        String path = entity.getPath();
+        if (path != null) {
+            stmt.bindString(4, path);
+        }
+ 
         Long fileNum = entity.getFileNum();
         if (fileNum != null) {
-            stmt.bindLong(4, fileNum);
+            stmt.bindLong(5, fileNum);
+        }
+ 
+        String type = entity.getType();
+        if (type != null) {
+            stmt.bindString(6, type);
         }
     }
 
@@ -97,9 +111,19 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
             stmt.bindString(3, fileName);
         }
  
+        String path = entity.getPath();
+        if (path != null) {
+            stmt.bindString(4, path);
+        }
+ 
         Long fileNum = entity.getFileNum();
         if (fileNum != null) {
-            stmt.bindLong(4, fileNum);
+            stmt.bindLong(5, fileNum);
+        }
+ 
+        String type = entity.getType();
+        if (type != null) {
+            stmt.bindString(6, type);
         }
     }
 
@@ -114,7 +138,9 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // creatTime
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // fileName
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3) // fileNum
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // path
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // fileNum
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // type
         );
         return entity;
     }
@@ -124,7 +150,9 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setCreatTime(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setFileName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setFileNum(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setPath(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setFileNum(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setType(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

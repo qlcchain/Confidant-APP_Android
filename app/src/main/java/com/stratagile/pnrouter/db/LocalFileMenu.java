@@ -15,9 +15,9 @@ public class LocalFileMenu implements Parcelable {
     private String fileName;
     private String path;
     private Long fileNum;
+    private String type;//文件类型，0 本地，1微信
 
     public LocalFileMenu() {
-
     }
 
     protected LocalFileMenu(Parcel in) {
@@ -38,6 +38,18 @@ public class LocalFileMenu implements Parcelable {
         } else {
             fileNum = in.readLong();
         }
+        type = in.readString();
+    }
+
+    @Generated(hash = 1793053926)
+    public LocalFileMenu(Long id, Long creatTime, String fileName, String path, Long fileNum,
+            String type) {
+        this.id = id;
+        this.creatTime = creatTime;
+        this.fileName = fileName;
+        this.path = path;
+        this.fileNum = fileNum;
+        this.type = type;
     }
 
     public static final Creator<LocalFileMenu> CREATOR = new Creator<LocalFileMenu>() {
@@ -79,6 +91,7 @@ public class LocalFileMenu implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeLong(fileNum);
         }
+        dest.writeString(type);
     }
 
     public Long getId() {
@@ -119,5 +132,13 @@ public class LocalFileMenu implements Parcelable {
 
     public void setFileNum(Long fileNum) {
         this.fileNum = fileNum;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

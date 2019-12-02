@@ -62,6 +62,20 @@ public class LocalFileItem implements Parcelable {
         fileId = in.readString();
     }
 
+    @Generated(hash = 1281854371)
+    public LocalFileItem(Long id, String fileName, String filePath, Long fileSize,
+            Long creatTime, Integer fileType, Integer fileFrom, String autor, String fileId) {
+        this.id = id;
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.fileSize = fileSize;
+        this.creatTime = creatTime;
+        this.fileType = fileType;
+        this.fileFrom = fileFrom;
+        this.autor = autor;
+        this.fileId = fileId;
+    }
+
     public static final Creator<LocalFileItem> CREATOR = new Creator<LocalFileItem>() {
         @Override
         public LocalFileItem createFromParcel(Parcel in) {
