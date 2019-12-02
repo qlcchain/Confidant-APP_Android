@@ -901,5 +901,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Default_album">Default album</string>
     <string name="Are_you_sure_you_want_to_delete_the_folder">Do you want to delete the folder?</string>
     <string name="This_name_folder_already_exists">This name folder already exists</string>
+    <string name="Album_encryption">Album encryption</string>
 
 </resources>

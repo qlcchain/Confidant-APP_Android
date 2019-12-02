@@ -1,29 +1,31 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import com.hyphenate.easeui.utils.PathUtils
-import com.mcxtzhang.swipemenulib.SwipeMenuLayout
-import com.pawegio.kandroid.toast
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentStatePagerAdapter
+import android.widget.LinearLayout
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
-import com.stratagile.pnrouter.db.LocalFileMenu
-import com.stratagile.pnrouter.db.LocalFileMenuDao
-import com.stratagile.pnrouter.entity.JPullFileListRsp
-import com.stratagile.pnrouter.entity.PicMenu
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
-import com.stratagile.pnrouter.utils.DeleteUtils
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.view.SweetAlertDialog
-import kotlinx.android.synthetic.main.picencry_menu_list.*
-import java.io.File
-
-import javax.inject.Inject;
+import kotlinx.android.synthetic.main.activity_encrption_local.*
+import net.lucode.hackware.magicindicator.ViewPagerHelper
+import net.lucode.hackware.magicindicator.buildins.UIUtil
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -37,108 +39,102 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     @Inject
     internal lateinit var mPresenter: PicEncryptionPresenter
     var picMenuEncryptionAdapter: PicMenuEncryptionAdapter? = null
-
+    lateinit var commonNavigator : CommonNavigator
+    private var picMenuLocalFragment: PicMenuLocalFragment? = null
+    private var picMenuNodeFragment: PicMenuNodeFragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
-        setContentView(R.layout.picencry_menu_list)
-        title.text = getString(R.string.Default_album)
+        commonNavigator = CommonNavigator(this)
+        //setContentView(R.layout.picencry_menu_list)
+        setContentView(R.layout.activity_encrption_local)
+        title.text = getString(R.string.Album_encryption)
 
     }
     override fun initData() {
         var _this = this;
-        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
-        picMenuEncryptionAdapter = PicMenuEncryptionAdapter(picMenuList)
-        recyclerViewPicEncry.adapter = picMenuEncryptionAdapter
-        picMenuEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var taskFile = picMenuEncryptionAdapter!!.getItem(position)
-            //startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
-        }
-        picMenuEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
-            when (view.id) {
-                R.id.menuItem ->
-                {
+        picMenuLocalFragment = PicMenuLocalFragment()
+        picMenuNodeFragment = PicMenuNodeFragment()
+        var titles = ArrayList<String>()
+        titles.add(getString(R.string.maillist_local))
+        titles.add(getString(R.string.node_local))
+        var icon = ArrayList<Drawable>()
+        icon.add(getResources().getDrawable(R.mipmap.statusbar_local))
+        icon.add(getResources().getDrawable(R.mipmap.statusbar_download_node))
+        commonNavigator.isAdjustMode = true
+        viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
+            override fun getItem(position: Int): Fragment {
+                if (position == 0) {
+                    val args = Bundle()
+                    args.putString("from", "")
+                    picMenuLocalFragment!!.arguments = args
+                    return picMenuLocalFragment!!
+                } else {
+                    val args = Bundle()
+                    args.putString("from", "")
+                    picMenuNodeFragment!!.arguments = args
+                    return picMenuNodeFragment!!
+                }
+            }
 
-                }
-                R.id.btnDelete ->
+            override fun getCount(): Int {
+                return titles.size
+            }
+
+            override fun getPageTitle(position: Int): CharSequence? {
+                return titles.get(position)
+            }
+        }
+        commonNavigator.adapter = object : CommonNavigatorAdapter() {
+
+            override fun getCount(): Int {
+                return if (titles == null) 0 else titles.size
+            }
+
+            override fun getTitleView(context: Context, index: Int): IPagerTitleView {
+                //val badgePagerTitleView = BadgePagerTitleView(context)
+                val simplePagerTitleView = ColorTransitionPagerTitleView(context)
+                simplePagerTitleView.setText(titles.get(index))
+                simplePagerTitleView.normalColor =  Color.parseColor("#FF9496A1")
+                simplePagerTitleView.textSize = 17f
+                var icon: Drawable = icon.get(index)
+                 icon.setBounds(120,0,210,90);
+                /*if(index == 0)
                 {
-                    var parentRoot = view.parent as SwipeMenuLayout
-                    parentRoot.quickClose()
-                    runOnUiThread {
-                        SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
-                                .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_folder))
-                                .setConfirmClickListener {
-                                    var data = picMenuEncryptionAdapter!!.getItem(position)
-                                    var filePath = data!!.path;
-                                    DeleteUtils.deleteDirectory(filePath)
-                                    AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.delete(data)
-                                    picMenuEncryptionAdapter!!.remove(position)
-                                    picMenuEncryptionAdapter!!.notifyDataSetChanged()
-                                }
-                                .show()
-                    }
-                }
-                R.id.btnRename ->
-                {
-                    var parentRoot = view.parent as SwipeMenuLayout
-                    parentRoot.quickClose()
-                    var choosePosition = position
-                    PopWindowUtil.showRenameFolderWindow(this@PicEncryptionActivity, addMenuItem, object : PopWindowUtil.OnSelectListener {
-                        override fun onSelect(position: Int, obj: Any) {
-                            var map = obj as HashMap<String,String>
-                            var foldername = map.get("foldername") as String
-                            var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.FileName.eq(foldername)).list()
-                           if(picMenuList != null && picMenuList.size > 0)
-                           {
-                               toast(R.string.This_name_folder_already_exists)
-                               return;
-                           }
-                            var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
-                            data!!.fileName = foldername
-                            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
-                            picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
-                        }
-                    })
+                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x105).toInt(),resources.getDimension(R.dimen.x60).toInt());
+                }else{
+                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x125).toInt(),resources.getDimension(R.dimen.x60).toInt());
+                }*/
+                simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
+                simplePagerTitleView.selectedColor = Color.parseColor("#FF2B2B2B")
+                simplePagerTitleView.setOnClickListener {  viewPager.setCurrentItem(index) }
+                return simplePagerTitleView
+            }
+
+            override fun getIndicator(context: Context): IPagerIndicator {
+                val indicator = LinePagerIndicator(context)
+                indicator.setColors(Color.parseColor("#FF6646F7"))
+                indicator.lineHeight = UIUtil.dip2px(context, 1.5).toFloat()
+                return indicator
+            }
+
+            override fun getTitleWeight(context: Context?, index: Int): Float {
+                return if (index == 0) {
+                    1.0f
+                } else {
+                    1.0f
                 }
             }
         }
-        addMenuItem.setOnClickListener()
-        {
-            PopWindowUtil.showCreateFolderWindow(this@PicEncryptionActivity, addMenuItem, object : PopWindowUtil.OnSelectListener {
-                override fun onSelect(position: Int, obj: Any) {
-                    var map = obj as HashMap<String,String>
-                    var foldername = map.get("foldername") as String
-                    var localFileMenu = LocalFileMenu();
-                    try {
-                        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() + foldername
-                        var defaultfolderFile = File(defaultfolder)
-                        if(!defaultfolderFile.exists())
-                        {
-                            defaultfolderFile.mkdirs();
-                            localFileMenu.creatTime = System.currentTimeMillis();
-                            localFileMenu.fileName = foldername
-                            localFileMenu.path = defaultfolder
-                            localFileMenu.fileNum = 0L
-                            localFileMenu.type = "0"
-                            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
-                        }
-                    }catch (e:Exception)
-                    {
-                        toast(R.string.This_name_folder_already_exists)
-                    }
-                    if(localFileMenu.fileName != null)
-                    {
-                        picMenuEncryptionAdapter!!.addData(localFileMenu)
-                        picMenuEncryptionAdapter!!.notifyDataSetChanged()
-                    }else{
-                        toast(R.string.This_name_folder_already_exists)
-                    }
+        indicator.setNavigator(commonNavigator)
+        val titleContainer = commonNavigator.titleContainer // must after setNavigator
+        titleContainer.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
+        titleContainer.dividerPadding = UIUtil.dip2px(AppConfig.instance, 15.0)
+        titleContainer.dividerDrawable = resources.getDrawable(R.drawable.simple_splitter)
+        ViewPagerHelper.bind(indicator, viewPager);
 
-                }
-            })
-        }
     }
 
     override fun setupActivityComponent() {
