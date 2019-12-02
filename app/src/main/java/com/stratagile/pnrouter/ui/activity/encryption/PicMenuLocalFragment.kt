@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,15 +48,18 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
         picMenuEncryptionAdapter = PicMenuEncryptionAdapter(picMenuList)
         recyclerViewPicEncry.adapter = picMenuEncryptionAdapter
-        picMenuEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
+        /*picMenuEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
             var taskFile = picMenuEncryptionAdapter!!.getItem(position)
             //startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
-        }
+        }*/
         picMenuEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.menuItem ->
                 {
-
+                    var data = picMenuEncryptionAdapter!!.getItem(position)
+                    var intent =  Intent(activity!!, PicEncryptionlListActivity::class.java)
+                    intent.putExtra("folderInfo",data)
+                    startActivity(intent)
                 }
                 R.id.btnDelete ->
                 {

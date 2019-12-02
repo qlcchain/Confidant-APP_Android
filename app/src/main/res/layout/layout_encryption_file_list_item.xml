@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/x21"
+    android:layout_marginTop="@dimen/x19"
+    android:paddingRight="@dimen/x31"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x138">
+
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/x61"
+            android:layout_height="@dimen/x61"
+            android:layout_marginLeft="@dimen/x4"
+            android:layout_marginRight="@dimen/x15"
+            android:src="@mipmap/jpg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/checkBox"
+            app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_marginBottom="@dimen/x2"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvFileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:text="Google project development.jpg"
+                android:textColor="@color/emailtextColor"
+                android:textSize="@dimen/commemTextSize"/>
+
+            <TextView
+                android:id="@+id/tvFileSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/contentColor"
+                android:text="244k" />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/opMenu"
+            android:layout_width="@dimen/x61"
+            android:layout_height="@dimen/x61"
+            android:src="@mipmap/statusbar_hedo"
+            android:layout_gravity="right|center_vertical"
+            />
+    </LinearLayout>
+</LinearLayout>
