@@ -25,10 +25,13 @@ public class LocalFileItem implements Parcelable {
     private Integer fileType;
     private Integer fileFrom;//0本地，1服务器
     private String autor;//作者
-    private String fileId;//属于哪个文件夹
+    private Long fileId;//属于哪个文件夹
+    private String srcKey;
+    private String fileMD5;
 
     public LocalFileItem() {
     }
+
 
     protected LocalFileItem(Parcel in) {
         if (in.readByte() == 0) {
@@ -59,12 +62,20 @@ public class LocalFileItem implements Parcelable {
             fileFrom = in.readInt();
         }
         autor = in.readString();
-        fileId = in.readString();
+        if (in.readByte() == 0) {
+            fileId = null;
+        } else {
+            fileId = in.readLong();
+        }
+        srcKey = in.readString();
+        fileMD5 = in.readString();
     }
 
-    @Generated(hash = 1281854371)
+
+    @Generated(hash = 459452525)
     public LocalFileItem(Long id, String fileName, String filePath, Long fileSize,
-            Long creatTime, Integer fileType, Integer fileFrom, String autor, String fileId) {
+            Long creatTime, Integer fileType, Integer fileFrom, String autor, Long fileId,
+            String srcKey, String fileMD5) {
         this.id = id;
         this.fileName = fileName;
         this.filePath = filePath;
@@ -74,6 +85,8 @@ public class LocalFileItem implements Parcelable {
         this.fileFrom = fileFrom;
         this.autor = autor;
         this.fileId = fileId;
+        this.srcKey = srcKey;
+        this.fileMD5 = fileMD5;
     }
 
     public static final Creator<LocalFileItem> CREATOR = new Creator<LocalFileItem>() {
@@ -128,7 +141,14 @@ public class LocalFileItem implements Parcelable {
             dest.writeInt(fileFrom);
         }
         dest.writeString(autor);
-        dest.writeString(fileId);
+        if (fileId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(fileId);
+        }
+        dest.writeString(srcKey);
+        dest.writeString(fileMD5);
     }
 
     public Long getId() {
@@ -195,11 +215,27 @@ public class LocalFileItem implements Parcelable {
         this.autor = autor;
     }
 
-    public String getFileId() {
+    public Long getFileId() {
         return fileId;
     }
 
-    public void setFileId(String fileId) {
+    public void setFileId(Long fileId) {
         this.fileId = fileId;
+    }
+
+    public String getSrcKey() {
+        return srcKey;
+    }
+
+    public void setSrcKey(String srcKey) {
+        this.srcKey = srcKey;
+    }
+
+    public String getFileMD5() {
+        return fileMD5;
+    }
+
+    public void setFileMD5(String fileMD5) {
+        this.fileMD5 = fileMD5;
     }
 }

@@ -8,6 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.pawegio.kandroid.loadAnimation
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.entity.JPullFileListRsp
@@ -26,12 +27,20 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
 
     var isChooseMode = false
     override fun convert(helper: BaseViewHolder, item: LocalFileItem) {
-        /*helper.addOnClickListener(R.id.menuItem)
-        helper.addOnClickListener(R.id.btnDelete)
-        helper.addOnClickListener(R.id.btnRename)
-        var userAvatar = helper.getView<DrawableEnTextView>(R.id.menuItem)
-        userAvatar.setTitleText(item.fileName)
-        userAvatar.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))*/
+        helper.addOnClickListener(R.id.itemTypeIcon)
+        helper.addOnClickListener(R.id.itemInfo)
+        helper.addOnClickListener(R.id.opMenu)
+        helper.setText(R.id.tvFileName,item.fileName)
+        var timeStr = DateUtil.getTimestampString(Date(item.creatTime), AppConfig.instance)
+        if(item.fileSize >= 1024 * 1024)
+        {
+            helper.setText(R.id.tvFileSize,timeStr +" "+(item.fileSize / (1024 *1024)).toFloat().toString() +"M")
+        }else{
+            helper.setText(R.id.tvFileSize,timeStr +" "+(item.fileSize / 1024).toFloat().toString() +"K")
+        }
+
+        var itemTypeIcon = helper.getView<ImageView>(R.id.itemTypeIcon)
+        //itemTypeIcon.setImageResource()
     }
 
 }

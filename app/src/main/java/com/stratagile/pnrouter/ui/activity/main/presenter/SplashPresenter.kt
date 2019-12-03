@@ -13,6 +13,8 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
+import com.stratagile.pnrouter.db.LocalFileMenu
+import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.CryptoBoxKeypair
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
@@ -25,6 +27,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import org.libsodium.jni.Sodium
+import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -140,6 +143,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/temp/")//删除外部查看文件的临时路径
             FileUtil.init()
             PathUtils.getInstance().initDirs("", "", AppConfig.instance)
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
             if(ConstantValue.encryptionType.equals("0"))
             {
                 ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
@@ -291,6 +295,46 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_fileForward_vedio.mp4",3)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_downloading.*",5)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_fileForward.*",5)
+
+
+            var needCreate = false;
+            var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
+            if(picMenuList == null || picMenuList.size == 0)
+            {
+                needCreate = true
+            }
+            var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultfolder"
+            var defaultfolderFile = File(defaultfolder)
+            if(needCreate && !defaultfolderFile.exists())
+            {
+                defaultfolderFile.mkdirs();
+                var localFileMenu = LocalFileMenu();
+                localFileMenu.creatTime = System.currentTimeMillis();
+                localFileMenu.fileName = "Default album"
+                localFileMenu.path = defaultfolder
+                localFileMenu.fileNum = 0
+                localFileMenu.type = "0"
+                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
+            }
+            var needCreateWechat = false;
+            var picMenuListWechat = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
+            if(picMenuListWechat == null || picMenuListWechat.size == 0)
+            {
+                needCreateWechat = true
+            }
+            var defaultwechatfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultwechatfolder"
+            var defaultwechatfolderFile = File(defaultwechatfolder)
+            if(needCreateWechat && !defaultwechatfolderFile.exists())
+            {
+                defaultwechatfolderFile.mkdirs();
+                var localFileMenu = LocalFileMenu();
+                localFileMenu.creatTime = System.currentTimeMillis();
+                localFileMenu.fileName = "Default Wechat Folder"
+                localFileMenu.path = defaultwechatfolder
+                localFileMenu.fileNum = 0
+                localFileMenu.type = "1"
+                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
+            }
             /*FileUtil.getKongFile("image_defalut_bg.xml")
             FileUtil.getKongFile("image_defalut_bg.png")
             FileUtil.getKongFile("image_defalut_fileForward_bg.png")

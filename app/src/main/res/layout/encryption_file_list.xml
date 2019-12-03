@@ -37,7 +37,6 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:textSize="19sp"
-               android:textStyle="bold"
                android:textColor="#1E1E24"
                android:text="@string/Confirm"/>
        </LinearLayout>
@@ -50,25 +49,25 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/backMenu"
+                android:id="@+id/allMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/mainColor"
                 android:layout_marginRight="@dimen/x20"
-                android:drawableLeft="@mipmap/statusbar_download_node"
+                android:drawableLeft="@mipmap/multiple_selection"
                 android:textSize="15sp"
                 android:text=""/>
             <TextView
-                android:id="@+id/deleteMenu"
+                android:id="@+id/addMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/mainColor"
                 android:layout_marginRight="@dimen/x20"
-                android:drawableLeft="@mipmap/statusbar_delete"
+                android:drawableLeft="@mipmap/statusbar_plus"
                 android:textSize="15sp"
                 android:text=""/>
             <TextView
-                android:id="@+id/moreMenu"
+                android:id="@+id/hide"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

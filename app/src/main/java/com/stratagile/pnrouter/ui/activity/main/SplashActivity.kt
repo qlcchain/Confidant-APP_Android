@@ -323,44 +323,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 
-        var needCreate = false;
-        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
-        if(picMenuList == null || picMenuList.size == 0)
-        {
-            needCreate = true
-        }
-        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultfolder"
-        var defaultfolderFile = File(defaultfolder)
-        if(needCreate && !defaultfolderFile.exists())
-        {
-            defaultfolderFile.mkdirs();
-            var localFileMenu = LocalFileMenu();
-            localFileMenu.creatTime = System.currentTimeMillis();
-            localFileMenu.fileName = "Default album"
-            localFileMenu.path = defaultfolder
-            localFileMenu.fileNum = 0
-            localFileMenu.type = "0"
-            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
-        }
-        var needCreateWechat = false;
-        var picMenuListWechat = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
-        if(picMenuListWechat == null || picMenuListWechat.size == 0)
-        {
-            needCreateWechat = true
-        }
-        var defaultwechatfolder  = PathUtils.getInstance().getEncryptionPath().toString() + "/defaultwechatfolder"
-        var defaultwechatfolderFile = File(defaultwechatfolder)
-        if(needCreateWechat && !defaultwechatfolderFile.exists())
-        {
-            defaultwechatfolderFile.mkdirs();
-            var localFileMenu = LocalFileMenu();
-            localFileMenu.creatTime = System.currentTimeMillis();
-            localFileMenu.fileName = "Default Wechat Folder"
-            localFileMenu.path = defaultwechatfolder
-            localFileMenu.fileNum = 0
-            localFileMenu.type = "1"
-            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
-        }
         mPresenter.observeJump()
     }
 

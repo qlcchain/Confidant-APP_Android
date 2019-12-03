@@ -109,7 +109,7 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                     var foldername = map.get("foldername") as String
                     var localFileMenu = LocalFileMenu();
                     try {
-                        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() + foldername
+                        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ foldername
                         var defaultfolderFile = File(defaultfolder)
                         if(!defaultfolderFile.exists())
                         {

@@ -30,7 +30,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         public final static Property FileType = new Property(5, Integer.class, "fileType", false, "FILE_TYPE");
         public final static Property FileFrom = new Property(6, Integer.class, "fileFrom", false, "FILE_FROM");
         public final static Property Autor = new Property(7, String.class, "autor", false, "AUTOR");
-        public final static Property FileId = new Property(8, String.class, "fileId", false, "FILE_ID");
+        public final static Property FileId = new Property(8, Long.class, "fileId", false, "FILE_ID");
+        public final static Property SrcKey = new Property(9, String.class, "srcKey", false, "SRC_KEY");
+        public final static Property FileMD5 = new Property(10, String.class, "fileMD5", false, "FILE_MD5");
     }
 
 
@@ -54,7 +56,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
                 "\"FILE_TYPE\" INTEGER," + // 5: fileType
                 "\"FILE_FROM\" INTEGER," + // 6: fileFrom
                 "\"AUTOR\" TEXT," + // 7: autor
-                "\"FILE_ID\" TEXT);"); // 8: fileId
+                "\"FILE_ID\" INTEGER," + // 8: fileId
+                "\"SRC_KEY\" TEXT," + // 9: srcKey
+                "\"FILE_MD5\" TEXT);"); // 10: fileMD5
     }
 
     /** Drops the underlying database table. */
@@ -107,9 +111,19 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             stmt.bindString(8, autor);
         }
  
-        String fileId = entity.getFileId();
+        Long fileId = entity.getFileId();
         if (fileId != null) {
-            stmt.bindString(9, fileId);
+            stmt.bindLong(9, fileId);
+        }
+ 
+        String srcKey = entity.getSrcKey();
+        if (srcKey != null) {
+            stmt.bindString(10, srcKey);
+        }
+ 
+        String fileMD5 = entity.getFileMD5();
+        if (fileMD5 != null) {
+            stmt.bindString(11, fileMD5);
         }
     }
 
@@ -157,9 +171,19 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             stmt.bindString(8, autor);
         }
  
-        String fileId = entity.getFileId();
+        Long fileId = entity.getFileId();
         if (fileId != null) {
-            stmt.bindString(9, fileId);
+            stmt.bindLong(9, fileId);
+        }
+ 
+        String srcKey = entity.getSrcKey();
+        if (srcKey != null) {
+            stmt.bindString(10, srcKey);
+        }
+ 
+        String fileMD5 = entity.getFileMD5();
+        if (fileMD5 != null) {
+            stmt.bindString(11, fileMD5);
         }
     }
 
@@ -179,7 +203,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // fileType
             cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // fileFrom
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // autor
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // fileId
+            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // fileId
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // srcKey
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // fileMD5
         );
         return entity;
     }
@@ -194,7 +220,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         entity.setFileType(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
         entity.setFileFrom(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
         entity.setAutor(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setFileId(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setFileId(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setSrcKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setFileMD5(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
      }
     
     @Override
