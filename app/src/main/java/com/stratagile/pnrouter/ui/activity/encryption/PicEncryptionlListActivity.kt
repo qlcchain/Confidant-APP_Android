@@ -24,6 +24,8 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.SortEmailConfig
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionlListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionlListContract
@@ -34,6 +36,7 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.encryption_file_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.Serializable
 import java.util.ArrayList
@@ -72,6 +75,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
 
     }
     override fun initData() {
+        var _this = this;
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
         initPicPlug()
@@ -129,7 +133,18 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
 
                                 }
                                 "Delete" -> {
-
+                                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                            .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
+                                            .setConfirmClickListener {
+                                                var data = picItemEncryptionAdapter!!.getItem(position)
+                                                var filePath = data!!.filePath;
+                                                DeleteUtils.deleteDirectory(filePath)
+                                                AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
+                                                picItemEncryptionAdapter!!.remove(position)
+                                                picItemEncryptionAdapter!!.notifyDataSetChanged()
+                                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                            }
+                                            .show()
                                 }
 
                             }
@@ -311,6 +326,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.addData(0,localFileItem)
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
+                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
                             }
                         }
 

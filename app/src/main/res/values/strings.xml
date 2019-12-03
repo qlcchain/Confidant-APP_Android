@@ -904,5 +904,5 @@ Then enter your Email address and password to log in.</string>
     <string name="Album_encryption">Album encryption</string>
     <string name="file_already_exists">file already exists</string>
     <string name="Encryption_succeeded">Encryption succeeded</string>
-
+    <string name="Are_you_sure_you_want_to_delete_the_file">Do you want to delete the file?</string>
 </resources>

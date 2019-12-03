@@ -137,6 +137,11 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
             })
         }
     }
+    public fun upDateUI()
+    {
+        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
+        picMenuEncryptionAdapter!!.setNewData(picMenuList)
+    }
     override fun setupFragmentComponent() {
         DaggerPicMenuLocalComponent
                 .builder()

@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
@@ -24,6 +25,9 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
 
@@ -55,6 +59,7 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     }
     override fun initData() {
         var _this = this;
+        EventBus.getDefault().register(this)
         picMenuLocalFragment = PicMenuLocalFragment()
         picMenuNodeFragment = PicMenuNodeFragment()
         var titles = ArrayList<String>()
@@ -136,7 +141,10 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
         ViewPagerHelper.bind(indicator, viewPager);
 
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAddLocalEncryptionItemEvent(statusChange: AddLocalEncryptionItemEvent) {
+        picMenuLocalFragment!!.upDateUI();
+    }
     override fun setupActivityComponent() {
         DaggerPicEncryptionComponent
                 .builder()
@@ -156,5 +164,8 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
 }
