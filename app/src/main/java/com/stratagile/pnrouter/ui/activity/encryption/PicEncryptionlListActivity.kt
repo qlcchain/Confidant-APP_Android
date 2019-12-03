@@ -142,6 +142,15 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                                 AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
                                                 picItemEncryptionAdapter!!.remove(position)
                                                 picItemEncryptionAdapter!!.notifyDataSetChanged()
+                                                var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(folderInfo!!.id)).list()
+                                                if(picMenuList != null && picMenuList.size > 0)
+                                                {
+                                                    var picMenuItem = picMenuList.get(0)
+                                                    picMenuItem.fileNum -= 1;
+                                                    if(picMenuItem.fileNum < 0)
+                                                        picMenuItem.fileNum = 0
+                                                    AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
+                                                }
                                                 EventBus.getDefault().post(AddLocalEncryptionItemEvent())
                                             }
                                             .show()
@@ -150,7 +159,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             }
                         }
 
-                })
+                    })
                 }
 
             }
@@ -339,16 +348,16 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         }
     }
     override fun setupActivityComponent() {
-       DaggerPicEncryptionlListComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .picEncryptionlListModule(PicEncryptionlListModule(this))
-               .build()
-               .inject(this)
+        DaggerPicEncryptionlListComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .picEncryptionlListModule(PicEncryptionlListModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: PicEncryptionlListContract.PicEncryptionlListContractPresenter) {
-            mPresenter = presenter as PicEncryptionlListPresenter
-        }
+        mPresenter = presenter as PicEncryptionlListPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
