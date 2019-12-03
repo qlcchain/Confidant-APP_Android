@@ -292,7 +292,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             var filePath = list.get(i).path
                             val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
                             val fileMD5 = FileUtil.getFileMD5(File(filePath))
-                            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5)).list()
+                            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5),LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).list()
                             if(picItemList != null && picItemList.size > 0)
                             {
                                 toast(imgeSouceName+" "+getString( R.string.file_already_exists))
