@@ -2955,7 +2955,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
         //initFlatBall()
-
+        requestCapturePermission()
     }
 
     fun initFlatBall()
@@ -2989,7 +2989,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
         createFloatView()
         createImageReader()
-        requestCapturePermission()
     }
 
     private fun createFloatView() {
@@ -5496,6 +5495,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
             mResultData = data;
+            initFlatBall()
             /* FloatWindowsService.setResultData(data)
              startService(Intent(applicationContext, FloatWindowsService::class.java))*/
         }

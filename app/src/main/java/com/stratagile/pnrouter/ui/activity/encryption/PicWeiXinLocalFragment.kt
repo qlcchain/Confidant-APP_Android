@@ -10,10 +10,10 @@ import android.view.ViewGroup
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicMenuNodeComponent
-import com.stratagile.pnrouter.ui.activity.encryption.contract.PicMenuNodeContract
-import com.stratagile.pnrouter.ui.activity.encryption.module.PicMenuNodeModule
-import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicMenuNodePresenter
+import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicWeiXinLocalComponent
+import com.stratagile.pnrouter.ui.activity.encryption.contract.PicWeiXinLocalContract
+import com.stratagile.pnrouter.ui.activity.encryption.module.PicWeiXinLocalModule
+import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicWeiXinLocalPresenter
 
 import javax.inject.Inject;
 
@@ -35,22 +35,21 @@ import java.io.File
  * @author zl
  * @Package com.stratagile.pnrouter.ui.activity.encryption
  * @Description: $description
- * @date 2019/12/02 16:04:58
+ * @date 2019/12/03 17:30:10
  */
 
-class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View {
+class PicWeiXinLocalFragment : BaseFragment(), PicWeiXinLocalContract.View {
 
     @Inject
-    lateinit internal var mPresenter: PicMenuNodePresenter
+    lateinit internal var mPresenter: PicWeiXinLocalPresenter
     var picMenuEncryptionAdapter: PicMenuEncryptionAdapter? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.picencry_menu_list, null);
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var parent = this.activity as Activity;
-        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
+        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
         picMenuEncryptionAdapter = PicMenuEncryptionAdapter(picMenuList)
         recyclerViewPicEncry.adapter = picMenuEncryptionAdapter
         /*picMenuEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
@@ -62,7 +61,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View {
                 R.id.menuItem ->
                 {
                     var data = picMenuEncryptionAdapter!!.getItem(position)
-                    var intent =  Intent(activity!!, PicEncryptionlListActivity::class.java)
+                    var intent =  Intent(activity!!, WeXinEncryptionListActivity::class.java)
                     intent.putExtra("folderInfo",data)
                     startActivity(intent)
                 }
@@ -123,7 +122,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View {
                             localFileMenu.fileName = foldername
                             localFileMenu.path = defaultfolder
                             localFileMenu.fileNum = 0L
-                            localFileMenu.type = "0"
+                            localFileMenu.type = "1"
                             AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
                         }
                     }catch (e:Exception)
@@ -144,20 +143,22 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View {
     }
     public fun upDateUI()
     {
-        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
+        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
         picMenuEncryptionAdapter!!.setNewData(picMenuList)
     }
+
+
     override fun setupFragmentComponent() {
-        DaggerPicMenuNodeComponent
+        DaggerPicWeiXinLocalComponent
                 .builder()
                 .appComponent((activity!!.application as AppConfig).applicationComponent)
-                .picMenuNodeModule(PicMenuNodeModule(this))
+                .picWeiXinLocalModule(PicWeiXinLocalModule(this))
                 .build()
                 .inject(this)
     }
 
-    override fun setPresenter(presenter: PicMenuNodeContract.PicMenuNodeContractPresenter) {
-        mPresenter = presenter as PicMenuNodePresenter
+    override fun setPresenter(presenter: PicWeiXinLocalContract.PicWeiXinLocalContractPresenter) {
+        mPresenter = presenter as PicWeiXinLocalPresenter
     }
 
     override fun initDataFromLocal() {
