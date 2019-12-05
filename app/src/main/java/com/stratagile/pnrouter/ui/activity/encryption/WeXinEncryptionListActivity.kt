@@ -13,7 +13,6 @@ import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -53,12 +52,12 @@ import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeXinEncryptionListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeXinEncryptionListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeXinEncryptionListPresenter
-import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
@@ -191,7 +190,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                                         picMenuItem.fileNum = 0
                                                     AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                                                 }
-                                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                                EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
                                             }
                                             .show()
                                 }
@@ -377,7 +376,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 picItemEncryptionAdapter!!.addData(0,localFileItem)
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
-                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
                             }
                         }
 
@@ -531,6 +530,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         }
     }
     private fun addFloatMenuItem() {
+        var _this = this;
         val personItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_desktop", this)) {
             override fun action() {
                 goToDesktop(AppConfig.instance)
@@ -552,7 +552,15 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         }
         val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("icon_delete", this)) {
             override fun action() {
-                mFloatballManager!!.hide()
+                runOnUiThread {
+                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                            .setContentText(getString(R.string.Are_you_colse))
+                            .setConfirmClickListener {
+                                mFloatballManager!!.hide()
+                            }
+                            .show()
+                }
+
             }
         }
         mFloatballManager!!.addMenuItem(personItem)
@@ -698,34 +706,92 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
             bitmap!!.copyPixelsFromBuffer(buffer)
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
             image.close()
-            var fileImage: File? = null
+            var fileTempPathFile:File? = null
+            var filePic:File? = null
+            var fileScreenShotName = com.stratagile.pnrouter.screencapture.FileUtil.getOnlyScreenShotsName();
+            var fileTempPath  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "sreenshots"
             if (bitmap != null) {
                 try {
-                    fileImage = File(com.stratagile.pnrouter.screencapture.FileUtil.getScreenShotsName(applicationContext))
-                    if (!fileImage.exists()) {
-                        fileImage.createNewFile()
+                    fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
                     }
-                    val out = FileOutputStream(fileImage)
+                    filePic = File(fileTempPath +"/"+fileScreenShotName)
+                    val out = FileOutputStream(filePic)
                     if (out != null) {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
                         out.flush()
                         out.close()
-                        val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                        val contentUri = Uri.fromFile(fileImage)
+                        /*val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                        val contentUri = Uri.fromFile(filePic)
                         media.data = contentUri
-                        sendBroadcast(media)
+                        sendBroadcast(media)*/
                     }
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()
-                    fileImage = null
+                    filePic = null
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    fileImage = null
+                    filePic = null
                 }
+                var needPicPath = fileTempPath +"/"+fileScreenShotName
+                var file = File(needPicPath);
+                var isHas = file.exists();
+                if (isHas) {
+                    var filePath = needPicPath
+                    val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
+                    val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                    var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5),LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).list()
+                    if(picItemList != null && picItemList.size > 0)
+                    {
+                        toast(imgeSouceName+" "+getString( R.string.file_already_exists))
+                    }else{
+                        var fileSize = file.length();
+                        val fileKey = RxEncryptTool.generateAESKey()
+                        var SrcKey = ByteArray(256)
+                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
 
+                        val base58files_dir = folderInfo!!.path +"/"+imgeSouceName
+                        val code = FileUtil.copySdcardToxFileAndEncrypt(needPicPath, base58files_dir, fileKey.substring(0, 16))
+                        if (code == 1) {
+                            DeleteUtils.deleteDirectory(filePath)
+                            var localFileItem = LocalFileItem();
+                            localFileItem.filePath = base58files_dir;
+                            localFileItem.fileName = imgeSouceName;
+                            localFileItem.fileSize = fileSize;
+                            localFileItem.creatTime = System.currentTimeMillis()
+                            localFileItem.fileMD5 = fileMD5;
+                            val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                            when (MsgType) {
+                                "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
+                                "amr" ->  localFileItem.fileType = 2
+                                "mp4" ->  localFileItem.fileType = 3
+                                else ->  localFileItem.fileType = 4
+                            }
+                            localFileItem.fileFrom = 0;
+                            localFileItem.autor = "";
+                            localFileItem.fileId = folderInfo!!.id;
+                            localFileItem.srcKey = String(SrcKey)
+                            AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.insert(localFileItem)
+                            var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(folderInfo!!.id)).list()
+                            if(picMenuList != null && picMenuList.size > 0)
+                            {
+                                var picMenuItem = picMenuList.get(0)
+                                picMenuItem.fileNum += 1;
+                                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
+                            }
+                            runOnUiThread {
+                                picItemEncryptionAdapter!!.addData(0,localFileItem)
+                                picItemEncryptionAdapter!!.notifyItemChanged(0)
+                                toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
+                            }
+                            EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
+                        }
+                    }
+                }
             }
 
-            return if (fileImage != null) {
+            return if (filePic != null) {
                 bitmap
             } else null
         }
@@ -741,7 +807,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 {
                     mFloatballManager!!.show()
                 }
-                toast(R.string.screenshots_success)
+                //toast(R.string.screenshots_success)
                 //startActivity(PreviewPictureActivity.newIntent(applicationContext))
             }
 
@@ -757,16 +823,16 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     }
 
     override fun setupActivityComponent() {
-       DaggerWeXinEncryptionListComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .weXinEncryptionListModule(WeXinEncryptionListModule(this))
-               .build()
-               .inject(this)
+        DaggerWeXinEncryptionListComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .weXinEncryptionListModule(WeXinEncryptionListModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: WeXinEncryptionListContract.WeXinEncryptionListContractPresenter) {
-            mPresenter = presenter as WeXinEncryptionListPresenter
-        }
+        mPresenter = presenter as WeXinEncryptionListPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -779,18 +845,35 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
      * 跳转到桌面
      */
     fun goToDesktop(context: Context) {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
-        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        context.startActivity(intent)
+
+        try {
+            var intentWX = Intent(Intent.ACTION_MAIN);
+            var cmp =  ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+            intentWX.addCategory(Intent.CATEGORY_LAUNCHER);
+            intentWX.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intentWX.setComponent(cmp);
+            context.startActivity(intentWX)
+        }catch (e:Exception)
+        {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            context.startActivity(intent)
+        }
+
     }
     /**
      * 跳转到桌面
      */
     fun goToApp(context: Context) {
-        val intent = Intent("android.intent.action.MAIN")
+        /*val intent = Intent("android.intent.action.MAIN")
+        var currentActivity =  AppConfig.instance.mAppActivityManager.currentActivity() as Activity
         intent.component = ComponentName(applicationContext.packageName, MainActivity::class.java.name)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        applicationContext.startActivity(intent)
+        applicationContext.startActivity(intent)*/
+        var launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.stratagile.pnrouter");
+        //launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+        context.startActivity(launchIntent);
     }
+
 }

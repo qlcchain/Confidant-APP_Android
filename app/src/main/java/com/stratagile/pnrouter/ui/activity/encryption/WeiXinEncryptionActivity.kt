@@ -12,6 +12,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeiXinEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeiXinEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeiXinEncryptionModule
@@ -144,7 +145,7 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAddLocalEncryptionItemEvent(statusChange: AddLocalEncryptionItemEvent) {
+    fun onAddWxLocalEncryptionItemEvent(statusChange: AddWxLocalEncryptionItemEvent) {
         picMenuWxFragment!!.upDateUI();
     }
 

@@ -66,5 +66,17 @@ public class FileUtil {
 
   }
 
+  public static String getOnlyScreenShotsName() {
 
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+    String date = simpleDateFormat.format(new Date());
+    StringBuffer stringBuffer = new StringBuffer();
+    stringBuffer.append(SCREENSHOT_NAME);
+    stringBuffer.append("_");
+    stringBuffer.append(date);
+    stringBuffer.append(".png");
+
+    return stringBuffer.toString();
+
+  }
 }
