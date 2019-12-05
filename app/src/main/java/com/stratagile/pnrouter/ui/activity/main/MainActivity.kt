@@ -2663,7 +2663,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         WinqMessageReceiver.count = 0
         ShortcutBadger.removeCount(this)
         exitTime = System.currentTimeMillis() - 2001
-
         super.onResume()
         notificationManager?.cancelAll()
         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
@@ -2954,7 +2953,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        initFlatBall()
+        //initFlatBall()
 
     }
 
@@ -3560,7 +3559,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         ivNewGroup.setOnClickListener {
             //startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
-
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
             menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
@@ -3821,7 +3819,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
-            PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
+          PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     when (position) {
@@ -5846,11 +5844,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 REQUEST_MEDIA_PROJECTION)
     }
     private fun setFloatballVisible(visible: Boolean) {
-        if (visible) {
-            mFloatballManager!!.show()
-        } else {
-            mFloatballManager!!.hide()
+        if(mFloatballManager != null)
+        {
+            if (visible) {
+                mFloatballManager!!.show()
+            } else {
+                mFloatballManager!!.hide()
+            }
         }
+
     }
 
     fun isApplicationInForeground(): Boolean {

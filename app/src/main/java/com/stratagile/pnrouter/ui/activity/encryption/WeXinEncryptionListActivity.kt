@@ -211,6 +211,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         addMenu.setOnClickListener()
         {
             initFlatBall()
+            setFloatballVisible(true)
         }
         backBtn.setOnClickListener {
             onBackPressed()
@@ -549,9 +550,15 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 mFloatballManager!!.closeMenu()
             }
         }
+        val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("icon_delete", this)) {
+            override fun action() {
+                mFloatballManager!!.hide()
+            }
+        }
         mFloatballManager!!.addMenuItem(personItem)
                 .addMenuItem(settingItem)
                 .addMenuItem(walletItem)
+                .addMenuItem(closeItem)
                 .buildMenu()
     }
 
@@ -569,11 +576,15 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 REQUEST_MEDIA_PROJECTION)
     }
     private fun setFloatballVisible(visible: Boolean) {
-        if (visible) {
-            mFloatballManager!!.show()
-        } else {
-            mFloatballManager!!.hide()
+        if(mFloatballManager != null)
+        {
+            if (visible) {
+                mFloatballManager!!.show()
+            } else {
+                mFloatballManager!!.hide()
+            }
         }
+
     }
 
     fun isApplicationInForeground(): Boolean {
@@ -604,10 +615,6 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if(mFloatballManager != null)
-        {
-            mFloatballManager!!.hide()
-        }
     }
     inner class ActivityLifeCycleListener : Application.ActivityLifecycleCallbacks {
 
