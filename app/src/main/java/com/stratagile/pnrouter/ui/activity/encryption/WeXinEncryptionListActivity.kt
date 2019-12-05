@@ -125,6 +125,11 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
             var taskFile = picItemEncryptionAdapter!!.getItem(position)
             //startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
         }*/
+        initFlatBall()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.showIFHasPermission()
+        }
         picItemEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.itemTypeIcon, R.id.itemInfo ->
@@ -209,7 +214,6 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         }
         addMenu.setOnClickListener()
         {
-            initFlatBall()
             setFloatballVisible(true)
         }
         backBtn.setOnClickListener {
@@ -552,14 +556,15 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         }
         val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("icon_delete", this)) {
             override fun action() {
-                runOnUiThread {
+                mFloatballManager!!.hide()
+               /* runOnUiThread {
                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                             .setContentText(getString(R.string.Are_you_colse))
                             .setConfirmClickListener {
-                                mFloatballManager!!.hide()
+
                             }
                             .show()
-                }
+                }*/
 
             }
         }
@@ -744,7 +749,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5),LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).list()
                     if(picItemList != null && picItemList.size > 0)
                     {
-                        toast(imgeSouceName+" "+getString( R.string.file_already_exists))
+                        runOnUiThread {
+                            toast(imgeSouceName+" "+getString( R.string.file_already_exists))
+                        }
+
                     }else{
                         var fileSize = file.length();
                         val fileKey = RxEncryptTool.generateAESKey()
@@ -876,4 +884,11 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         context.startActivity(launchIntent);
     }
 
+    override fun onDestroy() {
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
+        super.onDestroy()
+    }
 }

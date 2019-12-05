@@ -138,7 +138,22 @@ public class FloatBallManager {
         floatBall.attachToWindow(mWindowManager);
         floatMenu.detachFromWindow(mWindowManager);
     }
-
+    public void showIFHasPermission() {
+        if (mActivity == null) {
+            if (mPermission == null) {
+                return;
+            }
+            if (mPermission.hasFloatBallPermission(mContext)) {
+                return;
+            }
+        }
+        if (isShowing) return;
+        isShowing = true;
+        floatBall.setVisibility(View.VISIBLE);
+        statusBarView.attachToWindow(mWindowManager);
+        floatBall.attachToWindow(mWindowManager);
+        floatMenu.detachFromWindow(mWindowManager);
+    }
     public void closeMenu() {
         floatMenu.closeMenu();
     }
