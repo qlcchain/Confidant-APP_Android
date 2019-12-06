@@ -187,7 +187,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                             .setConfirmClickListener {
                                                 var data = picItemEncryptionAdapter!!.getItem(position)
                                                 var filePath = data!!.filePath;
-                                                DeleteUtils.deleteDirectory(filePath)
+                                                DeleteUtils.deleteFile(filePath)
                                                 AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
                                                 picItemEncryptionAdapter!!.remove(position)
                                                 picItemEncryptionAdapter!!.notifyDataSetChanged()

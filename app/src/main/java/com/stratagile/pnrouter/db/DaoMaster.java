@@ -30,13 +30,13 @@ public class DaoMaster extends AbstractDaoMaster {
         FriendEntityDao.createTable(db, ifNotExists);
         GroupEntityDao.createTable(db, ifNotExists);
         GroupVerifyEntityDao.createTable(db, ifNotExists);
+        LocalFileItemDao.createTable(db, ifNotExists);
+        LocalFileMenuDao.createTable(db, ifNotExists);
         MessageEntityDao.createTable(db, ifNotExists);
         RecentFileDao.createTable(db, ifNotExists);
         RouterEntityDao.createTable(db, ifNotExists);
         RouterUserEntityDao.createTable(db, ifNotExists);
         UserEntityDao.createTable(db, ifNotExists);
-        LocalFileMenuDao.createTable(db, ifNotExists);
-        LocalFileItemDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -50,13 +50,13 @@ public class DaoMaster extends AbstractDaoMaster {
         FriendEntityDao.dropTable(db, ifExists);
         GroupEntityDao.dropTable(db, ifExists);
         GroupVerifyEntityDao.dropTable(db, ifExists);
+        LocalFileItemDao.dropTable(db, ifExists);
+        LocalFileMenuDao.dropTable(db, ifExists);
         MessageEntityDao.dropTable(db, ifExists);
         RecentFileDao.dropTable(db, ifExists);
         RouterEntityDao.dropTable(db, ifExists);
         RouterUserEntityDao.dropTable(db, ifExists);
         UserEntityDao.dropTable(db, ifExists);
-        LocalFileMenuDao.dropTable(db, ifExists);
-        LocalFileItemDao.dropTable(db, ifExists);
     }
 
     /**
@@ -84,13 +84,13 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(FriendEntityDao.class);
         registerDaoClass(GroupEntityDao.class);
         registerDaoClass(GroupVerifyEntityDao.class);
+        registerDaoClass(LocalFileItemDao.class);
+        registerDaoClass(LocalFileMenuDao.class);
         registerDaoClass(MessageEntityDao.class);
         registerDaoClass(RecentFileDao.class);
         registerDaoClass(RouterEntityDao.class);
         registerDaoClass(RouterUserEntityDao.class);
         registerDaoClass(UserEntityDao.class);
-        registerDaoClass(LocalFileMenuDao.class);
-        registerDaoClass(LocalFileItemDao.class);
     }
 
     public DaoSession newSession() {

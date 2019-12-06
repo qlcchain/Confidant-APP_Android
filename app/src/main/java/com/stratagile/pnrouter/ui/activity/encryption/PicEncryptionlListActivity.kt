@@ -3,7 +3,6 @@ package com.stratagile.pnrouter.ui.activity.encryption
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
@@ -15,8 +14,6 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
-import com.mcxtzhang.swipemenulib.SwipeMenuLayout
-import com.pawegio.kandroid.longToast
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -27,7 +24,6 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
-import com.stratagile.pnrouter.entity.events.SortEmailConfig
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionlListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionlListContract
@@ -143,7 +139,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                             .setConfirmClickListener {
                                                 var data = picItemEncryptionAdapter!!.getItem(position)
                                                 var filePath = data!!.filePath;
-                                                DeleteUtils.deleteDirectory(filePath)
+                                                DeleteUtils.deleteFile(filePath)
                                                 AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
                                                 picItemEncryptionAdapter!!.remove(position)
                                                 picItemEncryptionAdapter!!.notifyDataSetChanged()
@@ -311,7 +307,9 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
 
                             val base58files_dir = folderInfo!!.path +"/"+imgeSouceName
                             val code = FileUtil.copySdcardToxFileAndEncrypt(list.get(i).path, base58files_dir, fileKey.substring(0, 16))
+
                             if (code == 1) {
+
                                 var localFileItem = LocalFileItem();
                                 localFileItem.filePath = base58files_dir;
                                 localFileItem.fileName = imgeSouceName;
@@ -341,6 +339,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                                 EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
                             }
                         }
 

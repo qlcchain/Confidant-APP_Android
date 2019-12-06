@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.utils;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * time : 2019/3/27
@@ -29,11 +31,33 @@ public class AlbumNotifyHelper {
     public static void notifyScanDcim(Context context, String filePath) {
         scanFile(context, filePath);
     }
-
+    public static void notifyScanFolder(Context context, String filePath) {
+        scanFolder(context, filePath);
+    }
     public static void insertVideoToMediaStore(Context context, String filePath, long dateTaken, long duration) {
         insertVideoToMediaStore(context, filePath, dateTaken, 0, 0, duration);
     }
+    public static void deleteImagesInAlbumDB(Context context, String filePath) {
+        ContentResolver contentResolver = context.getContentResolver();
+        try {
+            DeleteUtils.deleteFile(filePath);
+            int delete = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Video.Media.DATA + "=?", new String[]{filePath});
+        }catch (Exception e)
+        {
 
+        }
+
+    }
+    public static void deleteVideoInAlbumDB(Context context, String filePath) {
+        ContentResolver contentResolver = context.getContentResolver();
+        try {
+            DeleteUtils.deleteFile(filePath);
+            int delete = contentResolver.delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, MediaStore.Video.Media.DATA + "=?", new String[]{filePath});
+        }catch (Exception e)
+        {
+
+        }
+    }
  /*   public static void insertVideoToMediaStore(Context context, VideoUtil.VideoInfo videoInfo) {
         insertVideoToMediaStore(context, videoInfo.originalVideoFilePath, videoInfo.dateTaken, videoInfo.width, videoInfo.height, videoInfo.duringTime);
     }*/
@@ -60,7 +84,19 @@ public class AlbumNotifyHelper {
         intent.setData(Uri.fromFile(new File(filePath)));
         context.sendBroadcast(intent);
     }
-
+    /**
+     * 针对系统文夹只需要扫描,不用插入内容提供者,不然会重复
+     *
+     * @param context  上下文
+     * @param filePath 文件路径
+     */
+    public static void scanFolder(Context context, String filePath) {
+        if (!checkFile(filePath))
+            return;
+        Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
+        intent.setData(Uri.fromFile(new File(filePath)));
+        context.sendBroadcast(intent);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // 非系统相册像MediaContent中插入数据，核心方法

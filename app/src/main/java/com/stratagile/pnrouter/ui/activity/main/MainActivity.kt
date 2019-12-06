@@ -3704,6 +3704,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+
+            Inbox.setTextColor(resources.getColor(R.color.white))
+            Inbox.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox_selected)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
         }
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
@@ -3719,6 +3747,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.white))
+            Inbox.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox_selected)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
 
             EventBus.getDefault().post(ChangEmailMenu("Inbox",ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
@@ -3736,6 +3792,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.white))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups_selected)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Nodebackedup",ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
@@ -3752,6 +3836,35 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.white))
+            starred.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected2)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
+
             EventBus.getDefault().post(ChangEmailMenu("Starred",ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
@@ -3768,6 +3881,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.white))
+            drafts.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts_selected)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Drafts",ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
@@ -3784,6 +3925,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.white))
+            sent.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent_selected)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Sent",ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
@@ -3800,6 +3969,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.white))
+            spam.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash_selected)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Spam",ConstantValue.currentEmailConfigEntity!!.garbageMenu))
         }
         trash.setOnClickListener {
@@ -3816,6 +4013,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.white))
+            trash.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted_selected)
             EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
@@ -4033,13 +4258,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                     1 -> {
-                        if(BuildConfig.DEBUG)
+                        /*if(BuildConfig.DEBUG)
                         {
                             return FileEncryptionFragment()
                         }else{
                             return FileListFragment()
-                        }
-
+                        }*/
+                        return FileEncryptionFragment()
                     }
                     2 -> return contactFragment!!
                     else -> return MyFragment()
