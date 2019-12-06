@@ -6,16 +6,20 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.view.WindowManager
 import android.widget.LinearLayout
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_encrption_local.*
 import net.lucode.hackware.magicindicator.ViewPagerHelper
 import net.lucode.hackware.magicindicator.buildins.UIUtil
@@ -163,6 +167,15 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
 
     override fun closeProgressDialog() {
         progressDialog.hide()
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if (screenshotsSettingFlag.equals("1")) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)

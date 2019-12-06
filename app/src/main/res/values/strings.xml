@@ -907,4 +907,5 @@ Then enter your Email address and password to log in.</string>
     <string name="Are_you_sure_you_want_to_delete_the_file">Do you want to delete the file?</string>
     <string name="Please_delete_in_the_system_album_to_protect_privacy">Please delete in the system album to protect privacy.</string>
     <string name="Are_you_colse">Are you sure you want to close it?</string>
+    <string name="screen_security">Are you sure you want to turn off the screen security?</string>
 </resources>

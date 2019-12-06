@@ -51,6 +51,7 @@ import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
@@ -58,12 +59,15 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncry
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeXinEncryptionListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeXinEncryptionListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeXinEncryptionListPresenter
+import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.encryption_file_wx_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.*
 import java.util.ArrayList
 
@@ -115,6 +119,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     }
     override fun initData() {
         var _this = this;
+        EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
         initPicPlug()
@@ -391,6 +396,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 }
             }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
                 mResultData = data;
+
             }
         }
     }
@@ -544,7 +550,27 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
             override fun action() {
 
-                startScreenShot()
+                if(!AppConfig.instance.isBackGroud)//截应用内屏
+                {
+                    var screenshotsFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+                    if(screenshotsFlag.equals("1"))
+                    {
+                        runOnUiThread {
+                            SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setContentText(getString(R.string.screen_security))
+                                    .setConfirmClickListener {
+                                        var intent= Intent(_this, MyDetailActivity::class.java)
+                                        intent.putExtra("flag",1)
+                                        startActivity(intent)
+                                    }
+                                    .show()
+                        }
+                    }else{
+                        startScreenShot()
+                    }
+                }else{
+                    startScreenShot()
+                }
                 mFloatballManager!!.closeMenu()
             }
         }
@@ -554,7 +580,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 mFloatballManager!!.closeMenu()
             }
         }
-        val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("icon_delete", this)) {
+        val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_close", this)) {
             override fun action() {
                 mFloatballManager!!.hide()
                /* runOnUiThread {
@@ -621,7 +647,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         super.onAttachedToWindow()
         if(mFloatballManager != null)
         {
-            mFloatballManager!!.show()
+            mFloatballManager!!.showIFHasPermission()
         }
         //mFloatballManager!!.onFloatBallClick()
     }
@@ -750,6 +776,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     if(picItemList != null && picItemList.size > 0)
                     {
                         runOnUiThread {
+                            DeleteUtils.deleteFile(filePath)
                             toast(imgeSouceName+" "+getString( R.string.file_already_exists))
                         }
 
@@ -762,7 +789,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         val base58files_dir = folderInfo!!.path +"/"+imgeSouceName
                         val code = FileUtil.copySdcardToxFileAndEncrypt(needPicPath, base58files_dir, fileKey.substring(0, 16))
                         if (code == 1) {
-                            DeleteUtils.deleteDirectory(filePath)
+                            DeleteUtils.deleteFile(filePath)
                             var localFileItem = LocalFileItem();
                             localFileItem.filePath = base58files_dir;
                             localFileItem.fileName = imgeSouceName;
@@ -883,12 +910,21 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         //launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
         context.startActivity(launchIntent);
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if (screenshotsSettingFlag.equals("1")) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
     override fun onDestroy() {
         if(mFloatballManager != null)
         {
             mFloatballManager!!.hide()
         }
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 }

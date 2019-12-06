@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
@@ -24,6 +25,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.SortEmailConfig
 import com.stratagile.pnrouter.entity.file.FileOpreateType
@@ -37,6 +39,8 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.encryption_file_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.Serializable
 import java.util.ArrayList
@@ -76,6 +80,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     }
     override fun initData() {
         var _this = this;
+        EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
         initPicPlug()
@@ -366,8 +371,21 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if (screenshotsSettingFlag.equals("1")) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
     override fun onResume() {
         DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         super.onResume()
+    }
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

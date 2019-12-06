@@ -6,11 +6,14 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.view.WindowManager
 import android.widget.LinearLayout
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeiXinEncryptionComponent
@@ -18,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.contract.WeiXinEncryptionC
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeiXinEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeiXinEncryptionPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_encrption_local.*
 import net.lucode.hackware.magicindicator.ViewPagerHelper
 import net.lucode.hackware.magicindicator.buildins.UIUtil
@@ -167,6 +171,15 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
 
     override fun closeProgressDialog() {
         progressDialog.hide()
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if (screenshotsSettingFlag.equals("1")) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)

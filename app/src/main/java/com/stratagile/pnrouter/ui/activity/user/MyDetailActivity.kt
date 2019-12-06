@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import com.alibaba.fastjson.JSONObject
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -111,6 +112,12 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
                 SpUtil.putString(this, ConstantValue.screenshotsSetting, "1")
             } else {
                 SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
+            }
+            var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+            if (screenshotsSettingFlag.equals("1")) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
             EventBus.getDefault().post(Sceen())
         }

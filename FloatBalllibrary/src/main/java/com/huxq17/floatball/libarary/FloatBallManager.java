@@ -143,7 +143,7 @@ public class FloatBallManager {
             if (mPermission == null) {
                 return;
             }
-            if (mPermission.hasFloatBallPermission(mContext)) {
+            if (!mPermission.hasFloatBallPermission(mContext)) {
                 return;
             }
         }
