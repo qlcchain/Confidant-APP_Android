@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.AddFriendReq
+import com.stratagile.pnrouter.entity.AddFriendReq2
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerSendAddFriendComponent
@@ -90,6 +91,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
     @Inject
     internal lateinit var mPresenter: SendAddFriendPresenter
     lateinit var userEntity: UserEntity
+    var typeData = "";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +106,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         title.text = getString(R.string.FriendRequest)
         validation.setText("I'm "+ nickName)
         userEntity = intent.getParcelableExtra("user")
+        typeData= intent.getStringExtra("typeData")
         sendNickName.setText(String(RxEncodeTool.base64Decode(userEntity.nickName)))
         EventBus.getDefault().register(this)
         sendRequestBtn.setOnClickListener {
@@ -121,12 +124,15 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
             var msg= RxEncodeTool.base64Encode2String(validation.text.toString().trim().toByteArray())
 
             val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-            var addFriendReq = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)
-            var sendData = BaseData(addFriendReq);
-            if(ConstantValue.encryptionType.equals( "1"))
+
+            var sendData = BaseData();
+            if(typeData.equals("type_0"))
             {
-                addFriendReq =  AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                var addFriendReq = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)
                 sendData = BaseData(4,addFriendReq);
+            }else{
+                var addFriendReq2 = AddFriendReq2( selfUserId!!, strBase64,userEntity.signPublicKey!!,"",userEntity.routeId,msg)
+                sendData = BaseData(6,addFriendReq2);
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

@@ -245,6 +245,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var mScreenWidth: Int = 0
     private var mScreenHeight: Int = 0
     private var mScreenDensity: Int = 0
+    private var typeData = ""
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (!isScanSwitch) {
@@ -3448,60 +3449,150 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            if (toAddUserId!!.contains(selfUserId!!)) {
-                runOnUiThread {
-                    toast(R.string.The_same_user)
-                }
-                return@Observer
-            }
-            if (!"".equals(toAddUserId)) {
-                var toAddUserIdTemp = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
-                var intent = Intent(this, SendAddFriendActivity::class.java)
-                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-                for (i in useEntityList) {
-                    if (i.userId.equals(toAddUserIdTemp)) {
-                        var nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
-                        i.nickName = nickName
-                        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
-                        var freindStatusData = FriendEntity()
-                        freindStatusData.friendLocalStatus = 7
-                        val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
-                        if (localFriendStatusList.size > 0)
-                            freindStatusData = localFriendStatusList[0]
 
-                        if (freindStatusData.friendLocalStatus == 0) {
-                            intent.putExtra("user", i)
-                            startActivity(intent)
-                        } else {
-                            intent = Intent(this, SendAddFriendActivity::class.java)
-                            intent.putExtra("user", i)
-                            startActivity(intent)
-                        }
-                        return@Observer
+            if(typeData.equals("type_0"))
+            {
+                if (toAddUserId!!.contains(selfUserId!!)) {
+                    runOnUiThread {
+                        toast(R.string.The_same_user)
                     }
+                    return@Observer
                 }
-                intent = Intent(this, SendAddFriendActivity::class.java)
-                var userEntity = UserEntity()
-                //userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
-                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
-                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") + 1, toAddUserId.length)
-                userEntity.timestamp = Calendar.getInstance().timeInMillis
-                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                userEntity.routerUserId = selfUserId
-                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                if (!"".equals(toAddUserId))
+                {
+                    var userEntity = UserEntity()
+                    var intent = Intent(this, SendAddFriendActivity::class.java)
+                    var toAddUserIdTemp = ""
+                    toAddUserIdTemp = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
+                    var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                    for (i in useEntityList) {
+                        if (i.userId.equals(toAddUserIdTemp)) {
+                            var nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                            i.nickName = nickName
+                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                            var freindStatusData = FriendEntity()
+                            freindStatusData.friendLocalStatus = 7
+                            val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                            if (localFriendStatusList.size > 0)
+                                freindStatusData = localFriendStatusList[0]
+
+                            if (freindStatusData.friendLocalStatus == 0) {
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            } else {
+                                intent = Intent(this, SendAddFriendActivity::class.java)
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            }
+                            return@Observer
+                        }
+                    }
+                    intent = Intent(this, SendAddFriendActivity::class.java)
+
+                    //userEntity.friendStatus = 7
+                    userEntity.userId = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
+                    userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                    userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") + 1, toAddUserId.length)
+
+                    userEntity.timestamp = Calendar.getInstance().timeInMillis
+                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                    userEntity.routerUserId = selfUserId
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
 
 
-                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var newFriendStatus = FriendEntity()
-                newFriendStatus.userId = userId;
-                newFriendStatus.friendId = toAddUserId
-                newFriendStatus.friendLocalStatus = 7
-                newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
-                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
-                intent.putExtra("user", userEntity)
-                startActivity(intent)
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var newFriendStatus = FriendEntity()
+                    newFriendStatus.userId = userId;
+                    newFriendStatus.friendId = toAddUserIdTemp
+                    newFriendStatus.friendLocalStatus = 7
+                    newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                    intent.putExtra("user", userEntity)
+                    intent.putExtra("typeData", typeData!!)
+                    startActivity(intent)
+                }
+            }else{
+                //type_5
+                if (toAddUserId!!.contains(selfUserId!!)) {
+                    runOnUiThread {
+                        toast(R.string.The_same_user)
+                    }
+                    return@Observer
+                }
+                if (!"".equals(toAddUserId))
+                {
+                    var userEntity = UserEntity()
+                    var intent = Intent(this, SendAddFriendActivity::class.java)
+                    var toAddUserKey = ""
+                    var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                    toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
+                    var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+
+                    var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                    var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                    var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
+                    var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                    for (i in useEntityList) {
+                        if (i.userId.equals(toAddUserIdTemp)) {
+                            i.nickName = nickName
+                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                            var freindStatusData = FriendEntity()
+                            freindStatusData.friendLocalStatus = 7
+                            val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                            if (localFriendStatusList.size > 0)
+                                freindStatusData = localFriendStatusList[0]
+
+                            if (freindStatusData.friendLocalStatus == 0) {
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            } else {
+                                intent = Intent(this, SendAddFriendActivity::class.java)
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            }
+                            return@Observer
+                        }
+                    }
+                    intent = Intent(this, SendAddFriendActivity::class.java)
+
+                    //userEntity.friendStatus = 7
+                    userEntity.userId = toAddUserIdTemp
+                    userEntity.nickName = nickName
+                    userEntity.signPublicKey = toAddUserKey
+                    userEntity.routeId = FriendDevId
+                    userEntity.timestamp = Calendar.getInstance().timeInMillis
+                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                    userEntity.routerUserId = selfUserId
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+
+
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var newFriendStatus = FriendEntity()
+                    newFriendStatus.userId = userId;
+                    newFriendStatus.friendId = toAddUserIdTemp
+                    newFriendStatus.friendLocalStatus = 7
+                    newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                    intent.putExtra("user", userEntity)
+                    intent.putExtra("typeData", typeData!!)
+                    startActivity(intent)
+                   /* var userType5 = UserEntity();
+                    userType5.nickName = nickName
+                    userType5.routeId = FriendDevId!!
+                    userType5.miPublicKey = toAddUserKey!!
+                    intent = Intent(this, SendAddFriendActivity::class.java)
+                    intent.putExtra("user", userType5)
+                    intent.putExtra("typeData", typeData!!)
+                    startActivity(intent)*/
+                }
             }
+
         })
         if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
         {
@@ -4044,7 +4135,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
-          PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
+            PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     when (position) {
@@ -5089,6 +5180,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if(type.equals("type_0"))
                 {
                     viewModel.toAddUserId.value = result.substring(7, result.length)
+                    typeData = "type_0"
+                }else if(type.equals("type_5"))
+                {
+                    soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                    var dataStr = String(soureData);
+                    viewModel.toAddUserId.value = dataStr
+                    typeData = "type_5"
                 }
                 else if(type.equals("type_1"))
                 {

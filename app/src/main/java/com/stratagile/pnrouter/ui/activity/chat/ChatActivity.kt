@@ -291,10 +291,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                                         if (freindStatusData.friendLocalStatus == 0) {
                                             intent.putExtra("user", i)
+                                            intent.putExtra("typeData", "type_0")
                                             startActivity(intent)
                                         } else {
                                             intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
                                             intent.putExtra("user", i)
+                                            intent.putExtra("typeData", "type_0")
                                             startActivity(intent)
                                         }
 
@@ -316,14 +318,90 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                 val newFriendStatus = FriendEntity()
                                 newFriendStatus.userId = userId
-                                newFriendStatus.friendId = toAddUserId
+                                newFriendStatus.friendId = toAddUserIdTemp
                                 newFriendStatus.friendLocalStatus = 7
                                 newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
                                 AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
                                 intent.putExtra("user", userEntity)
+                                intent.putExtra("typeData", "type_0")
                                 startActivity(intent)
                             }
-                        } else if (hasQRCode!!.contains("type_1")) {
+                        } else if (hasQRCode!!.contains("type_5")) {
+                            var toAddUserId = hasQRCode!!.substring(7, hasQRCode!!.length)
+                            toAddUserId = String(AESCipher.aesDecryptByte(toAddUserId,"welcometoqlc0101"))
+                            val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            if (toAddUserId.contains(selfUserId!!)) {
+                                runOnUiThread {
+                                    runOnUiThread {
+                                        toast(R.string.The_same_user)
+                                    }
+
+                                }
+                                return
+                            }
+                            if (!"".equals(toAddUserId))
+                            {
+                                var userEntity = UserEntity()
+                                var intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+                                var toAddUserKey = ""
+                                var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                                toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
+                                var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
+                                var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+
+                                var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                                var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                                var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                                var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
+                                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                                for (i in useEntityList) {
+                                    if (i.userId.equals(toAddUserIdTemp)) {
+                                        i.nickName = nickName
+                                        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                                        var freindStatusData = FriendEntity()
+                                        freindStatusData.friendLocalStatus = 7
+                                        val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                                        if (localFriendStatusList.size > 0)
+                                            freindStatusData = localFriendStatusList[0]
+
+                                        if (freindStatusData.friendLocalStatus == 0) {
+                                            intent.putExtra("user", i)
+                                            intent.putExtra("typeData", "type_5")
+                                            startActivity(intent)
+                                        } else {
+                                            intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+                                            intent.putExtra("user", i)
+                                            intent.putExtra("typeData", "type_5")
+                                            startActivity(intent)
+                                        }
+                                        return
+                                    }
+                                }
+                                intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+
+                                //userEntity.friendStatus = 7
+                                userEntity.userId = toAddUserIdTemp
+                                userEntity.nickName = nickName
+                                userEntity.signPublicKey = toAddUserKey
+                                userEntity.routeId = FriendDevId
+                                userEntity.timestamp = Calendar.getInstance().timeInMillis
+                                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                userEntity.routerUserId = selfUserId
+                                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+
+
+                                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                var newFriendStatus = FriendEntity()
+                                newFriendStatus.userId = userId;
+                                newFriendStatus.friendId = toAddUserIdTemp
+                                newFriendStatus.friendLocalStatus = 7
+                                newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                                intent.putExtra("user", userEntity)
+                                intent.putExtra("typeData", "type_5")
+                                startActivity(intent)
+                            }
+                        }else if (hasQRCode!!.contains("type_1")) {
 
                             scanType = 1
                             val keyId:ByteArray = ByteArray(6) //密钥ID
