@@ -766,9 +766,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         System.arraycopy(retMsg, 97, ToId, 0, 76)
         try {
             System.arraycopy(retMsg, 176, serverTime, 0, 4)
-        }catch (E:Exception)
+        }catch (e:Exception)
         {
-
+           e.printStackTrace();
         }
 
         val ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action))
