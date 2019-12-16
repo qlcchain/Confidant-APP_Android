@@ -799,3 +799,28 @@ data class SysMsgPush(var Retcode :Int,var ToId:String,var Action : String = "Sy
  * (1)	请求（APP-->Router）
  */
 data class AddFriendsAutoReq(var Type : Int, var UserId :String, var Friends : String,var EmailId:String ,var Action : String = "AddFriendsAuto")
+/**
+ * 97.	用户数据同步接口
+ * (1)	请求（APP-->Router）
+ */
+data class UserDataSysnReq(var UserId : String, var DType :Int, var Direction : Int,var Increment:Int,var FriendSeq:Int,var UinfoSeq:Int,var Data : String,var Action : String = "UserDataSysn")
+/**
+ * 98.	拉取文件夹列表
+ * (1)	请求（APP-->Router）
+ */
+data class FilePathsPullReq(var UserId : String, var Type :Int,var Action : String = "FilePathsPull")
+/**
+ * 99.	拉取特定文件夹下文件列表
+ * (1)	请求（APP-->Router）
+ */
+data class FilesListPullReq(var UserId : String, var Depens :Int, var PathId : Int,var PathName:String,var Sort:Int,var StartId:Int,var Num : String,var Action : String = "FilesListPull")
+/**
+ * 100.	用户备份邮件到节点上
+ * (1)	请求（APP-->Router）
+ */
+data class BakFileReq(var Depens :Int,var UserId : String,  var Type : Int,var FileId:Int,var Size:Int,var Md5:String,var FName : String,var FKey : String,var FInfo : String,var PathId : Int,var PathName : String,var Action : String = "BakFile")
+/**
+ * 101.	用户文件目录或者文件更新（新建，改名，删除）
+ * (1)	请求（APP-->Router）
+ */
+data class FileActionReq(var UserId : String, var Depens :Int, var Type : Int,var React:Int,var FileId:Int,var PathId:Int,var Name : String,var OldName : String,var Action : String = "FileAction")

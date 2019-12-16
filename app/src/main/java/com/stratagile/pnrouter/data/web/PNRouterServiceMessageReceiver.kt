@@ -598,6 +598,14 @@ val credentialsProvider: CredentialsProvider, private
                     val JAddFriendsAutoRsp = gson.fromJson(text, JAddFriendsAutoRsp::class.java)
                     checkmailUkeyCallback?.addFriendsAuto(JAddFriendsAutoRsp)
                 }
+                "FileAction" -> {
+                    val jFileActionRsp = gson.fromJson(text, JFileActionRsp::class.java)
+                    nodeFileCallback?.fileAction(jFileActionRsp)
+                }
+                "FilePathsPull" -> {
+                    val jFilePathsPulRsp = gson.fromJson(text, JFilePathsPulRsp::class.java)
+                    nodeFileCallback?.filePathsPull(jFilePathsPulRsp)
+                }
             }
         }
 
@@ -692,6 +700,8 @@ val credentialsProvider: CredentialsProvider, private
     var bakMailsCheckCallback: BakMailsCheckCallback? = null
 
     var mailSendNoticeCallback:MailSendNoticeCallback? = null;
+
+    var nodeFileCallback:NodeFileCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1091,6 +1101,10 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface MailSendNoticeCallback {
         fun MailSendNoticeBack(JMailSendNoticeRsp: JMailSendNoticeRsp)
+    }
+    interface NodeFileCallback {
+        fun fileAction(jFileActionRsp: JFileActionRsp)
+        fun filePathsPull(jFilePathsPulRsp: JFilePathsPulRsp)
     }
 }
 

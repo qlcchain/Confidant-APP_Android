@@ -16,6 +16,9 @@ public class LocalFileMenu implements Parcelable {
     private String path;
     private Long fileNum;
     private String type;//文件类型，0 本地，1微信
+    private Integer nodeId;//文件目录在服务器上的id
+    private Long size;
+    private Long LastModify;
 
     public LocalFileMenu() {
     }
@@ -39,17 +42,35 @@ public class LocalFileMenu implements Parcelable {
             fileNum = in.readLong();
         }
         type = in.readString();
+        if (in.readByte() == 0) {
+            nodeId = null;
+        } else {
+            nodeId = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            size = null;
+        } else {
+            size = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            LastModify = null;
+        } else {
+            LastModify = in.readLong();
+        }
     }
 
-    @Generated(hash = 1793053926)
+    @Generated(hash = 1262934451)
     public LocalFileMenu(Long id, Long creatTime, String fileName, String path, Long fileNum,
-            String type) {
+            String type, Integer nodeId, Long size, Long LastModify) {
         this.id = id;
         this.creatTime = creatTime;
         this.fileName = fileName;
         this.path = path;
         this.fileNum = fileNum;
         this.type = type;
+        this.nodeId = nodeId;
+        this.size = size;
+        this.LastModify = LastModify;
     }
 
     public static final Creator<LocalFileMenu> CREATOR = new Creator<LocalFileMenu>() {
@@ -63,36 +84,6 @@ public class LocalFileMenu implements Parcelable {
             return new LocalFileMenu[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        if (creatTime == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(creatTime);
-        }
-        dest.writeString(fileName);
-        dest.writeString(path);
-        if (fileNum == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(fileNum);
-        }
-        dest.writeString(type);
-    }
 
     public Long getId() {
         return id;
@@ -140,5 +131,77 @@ public class LocalFileMenu implements Parcelable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public Long getLastModify() {
+        return LastModify;
+    }
+
+    public void setLastModify(Long lastModify) {
+        LastModify = lastModify;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        if (creatTime == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(creatTime);
+        }
+        dest.writeString(fileName);
+        dest.writeString(path);
+        if (fileNum == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(fileNum);
+        }
+        dest.writeString(type);
+        if (nodeId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(nodeId);
+        }
+        if (size == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(size);
+        }
+        if (LastModify == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(LastModify);
+        }
     }
 }
