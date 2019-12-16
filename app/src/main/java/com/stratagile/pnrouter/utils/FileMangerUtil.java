@@ -308,6 +308,15 @@ public class FileMangerUtil {
         System.arraycopy(retMsg, 18, Code, 0, 2);
         System.arraycopy(retMsg, 20, FromId, 0, 76);
         System.arraycopy(retMsg, 97, ToId, 0, 76);
+
+        if(FromId[44]== 0 && FromId[45]== 0)
+        {
+            FromId = new byte[44];
+            ToId = new byte[44];
+            System.arraycopy(retMsg, 20, FromId, 0, 44);
+            System.arraycopy(retMsg, 97, ToId, 0, 44);
+        }
+
         int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action)) ;
         int FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId));
         int LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId));

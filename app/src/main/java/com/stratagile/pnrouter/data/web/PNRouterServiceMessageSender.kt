@@ -753,8 +753,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val SegSeq = ByteArray(4)
         val CRC = ByteArray(2)
         val Code = ByteArray(2)
-        val FromId = ByteArray(76)
-        val ToId = ByteArray(76)
+        var FromId = ByteArray(76)
+        var ToId = ByteArray(76)
         val serverTime = ByteArray(4)
         System.arraycopy(retMsg, 0, Action, 0, 4)
         System.arraycopy(retMsg, 4, FileId, 0, 4)
@@ -764,6 +764,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         System.arraycopy(retMsg, 18, Code, 0, 2)
         System.arraycopy(retMsg, 20, FromId, 0, 76)
         System.arraycopy(retMsg, 97, ToId, 0, 76)
+        if(FromId[44].toInt()== 0 && FromId[45].toInt()== 0)
+        {
+            FromId = ByteArray(44)
+            ToId = ByteArray(44)
+            System.arraycopy(retMsg, 20, FromId, 0, 44)
+            System.arraycopy(retMsg, 97, ToId, 0, 44)
+        }
         try {
             System.arraycopy(retMsg, 176, serverTime, 0, 4)
         }catch (e:Exception)
