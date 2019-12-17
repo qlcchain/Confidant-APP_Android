@@ -55,7 +55,17 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
             {
                 1->
                 {
-
+                    runOnUiThread {
+                        //想命名的原文件夹的路径
+                        val file1 = File(oldPath)
+                        //将原文件夹更改为A，其中路径是必要的。注意
+                        if(file1.exists())
+                        {
+                            file1.renameTo(File(newPath))
+                        }
+                        picMenuEncryptionAdapter!!.notifyItemChanged(currentPosition)
+                        toast(R.string.success)
+                    }
                 }
                 2->
                 {
@@ -82,6 +92,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                    runOnUiThread {
                        picMenuEncryptionAdapter!!.addData(localFileMenu)
                        picMenuEncryptionAdapter!!.notifyDataSetChanged()
+                       toast(R.string.success)
                    }
                     try {
                         var defaultfolderFile = File(defaultfolder)
@@ -93,6 +104,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                     {
 
                     }
+
                 }
             }
         }else{
@@ -187,16 +199,31 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                             PopWindowUtil.showRenameFolderWindow(parent!!, addMenuItem,data!!.fileName, object : PopWindowUtil.OnSelectListener {
                                 override fun onSelect(position: Int, obj: Any) {
                                     var map = obj as HashMap<String,String>
-                                    var foldername = map.get("foldername") as String
-                                    var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.FileName.eq(foldername)).list()
-                                    if(picMenuList != null && picMenuList.size > 0)
-                                    {
-                                        toast(R.string.This_name_folder_already_exists)
-                                        return;
+                                    var folderNewname = map.get("foldername") as String
+
+                                    var foldername = data!!.fileName
+                                    var base58NameOld = Base58.encode(foldername.toByteArray())
+                                    var base58NameNew = Base58.encode(folderNewname.toByteArray())
+                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,1,0,data.nodeId,base58NameNew,base58NameOld)
+                                    var sendData = BaseData(6, filePathsPullReq);
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                    }else if (ConstantValue.isToxConnected) {
+                                        var baseData = sendData
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }
                                     }
-                                    data!!.fileName = foldername
-                                    AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
-                                    picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
+                                    oldPath = data!!.path
+                                    var pathPre = data!!.path.substring(0,data!!.path.lastIndexOf("/")+1)
+                                    newPath = pathPre +folderNewname
+                                    currentPosition = choosePosition;
+                                    data!!.fileName = folderNewname
                                 }
                             })
                         }
@@ -213,6 +240,8 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
     var currentData:LocalFileMenu? = null;
     var currentPath:String? = null;
     var currentPosition = 0;
+    var oldPath:String? = null
+    var newPath:String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.picencry_menu_list, null);
