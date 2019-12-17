@@ -43,6 +43,7 @@ public class JFileActionRsp extends BaseEntity {
         private String ToId;
         private int FileId;
         private int PathId;
+        private int React;
         private String Name;
 
         public String getAction() {
@@ -83,6 +84,14 @@ public class JFileActionRsp extends BaseEntity {
 
         public void setPathId(int PathId) {
             this.PathId = PathId;
+        }
+
+        public int getReact() {
+            return React;
+        }
+
+        public void setReact(int react) {
+            React = react;
         }
 
         public String getName() {

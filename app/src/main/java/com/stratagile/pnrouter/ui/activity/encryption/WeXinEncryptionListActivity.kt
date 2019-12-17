@@ -142,7 +142,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     var emaiAttach = picItemEncryptionAdapter!!.getItem(position)
                     var fileName = emaiAttach!!.fileName
                     var filePath= emaiAttach.filePath
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "temp"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "temp"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -740,7 +740,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
             var fileTempPathFile:File? = null
             var filePic:File? = null
             var fileScreenShotName = com.stratagile.pnrouter.screencapture.FileUtil.getOnlyScreenShotsName();
-            var fileTempPath  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "sreenshots"
+            var fileTempPath  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "sreenshots"
             if (bitmap != null) {
                 try {
                     fileTempPathFile = File(fileTempPath)

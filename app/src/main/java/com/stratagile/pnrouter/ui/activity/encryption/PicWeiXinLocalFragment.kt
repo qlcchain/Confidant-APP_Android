@@ -86,7 +86,7 @@ class PicWeiXinLocalFragment : BaseFragment(), PicWeiXinLocalContract.View {
                     var parentRoot = view.parent as SwipeMenuLayout
                     parentRoot.quickClose()
                     var choosePosition = position
-                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem, object : PopWindowUtil.OnSelectListener {
+                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem, "",object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             var map = obj as HashMap<String,String>
                             var foldername = map.get("foldername") as String
@@ -113,7 +113,7 @@ class PicWeiXinLocalFragment : BaseFragment(), PicWeiXinLocalContract.View {
                     var foldername = map.get("foldername") as String
                     var localFileMenu = LocalFileMenu();
                     try {
-                        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ foldername
+                        var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ foldername
                         var defaultfolderFile = File(defaultfolder)
                         if(!defaultfolderFile.exists())
                         {

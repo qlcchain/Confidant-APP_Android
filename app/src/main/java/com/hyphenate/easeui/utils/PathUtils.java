@@ -27,6 +27,8 @@ public class PathUtils {
     private File tempPath = null;
     private File emailPath = null;
     private File encryptionPath = null;
+    private File encryptionLocalPath = null;
+    private File encryptionWeChatPath = null;
     private PathUtils() {
     }
 
@@ -77,6 +79,14 @@ public class PathUtils {
         if(!this.encryptionPath.exists()) {
             this.encryptionPath.mkdirs();
         }
+        this.encryptionLocalPath=  generateEncryptionLocalPath(var1, var2, var3);
+        if(!this.encryptionLocalPath.exists()) {
+            this.encryptionLocalPath.mkdirs();
+        }
+        this.encryptionWeChatPath=  generateEncryptionWeChatPath(var1, var2, var3);
+        if(!this.encryptionWeChatPath.exists()) {
+            this.encryptionWeChatPath.mkdirs();
+        }
     }
 
     public File getImagePath() {
@@ -102,6 +112,8 @@ public class PathUtils {
     }
 
     public File getEncryptionPath(){return  this.encryptionPath;}
+    public File getEncryptionLocalPath(){return  this.encryptionLocalPath;}
+    public File getEncryptionWeChatPath(){return  this.encryptionWeChatPath;}
 
     private static File getStorageDir(Context var0) {
         if(storageDir == null) {
@@ -182,6 +194,26 @@ public class PathUtils {
             var3 = pathPrefix + var1 + "/encryption/";
         } else {
             var3 = pathPrefix + var0 + "/" + var1 + "/encryption/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionLocalPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/local/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/local/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionWeChatPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/wechat/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/wechat/";
         }
 
         return new File(var3);

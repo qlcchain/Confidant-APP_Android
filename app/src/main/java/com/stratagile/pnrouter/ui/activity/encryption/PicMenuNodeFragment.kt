@@ -46,10 +46,64 @@ import java.io.File
 
 class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterServiceMessageReceiver.NodeFileCallback {
     override fun fileAction(jFileActionRsp: JFileActionRsp) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        runOnUiThread {
+            closeProgressDialog();
+        }
+        if(jFileActionRsp.params.retCode == 0)
+        {
+            when(jFileActionRsp.params.react)
+            {
+                1->
+                {
+
+                }
+                2->
+                {
+                    runOnUiThread {
+                        DeleteUtils.deleteDirectory(currentPath)
+                        picMenuEncryptionAdapter!!.remove(currentPosition)
+                        picMenuEncryptionAdapter!!.notifyDataSetChanged()
+                        toast(R.string.success)
+                    }
+                }
+                3->
+                {
+                    var localFileMenu:LocalFileMenu = LocalFileMenu();
+                    var souceName = String(Base58.decode(jFileActionRsp.params!!.name))
+                    var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
+                    localFileMenu.id  = jFileActionRsp.params!!.fileId.toLong();
+                    localFileMenu.nodeId = jFileActionRsp.params!!.fileId;
+                    localFileMenu.fileName = souceName;
+                    localFileMenu.fileNum = 0;
+                    localFileMenu.size = 0;
+                    localFileMenu.path = defaultfolder
+                    localFileMenu.type = "1";
+                    localFileMenu.lastModify = System.currentTimeMillis();
+                   runOnUiThread {
+                       picMenuEncryptionAdapter!!.addData(localFileMenu)
+                       picMenuEncryptionAdapter!!.notifyDataSetChanged()
+                   }
+                    try {
+                        var defaultfolderFile = File(defaultfolder)
+                        if(!defaultfolderFile.exists())
+                        {
+                            defaultfolderFile.mkdirs();
+                        }
+                    }catch (e:Exception)
+                    {
+
+                    }
+                }
+            }
+        }else{
+            runOnUiThread {
+                toast(R.string.fail)
+            }
+        }
     }
 
     override fun filePathsPull(jFilePathsPulRsp: JFilePathsPulRsp) {
+
         if(jFilePathsPulRsp.params.retCode == 0)
         {
             var picMenuList = mutableListOf<LocalFileMenu>()
@@ -57,13 +111,27 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
             {
 
                 var localFileMenu:LocalFileMenu = LocalFileMenu();
+                var souceName = String(Base58.decode(item!!.pathName))
+                var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
+                localFileMenu.id  = item!!.id.toLong();
                 localFileMenu.nodeId = item!!.id;
-                localFileMenu.fileName = item!!.pathName;
+                localFileMenu.fileName = souceName;
                 localFileMenu.fileNum = item!!.filesNum.toLong();
                 localFileMenu.size = item!!.size.toLong();
+                localFileMenu.path = defaultfolder
                 localFileMenu.type = "1";
                 localFileMenu.lastModify = item!!.lastModify.toLong();
                 picMenuList.add(localFileMenu)
+                try {
+                    var defaultfolderFile = File(defaultfolder)
+                    if(!defaultfolderFile.exists())
+                    {
+                        defaultfolderFile.mkdirs();
+                    }
+                }catch (e:Exception)
+                {
+
+                }
             }
             runOnUiThread {
                 picMenuEncryptionAdapter = PicMenuEncryptionAdapter(picMenuList)
@@ -81,15 +149,32 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                         {
                             var parentRoot = view.parent as SwipeMenuLayout
                             parentRoot.quickClose()
+
                             SweetAlertDialog(this.context, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_folder))
                                     .setConfirmClickListener {
+                                        showProgressDialog()
                                         var data = picMenuEncryptionAdapter!!.getItem(position)
-                                        var filePath = data!!.path;
-                                        DeleteUtils.deleteDirectory(filePath)
-                                        AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.delete(data)
-                                        picMenuEncryptionAdapter!!.remove(position)
-                                        picMenuEncryptionAdapter!!.notifyDataSetChanged()
+                                        var foldername = data!!.fileName
+                                        var base58Name = Base58.encode(foldername.toByteArray())
+                                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                        var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,2,0,data.nodeId,base58Name,"")
+                                        var sendData = BaseData(6, filePathsPullReq);
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                        }else if (ConstantValue.isToxConnected) {
+                                            var baseData = sendData
+                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                            if (ConstantValue.isAntox) {
+                                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            }else{
+                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                            }
+                                        }
+                                        //以下是本地操作数据
+                                        currentPath = data!!.path;
+                                        currentPosition = position
                                     }
                                     .show()
                         }
@@ -98,7 +183,8 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                             var parentRoot = view.parent as SwipeMenuLayout
                             parentRoot.quickClose()
                             var choosePosition = position
-                            PopWindowUtil.showRenameFolderWindow(parent!!, addMenuItem, object : PopWindowUtil.OnSelectListener {
+                            var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
+                            PopWindowUtil.showRenameFolderWindow(parent!!, addMenuItem,data!!.fileName, object : PopWindowUtil.OnSelectListener {
                                 override fun onSelect(position: Int, obj: Any) {
                                     var map = obj as HashMap<String,String>
                                     var foldername = map.get("foldername") as String
@@ -108,7 +194,6 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                                         toast(R.string.This_name_folder_already_exists)
                                         return;
                                     }
-                                    var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
                                     data!!.fileName = foldername
                                     AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
                                     picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
@@ -125,6 +210,9 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
     lateinit internal var mPresenter: PicMenuNodePresenter
     var picMenuEncryptionAdapter: PicMenuEncryptionAdapter? = null
     var parent:Activity?= null;
+    var currentData:LocalFileMenu? = null;
+    var currentPath:String? = null;
+    var currentPosition = 0;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.picencry_menu_list, null);

@@ -82,7 +82,8 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                     var parentRoot = view.parent as SwipeMenuLayout
                     parentRoot.quickClose()
                     var choosePosition = position
-                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem, object : PopWindowUtil.OnSelectListener {
+                    var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
+                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem,data!!.fileName, object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             var map = obj as HashMap<String,String>
                             var foldername = map.get("foldername") as String
@@ -92,7 +93,15 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                                 toast(R.string.This_name_folder_already_exists)
                                 return;
                             }
-                            var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
+
+                            //想命名的原文件夹的路径
+                            val file1 = File(data!!.path)
+                            //将原文件夹更改为A，其中路径是必要的。注意
+                            if(file1.exists())
+                            {
+                                var path = data!!.path.substring(0,data!!.path.lastIndexOf("/")+1)
+                                file1.renameTo(File(path +foldername))
+                            }
                             data!!.fileName = foldername
                             AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
                             picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
@@ -109,7 +118,7 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                     var foldername = map.get("foldername") as String
                     var localFileMenu = LocalFileMenu();
                     try {
-                        var defaultfolder  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ foldername
+                        var defaultfolder  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ foldername
                         var defaultfolderFile = File(defaultfolder)
                         if(!defaultfolderFile.exists())
                         {

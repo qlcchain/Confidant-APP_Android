@@ -94,7 +94,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var emaiAttach = picItemEncryptionAdapter!!.getItem(position)
                     var fileName = emaiAttach!!.fileName
                     var filePath= emaiAttach.filePath
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "temp"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -380,7 +380,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         }
     }
     override fun onResume() {
-        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         super.onResume()
     }
     override fun onDestroy() {

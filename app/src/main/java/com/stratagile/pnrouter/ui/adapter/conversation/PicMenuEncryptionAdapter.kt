@@ -30,13 +30,14 @@ class PicMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQuic
         helper.addOnClickListener(R.id.btnDelete)
         helper.addOnClickListener(R.id.btnRename)
         var userAvatar = helper.getView<DrawableEnTextView>(R.id.menuItem)
-        if(item.type.equals("0"))
+        /*if(item.type.equals("0"))
         {
             userAvatar.setTitleText(item.fileName)
         }else{
             var souceName = String(Base58.decode(item.fileName))
             userAvatar.setTitleText(souceName)
-        }
+        }*/
+        userAvatar.setTitleText(item.fileName)
         userAvatar.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))
     }
 

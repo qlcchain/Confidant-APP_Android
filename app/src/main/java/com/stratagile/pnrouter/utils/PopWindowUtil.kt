@@ -581,7 +581,7 @@ object PopWindowUtil {
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
      */
-    fun showRenameFolderWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
+    fun showRenameFolderWindow(activity: Activity, showView: View,content:String, onRouterSelectListener : OnSelectListener) {
         var isShow = false
         var isShow2 = false
         val maskView = LayoutInflater.from(activity).inflate(R.layout.renamefolder_layout, null)
@@ -608,6 +608,7 @@ object PopWindowUtil {
 
         var bt_set= maskView.findViewById<View>(R.id.bt_set)
         var foldername= maskView.findViewById<EditText>(R.id.foldername)
+        foldername.setText(content)
         bt_set.setOnClickListener {
             var foldername= foldername.text.toString()
             if(foldername == "")
