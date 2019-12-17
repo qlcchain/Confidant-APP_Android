@@ -5,6 +5,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.mcxtzhang.swipemenulib.SwipeMenuLayout
 import com.pawegio.kandroid.loadAnimation
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -29,6 +30,13 @@ class PicMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQuic
         helper.addOnClickListener(R.id.menuItem)
         helper.addOnClickListener(R.id.btnDelete)
         helper.addOnClickListener(R.id.btnRename)
+        var menuRoot = helper.getView<SwipeMenuLayout>(R.id.menuRoot)
+        if(item.id == 1L)
+        {
+            menuRoot.isSwipeEnable = false;
+        }else{
+            menuRoot.isSwipeEnable = true;
+        }
         var userAvatar = helper.getView<DrawableEnTextView>(R.id.menuItem)
         /*if(item.type.equals("0"))
         {
