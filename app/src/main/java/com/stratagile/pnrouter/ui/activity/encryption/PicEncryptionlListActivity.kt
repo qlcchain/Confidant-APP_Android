@@ -14,6 +14,7 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
+import com.pawegio.kandroid.startActivityForResult
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -56,7 +57,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     internal lateinit var mPresenter: PicEncryptionlListPresenter
     var picItemEncryptionAdapter: PicItemEncryptionAdapter? = null
     var folderInfo:LocalFileMenu? = null
-    protected val REQUEST_CODE_MAP = 1
+    protected val REQUEST_CODE_MENU = 1
     protected val REQUEST_CODE_CAMERA = 2
     protected val REQUEST_CODE_LOCAL = 3
     protected val REQUEST_CODE_DING_MSG = 4
@@ -131,7 +132,8 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             var data = obj as FileOpreateType
                             when (data.name) {
                                 "Node back up" -> {
-
+                                    val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
+                                    startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
                                 "Delete" -> {
                                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
@@ -280,7 +282,11 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_LOCAL) { // send local image
+            if (requestCode == REQUEST_CODE_MENU) { //
+                var folderInfo = data!!.getParcelableExtra<LocalFileMenu>("folderInfo");
+                var aa= "";
+            }
+            else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 KLog.i("选照片或者视频返回。。。")
                 val list = data!!.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
                 KLog.i(list)

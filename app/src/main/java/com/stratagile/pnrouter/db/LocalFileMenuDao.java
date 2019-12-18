@@ -31,6 +31,7 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         public final static Property NodeId = new Property(6, Integer.class, "nodeId", false, "NODE_ID");
         public final static Property Size = new Property(7, Long.class, "size", false, "SIZE");
         public final static Property LastModify = new Property(8, Long.class, "LastModify", false, "LAST_MODIFY");
+        public final static Property IsChoose = new Property(9, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -54,7 +55,8 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
                 "\"TYPE\" TEXT," + // 5: type
                 "\"NODE_ID\" INTEGER," + // 6: nodeId
                 "\"SIZE\" INTEGER," + // 7: size
-                "\"LAST_MODIFY\" INTEGER);"); // 8: LastModify
+                "\"LAST_MODIFY\" INTEGER," + // 8: LastModify
+                "\"IS_CHOOSE\" INTEGER);"); // 9: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -111,6 +113,11 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         if (LastModify != null) {
             stmt.bindLong(9, LastModify);
         }
+ 
+        Boolean isChoose = entity.getIsChoose();
+        if (isChoose != null) {
+            stmt.bindLong(10, isChoose ? 1L: 0L);
+        }
     }
 
     @Override
@@ -161,6 +168,11 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         if (LastModify != null) {
             stmt.bindLong(9, LastModify);
         }
+ 
+        Boolean isChoose = entity.getIsChoose();
+        if (isChoose != null) {
+            stmt.bindLong(10, isChoose ? 1L: 0L);
+        }
     }
 
     @Override
@@ -179,7 +191,8 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // type
             cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // nodeId
             cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // size
-            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8) // LastModify
+            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // LastModify
+            cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0 // isChoose
         );
         return entity;
     }
@@ -195,6 +208,7 @@ public class LocalFileMenuDao extends AbstractDao<LocalFileMenu, Long> {
         entity.setNodeId(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
         entity.setSize(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
         entity.setLastModify(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setIsChoose(cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0);
      }
     
     @Override

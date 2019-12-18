@@ -399,6 +399,9 @@
         <activity
             android:name=".ui.activity.encryption.WeXinEncryptionListActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.encryption.SelectNodeMenuActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Rich push 核心功能 since 2.0.6-->
         <activity

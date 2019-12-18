@@ -127,7 +127,16 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     override fun onResume() {
         super.onResume()
         // cancel the notification
-        EaseUI.getInstance().notifier.reset()
+        try {
+            if( EaseUI.getInstance().notifier != null)
+            {
+                EaseUI.getInstance().notifier.reset()
+            }
+        }catch (e:Exception)
+        {
+
+        }
+
     }
 
     protected fun hideSoftKeyboard() {

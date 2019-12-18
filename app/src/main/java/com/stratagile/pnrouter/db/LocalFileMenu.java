@@ -19,9 +19,28 @@ public class LocalFileMenu implements Parcelable {
     private Integer nodeId;//文件目录在服务器上的id
     private Long size;
     private Long LastModify;
+    private Boolean isChoose;
 
     public LocalFileMenu() {
     }
+
+
+    @Generated(hash = 1107858049)
+    public LocalFileMenu(Long id, Long creatTime, String fileName, String path,
+            Long fileNum, String type, Integer nodeId, Long size, Long LastModify,
+            Boolean isChoose) {
+        this.id = id;
+        this.creatTime = creatTime;
+        this.fileName = fileName;
+        this.path = path;
+        this.fileNum = fileNum;
+        this.type = type;
+        this.nodeId = nodeId;
+        this.size = size;
+        this.LastModify = LastModify;
+        this.isChoose = isChoose;
+    }
+
 
     protected LocalFileMenu(Parcel in) {
         if (in.readByte() == 0) {
@@ -57,20 +76,8 @@ public class LocalFileMenu implements Parcelable {
         } else {
             LastModify = in.readLong();
         }
-    }
-
-    @Generated(hash = 1262934451)
-    public LocalFileMenu(Long id, Long creatTime, String fileName, String path, Long fileNum,
-            String type, Integer nodeId, Long size, Long LastModify) {
-        this.id = id;
-        this.creatTime = creatTime;
-        this.fileName = fileName;
-        this.path = path;
-        this.fileNum = fileNum;
-        this.type = type;
-        this.nodeId = nodeId;
-        this.size = size;
-        this.LastModify = LastModify;
+        byte tmpIsChoose = in.readByte();
+        isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
     public static final Creator<LocalFileMenu> CREATOR = new Creator<LocalFileMenu>() {
@@ -84,6 +91,55 @@ public class LocalFileMenu implements Parcelable {
             return new LocalFileMenu[size];
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        if (creatTime == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(creatTime);
+        }
+        dest.writeString(fileName);
+        dest.writeString(path);
+        if (fileNum == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(fileNum);
+        }
+        dest.writeString(type);
+        if (nodeId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(nodeId);
+        }
+        if (size == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(size);
+        }
+        if (LastModify == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(LastModify);
+        }
+        dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
+    }
 
     public Long getId() {
         return id;
@@ -157,51 +213,21 @@ public class LocalFileMenu implements Parcelable {
         LastModify = lastModify;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Boolean getChoose() {
+        return isChoose;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        if (creatTime == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(creatTime);
-        }
-        dest.writeString(fileName);
-        dest.writeString(path);
-        if (fileNum == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(fileNum);
-        }
-        dest.writeString(type);
-        if (nodeId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(nodeId);
-        }
-        if (size == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(size);
-        }
-        if (LastModify == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(LastModify);
-        }
+    public void setChoose(Boolean choose) {
+        isChoose = choose;
+    }
+
+
+    public Boolean getIsChoose() {
+        return this.isChoose;
+    }
+
+
+    public void setIsChoose(Boolean isChoose) {
+        this.isChoose = isChoose;
     }
 }
