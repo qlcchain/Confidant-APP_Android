@@ -32,7 +32,7 @@ class NodeMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQui
         helper.addOnClickListener(R.id.btnRename)
         var menuRoot = helper.getView<SwipeMenuLayout>(R.id.menuRoot)
         menuRoot.isSwipeEnable = false;
-        var userAvatar = helper.getView<DrawableNodeMenuEnTextView>(R.id.menuItem)
+        var menuItem = helper.getView<DrawableNodeMenuEnTextView>(R.id.menuItem)
         /*if(item.type.equals("0"))
         {
             userAvatar.setTitleText(item.fileName)
@@ -40,8 +40,9 @@ class NodeMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQui
             var souceName = String(Base58.decode(item.fileName))
             userAvatar.setTitleText(souceName)
         }*/
-        userAvatar.setTitleText(item.fileName)
-        userAvatar.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))
+        menuItem.setShowNext(item.isChoose)
+        menuItem.setTitleText(item.fileName)
+        menuItem.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))
     }
 
 }

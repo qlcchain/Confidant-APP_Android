@@ -122,6 +122,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 localFileMenu.size = item!!.size.toLong();
                 localFileMenu.path = defaultfolder
                 localFileMenu.type = "1";
+                localFileMenu.isChoose = false;
                 localFileMenu.lastModify = item!!.lastModify.toLong();
                 picMenuList.add(localFileMenu)
                 try {
@@ -141,7 +142,14 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 picMenuEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
                     when (view.id) {
                         R.id.menuItem -> {
+                            var dataList = picMenuEncryptionAdapter!!.data;
+                            for(item in dataList)
+                            {
+                                item.isChoose = false;
+                            }
                             var data = picMenuEncryptionAdapter!!.getItem(position)
+                            data!!.isChoose = true;
+                            picMenuEncryptionAdapter!!.notifyDataSetChanged()
                             val intent = Intent()
                             intent.putExtra("folderInfo", data)
                             setResult(RESULT_OK, intent)
