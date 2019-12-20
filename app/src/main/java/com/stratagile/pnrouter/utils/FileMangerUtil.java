@@ -149,9 +149,11 @@ public class FileMangerUtil {
     private static ConcurrentHashMap<String, String> sendFileWidthAndHeightMap =new  ConcurrentHashMap<>();
     private static long  faBegin;
     private static long faEnd;
+    private static Integer fromPorperty;
 
     public static void  init()
     {
+        fromPorperty = null;
         sendMsgLocalMap = new ConcurrentHashMap<>();
         sendFilePathMap = new ConcurrentHashMap<>();
         sendToxFileDataMap = new ConcurrentHashMap<>();
@@ -428,6 +430,7 @@ public class FileMangerUtil {
                     sendFileMyKeyByteMap.remove(msgId);
                     sendFileFriendKeyByteMap.remove(msgId);
                     sendFilePathMap.remove(msgId);
+                    fromPorperty = null;
                     System.gc();
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
@@ -576,6 +579,11 @@ public class FileMangerUtil {
                 Arrays.fill(porperty,(byte) 2);
             }else{
                 Arrays.fill(porperty,(byte) 0);
+            }
+            if(fromPorperty != null)
+            {
+                Arrays.fill(porperty,(byte) fromPorperty.byteValue());
+
             }
             sendFileData.setPorperty(porperty);
             byte[] ver = new byte[1];
@@ -969,6 +977,10 @@ public class FileMangerUtil {
         if(toxFileData != null) {
             ToxCoreJni.getInstance().cancelFileSend(toxFileData.getFileNumber());
         }
+    }
+    public static void setPorperty(Integer porperty)
+    {
+        fromPorperty = porperty;
     }
     public static int sendImageFile(String imagePath,String msgId,boolean isCompress) {
         if(sendFilePathMap.containsValue(imagePath))

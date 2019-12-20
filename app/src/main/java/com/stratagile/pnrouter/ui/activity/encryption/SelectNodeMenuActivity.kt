@@ -123,6 +123,11 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 localFileMenu.path = defaultfolder
                 localFileMenu.type = "1";
                 localFileMenu.isChoose = false;
+                var chooseId = SpUtil.getInt(this,"chooseId",-1);
+                if(item!!.id == chooseId)
+                {
+                    localFileMenu.isChoose = true;
+                }
                 localFileMenu.lastModify = item!!.lastModify.toLong();
                 picMenuList.add(localFileMenu)
                 try {
@@ -149,6 +154,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                             }
                             var data = picMenuEncryptionAdapter!!.getItem(position)
                             data!!.isChoose = true;
+                            SpUtil.putInt(this,"chooseId",data!!.nodeId)
                             picMenuEncryptionAdapter!!.notifyDataSetChanged()
                             val intent = Intent()
                             intent.putExtra("folderInfo", data)
