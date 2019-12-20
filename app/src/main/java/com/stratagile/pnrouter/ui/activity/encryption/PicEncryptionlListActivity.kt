@@ -325,6 +325,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                         list.add(localMediaUpdate!!)
                         var startIntent = Intent(this, FileTaskListActivity::class.java)
                         startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+                        startIntent.putExtra("fromPorperty",3)
                         startActivity(startIntent)
 
                         /*val fileNameBase58 = Base58.encode(fileName.toByteArray())

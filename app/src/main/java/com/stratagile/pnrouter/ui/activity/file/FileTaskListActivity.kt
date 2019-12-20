@@ -134,6 +134,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
+    var fromPorperty:Integer? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -310,6 +311,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         AppConfig.instance.messageReceiver?.fileTaskBack = this
         var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+        if(intent.hasExtra("fromPorperty"))
+        {
+            fromPorperty = Integer(intent.getIntExtra("fromPorperty",-1))
+        }
         if (listData != null && listData.size > 0) {
             for (i in listData) {
                 var file = File(i.path)
