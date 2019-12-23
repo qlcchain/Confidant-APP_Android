@@ -580,7 +580,7 @@ public class FileMangerUtil {
             }else{
                 Arrays.fill(porperty,(byte) 0);
             }
-            if(fromPorperty != null)
+            if(fromPorperty != null && fromPorperty != -1)
             {
                 Arrays.fill(porperty,(byte) fromPorperty.byteValue());
 
@@ -982,11 +982,12 @@ public class FileMangerUtil {
     {
         fromPorperty = porperty;
     }
-    public static int sendImageFile(String imagePath,String msgId,boolean isCompress) {
+    public static int sendImageFile(String imagePath,String msgId,boolean isCompress,Integer porperty) {
         if(sendFilePathMap.containsValue(imagePath))
         {
             return 0;
         }
+        fromPorperty = porperty;
         new Thread(new Runnable(){
             public void run(){
 
@@ -1498,11 +1499,12 @@ public class FileMangerUtil {
         }).start();
         return 1;
     }
-    public static int sendVideoFile(String videoPath,String msgId) {
+    public static int sendVideoFile(String videoPath,String msgId,Integer porperty) {
         if(sendFilePathMap.containsValue(videoPath))
         {
             return 0;
         }
+        fromPorperty = porperty;
         new Thread(new Runnable(){
             public void run() {
 
@@ -1693,7 +1695,7 @@ public class FileMangerUtil {
         return 1;
     }
 
-    public static int sendOtherFile(String filePath,String msgId) {
+    public static int sendOtherFile(String filePath,String msgId,Integer porperty) {
         if(sendFilePathMap.containsValue(filePath))
         {
             return 0;
