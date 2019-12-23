@@ -1,0 +1,398 @@
+package com.stratagile.pnrouter.ui.activity.encryption
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.WindowManager
+import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.OpenFileUtil
+import com.hyphenate.easeui.utils.PathUtils
+import com.luck.picture.lib.PicturePreviewActivity
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.observable.ImagesObservable
+import com.pawegio.kandroid.toast
+import com.socks.library.KLog
+import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.LocalFileItem
+import com.stratagile.pnrouter.db.LocalFileMenu
+import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.entity.file.UpLoadFile
+import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionNodelListComponent
+import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionNodelListContract
+import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionNodelListModule
+import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionNodelListPresenter
+import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
+import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.ToxCoreJni
+import kotlinx.android.synthetic.main.encryption_nodefile_list.*
+import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.io.File
+import java.io.Serializable
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+
+/**
+ * @author zl
+ * @Package com.stratagile.pnrouter.ui.activity.encryption
+ * @Description: $description
+ * @date 2019/12/23 16:07:44
+ */
+
+class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListContract.View , PNRouterServiceMessageReceiver.NodeFilesListPullCallback{
+    override fun fileAction(jFileActionRsp: JFileActionRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if (jFileActionRsp.params.retCode== 0)
+        {
+            /*var deleteData:LocalFileItem ? = null
+            var deletePositon = -1;*/
+            var filePath = deleteData!!.filePath;
+            DeleteUtils.deleteFile(filePath)
+            picItemEncryptionAdapter!!.remove(deletePositon)
+            picItemEncryptionAdapter!!.notifyDataSetChanged()
+            //EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+        }else{
+            com.pawegio.kandroid.runOnUiThread {
+                toast(R.string.fail)
+            }
+        }
+    }
+
+    override fun filesListPull(jFilesListPullRsp: JFilesListPullRsp) {
+
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jFilesListPullRsp.params.retCode == 0)
+        {
+            var fileItemList = mutableListOf<LocalFileItem>()
+            pathId = jFilesListPullRsp.params.pathId.toLong();
+            for (item in jFilesListPullRsp.params.payload)
+            {
+                var localFileItem:LocalFileItem = LocalFileItem();
+                localFileItem.fileId = item.id.toLong()
+                localFileItem.filePath = item.paths;
+                localFileItem.fileType = item.type;
+                var souceName = String(Base58.decode(item.fname))
+                localFileItem.fileName = souceName
+                localFileItem.fileSize = item.size.toLong()
+                localFileItem.creatTime = item.lastModify.toLong()
+                localFileItem.fileMD5 = item.md5
+                localFileItem.srcKey = item.fKey;
+                localFileItem.fileInfo = item.finfo
+                fileItemList.add(localFileItem)
+            }
+            runOnUiThread {
+                picItemEncryptionAdapter = PicItemEncryptionAdapter(fileItemList)
+                recyclerView.adapter = picItemEncryptionAdapter
+                /*picItemEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    var taskFile = picItemEncryptionAdapter!!.getItem(position)
+                    //startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
+                }*/
+                picItemEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
+                    when (view.id) {
+                        R.id.itemTypeIcon,R.id.itemInfo ->
+                        {
+                            var emaiAttach = picItemEncryptionAdapter!!.getItem(position)
+                            var fileName = emaiAttach!!.fileName
+                            var filePath= emaiAttach.filePath
+                            var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
+                            var fileTempPathFile = File(fileTempPath)
+                            if(!fileTempPathFile.exists()) {
+                                fileTempPathFile.mkdirs();
+                            }
+                            fileTempPath += "/"+fileName;
+                            var aesKey = LibsodiumUtil.DecryptShareKey(emaiAttach.srcKey, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                            var code = FileUtil.copySdcardToxFileAndDecrypt(filePath,fileTempPath,aesKey)
+                            if(code == 1)
+                            {
+                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                    showImagList(fileTempPath)
+                                }else if(fileName.contains("mp4"))
+                                {
+                                    val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                    intent.putExtra("path", fileTempPath)
+                                    startActivity(intent)
+                                }else{
+                                    OpenFileUtil.getInstance(AppConfig.instance)
+                                    val intent = OpenFileUtil.openFile(fileTempPath)
+                                    startActivity(intent)
+                                }
+                            }
+
+                        }
+                        R.id.opMenu ->
+                        {
+                            chooseFileData = picItemEncryptionAdapter!!.getItem(position)
+                            var menuArray = arrayListOf<String>()
+                            var iconArray = arrayListOf<String>()
+                            menuArray = arrayListOf<String>(getString(R.string.Delete))
+                            iconArray = arrayListOf<String>("statusbar_delete")
+                            PopWindowUtil.showPopMenuWindow(this@PicEncryptionNodelListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                                override fun onSelect(position: Int, obj: Any) {
+                                    KLog.i("" + position)
+                                    var data = obj as FileOpreateType
+                                    when (data.name) {
+                                        "Delete" -> {
+                                            SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                    .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
+                                                    .setConfirmClickListener {
+                                                        var data = picItemEncryptionAdapter!!.getItem(position)
+
+                                                        deleteData= data
+                                                        deletePositon = position;
+                                                        runOnUiThread {
+                                                            showProgressDialog()
+                                                        }
+                                                        var foldername = data!!.fileName
+                                                        var base58Name = Base58.encode(foldername.toByteArray())
+                                                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                                        var filePathsPullReq = FileActionReq( selfUserId!!, 1,1,2,data!!.fileId,pathId,base58Name,"")
+                                                        var sendData = BaseData(6, filePathsPullReq);
+                                                        if (ConstantValue.isWebsocketConnected) {
+                                                            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                                        }else if (ConstantValue.isToxConnected) {
+                                                            var baseData = sendData
+                                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                            if (ConstantValue.isAntox) {
+                                                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                            }else{
+                                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                                            }
+                                                        }
+                                                    }
+                                                    .show()
+                                        }
+
+                                    }
+                                }
+
+                            })
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    @Inject
+    internal lateinit var mPresenter: PicEncryptionNodelListPresenter
+    var _this:Activity?= null
+    var picItemEncryptionAdapter: PicItemEncryptionAdapter? = null
+    var folderInfo: LocalFileMenu? = null
+    protected val REQUEST_CODE_MENU = 1
+    protected val REQUEST_CODE_CAMERA = 2
+    protected val REQUEST_CODE_LOCAL = 3
+    protected val REQUEST_CODE_DING_MSG = 4
+    protected val REQUEST_CODE_FILE = 5
+    protected val REQUEST_CODE_VIDEO = 6
+    internal var previewImages: MutableList<LocalMedia> = ArrayList()
+    var localMediaUpdate: LocalMedia? = null
+    var pathId:Long = 0
+    var chooseFileData: LocalFileItem? = null;
+    var chooseFolderData: LocalFileMenu? = null;
+
+    var clickTimeMap = ConcurrentHashMap<String, Long>()
+
+    var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
+    var deleteData:LocalFileItem ? = null
+    var deletePositon = -1;
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun initView() {
+        setContentView(R.layout.encryption_nodefile_list)
+    }
+    override fun initData() {
+        AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = this
+        _this = this;
+        EventBus.getDefault().register(this)
+        folderInfo = intent.getParcelableExtra("folderInfo")
+        titleShow.text = folderInfo!!.fileName
+        initPicPlug()
+
+        showProgressDialog()
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
+        var filesListPullReq = FilesListPullReq( selfUserId!!, 1,folderInfo!!.nodeId,base58Name,1,0,0)
+        var sendData = BaseData(6, filesListPullReq);
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+        allMenu.setOnClickListener()
+        {
+
+        }
+        addMenu.setOnClickListener()
+        {
+            selectPicFromLocal()
+        }
+        backBtn.setOnClickListener {
+            onBackPressed()
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if (screenshotsSettingFlag.equals("1")) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+    fun showImagList(localPath:String)
+    {
+        previewImages = ArrayList()
+        val selectedImages = ArrayList<LocalMedia>()
+
+        val localMedia = LocalMedia()
+        localMedia.isCompressed = false
+        localMedia.duration = 0
+        localMedia.height = 100
+        localMedia.width = 100
+        localMedia.isChecked = false
+        localMedia.isCut = false
+        localMedia.mimeType = 0
+        localMedia.num = 0
+        localMedia.path = localPath
+        localMedia.pictureType = "image/jpeg"
+        localMedia.setPosition(0)
+        localMedia.sortIndex = 0
+        previewImages.add(localMedia)
+        ImagesObservable.getInstance().saveLocalMedia(previewImages, "chat")
+
+        val previewImages = ImagesObservable.getInstance().readLocalMedias("chat")
+        if (previewImages != null && previewImages.size > 0) {
+            val intentPicturePreviewActivity = Intent(this, PicturePreviewActivity::class.java)
+            val bundle = Bundle()
+            //ImagesObservable.getInstance().saveLocalMedia(previewImages);
+            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, selectedImages as Serializable)
+            bundle.putInt(PictureConfig.EXTRA_POSITION, 0)
+            bundle.putString("from", "chat")
+            intentPicturePreviewActivity.putExtras(bundle)
+            startActivity(intentPicturePreviewActivity)
+        }
+    }
+    /**
+     * select local image
+     * //todo
+     */
+    protected fun initPicPlug() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+    }
+    /**
+     * select local image
+     * //todo
+     */
+    protected fun selectPicFromLocal() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+                .forResult(REQUEST_CODE_LOCAL)
+    }
+    override fun setupActivityComponent() {
+        DaggerPicEncryptionNodelListComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .picEncryptionNodelListModule(PicEncryptionNodelListModule(this))
+                .build()
+                .inject(this)
+    }
+    override fun setPresenter(presenter: PicEncryptionNodelListContract.PicEncryptionNodelListContractPresenter) {
+        mPresenter = presenter as PicEncryptionNodelListPresenter
+    }
+
+    override fun showProgressDialog() {
+        progressDialog.show()
+    }
+
+    override fun closeProgressDialog() {
+        progressDialog.hide()
+    }
+
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = null
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+}

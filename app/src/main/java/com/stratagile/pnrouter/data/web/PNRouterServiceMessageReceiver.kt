@@ -601,11 +601,17 @@ val credentialsProvider: CredentialsProvider, private
                 "FileAction" -> {
                     val jFileActionRsp = gson.fromJson(text, JFileActionRsp::class.java)
                     nodeFileCallback?.fileAction(jFileActionRsp)
+                    nodeFilesListPullCallback?.fileAction(jFileActionRsp)
                 }
                 "FilePathsPull" -> {
                     val jFilePathsPulRsp = gson.fromJson(text, JFilePathsPulRsp::class.java)
                     nodeFileCallback?.filePathsPull(jFilePathsPulRsp)
                 }
+                "FilesListPull" -> {
+                    val jFilesListPullRsp = gson.fromJson(text, JFilesListPullRsp::class.java)
+                    nodeFilesListPullCallback?.filesListPull(jFilesListPullRsp)
+                }
+
             }
         }
 
@@ -702,6 +708,8 @@ val credentialsProvider: CredentialsProvider, private
     var mailSendNoticeCallback:MailSendNoticeCallback? = null;
 
     var nodeFileCallback:NodeFileCallback? = null;
+
+    var nodeFilesListPullCallback:NodeFilesListPullCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1105,6 +1113,10 @@ val credentialsProvider: CredentialsProvider, private
     interface NodeFileCallback {
         fun fileAction(jFileActionRsp: JFileActionRsp)
         fun filePathsPull(jFilePathsPulRsp: JFilePathsPulRsp)
+    }
+    interface NodeFilesListPullCallback {
+        fun filesListPull(jFilesListPullRsp: JFilesListPullRsp)
+        fun fileAction(jFileActionRsp: JFileActionRsp)
     }
 }
 
