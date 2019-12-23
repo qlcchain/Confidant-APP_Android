@@ -33,6 +33,7 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         public final static Property FileId = new Property(8, Long.class, "fileId", false, "FILE_ID");
         public final static Property SrcKey = new Property(9, String.class, "srcKey", false, "SRC_KEY");
         public final static Property FileMD5 = new Property(10, String.class, "fileMD5", false, "FILE_MD5");
+        public final static Property FileInfo = new Property(11, String.class, "fileInfo", false, "FILE_INFO");
     }
 
 
@@ -58,7 +59,8 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
                 "\"AUTOR\" TEXT," + // 7: autor
                 "\"FILE_ID\" INTEGER," + // 8: fileId
                 "\"SRC_KEY\" TEXT," + // 9: srcKey
-                "\"FILE_MD5\" TEXT);"); // 10: fileMD5
+                "\"FILE_MD5\" TEXT," + // 10: fileMD5
+                "\"FILE_INFO\" TEXT);"); // 11: fileInfo
     }
 
     /** Drops the underlying database table. */
@@ -125,6 +127,11 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         if (fileMD5 != null) {
             stmt.bindString(11, fileMD5);
         }
+ 
+        String fileInfo = entity.getFileInfo();
+        if (fileInfo != null) {
+            stmt.bindString(12, fileInfo);
+        }
     }
 
     @Override
@@ -185,6 +192,11 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         if (fileMD5 != null) {
             stmt.bindString(11, fileMD5);
         }
+ 
+        String fileInfo = entity.getFileInfo();
+        if (fileInfo != null) {
+            stmt.bindString(12, fileInfo);
+        }
     }
 
     @Override
@@ -205,7 +217,8 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // autor
             cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // fileId
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // srcKey
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // fileMD5
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // fileMD5
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // fileInfo
         );
         return entity;
     }
@@ -223,6 +236,7 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         entity.setFileId(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
         entity.setSrcKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setFileMD5(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setFileInfo(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     @Override

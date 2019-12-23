@@ -6,6 +6,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
+        android:id="@+id/albumMenuRoot"
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/x30"

@@ -909,4 +909,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Are_you_colse">Are you sure you want to close it?</string>
     <string name="screen_security">Are you sure you want to turn off the screen security?</string>
     <string name="Select_Folder">Select Folder</string>
+    <string name="Create_Folder">Create Folder</string>
+    <string name="Select">Select</string>
 </resources>

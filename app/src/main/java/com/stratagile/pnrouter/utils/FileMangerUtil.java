@@ -25,7 +25,10 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.db.FileUploadItem;
+import com.stratagile.pnrouter.db.FileUploadItemDao;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.entity.BakFileReq;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.SendFileData;
@@ -448,6 +451,27 @@ public class FileMangerUtil {
                         }else if(ConstantValue.INSTANCE.isToxConnected())
                         {
                             BaseData baseData = new BaseData(4,uploadAvatarReq);
+                            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                            if (ConstantValue.INSTANCE.isAntox()) {
+                                //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                            }else{
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            }
+                        }
+                    }
+                    List<FileUploadItem> picItemList = AppConfig.instance.getMDaoMaster().newSession().getFileUploadItemDao().queryBuilder().where(FileUploadItemDao.Properties.FileId.eq(msgId)).list();
+                    if(picItemList != null &&  picItemList.size() != 0)//加密相册上传
+                    {
+                        FileUploadItem fileUploadItem = picItemList.get(0);
+                        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                        BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fileUploadItem.getFInfo(),fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");
+                        if(ConstantValue.INSTANCE.isWebsocketConnected())
+                        {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(6,bakFileReq));
+                        }else if(ConstantValue.INSTANCE.isToxConnected())
+                        {
+                            BaseData baseData = new BaseData(6,bakFileReq);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
                                 //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));

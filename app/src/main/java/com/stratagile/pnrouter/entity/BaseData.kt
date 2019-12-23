@@ -818,7 +818,7 @@ data class FilesListPullReq(var UserId : String, var Depens :Int, var PathId : I
  * 100.	用户备份邮件到节点上
  * (1)	请求（APP-->Router）
  */
-data class BakFileReq(var Depens :Int,var UserId : String,  var Type : Int,var FileId:Int,var Size:Int,var Md5:String,var FName : String,var FKey : String,var FInfo : String,var PathId : Int,var PathName : String,var Action : String = "BakFile")
+data class BakFileReq(var Depens :Int,var UserId : String,  var Type : Int,var FileId:Int,var Size:Long,var Md5:String,var FName : String,var FKey : String,var FInfo : String,var PathId : Int,var PathName : String,var Action : String = "BakFile")
 /**
  * 101.	用户文件目录或者文件更新（新建，改名，删除）
  * (1)	请求（APP-->Router）

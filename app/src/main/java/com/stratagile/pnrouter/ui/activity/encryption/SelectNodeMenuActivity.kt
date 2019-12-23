@@ -123,12 +123,13 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 localFileMenu.path = defaultfolder
                 localFileMenu.type = "1";
                 localFileMenu.isChoose = false;
+                localFileMenu.lastModify = item!!.lastModify.toLong();
                 var chooseId = SpUtil.getInt(this,"chooseId",-1);
                 if(item!!.id == chooseId)
                 {
                     localFileMenu.isChoose = true;
+                    currentData = localFileMenu;
                 }
-                localFileMenu.lastModify = item!!.lastModify.toLong();
                 picMenuList.add(localFileMenu)
                 try {
                     var defaultfolderFile = File(defaultfolder)
@@ -154,12 +155,8 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                             }
                             var data = picMenuEncryptionAdapter!!.getItem(position)
                             data!!.isChoose = true;
-                            SpUtil.putInt(this,"chooseId",data!!.nodeId)
                             picMenuEncryptionAdapter!!.notifyDataSetChanged()
-                            val intent = Intent()
-                            intent.putExtra("folderInfo", data)
-                            setResult(RESULT_OK, intent)
-                            finish()
+                            currentData = data;
                         }
                         /*R.id.btnDelete -> {
                             var parentRoot = view.parent as SwipeMenuLayout
@@ -274,7 +271,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
         }
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
 
-     /*   addMenuItem.setOnClickListener()
+        createFolder.setOnClickListener()
         {
             PopWindowUtil.showCreateFolderWindow(parentTarget!!, addMenuItem, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
@@ -298,7 +295,15 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                     }
                 }
             })
-        }*/
+        }
+        selectbtn.setOnClickListener()
+        {
+            SpUtil.putInt(this,"chooseId",currentData!!.nodeId)
+            val intent = Intent()
+            intent.putExtra("folderInfo", currentData)
+            setResult(RESULT_OK, intent)
+            finish()
+        }
     }
 
     override fun setupActivityComponent() {

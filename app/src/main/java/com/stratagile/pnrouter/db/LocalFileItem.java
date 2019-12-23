@@ -19,15 +19,16 @@ public class LocalFileItem implements Parcelable {
     // 文件类型0--所有文件
     //1--图片
     //2--语音
-    //3--视频
-    //4--文档
-    //5--其他文件
+    //3--没有用到
+    //4--视频
+    //5--文件
     private Integer fileType;
     private Integer fileFrom;//0本地，1服务器
     private String autor;//作者
     private Long fileId;//属于哪个文件夹
     private String srcKey;
     private String fileMD5;
+    private String fileInfo;
 
     public LocalFileItem() {
     }
@@ -69,13 +70,14 @@ public class LocalFileItem implements Parcelable {
         }
         srcKey = in.readString();
         fileMD5 = in.readString();
+        fileInfo = in.readString();
     }
 
 
-    @Generated(hash = 459452525)
+    @Generated(hash = 1116936080)
     public LocalFileItem(Long id, String fileName, String filePath, Long fileSize,
             Long creatTime, Integer fileType, Integer fileFrom, String autor, Long fileId,
-            String srcKey, String fileMD5) {
+            String srcKey, String fileMD5, String fileInfo) {
         this.id = id;
         this.fileName = fileName;
         this.filePath = filePath;
@@ -87,6 +89,7 @@ public class LocalFileItem implements Parcelable {
         this.fileId = fileId;
         this.srcKey = srcKey;
         this.fileMD5 = fileMD5;
+        this.fileInfo = fileInfo;
     }
 
     public static final Creator<LocalFileItem> CREATOR = new Creator<LocalFileItem>() {
@@ -149,14 +152,7 @@ public class LocalFileItem implements Parcelable {
         }
         dest.writeString(srcKey);
         dest.writeString(fileMD5);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        dest.writeString(fileInfo);
     }
 
     public String getFileName() {
@@ -237,5 +233,23 @@ public class LocalFileItem implements Parcelable {
 
     public void setFileMD5(String fileMD5) {
         this.fileMD5 = fileMD5;
+    }
+
+    public String getFileInfo() {
+        return fileInfo;
+    }
+
+    public void setFileInfo(String fileInfo) {
+        this.fileInfo = fileInfo;
+    }
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

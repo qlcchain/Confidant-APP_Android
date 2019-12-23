@@ -2,11 +2,9 @@ package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
 import android.view.WindowManager
-import android.widget.CheckBox
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
@@ -17,20 +15,17 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
-import com.pawegio.kandroid.startActivityForResult
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
-import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.Sceen
+import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
-import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionlListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionlListContract
@@ -38,10 +33,8 @@ import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionlListM
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionlListPresenter
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
-import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.encryption_file_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
 import org.greenrobot.eventbus.EventBus
@@ -49,10 +42,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.Serializable
-import java.util.ArrayList
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -77,7 +69,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     var localMediaUpdate: LocalMedia? = null
 
     var chooseFileData:LocalFileItem? = null;
-
+    var chooseFolderData:LocalFileMenu? = null;
 
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
@@ -297,11 +289,47 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                 .isDragFrame(false)
                 .forResult(REQUEST_CODE_LOCAL)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.File_does_not_exist)
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
+        }else {
+
+            var  fileKey = fileStatus.fileKey;
+            var fileId = fileKey.substring(fileKey.indexOf("__")+2,fileKey.length);
+            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.queryBuilder().where(FileUploadItemDao.Properties.FileId.eq(fileId)).list()
+            if(picItemList ==null || picItemList.size == 0)
+            {
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var fileUploadItem = FileUploadItem();
+                fileUploadItem.depens = 1;
+                fileUploadItem.userId = selfUserId;
+                fileUploadItem.type = chooseFileData!!.fileType
+                fileUploadItem.fileId = fileId
+                fileUploadItem.size = chooseFileData!!.fileSize
+                val fileMD5 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
+                fileUploadItem.md5 = fileMD5;
+                val fileNameBase58 = Base58.encode(chooseFileData!!.fileName.toByteArray())
+                fileUploadItem.setfName(fileNameBase58);
+                fileUploadItem.setfKey(chooseFileData!!.srcKey);
+                fileUploadItem.setfInfo(chooseFileData!!.fileInfo);
+                fileUploadItem.pathId = chooseFolderData!!.nodeId;
+                val folderNameBase58 = Base58.encode(chooseFolderData!!.fileName.toByteArray())
+                fileUploadItem.pathName =folderNameBase58;
+                AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.insert(fileUploadItem)
+            }
+
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_MENU) { //
-                var folderInfo = data!!.getParcelableExtra<LocalFileMenu>("folderInfo")
+                chooseFolderData = data!!.getParcelableExtra<LocalFileMenu>("folderInfo")
                 var file = File(chooseFileData!!.filePath)
                 if (file.exists()) {
 
@@ -309,7 +337,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
 
                     var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "upload"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -405,10 +433,16 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 localFileItem.fileMD5 = fileMD5;
                                 val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
                                 when (MsgType) {
-                                    "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
+                                    "png", "jpg", "jpeg", "webp" ->
+                                    {
+                                        var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
+                                        var widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                        localFileItem.fileType = 1
+                                        localFileItem.fileInfo = widthAndHeight;
+                                    }
                                     "amr" ->  localFileItem.fileType = 2
-                                    "mp4" ->  localFileItem.fileType = 3
-                                    else ->  localFileItem.fileType = 4
+                                    "mp4" ->  localFileItem.fileType = 4
+                                    else ->  localFileItem.fileType = 5
                                 }
                                 localFileItem.fileFrom = 0;
                                 localFileItem.autor = "";

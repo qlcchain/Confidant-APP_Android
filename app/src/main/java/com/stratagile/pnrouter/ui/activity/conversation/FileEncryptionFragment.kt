@@ -50,7 +50,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        albumMenu.setOnClickListener {
+        albumMenuRoot.setOnClickListener {
             var intent =  Intent(activity!!, PicEncryptionActivity::class.java)
             startActivity(intent);
         }

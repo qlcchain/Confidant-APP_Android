@@ -367,8 +367,8 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 when (MsgType) {
                                     "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
                                     "amr" ->  localFileItem.fileType = 2
-                                    "mp4" ->  localFileItem.fileType = 3
-                                    else ->  localFileItem.fileType = 4
+                                    "mp4" ->  localFileItem.fileType = 4
+                                    else ->  localFileItem.fileType = 5
                                 }
                                 localFileItem.fileFrom = 0;
                                 localFileItem.autor = "";
@@ -800,8 +800,8 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             when (MsgType) {
                                 "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
                                 "amr" ->  localFileItem.fileType = 2
-                                "mp4" ->  localFileItem.fileType = 3
-                                else ->  localFileItem.fileType = 4
+                                "mp4" ->  localFileItem.fileType = 4
+                                else ->  localFileItem.fileType = 5
                             }
                             localFileItem.fileFrom = 0;
                             localFileItem.autor = "";

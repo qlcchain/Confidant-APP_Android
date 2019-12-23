@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.db.EmailCidEntity;
 import com.stratagile.pnrouter.db.EmailConfigEntity;
 import com.stratagile.pnrouter.db.EmailContactsEntity;
 import com.stratagile.pnrouter.db.EmailMessageEntity;
+import com.stratagile.pnrouter.db.FileUploadItem;
 import com.stratagile.pnrouter.db.FriendEntity;
 import com.stratagile.pnrouter.db.GroupEntity;
 import com.stratagile.pnrouter.db.GroupVerifyEntity;
@@ -31,6 +32,7 @@ import com.stratagile.pnrouter.db.EmailCidEntityDao;
 import com.stratagile.pnrouter.db.EmailConfigEntityDao;
 import com.stratagile.pnrouter.db.EmailContactsEntityDao;
 import com.stratagile.pnrouter.db.EmailMessageEntityDao;
+import com.stratagile.pnrouter.db.FileUploadItemDao;
 import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.GroupVerifyEntityDao;
@@ -57,6 +59,7 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig emailConfigEntityDaoConfig;
     private final DaoConfig emailContactsEntityDaoConfig;
     private final DaoConfig emailMessageEntityDaoConfig;
+    private final DaoConfig fileUploadItemDaoConfig;
     private final DaoConfig friendEntityDaoConfig;
     private final DaoConfig groupEntityDaoConfig;
     private final DaoConfig groupVerifyEntityDaoConfig;
@@ -74,6 +77,7 @@ public class DaoSession extends AbstractDaoSession {
     private final EmailConfigEntityDao emailConfigEntityDao;
     private final EmailContactsEntityDao emailContactsEntityDao;
     private final EmailMessageEntityDao emailMessageEntityDao;
+    private final FileUploadItemDao fileUploadItemDao;
     private final FriendEntityDao friendEntityDao;
     private final GroupEntityDao groupEntityDao;
     private final GroupVerifyEntityDao groupVerifyEntityDao;
@@ -106,6 +110,9 @@ public class DaoSession extends AbstractDaoSession {
 
         emailMessageEntityDaoConfig = daoConfigMap.get(EmailMessageEntityDao.class).clone();
         emailMessageEntityDaoConfig.initIdentityScope(type);
+
+        fileUploadItemDaoConfig = daoConfigMap.get(FileUploadItemDao.class).clone();
+        fileUploadItemDaoConfig.initIdentityScope(type);
 
         friendEntityDaoConfig = daoConfigMap.get(FriendEntityDao.class).clone();
         friendEntityDaoConfig.initIdentityScope(type);
@@ -143,6 +150,7 @@ public class DaoSession extends AbstractDaoSession {
         emailConfigEntityDao = new EmailConfigEntityDao(emailConfigEntityDaoConfig, this);
         emailContactsEntityDao = new EmailContactsEntityDao(emailContactsEntityDaoConfig, this);
         emailMessageEntityDao = new EmailMessageEntityDao(emailMessageEntityDaoConfig, this);
+        fileUploadItemDao = new FileUploadItemDao(fileUploadItemDaoConfig, this);
         friendEntityDao = new FriendEntityDao(friendEntityDaoConfig, this);
         groupEntityDao = new GroupEntityDao(groupEntityDaoConfig, this);
         groupVerifyEntityDao = new GroupVerifyEntityDao(groupVerifyEntityDaoConfig, this);
@@ -160,6 +168,7 @@ public class DaoSession extends AbstractDaoSession {
         registerDao(EmailConfigEntity.class, emailConfigEntityDao);
         registerDao(EmailContactsEntity.class, emailContactsEntityDao);
         registerDao(EmailMessageEntity.class, emailMessageEntityDao);
+        registerDao(FileUploadItem.class, fileUploadItemDao);
         registerDao(FriendEntity.class, friendEntityDao);
         registerDao(GroupEntity.class, groupEntityDao);
         registerDao(GroupVerifyEntity.class, groupVerifyEntityDao);
@@ -179,6 +188,7 @@ public class DaoSession extends AbstractDaoSession {
         emailConfigEntityDaoConfig.clearIdentityScope();
         emailContactsEntityDaoConfig.clearIdentityScope();
         emailMessageEntityDaoConfig.clearIdentityScope();
+        fileUploadItemDaoConfig.clearIdentityScope();
         friendEntityDaoConfig.clearIdentityScope();
         groupEntityDaoConfig.clearIdentityScope();
         groupVerifyEntityDaoConfig.clearIdentityScope();
@@ -213,6 +223,10 @@ public class DaoSession extends AbstractDaoSession {
 
     public EmailMessageEntityDao getEmailMessageEntityDao() {
         return emailMessageEntityDao;
+    }
+
+    public FileUploadItemDao getFileUploadItemDao() {
+        return fileUploadItemDao;
     }
 
     public FriendEntityDao getFriendEntityDao() {

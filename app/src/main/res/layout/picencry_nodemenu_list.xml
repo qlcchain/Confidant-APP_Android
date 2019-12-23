@@ -6,6 +6,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.RecyclerView
+        android:layout_weight="1"
         android:id="@+id/recyclerViewNodeMenu"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         android:layout_width="match_parent"
@@ -19,4 +20,39 @@
         app:srcmy="@mipmap/encryption_add_pictures"
         app:textmy="@string/album_encryption">
     </com.stratagile.pnrouter.view.DrawableEnTextView>
+    <LinearLayout
+        android:id="@+id/llOperate"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x50"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_marginTop="@dimen/x50"
+        android:layout_marginBottom="@dimen/x40"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/createFolder"
+            android:layout_width="0dp"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:textColor="@color/loginbtnColor"
+            android:background="@drawable/btn_whitestroke"
+            android:text="@string/Create_Folder"
+            android:gravity="center"
+            android:layout_height="@dimen/x85"
+            />
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2"/>
+
+        <TextView
+            android:id="@+id/selectbtn"
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_maincolor2"
+            android:text="@string/Select"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
 </LinearLayout>
