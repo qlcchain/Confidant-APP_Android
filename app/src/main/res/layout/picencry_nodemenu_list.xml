@@ -22,6 +22,7 @@
     </com.stratagile.pnrouter.view.DrawableEnTextView>
     <LinearLayout
         android:id="@+id/llOperate"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_marginLeft="@dimen/x50"
         android:layout_marginRight="@dimen/x50"

@@ -23,7 +23,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -83,6 +83,11 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         setContentView(R.layout.encryption_file_list)
 
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAddLocalEncryptionItemEvent(statusChange: UpdateLocalEncryptionItemEvent) {
+        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
+        picItemEncryptionAdapter!!.setNewData(picMenuList)
+    }
     override fun initData() {
         var _this = this;
         EventBus.getDefault().register(this)
@@ -135,6 +140,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var iconArray = arrayListOf<String>()
                     menuArray = arrayListOf<String>(getString(R.string.Node_back_up),getString(R.string.Delete))
                     iconArray = arrayListOf<String>("statusbar_download_node","statusbar_delete")
+                    var chooseItemPosition = position
                     PopWindowUtil.showPopMenuWindow(this@PicEncryptionlListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
@@ -149,11 +155,11 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                             .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                             .setConfirmClickListener {
-                                                var data = picItemEncryptionAdapter!!.getItem(position)
+                                                var data = picItemEncryptionAdapter!!.getItem(chooseItemPosition)
                                                 var filePath = data!!.filePath;
                                                 DeleteUtils.deleteFile(filePath)
                                                 AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
-                                                picItemEncryptionAdapter!!.remove(position)
+                                                picItemEncryptionAdapter!!.remove(chooseItemPosition)
                                                 picItemEncryptionAdapter!!.notifyDataSetChanged()
                                                 var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(folderInfo!!.id)).list()
                                                 if(picMenuList != null && picMenuList.size > 0)
@@ -164,7 +170,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                                         picMenuItem.fileNum = 0
                                                     AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                                                 }
-                                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                                EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
                                             }
                                             .show()
                                 }
@@ -306,6 +312,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
             {
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var fileUploadItem = FileUploadItem();
+                fileUploadItem.localFileItemId = chooseFileData!!.id;
                 fileUploadItem.depens = 1;
                 fileUploadItem.userId = selfUserId;
                 fileUploadItem.type = chooseFileData!!.fileType
@@ -355,41 +362,6 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                         startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
                         startIntent.putExtra("fromPorperty",3)
                         startActivity(startIntent)
-
-                        /*val fileNameBase58 = Base58.encode(fileName.toByteArray())
-                        var fileSize = file.length()
-                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                        var fileType = 1
-                        when (localMediaUpdate!!.pictureType) {
-                            "image/jpeg" -> {
-                                fileType = 1
-                            }
-                            "image/png" -> {
-                                fileType = 1
-                            }
-                            "video/mp4" -> {
-                                fileType = 4
-                            }
-                            else -> {
-                                fileType = 6
-                            }
-                        }
-                        runOnUiThread {
-                            showProgressDialog(getString(R.string.waiting))
-                        }
-                        var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
-                        if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
-                        } else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(2, msgData)
-                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            if (ConstantValue.isAntox) {
-                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            } else {
-                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                            }
-                        }*/
                     }
 
                 }
@@ -431,6 +403,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 localFileItem.fileSize = fileSize;
                                 localFileItem.creatTime = System.currentTimeMillis()
                                 localFileItem.fileMD5 = fileMD5;
+                                localFileItem.upLoad = false;
                                 val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
                                 when (MsgType) {
                                     "png", "jpg", "jpeg", "webp" ->
@@ -459,7 +432,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.addData(0,localFileItem)
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
-                                EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+                                EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
                                 AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
                             }
                         }

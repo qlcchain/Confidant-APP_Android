@@ -148,6 +148,42 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener, PNRouterServiceMessageReceiver.BakMailsNumCallback {
+    override fun bakFileBack(jBakFileRsp: JBakFileRsp) {
+
+        when (jBakFileRsp.params.retCode )
+        {
+            0->{
+                runOnUiThread {
+                    toast(R.string.success)
+                }
+            }
+            1->{
+                runOnUiThread {
+                    toast(R.string.Parameter_error)
+                }
+            }
+            2->{
+                runOnUiThread {
+                    toast(R.string.no_space)
+                }
+            }
+            3->{
+                runOnUiThread {
+                    toast(R.string.There_is_a_file_with_the_same_name)
+                }
+            }
+            4->{
+                runOnUiThread {
+                    toast(R.string.Destination_directory_error)
+                }
+            }
+            else ->{
+                runOnUiThread {
+                    toast(R.string.Backup_failed)
+                }
+            }
+        }
+    }
     override fun sysMsgPushRsp(jSysMsgPushRsp: JSysMsgPushRsp) {
 
     }
@@ -3582,14 +3618,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     intent.putExtra("user", userEntity)
                     intent.putExtra("typeData", typeData!!)
                     startActivity(intent)
-                   /* var userType5 = UserEntity();
-                    userType5.nickName = nickName
-                    userType5.routeId = FriendDevId!!
-                    userType5.miPublicKey = toAddUserKey!!
-                    intent = Intent(this, SendAddFriendActivity::class.java)
-                    intent.putExtra("user", userType5)
-                    intent.putExtra("typeData", typeData!!)
-                    startActivity(intent)*/
+                    /* var userType5 = UserEntity();
+                     userType5.nickName = nickName
+                     userType5.routeId = FriendDevId!!
+                     userType5.miPublicKey = toAddUserKey!!
+                     intent = Intent(this, SendAddFriendActivity::class.java)
+                     intent.putExtra("user", userType5)
+                     intent.putExtra("typeData", typeData!!)
+                     startActivity(intent)*/
                 }
             }
 

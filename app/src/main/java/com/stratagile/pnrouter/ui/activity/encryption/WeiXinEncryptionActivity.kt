@@ -14,7 +14,6 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeiXinEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeiXinEncryptionContract

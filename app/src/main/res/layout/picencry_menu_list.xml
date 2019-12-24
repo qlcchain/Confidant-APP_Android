@@ -16,6 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/x150"
         app:srcmy="@mipmap/encryption_add_pictures"
-        app:textmy="@string/album_encryption">
+        app:textmy="@string/new_encryption">
     </com.stratagile.pnrouter.view.DrawableEnTextView>
 </LinearLayout>

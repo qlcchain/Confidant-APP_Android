@@ -911,4 +911,9 @@ Then enter your Email address and password to log in.</string>
     <string name="Select_Folder">Select Folder</string>
     <string name="Create_Folder">Create Folder</string>
     <string name="Select">Select</string>
+    <string name="Backup_failed">Backup failed</string>
+    <string name="Parameter_error">Parameter error</string>
+    <string name="no_space">no space</string>
+    <string name="There_is_a_file_with_the_same_name">There is a file with the same name</string>
+    <string name="Destination_directory_error">Destination directory error</string>
 </resources>

@@ -2,13 +2,14 @@ package com.stratagile.pnrouter.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JFileActionRsp extends BaseEntity {
+public class JBakFileRsp extends BaseEntity {
 
 
     /**
-     * timestamp : 1577170488
-     * params : {"Action":"FileAction","RetCode":0,"React":2,"ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","FileId":23,"PathId":1,"Name":"3Bqcqiy1K1oekpM5G594AJ5Jr6A3aP4gApx9v8td9zBNMnN7RPUuwpMqAeJf3Sev6pjFxCpAeo9LgSTohz7r3Ssp"}
+     * timestamp : 1577170033
+     * params : {"Action":"BakFile","RetCode":0,"ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","SrcId":1577170024,"FileId":25,"PathId":1,"FilePath":"/user5/files/A005S08F1577170024","PathName":"5QpjAN3kSUtMiEADy","Fname":"3Bqcqiy1K1oekpM5G594AJ5Jr6A3aP4gApx9v8td9zBNMnN7RPUuwpMqAeJf3Sev6pjFxCpAeo9LgSTohz7r3Ssp"}
      */
+
     private int timestampX;
     private ParamsBean params;
 
@@ -30,22 +31,26 @@ public class JFileActionRsp extends BaseEntity {
 
     public static class ParamsBean {
         /**
-         * Action : FileAction
+         * Action : BakFile
          * RetCode : 0
-         * React : 2
          * ToId : wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=
-         * FileId : 23
+         * SrcId : 1577170024
+         * FileId : 25
          * PathId : 1
-         * Name : 3Bqcqiy1K1oekpM5G594AJ5Jr6A3aP4gApx9v8td9zBNMnN7RPUuwpMqAeJf3Sev6pjFxCpAeo9LgSTohz7r3Ssp
+         * FilePath : /user5/files/A005S08F1577170024
+         * PathName : 5QpjAN3kSUtMiEADy
+         * Fname : 3Bqcqiy1K1oekpM5G594AJ5Jr6A3aP4gApx9v8td9zBNMnN7RPUuwpMqAeJf3Sev6pjFxCpAeo9LgSTohz7r3Ssp
          */
 
         private String Action;
         private int RetCode;
-        private int React;
         private String ToId;
+        private int SrcId;
         private int FileId;
         private int PathId;
-        private String Name;
+        private String FilePath;
+        private String PathName;
+        private String Fname;
 
         public String getAction() {
             return Action;
@@ -63,20 +68,20 @@ public class JFileActionRsp extends BaseEntity {
             this.RetCode = RetCode;
         }
 
-        public int getReact() {
-            return React;
-        }
-
-        public void setReact(int React) {
-            this.React = React;
-        }
-
         public String getToId() {
             return ToId;
         }
 
         public void setToId(String ToId) {
             this.ToId = ToId;
+        }
+
+        public int getSrcId() {
+            return SrcId;
+        }
+
+        public void setSrcId(int SrcId) {
+            this.SrcId = SrcId;
         }
 
         public int getFileId() {
@@ -95,12 +100,28 @@ public class JFileActionRsp extends BaseEntity {
             this.PathId = PathId;
         }
 
-        public String getName() {
-            return Name;
+        public String getFilePath() {
+            return FilePath;
         }
 
-        public void setName(String Name) {
-            this.Name = Name;
+        public void setFilePath(String FilePath) {
+            this.FilePath = FilePath;
+        }
+
+        public String getPathName() {
+            return PathName;
+        }
+
+        public void setPathName(String PathName) {
+            this.PathName = PathName;
+        }
+
+        public String getFname() {
+            return Fname;
+        }
+
+        public void setFname(String Fname) {
+            this.Fname = Fname;
         }
     }
 }

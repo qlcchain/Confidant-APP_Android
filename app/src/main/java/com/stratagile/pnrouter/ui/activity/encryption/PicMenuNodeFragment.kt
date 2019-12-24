@@ -152,7 +152,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                     when (view.id) {
                         R.id.menuItem ->
                         {
-                            AppConfig.instance.messageReceiver?.nodeFileCallback = null
+                            //AppConfig.instance.messageReceiver?.nodeFileCallback = null
                             var data = picMenuEncryptionAdapter!!.getItem(position)
                             var intent =  Intent(activity!!, PicEncryptionNodelListActivity::class.java)
                             intent.putExtra("folderInfo",data)
@@ -282,27 +282,30 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
     }
     public fun upDateUI()
     {
-        var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
-        picMenuEncryptionAdapter!!.setNewData(picMenuList)
+        updateUIFromData()
     }
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
         {
-            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var filePathsPullReq = FilePathsPullReq( selfUserId!!, 1)
-            var sendData = BaseData(6, filePathsPullReq);
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            }else if (ConstantValue.isToxConnected) {
-                var baseData = sendData
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
+            updateUIFromData()
+        }
+    }
+    fun updateUIFromData()
+    {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var filePathsPullReq = FilePathsPullReq( selfUserId!!, 1)
+        var sendData = BaseData(6, filePathsPullReq);
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }
@@ -332,7 +335,6 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
     }
 
     override fun onResume() {
-        AppConfig.instance.messageReceiver?.nodeFileCallback = this
         super.onResume()
     }
     override fun onDestroy() {

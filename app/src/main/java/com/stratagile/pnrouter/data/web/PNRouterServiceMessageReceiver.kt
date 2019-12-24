@@ -600,18 +600,26 @@ val credentialsProvider: CredentialsProvider, private
                 }
                 "FileAction" -> {
                     val jFileActionRsp = gson.fromJson(text, JFileActionRsp::class.java)
-                    nodeFileCallback?.fileAction(jFileActionRsp)
+                    if(nodeFilesListPullCallback == null)
+                    {
+                        nodeFileCallback?.fileAction(jFileActionRsp)
+                    }
+                    nodeSelectFileCallback?.fileAction(jFileActionRsp)
                     nodeFilesListPullCallback?.fileAction(jFileActionRsp)
                 }
                 "FilePathsPull" -> {
                     val jFilePathsPulRsp = gson.fromJson(text, JFilePathsPulRsp::class.java)
                     nodeFileCallback?.filePathsPull(jFilePathsPulRsp)
+                    nodeSelectFileCallback?.filePathsPull(jFilePathsPulRsp)
                 }
                 "FilesListPull" -> {
                     val jFilesListPullRsp = gson.fromJson(text, JFilesListPullRsp::class.java)
                     nodeFilesListPullCallback?.filesListPull(jFilesListPullRsp)
                 }
-
+                "BakFile" -> {
+                    val jBakFileRsp = gson.fromJson(text, JBakFileRsp::class.java)
+                    mainInfoBack?.bakFileBack(jBakFileRsp)
+                }
             }
         }
 
@@ -708,6 +716,8 @@ val credentialsProvider: CredentialsProvider, private
     var mailSendNoticeCallback:MailSendNoticeCallback? = null;
 
     var nodeFileCallback:NodeFileCallback? = null;
+
+    var nodeSelectFileCallback:NodeFileCallback? = null;
 
     var nodeFilesListPullCallback:NodeFilesListPullCallback? = null;
     /**
@@ -869,6 +879,7 @@ val credentialsProvider: CredentialsProvider, private
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
         fun sysMsgPushRsp(jSysMsgPushRsp:JSysMsgPushRsp)
+        fun bakFileBack(jBakFileRsp: JBakFileRsp)
     }
     interface BigImageBack {
         fun registerBack(registerRsp: JRegisterRsp)
@@ -1118,5 +1129,5 @@ val credentialsProvider: CredentialsProvider, private
         fun filesListPull(jFilesListPullRsp: JFilesListPullRsp)
         fun fileAction(jFileActionRsp: JFileActionRsp)
     }
-}
+ }
 

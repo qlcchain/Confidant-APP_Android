@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.encryption
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.hyphenate.easeui.utils.PathUtils
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout
 import com.pawegio.kandroid.toast
@@ -142,7 +143,8 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
 
                 }
             }
-            com.pawegio.kandroid.runOnUiThread {
+            runOnUiThread {
+                llOperate.visibility = View.VISIBLE
                 picMenuEncryptionAdapter = NodeMenuEncryptionAdapter(picMenuList)
                 recyclerViewNodeMenu.adapter = picMenuEncryptionAdapter
                 picMenuEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
@@ -251,7 +253,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
         title.text = getString(R.string.Select_Folder)
     }
     override fun initData() {
-        AppConfig.instance.messageReceiver?.nodeFileCallback = this
+        AppConfig.instance.messageReceiver?.nodeSelectFileCallback = this
         parentTarget = this;
 
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -326,7 +328,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
         progressDialog.hide()
     }
     override fun onDestroy() {
-        AppConfig.instance.messageReceiver?.nodeFileCallback = null
+        AppConfig.instance.messageReceiver?.nodeSelectFileCallback = null
         super.onDestroy()
     }
 }

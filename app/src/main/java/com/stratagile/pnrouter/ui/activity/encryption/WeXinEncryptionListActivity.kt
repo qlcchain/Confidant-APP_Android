@@ -52,7 +52,6 @@ import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionListComponent
@@ -363,6 +362,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 localFileItem.fileSize = fileSize;
                                 localFileItem.creatTime = System.currentTimeMillis()
                                 localFileItem.fileMD5 = fileMD5;
+                                localFileItem.upLoad = false
                                 val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
                                 when (MsgType) {
                                     "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
@@ -796,6 +796,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             localFileItem.fileSize = fileSize;
                             localFileItem.creatTime = System.currentTimeMillis()
                             localFileItem.fileMD5 = fileMD5;
+                            localFileItem.upLoad = false
                             val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
                             when (MsgType) {
                                 "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1

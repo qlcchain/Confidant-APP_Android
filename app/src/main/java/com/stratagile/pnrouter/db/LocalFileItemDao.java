@@ -34,6 +34,8 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         public final static Property SrcKey = new Property(9, String.class, "srcKey", false, "SRC_KEY");
         public final static Property FileMD5 = new Property(10, String.class, "fileMD5", false, "FILE_MD5");
         public final static Property FileInfo = new Property(11, String.class, "fileInfo", false, "FILE_INFO");
+        public final static Property IsUpLoad = new Property(12, Boolean.class, "isUpLoad", false, "IS_UP_LOAD");
+        public final static Property NodeId = new Property(13, Integer.class, "nodeId", false, "NODE_ID");
     }
 
 
@@ -60,7 +62,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
                 "\"FILE_ID\" INTEGER," + // 8: fileId
                 "\"SRC_KEY\" TEXT," + // 9: srcKey
                 "\"FILE_MD5\" TEXT," + // 10: fileMD5
-                "\"FILE_INFO\" TEXT);"); // 11: fileInfo
+                "\"FILE_INFO\" TEXT," + // 11: fileInfo
+                "\"IS_UP_LOAD\" INTEGER," + // 12: isUpLoad
+                "\"NODE_ID\" INTEGER);"); // 13: nodeId
     }
 
     /** Drops the underlying database table. */
@@ -132,6 +136,16 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         if (fileInfo != null) {
             stmt.bindString(12, fileInfo);
         }
+ 
+        Boolean isUpLoad = entity.getIsUpLoad();
+        if (isUpLoad != null) {
+            stmt.bindLong(13, isUpLoad ? 1L: 0L);
+        }
+ 
+        Integer nodeId = entity.getNodeId();
+        if (nodeId != null) {
+            stmt.bindLong(14, nodeId);
+        }
     }
 
     @Override
@@ -197,6 +211,16 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         if (fileInfo != null) {
             stmt.bindString(12, fileInfo);
         }
+ 
+        Boolean isUpLoad = entity.getIsUpLoad();
+        if (isUpLoad != null) {
+            stmt.bindLong(13, isUpLoad ? 1L: 0L);
+        }
+ 
+        Integer nodeId = entity.getNodeId();
+        if (nodeId != null) {
+            stmt.bindLong(14, nodeId);
+        }
     }
 
     @Override
@@ -218,7 +242,9 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // fileId
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // srcKey
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // fileMD5
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // fileInfo
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // fileInfo
+            cursor.isNull(offset + 12) ? null : cursor.getShort(offset + 12) != 0, // isUpLoad
+            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13) // nodeId
         );
         return entity;
     }
@@ -237,6 +263,8 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         entity.setSrcKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setFileMD5(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
         entity.setFileInfo(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setIsUpLoad(cursor.isNull(offset + 12) ? null : cursor.getShort(offset + 12) != 0);
+        entity.setNodeId(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
      }
     
     @Override

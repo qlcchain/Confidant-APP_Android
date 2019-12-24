@@ -26,6 +26,8 @@ public class FileUploadItem implements Parcelable {
     private Integer pathId;
     private String pathName;
 
+    private Long localFileItemId;
+
     public FileUploadItem() {
     }
 
@@ -63,13 +65,18 @@ public class FileUploadItem implements Parcelable {
             pathId = in.readInt();
         }
         pathName = in.readString();
+        if (in.readByte() == 0) {
+            localFileItemId = null;
+        } else {
+            localFileItemId = in.readLong();
+        }
     }
 
 
-    @Generated(hash = 1369581562)
+    @Generated(hash = 124319113)
     public FileUploadItem(Long id, Integer depens, String UserId, Integer type, String fileId,
             Long size, String md5, String fName, String fKey, String fInfo, Integer pathId,
-            String pathName) {
+            String pathName, Long localFileItemId) {
         this.id = id;
         this.depens = depens;
         this.UserId = UserId;
@@ -82,6 +89,7 @@ public class FileUploadItem implements Parcelable {
         this.fInfo = fInfo;
         this.pathId = pathId;
         this.pathName = pathName;
+        this.localFileItemId = localFileItemId;
     }
 
     public static final Creator<FileUploadItem> CREATOR = new Creator<FileUploadItem>() {
@@ -95,52 +103,6 @@ public class FileUploadItem implements Parcelable {
             return new FileUploadItem[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        if (depens == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(depens);
-        }
-        dest.writeString(UserId);
-        if (type == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(type);
-        }
-        dest.writeString(fileId);
-        if (size == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(size);
-        }
-        dest.writeString(md5);
-        dest.writeString(fName);
-        dest.writeString(fKey);
-        dest.writeString(fInfo);
-        if (pathId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(pathId);
-        }
-        dest.writeString(pathName);
-    }
 
     public Integer getDepens() {
         return depens;
@@ -268,5 +230,65 @@ public class FileUploadItem implements Parcelable {
 
     public void setFInfo(String fInfo) {
         this.fInfo = fInfo;
+    }
+
+    public Long getLocalFileItemId() {
+        return localFileItemId;
+    }
+
+    public void setLocalFileItemId(Long localFileItemId) {
+        this.localFileItemId = localFileItemId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        if (depens == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(depens);
+        }
+        dest.writeString(UserId);
+        if (type == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(type);
+        }
+        dest.writeString(fileId);
+        if (size == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(size);
+        }
+        dest.writeString(md5);
+        dest.writeString(fName);
+        dest.writeString(fKey);
+        dest.writeString(fInfo);
+        if (pathId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(pathId);
+        }
+        dest.writeString(pathName);
+        if (localFileItemId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(localFileItemId);
+        }
     }
 }

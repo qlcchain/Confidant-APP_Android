@@ -34,6 +34,7 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
         public final static Property FInfo = new Property(9, String.class, "fInfo", false, "F_INFO");
         public final static Property PathId = new Property(10, Integer.class, "pathId", false, "PATH_ID");
         public final static Property PathName = new Property(11, String.class, "pathName", false, "PATH_NAME");
+        public final static Property LocalFileItemId = new Property(12, Long.class, "localFileItemId", false, "LOCAL_FILE_ITEM_ID");
     }
 
 
@@ -60,7 +61,8 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
                 "\"F_KEY\" TEXT," + // 8: fKey
                 "\"F_INFO\" TEXT," + // 9: fInfo
                 "\"PATH_ID\" INTEGER," + // 10: pathId
-                "\"PATH_NAME\" TEXT);"); // 11: pathName
+                "\"PATH_NAME\" TEXT," + // 11: pathName
+                "\"LOCAL_FILE_ITEM_ID\" INTEGER);"); // 12: localFileItemId
     }
 
     /** Drops the underlying database table. */
@@ -132,6 +134,11 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
         if (pathName != null) {
             stmt.bindString(12, pathName);
         }
+ 
+        Long localFileItemId = entity.getLocalFileItemId();
+        if (localFileItemId != null) {
+            stmt.bindLong(13, localFileItemId);
+        }
     }
 
     @Override
@@ -197,6 +204,11 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
         if (pathName != null) {
             stmt.bindString(12, pathName);
         }
+ 
+        Long localFileItemId = entity.getLocalFileItemId();
+        if (localFileItemId != null) {
+            stmt.bindLong(13, localFileItemId);
+        }
     }
 
     @Override
@@ -218,7 +230,8 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // fKey
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // fInfo
             cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10), // pathId
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // pathName
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // pathName
+            cursor.isNull(offset + 12) ? null : cursor.getLong(offset + 12) // localFileItemId
         );
         return entity;
     }
@@ -237,6 +250,7 @@ public class FileUploadItemDao extends AbstractDao<FileUploadItem, Long> {
         entity.setFInfo(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setPathId(cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10));
         entity.setPathName(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setLocalFileItemId(cursor.isNull(offset + 12) ? null : cursor.getLong(offset + 12));
      }
     
     @Override

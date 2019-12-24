@@ -21,8 +21,11 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.LocalFileItem
+import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.UpdateLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateNodelEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionNodelListComponent
@@ -59,13 +62,29 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
         }
         if (jFileActionRsp.params.retCode== 0)
         {
-            /*var deleteData:LocalFileItem ? = null
-            var deletePositon = -1;*/
-            var filePath = deleteData!!.filePath;
-            DeleteUtils.deleteFile(filePath)
-            picItemEncryptionAdapter!!.remove(deletePositon)
-            picItemEncryptionAdapter!!.notifyDataSetChanged()
-            //EventBus.getDefault().post(AddLocalEncryptionItemEvent())
+            if(jFileActionRsp.params.react == 2)//删除
+            {
+                /*var deleteData:LocalFileItem ? = null
+                           var deletePositon = -1;*/
+                var filePath = PathUtils.getInstance().filePath.toString()+"/"+deleteData!!.fileName;
+                DeleteUtils.deleteFile(filePath)
+                runOnUiThread {
+                    picItemEncryptionAdapter!!.remove(deletePositon)
+                    picItemEncryptionAdapter!!.notifyDataSetChanged()
+                }
+                EventBus.getDefault().post(UpdateNodelEncryptionItemEvent())
+                var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
+                val fileItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.NodeId.eq(jFileActionRsp.params.fileId)).list()
+                if (fileItemList != null && fileItemList.size != 0)
+                //加密相册上传
+                {
+                    val fileItem = fileItemList[0]
+                    fileItem.upLoad = false
+                    fileItem.nodeId = jFileActionRsp.params.fileId
+                    AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(fileItem)
+                    EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
+                }
+            }
         }else{
             com.pawegio.kandroid.runOnUiThread {
                 toast(R.string.fail)
@@ -96,6 +115,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 localFileItem.fileMD5 = item.md5
                 localFileItem.srcKey = item.fKey;
                 localFileItem.fileInfo = item.finfo
+                localFileItem.upLoad = false
                 fileItemList.add(localFileItem)
             }
             runOnUiThread {
@@ -147,6 +167,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             var iconArray = arrayListOf<String>()
                             menuArray = arrayListOf<String>(getString(R.string.Delete))
                             iconArray = arrayListOf<String>("statusbar_delete")
+                            var chooseItemPosition = position
                             PopWindowUtil.showPopMenuWindow(this@PicEncryptionNodelListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                                 override fun onSelect(position: Int, obj: Any) {
                                     KLog.i("" + position)
@@ -156,10 +177,10 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                             SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                                     .setConfirmClickListener {
-                                                        var data = picItemEncryptionAdapter!!.getItem(position)
+                                                        var data = picItemEncryptionAdapter!!.getItem(chooseItemPosition)
 
                                                         deleteData= data
-                                                        deletePositon = position;
+                                                        deletePositon = chooseItemPosition;
                                                         runOnUiThread {
                                                             showProgressDialog()
                                                         }

@@ -15,16 +15,30 @@
         android:gravity="center_vertical"
         android:layout_height="@dimen/x146">
 
-        <ImageView
-            android:id="@+id/itemTypeIcon"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x10"
-            android:layout_marginRight="@dimen/x15"
-            android:src="@mipmap/jpg"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/checkBox"
-            app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/itemTypeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_marginRight="@dimen/x10"
+                android:src="@mipmap/jpg"
+                />
+
+            <ImageView
+                android:id="@+id/nodeTips"
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_marginRight="@dimen/x5"
+                android:src="@mipmap/saved_nodes"
+                android:layout_gravity="right|bottom"
+                />
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/itemInfo"
             android:layout_width="wrap_content"

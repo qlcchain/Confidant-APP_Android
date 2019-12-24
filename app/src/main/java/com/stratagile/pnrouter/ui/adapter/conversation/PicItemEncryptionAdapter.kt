@@ -38,7 +38,7 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
         }else{
             helper.setText(R.id.tvFileSize,timeStr +" "+(item.fileSize / 1024).toFloat().toString() +"K")
         }
-
+        helper.setVisible(R.id.nodeTips,item.isUpLoad)
         var itemTypeIcon = helper.getView<ImageView>(R.id.itemTypeIcon)
         //itemTypeIcon.setImageResource()
     }

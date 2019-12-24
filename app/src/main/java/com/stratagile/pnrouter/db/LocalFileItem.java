@@ -9,6 +9,8 @@ import org.greenrobot.greendao.annotation.Id;
 
 @Entity
 public class LocalFileItem implements Parcelable {
+
+
     @Id(autoincrement = true)
     private Long id;
 
@@ -29,6 +31,8 @@ public class LocalFileItem implements Parcelable {
     private String srcKey;
     private String fileMD5;
     private String fileInfo;
+    private Boolean isUpLoad;
+    private Integer nodeId;//关联服务器id，用于更新是否上传
 
     public LocalFileItem() {
     }
@@ -71,13 +75,21 @@ public class LocalFileItem implements Parcelable {
         srcKey = in.readString();
         fileMD5 = in.readString();
         fileInfo = in.readString();
+        byte tmpIsUpLoad = in.readByte();
+        isUpLoad = tmpIsUpLoad == 0 ? null : tmpIsUpLoad == 1;
+        if (in.readByte() == 0) {
+            nodeId = null;
+        } else {
+            nodeId = in.readInt();
+        }
     }
 
 
-    @Generated(hash = 1116936080)
+    @Generated(hash = 1946253788)
     public LocalFileItem(Long id, String fileName, String filePath, Long fileSize,
             Long creatTime, Integer fileType, Integer fileFrom, String autor, Long fileId,
-            String srcKey, String fileMD5, String fileInfo) {
+            String srcKey, String fileMD5, String fileInfo, Boolean isUpLoad,
+            Integer nodeId) {
         this.id = id;
         this.fileName = fileName;
         this.filePath = filePath;
@@ -90,6 +102,8 @@ public class LocalFileItem implements Parcelable {
         this.srcKey = srcKey;
         this.fileMD5 = fileMD5;
         this.fileInfo = fileInfo;
+        this.isUpLoad = isUpLoad;
+        this.nodeId = nodeId;
     }
 
     public static final Creator<LocalFileItem> CREATOR = new Creator<LocalFileItem>() {
@@ -104,55 +118,12 @@ public class LocalFileItem implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        dest.writeString(fileName);
-        dest.writeString(filePath);
-        if (fileSize == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(fileSize);
-        }
-        if (creatTime == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(creatTime);
-        }
-        if (fileType == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(fileType);
-        }
-        if (fileFrom == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(fileFrom);
-        }
-        dest.writeString(autor);
-        if (fileId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(fileId);
-        }
-        dest.writeString(srcKey);
-        dest.writeString(fileMD5);
-        dest.writeString(fileInfo);
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFileName() {
@@ -243,13 +214,85 @@ public class LocalFileItem implements Parcelable {
         this.fileInfo = fileInfo;
     }
 
-
-    public Long getId() {
-        return this.id;
+    public Boolean getUpLoad() {
+        return isUpLoad;
     }
 
+    public void setUpLoad(Boolean upLoad) {
+        isUpLoad = upLoad;
+    }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Boolean getIsUpLoad() {
+        return this.isUpLoad;
+    }
+
+    public void setIsUpLoad(Boolean isUpLoad) {
+        this.isUpLoad = isUpLoad;
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(fileName);
+        dest.writeString(filePath);
+        if (fileSize == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(fileSize);
+        }
+        if (creatTime == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(creatTime);
+        }
+        if (fileType == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(fileType);
+        }
+        if (fileFrom == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(fileFrom);
+        }
+        dest.writeString(autor);
+        if (fileId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(fileId);
+        }
+        dest.writeString(srcKey);
+        dest.writeString(fileMD5);
+        dest.writeString(fileInfo);
+        dest.writeByte((byte) (isUpLoad == null ? 0 : isUpLoad ? 1 : 2));
+        if (nodeId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(nodeId);
+        }
     }
 }
