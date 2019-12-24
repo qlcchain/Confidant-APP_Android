@@ -73,7 +73,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     picItemEncryptionAdapter!!.notifyDataSetChanged()
                 }
                 EventBus.getDefault().post(UpdateNodelEncryptionItemEvent())
-                var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
+                /*var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
                 val fileItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.NodeId.eq(jFileActionRsp.params.fileId)).list()
                 if (fileItemList != null && fileItemList.size != 0)
                 //加密相册上传
@@ -83,7 +83,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     fileItem.nodeId = jFileActionRsp.params.fileId
                     AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(fileItem)
                     EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
-                }
+                }*/
             }
         }else{
             com.pawegio.kandroid.runOnUiThread {

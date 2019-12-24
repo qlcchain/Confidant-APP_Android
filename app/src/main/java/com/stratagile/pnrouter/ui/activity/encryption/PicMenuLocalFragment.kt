@@ -13,6 +13,7 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicMenuLocalComponent
@@ -101,10 +102,19 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                             {
                                 var path = data!!.path.substring(0,data!!.path.lastIndexOf("/")+1)
                                 file1.renameTo(File(path +foldername))
+                                data!!.path = path +foldername
+                                data!!.fileName = foldername
+                                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
+                                picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
+                                var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(data!!.id)).list()
+                                for (item in picMenuList)
+                                {
+                                    var name = item.fileName
+                                    var newPath = data!!.path +"/" + name;
+                                    item.filePath = newPath;
+                                    AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(item)
+                                }
                             }
-                            data!!.fileName = foldername
-                            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
-                            picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
                         }
                     })
                 }

@@ -38,7 +38,7 @@ import javax.inject.Inject;
 
 class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNRouterServiceMessageReceiver.NodeFileCallback{
     override fun fileAction(jFileActionRsp: JFileActionRsp) {
-        com.pawegio.kandroid.runOnUiThread {
+        runOnUiThread {
             closeProgressDialog();
         }
         if(jFileActionRsp.params.retCode == 0)
@@ -47,7 +47,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
             {
                 1->
                 {
-                    com.pawegio.kandroid.runOnUiThread {
+                    runOnUiThread {
                         //想命名的原文件夹的路径
                         val file1 = File(oldPath)
                         //将原文件夹更改为A，其中路径是必要的。注意
@@ -60,7 +60,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 }
                 2->
                 {
-                    com.pawegio.kandroid.runOnUiThread {
+                    runOnUiThread {
                         DeleteUtils.deleteDirectory(currentPath)
                         picMenuEncryptionAdapter!!.remove(currentPosition)
                         picMenuEncryptionAdapter!!.notifyDataSetChanged()
@@ -79,8 +79,9 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                     localFileMenu.size = 0;
                     localFileMenu.path = defaultfolder
                     localFileMenu.type = "1";
+                    localFileMenu.isChoose = false
                     localFileMenu.lastModify = System.currentTimeMillis();
-                    com.pawegio.kandroid.runOnUiThread {
+                    runOnUiThread {
                         picMenuEncryptionAdapter!!.addData(localFileMenu)
                         picMenuEncryptionAdapter!!.notifyDataSetChanged()
                         toast(R.string.success)
@@ -99,7 +100,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 }
             }
         }else{
-            com.pawegio.kandroid.runOnUiThread {
+            runOnUiThread {
                 toast(R.string.fail)
             }
         }

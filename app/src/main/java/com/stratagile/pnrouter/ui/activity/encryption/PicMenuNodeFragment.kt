@@ -335,6 +335,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
     }
 
     override fun onResume() {
+        AppConfig.instance.messageReceiver?.nodeFileCallback = this
         super.onResume()
     }
     override fun onDestroy() {
