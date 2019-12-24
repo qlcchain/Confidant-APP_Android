@@ -63,6 +63,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                         {
                             file1.renameTo(File(newPath))
                         }
+                        currentData!!.path = newPath
                         picMenuEncryptionAdapter!!.notifyItemChanged(currentPosition)
                         toast(R.string.success)
                     }
@@ -197,6 +198,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                             parentRoot.quickClose()
                             var choosePosition = position
                             var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
+                            currentData = data
                             PopWindowUtil.showRenameFolderWindow(parentTarget!!, addMenuItem,data!!.fileName, object : PopWindowUtil.OnSelectListener {
                                 override fun onSelect(position: Int, obj: Any) {
                                     var map = obj as HashMap<String,String>

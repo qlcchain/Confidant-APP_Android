@@ -409,7 +409,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                     "png", "jpg", "jpeg", "webp" ->
                                     {
                                         var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
-                                        var widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                        var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                                         localFileItem.fileType = 1
                                         localFileItem.fileInfo = widthAndHeight;
                                     }

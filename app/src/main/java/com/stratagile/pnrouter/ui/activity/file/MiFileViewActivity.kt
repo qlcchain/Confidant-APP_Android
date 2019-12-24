@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
-import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -51,7 +50,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
     @Inject
     internal lateinit var mPresenter: MiFileViewPresenter
     var payLoad: LocalFileItem? = null
-    var fileMiPath:String = ""
+    var folderPath:String = ""
     var filePath:String = ""
     var receiveFileDataMap = HashMap<String, LocalFileItem>()
 
@@ -65,11 +64,12 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
     }
     override fun initData() {
         EventBus.getDefault().register(this)
+        folderPath = intent.getStringExtra("folderPath");
         payLoad = intent.getParcelableExtra<LocalFileItem>("file")
         var base58NameR = Base58.encode(payLoad!!.fileName.toByteArray())
         payLoad!!.fileName = base58NameR
         var base58Name =  String(Base58.decode(payLoad!!.fileName ))
-        filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+        filePath = folderPath+"/"+base58Name
         var file = File(filePath)
         var fileName = String(Base58.decode(payLoad!!.fileName))
         tvFileName.text = file.name
@@ -186,7 +186,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
 
                 }*/
         var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + payLoad!!.filePath
-        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+        var files_dir = folderPath + "/"
         var fileMiName = payLoad!!.fileName
         if (ConstantValue.isWebsocketConnected) {
             receiveFileDataMap.put(payLoad!!.fileId.toString(), payLoad!!)

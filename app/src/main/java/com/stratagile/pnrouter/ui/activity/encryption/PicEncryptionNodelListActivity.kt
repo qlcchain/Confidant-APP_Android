@@ -132,18 +132,12 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             var localFileItem = picItemEncryptionAdapter!!.getItem(position)
 
 
-                            var filePathLocal = PathUtils.getInstance().filePath.toString()+"/"+localFileItem!!.fileName
+                            var filePathLocal = folderInfo!!.path+"/"+localFileItem!!.fileName
                             var file = File(filePathLocal)
                             if(file.exists())
                             {
                                 var fileName = localFileItem!!.fileName
-                                var filePath= filePathLocal
-                                var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
-                                var fileTempPathFile = File(fileTempPath)
-                                if(!fileTempPathFile.exists()) {
-                                    fileTempPathFile.mkdirs();
-                                }
-                                fileTempPath += "/"+fileName;
+                                var fileTempPath  = filePathLocal
                                 if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
                                     showImagList(fileTempPath)
                                 }else if(fileName.contains("mp4"))
@@ -157,7 +151,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                     startActivity(intent)
                                 }
                             }else{
-                                startActivity(Intent(this, MiFileViewActivity::class.java).putExtra("file", localFileItem))
+                                startActivity(Intent(this, MiFileViewActivity::class.java).putExtra("file", localFileItem).putExtra("folderPath", folderInfo!!.path))
                             }
                         }
                         R.id.opMenu ->
