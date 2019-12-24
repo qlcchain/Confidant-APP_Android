@@ -74,6 +74,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
+    var _this:Activity?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -89,7 +90,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         picItemEncryptionAdapter!!.setNewData(picMenuList)
     }
     override fun initData() {
-        var _this = this;
+        _this = this;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
@@ -138,8 +139,8 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     chooseFileData = picItemEncryptionAdapter!!.getItem(position)
                     var menuArray = arrayListOf<String>()
                     var iconArray = arrayListOf<String>()
-                    menuArray = arrayListOf<String>(getString(R.string.Node_back_up),getString(R.string.Delete))
-                    iconArray = arrayListOf<String>("statusbar_download_node","statusbar_delete")
+                    menuArray = arrayListOf<String>(getString(R.string.Node_back_up),getString(R.string.rename),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>("statusbar_download_node","sheet_rename","statusbar_delete")
                     var chooseItemPosition = position
                     PopWindowUtil.showPopMenuWindow(this@PicEncryptionlListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
@@ -150,6 +151,30 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                     val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
 
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
+                                }
+                                "Rename" -> {
+                                    PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,chooseFileData!!.fileName, object : PopWindowUtil.OnSelectListener {
+                                        override fun onSelect(position: Int, obj: Any) {
+                                            var map = obj as HashMap<String,String>
+                                            var folderNewname = map.get("foldername") as String
+                                            var newPath = folderInfo!!.path +"/"+folderNewname
+                                            var newFile = File(newPath)
+                                            if(newFile.exists())
+                                            {
+                                                toast(R.string.This_name_folder_already_exists)
+                                                return;
+                                            }
+                                            var oldFile = File(chooseFileData!!.filePath)
+                                            if(oldFile.exists())
+                                            {
+                                                oldFile.renameTo(File(newPath))
+                                                chooseFileData!!.filePath = newPath
+                                                chooseFileData!!.fileName = folderNewname
+                                                AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(chooseFileData!!)
+                                                picItemEncryptionAdapter!!.notifyItemChanged(chooseItemPosition)
+                                            }
+                                        }
+                                    })
                                 }
                                 "Delete" -> {
                                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
