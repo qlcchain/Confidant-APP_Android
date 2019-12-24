@@ -23,13 +23,13 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.AddLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionNodelListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionNodelListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionNodelListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionNodelListPresenter
+import com.stratagile.pnrouter.ui.activity.file.MiFileViewActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
@@ -90,6 +90,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 localFileItem.fileType = item.type;
                 var souceName = String(Base58.decode(item.fname))
                 localFileItem.fileName = souceName
+                localFileItem.fileFrom = 1
                 localFileItem.fileSize = item.size.toLong()
                 localFileItem.creatTime = item.lastModify.toLong()
                 localFileItem.fileMD5 = item.md5
@@ -108,19 +109,21 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     when (view.id) {
                         R.id.itemTypeIcon,R.id.itemInfo ->
                         {
-                            var emaiAttach = picItemEncryptionAdapter!!.getItem(position)
-                            var fileName = emaiAttach!!.fileName
-                            var filePath= emaiAttach.filePath
-                            var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
-                            var fileTempPathFile = File(fileTempPath)
-                            if(!fileTempPathFile.exists()) {
-                                fileTempPathFile.mkdirs();
-                            }
-                            fileTempPath += "/"+fileName;
-                            var aesKey = LibsodiumUtil.DecryptShareKey(emaiAttach.srcKey, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
-                            var code = FileUtil.copySdcardToxFileAndDecrypt(filePath,fileTempPath,aesKey)
-                            if(code == 1)
+                            var localFileItem = picItemEncryptionAdapter!!.getItem(position)
+
+
+                            var filePathLocal = PathUtils.getInstance().filePath.toString()+"/"+localFileItem!!.fileName
+                            var file = File(filePathLocal)
+                            if(file.exists())
                             {
+                                var fileName = localFileItem!!.fileName
+                                var filePath= filePathLocal
+                                var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
+                                var fileTempPathFile = File(fileTempPath)
+                                if(!fileTempPathFile.exists()) {
+                                    fileTempPathFile.mkdirs();
+                                }
+                                fileTempPath += "/"+fileName;
                                 if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
                                     showImagList(fileTempPath)
                                 }else if(fileName.contains("mp4"))
@@ -133,8 +136,9 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                     val intent = OpenFileUtil.openFile(fileTempPath)
                                     startActivity(intent)
                                 }
+                            }else{
+                                startActivity(Intent(this, MiFileViewActivity::class.java).putExtra("file", localFileItem))
                             }
-
                         }
                         R.id.opMenu ->
                         {

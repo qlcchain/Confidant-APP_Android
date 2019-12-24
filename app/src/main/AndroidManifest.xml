@@ -406,9 +406,8 @@
             android:name=".ui.activity.encryption.PicEncryptionNodelListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.flle.MiFileViewActivity"
+            android:name=".ui.activity.file.MiFileViewActivity"
             android:screenOrientation="portrait" />
-        MiFileViewActivity
         <!-- Rich push 核心功能 since 2.0.6-->
         <activity
             android:name="cn.jpush.android.ui.PopWinActivity"

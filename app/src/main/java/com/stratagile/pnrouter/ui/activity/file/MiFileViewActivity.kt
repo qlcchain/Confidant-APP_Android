@@ -14,12 +14,11 @@ import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.PullFileReq
 import com.stratagile.pnrouter.entity.events.AllFileStatus
@@ -37,9 +36,8 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.lang.Exception
-import java.util.HashMap
-
-import javax.inject.Inject;
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -52,10 +50,10 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
 
     @Inject
     internal lateinit var mPresenter: MiFileViewPresenter
-    var payLoad: JPullFileListRsp.ParamsBean.PayloadBean? = null
+    var payLoad: LocalFileItem? = null
     var fileMiPath:String = ""
     var filePath:String = ""
-    var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveFileDataMap = HashMap<String, LocalFileItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +65,10 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
     }
     override fun initData() {
         EventBus.getDefault().register(this)
-        fileMiPath = intent.getStringExtra("fileMiPath")
-        payLoad = intent.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("file")
-        var fileMiName = fileMiPath.substring(fileMiPath.lastIndexOf("/")+1,fileMiPath.length)
-        var base58Name =  String(Base58.decode(fileMiName))
+        payLoad = intent.getParcelableExtra<LocalFileItem>("file")
+        var base58NameR = Base58.encode(payLoad!!.fileName.toByteArray())
+        payLoad!!.fileName = base58NameR
+        var base58Name =  String(Base58.decode(payLoad!!.fileName ))
         filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
         var fileName = String(Base58.decode(payLoad!!.fileName))
@@ -146,7 +144,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
         }else {
             runOnUiThread {
                 var fileMiName = payLoad!!.fileName
-                if(fileStatus.fileKey.contains(payLoad!!.msgId.toString()))
+                if(fileStatus.fileKey.contains(payLoad!!.fileId.toString()))
                 {
                     var segSeqResult = fileStatus.segSeqResult
                     var floatResult = (segSeqResult.toFloat()) / fileStatus.segSeqTotal
@@ -191,19 +189,19 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
         var fileMiName = payLoad!!.fileName
         if (ConstantValue.isWebsocketConnected) {
-            receiveFileDataMap.put(payLoad!!.msgId.toString(), payLoad!!)
-            FileMangerDownloadUtils.doDownLoadWork(filledUri,payLoad!!.fileName, files_dir, AppConfig.instance, payLoad!!.msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
+            receiveFileDataMap.put(payLoad!!.fileId.toString(), payLoad!!)
+            FileMangerDownloadUtils.doDownLoadWork(filledUri,payLoad!!.fileName, files_dir, AppConfig.instance, payLoad!!.fileId.toInt(), handler, payLoad!!.srcKey,payLoad!!.fileFrom)
         } else {
             //receiveToxFileDataMap.put(fileOrginName,data)
-            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.userKey)
-            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, "0", 0, 1, 0, false,payLoad!!.userKey, payLoad!!.fileFrom,0,payLoad!!.msgId.toString(),false)
+            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.srcKey)
+            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, "0", 0, 1, 0, false,payLoad!!.srcKey, payLoad!!.fileFrom,0,payLoad!!.fileId.toString(),false)
             val myRouter = MyFile()
             myRouter.type = 0
             myRouter.userSn = ConstantValue.currentRouterSN
             myRouter.upLoadFile = uploadFile
             LocalFileUtils.insertLocalAssets(myRouter)
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, payLoad!!.msgId, payLoad!!.fileFrom, 2)
+            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, payLoad!!.fileId.toInt(), payLoad!!.fileFrom, 2)
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
@@ -288,12 +286,12 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
             when (msg.what) {
                 0x404 -> {
                     var data: Bundle = msg.data;
-                    var msgId = data.getInt("msgID")
-                    var fileData = receiveFileDataMap.get(msgId.toString())
+                    var fileId = data.getInt("msgID")
+                    var fileData = receiveFileDataMap.get(fileId.toString())
                     if(fileData != null)
                     {
                         var fileMiName = fileData!!.fileName
-                        LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
+                        LocalFileUtils.deleteLocalAssets(fileData!!.fileId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }
                     runOnUiThread {
@@ -303,7 +301,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                 }
                 0x55 -> {
                     var data: Bundle = msg.data;
-                    var msgId = data.getInt("msgID")
+                    var fileId = data.getInt("msgID")
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_success)
