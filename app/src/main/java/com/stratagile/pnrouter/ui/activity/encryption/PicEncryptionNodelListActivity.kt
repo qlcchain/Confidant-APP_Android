@@ -78,7 +78,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 {
                     oldFile.renameTo(File(renameNewPath))
                 }
-                chooseFileData!!.filePath = renameNewPath
+                //chooseFileData!!.filePath = renameNewPath
                 chooseFileData!!.fileName = folderNewname
                 runOnUiThread {
                     picItemEncryptionAdapter!!.notifyItemChanged(renamePositon)
@@ -210,6 +210,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                                     var newFile = File(newPath)
                                                     renameOldPath = folderInfo!!.path +"/"+chooseFileData!!.fileName
                                                     renameNewPath = newPath;
+                                                    renameNewFilePath = chooseFileData!!.filePath
                                                     if(newFile.exists())
                                                     {
                                                         toast(R.string.This_name_folder_already_exists)
@@ -310,6 +311,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
     var renamePositon = -1;
     var renameOldPath = ""
     var renameNewPath = "";
+    var renameNewFilePath = "";
     var folderNewname = "";
 
     override fun onCreate(savedInstanceState: Bundle?) {
