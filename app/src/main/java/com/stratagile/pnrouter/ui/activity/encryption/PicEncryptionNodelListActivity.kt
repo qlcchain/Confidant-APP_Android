@@ -62,7 +62,22 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
         }
         if (jFileActionRsp.params.retCode== 0)
         {
-            if(jFileActionRsp.params.react == 2)//删除
+            if(jFileActionRsp.params.react == 1)//重命名
+            {
+
+                var oldFile = File(renameOldPath)
+                if(oldFile.exists())
+                {
+                    oldFile.renameTo(File(renameNewPath))
+                    chooseFileData!!.filePath = renameNewPath
+                    chooseFileData!!.fileName = folderNewname
+                    runOnUiThread {
+                        picItemEncryptionAdapter!!.notifyItemChanged(renamePositon)
+                    }
+
+                }
+            }
+            else if(jFileActionRsp.params.react == 2)//删除
             {
                 /*var deleteData:LocalFileItem ? = null
                            var deletePositon = -1;*/
@@ -159,14 +174,61 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             chooseFileData = picItemEncryptionAdapter!!.getItem(position)
                             var menuArray = arrayListOf<String>()
                             var iconArray = arrayListOf<String>()
-                            menuArray = arrayListOf<String>(getString(R.string.Delete))
-                            iconArray = arrayListOf<String>("statusbar_delete")
+                            menuArray = arrayListOf<String>(getString(R.string.rename),getString(R.string.Delete))
+                            iconArray = arrayListOf<String>("sheet_rename","statusbar_delete")
                             var chooseItemPosition = position
                             PopWindowUtil.showPopMenuWindow(this@PicEncryptionNodelListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                                 override fun onSelect(position: Int, obj: Any) {
                                     KLog.i("" + position)
                                     var data = obj as FileOpreateType
                                     when (data.name) {
+                                        "Rename" -> {
+                                            PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,chooseFileData!!.fileName, object : PopWindowUtil.OnSelectListener {
+                                                override fun onSelect(position: Int, obj: Any) {
+                                                    var map = obj as HashMap<String,String>
+                                                    folderNewname = map.get("foldername") as String
+                                                    if(folderNewname.equals(""))
+                                                    {
+                                                        toast(R.string.Name_cannot_be_empty)
+                                                        return;
+                                                    }
+                                                    renamePositon = chooseItemPosition;
+
+
+                                                    var newPath = folderInfo!!.path +"/"+folderNewname
+                                                    var newFile = File(newPath)
+                                                    renameOldPath = chooseFileData!!.filePath
+                                                    renameNewPath = newPath;
+                                                    if(newFile.exists())
+                                                    {
+                                                        toast(R.string.This_name_folder_already_exists)
+                                                        return;
+                                                    }
+                                                    runOnUiThread {
+                                                        showProgressDialog()
+                                                    }
+                                                    var base58Name = Base58.encode(chooseFileData!!.fileName.toByteArray())
+                                                    var base58NewName = Base58.encode(folderNewname.toByteArray())
+                                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,1,1,chooseFileData!!.fileId,pathId,base58NewName,base58Name)
+                                                    var sendData = BaseData(6, filePathsPullReq);
+                                                    if (ConstantValue.isWebsocketConnected) {
+                                                        AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                                    }else if (ConstantValue.isToxConnected) {
+                                                        var baseData = sendData
+                                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                        if (ConstantValue.isAntox) {
+                                                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                        }else{
+                                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                                        }
+                                                    }
+
+
+                                                }
+                                            })
+                                        }
                                         "Delete" -> {
                                             SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
@@ -233,6 +295,11 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
     var deleteData:LocalFileItem ? = null
     var deletePositon = -1;
+
+    var renamePositon = -1;
+    var renameOldPath = ""
+    var renameNewPath = "";
+    var folderNewname = "";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true

@@ -4395,12 +4395,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                     2 -> return contactFragment!!
                     else -> {
-                        if(BuildConfig.DEBUG)
+                        return MyFragment()
+                        /*if(BuildConfig.DEBUG)
                         {
                             return FileListFragment()
                         }else{
                             return MyFragment()
-                        }
+                        }*/
 
                     }
                 }

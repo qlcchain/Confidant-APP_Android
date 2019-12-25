@@ -1366,7 +1366,7 @@ public class FileUtil {
      * @param bitmap
      * @param path
      */
-    public static void saveBitmpToFileNoThread(Bitmap bitmap, String path) {
+    public static void saveBitmpToFileNoThread(Bitmap bitmap, String path,int quality) {
         if(new File(path).exists())
         {
             return;
@@ -1376,7 +1376,7 @@ public class FileUtil {
                 // 图片文件路径
                 File file = new File(path);
                 FileOutputStream os = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
                 os.flush();
                 os.close();
             } catch (Exception e) {

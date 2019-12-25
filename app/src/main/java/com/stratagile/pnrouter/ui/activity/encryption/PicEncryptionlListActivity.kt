@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.PicturePreviewActivity
@@ -37,6 +38,7 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.encryption_file_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
+import net.coobird.thumbnailator.Thumbnails
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -157,6 +159,11 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                         override fun onSelect(position: Int, obj: Any) {
                                             var map = obj as HashMap<String,String>
                                             var folderNewname = map.get("foldername") as String
+                                            if(folderNewname.equals(""))
+                                            {
+                                                toast(R.string.Name_cannot_be_empty)
+                                                return;
+                                            }
                                             var newPath = folderInfo!!.path +"/"+folderNewname
                                             var newFile = File(newPath)
                                             if(newFile.exists())
@@ -433,13 +440,36 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 when (MsgType) {
                                     "png", "jpg", "jpeg", "webp" ->
                                     {
+                                        // 配置压缩的参数
+
                                         var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
+
                                         var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                                         localFileItem.fileType = 1
                                         localFileItem.fileInfo = widthAndHeight;
+
+                                        val options = BitmapFactory.Options()
+                                        options.inJustDecodeBounds = false;
+                                        options.inSampleSize = 16
+                                        val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
+                                        val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
                                     }
                                     "amr" ->  localFileItem.fileType = 2
-                                    "mp4" ->  localFileItem.fileType = 4
+                                    "mp4" ->
+                                    {
+                                        localFileItem.fileType = 4
+                                        val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
+                                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                                        val thumbPath2 = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        val options = BitmapFactory.Options()
+                                        options.inJustDecodeBounds = false;
+                                        options.inSampleSize = 16
+                                        val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                                    }
                                     else ->  localFileItem.fileType = 5
                                 }
                                 localFileItem.fileFrom = 0;
@@ -458,12 +488,45 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                                 EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
-                                AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+
+
+
+
                             }
                         }
 
                     }
+                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                            .setContentText(getString(R.string.Delete_original_file))
+                            .setConfirmClickListener {
+                                for (i in 0 until len) {
+                                    var file = File(list.get(i).path);
+                                    var isHas = file.exists();
+                                    if (isHas) {
+                                        var filePath = list.get(i).path
+                                        val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
+                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                                        when (MsgType) {
+                                            "png", "jpg", "jpeg", "webp" ->
+                                            {
+                                                AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+                                            }
+                                            "amr" ->  {
 
+                                            }
+                                            "mp4" ->
+                                            {
+                                                AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
+                                            }
+                                            else -> {
+
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                            .show()
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }

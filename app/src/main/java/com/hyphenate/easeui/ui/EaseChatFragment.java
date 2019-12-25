@@ -414,7 +414,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String videoName = files_dir.substring(beginIndex, endIndex);
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath);
+                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,80);
                         messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                         break;
                     case 5:
