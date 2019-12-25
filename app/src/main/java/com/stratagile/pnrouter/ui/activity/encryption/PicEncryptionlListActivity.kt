@@ -387,7 +387,17 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     {
                         localMediaUpdate = LocalMedia()
                         localMediaUpdate!!.path = fileTempPath
-                        localMediaUpdate!!.pictureType = "image/jpeg"
+                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1)
+                        localMediaUpdate!!.pictureType = "file"
+                        when (MsgType) {
+                            "png", "jpg", "jpeg", "webp" -> {
+                                localMediaUpdate!!.pictureType = "image/jpeg"
+                            }
+                            "mp4" -> {
+
+                                localMediaUpdate!!.pictureType = "video/mp4"
+                            }
+                        }
                         var list = arrayListOf<LocalMedia>()
                         list.add(localMediaUpdate!!)
                         var startIntent = Intent(this, FileTaskListActivity::class.java)
@@ -437,40 +447,46 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 localFileItem.fileMD5 = fileMD5;
                                 localFileItem.upLoad = false;
                                 val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
-                                when (MsgType) {
-                                    "png", "jpg", "jpeg", "webp" ->
-                                    {
-                                        // 配置压缩的参数
+                                try {
+                                    when (MsgType) {
+                                        "png", "jpg", "jpeg", "webp" ->
+                                        {
+                                            // 配置压缩的参数
+                                            var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
 
-                                        var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
+                                            var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                            localFileItem.fileType = 1
+                                            localFileItem.fileInfo = widthAndHeight;
 
-                                        var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
-                                        localFileItem.fileType = 1
-                                        localFileItem.fileInfo = widthAndHeight;
+                                            val options = BitmapFactory.Options()
+                                            options.inJustDecodeBounds = false;
+                                            options.inSampleSize = 16
+                                            val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
+                                            val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                                        }
+                                        "amr" ->  localFileItem.fileType = 2
+                                        "mp4" ->
+                                        {
 
-                                        val options = BitmapFactory.Options()
-                                        options.inJustDecodeBounds = false;
-                                        options.inSampleSize = 16
-                                        val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
-                                        val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
-                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                                            localFileItem.fileType = 4
+                                            val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
+                                            FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                                            val thumbPath2 = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            val options = BitmapFactory.Options()
+                                            options.inJustDecodeBounds = false;
+                                            options.inSampleSize = 16
+                                            val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                                            DeleteUtils.deleteFile(thumbPath)
+                                        }
+                                        else ->  localFileItem.fileType = 5
                                     }
-                                    "amr" ->  localFileItem.fileType = 2
-                                    "mp4" ->
-                                    {
-                                        localFileItem.fileType = 4
-                                        val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
-                                        val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
-                                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+                                }catch (e:Exception)
+                                {
 
-                                        val thumbPath2 = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
-                                        val options = BitmapFactory.Options()
-                                        options.inJustDecodeBounds = false;
-                                        options.inSampleSize = 16
-                                        val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
-                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
-                                    }
-                                    else ->  localFileItem.fileType = 5
                                 }
                                 localFileItem.fileFrom = 0;
                                 localFileItem.autor = "";
