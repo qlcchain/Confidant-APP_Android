@@ -16,6 +16,7 @@ public class LocalFileItem implements Parcelable {
 
     private String fileName;
     private String filePath;
+    private String fileLocalPath;//只有节点数据有
     private Long fileSize;
     private Long creatTime;
     // 文件类型0--所有文件
@@ -46,6 +47,7 @@ public class LocalFileItem implements Parcelable {
         }
         fileName = in.readString();
         filePath = in.readString();
+        fileLocalPath = in.readString();
         if (in.readByte() == 0) {
             fileSize = null;
         } else {
@@ -85,14 +87,15 @@ public class LocalFileItem implements Parcelable {
     }
 
 
-    @Generated(hash = 1946253788)
-    public LocalFileItem(Long id, String fileName, String filePath, Long fileSize,
-            Long creatTime, Integer fileType, Integer fileFrom, String autor, Long fileId,
-            String srcKey, String fileMD5, String fileInfo, Boolean isUpLoad,
+    @Generated(hash = 1184358978)
+    public LocalFileItem(Long id, String fileName, String filePath, String fileLocalPath,
+            Long fileSize, Long creatTime, Integer fileType, Integer fileFrom, String autor,
+            Long fileId, String srcKey, String fileMD5, String fileInfo, Boolean isUpLoad,
             Integer nodeId) {
         this.id = id;
         this.fileName = fileName;
         this.filePath = filePath;
+        this.fileLocalPath = fileLocalPath;
         this.fileSize = fileSize;
         this.creatTime = creatTime;
         this.fileType = fileType;
@@ -238,6 +241,14 @@ public class LocalFileItem implements Parcelable {
         this.nodeId = nodeId;
     }
 
+    public String getFileLocalPath() {
+        return fileLocalPath;
+    }
+
+    public void setFileLocalPath(String fileLocalPath) {
+        this.fileLocalPath = fileLocalPath;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -253,6 +264,7 @@ public class LocalFileItem implements Parcelable {
         }
         dest.writeString(fileName);
         dest.writeString(filePath);
+        dest.writeString(fileLocalPath);
         if (fileSize == null) {
             dest.writeByte((byte) 0);
         } else {

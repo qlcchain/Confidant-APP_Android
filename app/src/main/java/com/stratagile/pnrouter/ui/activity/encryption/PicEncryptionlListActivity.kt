@@ -398,6 +398,31 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 localMediaUpdate!!.pictureType = "video/mp4"
                             }
                         }
+                        // 配置压缩的参数
+                        var fileLocalPath = chooseFolderData!!.path ;
+                        var base58NameR = chooseFileData!!.fileName
+                        if(  localMediaUpdate!!.pictureType == "image/jpeg")
+                        {
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = false;
+                            options.inSampleSize = 16
+                            val bmNew = BitmapFactory.decodeFile(fileTempPath, options) // 解码文件
+                            val thumbPath = fileLocalPath +"/th"+base58NameR
+                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                        }else if(  localMediaUpdate!!.pictureType == "video/mp4")
+                        {
+                            val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
+                            val bitmap = EaseImageUtils.getVideoPhoto(fileTempPath)
+                            FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                            val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = false;
+                            options.inSampleSize = 16
+                            val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                            DeleteUtils.deleteFile(thumbPath)
+                        }
                         var list = arrayListOf<LocalMedia>()
                         list.add(localMediaUpdate!!)
                         var startIntent = Intent(this, FileTaskListActivity::class.java)
@@ -470,6 +495,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                         {
 
                                             localFileItem.fileType = 4
+                                            localFileItem.fileInfo = "";
                                             val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
                                             val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
                                             FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)

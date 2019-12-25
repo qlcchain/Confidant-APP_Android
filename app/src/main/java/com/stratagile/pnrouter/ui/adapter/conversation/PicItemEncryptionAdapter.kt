@@ -44,39 +44,76 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
         helper.setVisible(R.id.nodeTips,item.isUpLoad)
         var itemTypeIcon = helper.getView<ImageView>(R.id.itemTypeIcon)
 
-        var namePre = item.filePath.substring(0,item.filePath.lastIndexOf("/")+1)
-        var name= item.filePath.substring(item.filePath.lastIndexOf("/")+1,item.filePath.length)
-        var thumbPath = ""
-        if(item.fileType == 1)
-        {
-            thumbPath = namePre + "th"+ name
-        }else if(item.fileType == 4)
-        {
-            thumbPath = namePre + "th"+ name.replace("mp4","jpg")
-        }
-        var thumFile = File(thumbPath)
-        if(thumFile.exists())
-        {
-            if(item.fileType == 4)
-            {
-                helper.setVisible(R.id.chatting_status_btn,true)
-            }else
-            {
-                helper.setVisible(R.id.chatting_status_btn,false)
-            }
-            itemTypeIcon.setImageURI(Uri.fromFile(thumFile))
-        }else{
-            helper.setVisible(R.id.chatting_status_btn,false)
+        if(item.fileLocalPath== null || item.fileLocalPath.equals("")){
+            var namePre = item.filePath.substring(0,item.filePath.lastIndexOf("/")+1)
+            var name= item.filePath.substring(item.filePath.lastIndexOf("/")+1,item.filePath.length)
+            var thumbPath = ""
             if(item.fileType == 1)
             {
-                itemTypeIcon.setImageResource(R.mipmap.jpg)
-            }
-            else if(item.fileType == 4)
+                thumbPath = namePre + "th"+ name
+            }else if(item.fileType == 4)
             {
-                itemTypeIcon.setImageResource(R.mipmap.mp4)
+                thumbPath = namePre + "th"+ name.replace("mp4","jpg")
             }
+            var thumFile = File(thumbPath)
+            if(thumFile.exists())
+            {
+                if(item.fileType == 4)
+                {
+                    helper.setVisible(R.id.chatting_status_btn,true)
+                }else
+                {
+                    helper.setVisible(R.id.chatting_status_btn,false)
+                }
+                itemTypeIcon.setImageURI(Uri.fromFile(thumFile))
+            }else{
+                helper.setVisible(R.id.chatting_status_btn,false)
+                if(item.fileType == 1)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.jpg)
+                }
+                else if(item.fileType == 4)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.mp4)
+                }
 
+            }
+        }else{
+            var namePre = item.fileLocalPath+"/"
+            var name= item.fileName
+            var thumbPath = ""
+            if(item.fileType == 1)
+            {
+                thumbPath = namePre + "th"+ name
+            }else if(item.fileType == 4)
+            {
+                thumbPath = namePre + "th"+ name.replace("mp4","jpg")
+            }
+            var thumFile = File(thumbPath)
+            if(thumFile.exists())
+            {
+                if(item.fileType == 4)
+                {
+                    helper.setVisible(R.id.chatting_status_btn,true)
+                }else
+                {
+                    helper.setVisible(R.id.chatting_status_btn,false)
+                }
+                itemTypeIcon.setImageURI(Uri.fromFile(thumFile))
+            }else{
+                helper.setVisible(R.id.chatting_status_btn,false)
+                if(item.fileType == 1)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.jpg)
+                }
+                else if(item.fileType == 4)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.mp4)
+                }
+
+            }
         }
+
     }
 
 }

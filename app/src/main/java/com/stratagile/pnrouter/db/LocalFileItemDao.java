@@ -25,17 +25,18 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property FileName = new Property(1, String.class, "fileName", false, "FILE_NAME");
         public final static Property FilePath = new Property(2, String.class, "filePath", false, "FILE_PATH");
-        public final static Property FileSize = new Property(3, Long.class, "fileSize", false, "FILE_SIZE");
-        public final static Property CreatTime = new Property(4, Long.class, "creatTime", false, "CREAT_TIME");
-        public final static Property FileType = new Property(5, Integer.class, "fileType", false, "FILE_TYPE");
-        public final static Property FileFrom = new Property(6, Integer.class, "fileFrom", false, "FILE_FROM");
-        public final static Property Autor = new Property(7, String.class, "autor", false, "AUTOR");
-        public final static Property FileId = new Property(8, Long.class, "fileId", false, "FILE_ID");
-        public final static Property SrcKey = new Property(9, String.class, "srcKey", false, "SRC_KEY");
-        public final static Property FileMD5 = new Property(10, String.class, "fileMD5", false, "FILE_MD5");
-        public final static Property FileInfo = new Property(11, String.class, "fileInfo", false, "FILE_INFO");
-        public final static Property IsUpLoad = new Property(12, Boolean.class, "isUpLoad", false, "IS_UP_LOAD");
-        public final static Property NodeId = new Property(13, Integer.class, "nodeId", false, "NODE_ID");
+        public final static Property FileLocalPath = new Property(3, String.class, "fileLocalPath", false, "FILE_LOCAL_PATH");
+        public final static Property FileSize = new Property(4, Long.class, "fileSize", false, "FILE_SIZE");
+        public final static Property CreatTime = new Property(5, Long.class, "creatTime", false, "CREAT_TIME");
+        public final static Property FileType = new Property(6, Integer.class, "fileType", false, "FILE_TYPE");
+        public final static Property FileFrom = new Property(7, Integer.class, "fileFrom", false, "FILE_FROM");
+        public final static Property Autor = new Property(8, String.class, "autor", false, "AUTOR");
+        public final static Property FileId = new Property(9, Long.class, "fileId", false, "FILE_ID");
+        public final static Property SrcKey = new Property(10, String.class, "srcKey", false, "SRC_KEY");
+        public final static Property FileMD5 = new Property(11, String.class, "fileMD5", false, "FILE_MD5");
+        public final static Property FileInfo = new Property(12, String.class, "fileInfo", false, "FILE_INFO");
+        public final static Property IsUpLoad = new Property(13, Boolean.class, "isUpLoad", false, "IS_UP_LOAD");
+        public final static Property NodeId = new Property(14, Integer.class, "nodeId", false, "NODE_ID");
     }
 
 
@@ -54,17 +55,18 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"FILE_NAME\" TEXT," + // 1: fileName
                 "\"FILE_PATH\" TEXT," + // 2: filePath
-                "\"FILE_SIZE\" INTEGER," + // 3: fileSize
-                "\"CREAT_TIME\" INTEGER," + // 4: creatTime
-                "\"FILE_TYPE\" INTEGER," + // 5: fileType
-                "\"FILE_FROM\" INTEGER," + // 6: fileFrom
-                "\"AUTOR\" TEXT," + // 7: autor
-                "\"FILE_ID\" INTEGER," + // 8: fileId
-                "\"SRC_KEY\" TEXT," + // 9: srcKey
-                "\"FILE_MD5\" TEXT," + // 10: fileMD5
-                "\"FILE_INFO\" TEXT," + // 11: fileInfo
-                "\"IS_UP_LOAD\" INTEGER," + // 12: isUpLoad
-                "\"NODE_ID\" INTEGER);"); // 13: nodeId
+                "\"FILE_LOCAL_PATH\" TEXT," + // 3: fileLocalPath
+                "\"FILE_SIZE\" INTEGER," + // 4: fileSize
+                "\"CREAT_TIME\" INTEGER," + // 5: creatTime
+                "\"FILE_TYPE\" INTEGER," + // 6: fileType
+                "\"FILE_FROM\" INTEGER," + // 7: fileFrom
+                "\"AUTOR\" TEXT," + // 8: autor
+                "\"FILE_ID\" INTEGER," + // 9: fileId
+                "\"SRC_KEY\" TEXT," + // 10: srcKey
+                "\"FILE_MD5\" TEXT," + // 11: fileMD5
+                "\"FILE_INFO\" TEXT," + // 12: fileInfo
+                "\"IS_UP_LOAD\" INTEGER," + // 13: isUpLoad
+                "\"NODE_ID\" INTEGER);"); // 14: nodeId
     }
 
     /** Drops the underlying database table. */
@@ -92,59 +94,64 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             stmt.bindString(3, filePath);
         }
  
+        String fileLocalPath = entity.getFileLocalPath();
+        if (fileLocalPath != null) {
+            stmt.bindString(4, fileLocalPath);
+        }
+ 
         Long fileSize = entity.getFileSize();
         if (fileSize != null) {
-            stmt.bindLong(4, fileSize);
+            stmt.bindLong(5, fileSize);
         }
  
         Long creatTime = entity.getCreatTime();
         if (creatTime != null) {
-            stmt.bindLong(5, creatTime);
+            stmt.bindLong(6, creatTime);
         }
  
         Integer fileType = entity.getFileType();
         if (fileType != null) {
-            stmt.bindLong(6, fileType);
+            stmt.bindLong(7, fileType);
         }
  
         Integer fileFrom = entity.getFileFrom();
         if (fileFrom != null) {
-            stmt.bindLong(7, fileFrom);
+            stmt.bindLong(8, fileFrom);
         }
  
         String autor = entity.getAutor();
         if (autor != null) {
-            stmt.bindString(8, autor);
+            stmt.bindString(9, autor);
         }
  
         Long fileId = entity.getFileId();
         if (fileId != null) {
-            stmt.bindLong(9, fileId);
+            stmt.bindLong(10, fileId);
         }
  
         String srcKey = entity.getSrcKey();
         if (srcKey != null) {
-            stmt.bindString(10, srcKey);
+            stmt.bindString(11, srcKey);
         }
  
         String fileMD5 = entity.getFileMD5();
         if (fileMD5 != null) {
-            stmt.bindString(11, fileMD5);
+            stmt.bindString(12, fileMD5);
         }
  
         String fileInfo = entity.getFileInfo();
         if (fileInfo != null) {
-            stmt.bindString(12, fileInfo);
+            stmt.bindString(13, fileInfo);
         }
  
         Boolean isUpLoad = entity.getIsUpLoad();
         if (isUpLoad != null) {
-            stmt.bindLong(13, isUpLoad ? 1L: 0L);
+            stmt.bindLong(14, isUpLoad ? 1L: 0L);
         }
  
         Integer nodeId = entity.getNodeId();
         if (nodeId != null) {
-            stmt.bindLong(14, nodeId);
+            stmt.bindLong(15, nodeId);
         }
     }
 
@@ -167,59 +174,64 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             stmt.bindString(3, filePath);
         }
  
+        String fileLocalPath = entity.getFileLocalPath();
+        if (fileLocalPath != null) {
+            stmt.bindString(4, fileLocalPath);
+        }
+ 
         Long fileSize = entity.getFileSize();
         if (fileSize != null) {
-            stmt.bindLong(4, fileSize);
+            stmt.bindLong(5, fileSize);
         }
  
         Long creatTime = entity.getCreatTime();
         if (creatTime != null) {
-            stmt.bindLong(5, creatTime);
+            stmt.bindLong(6, creatTime);
         }
  
         Integer fileType = entity.getFileType();
         if (fileType != null) {
-            stmt.bindLong(6, fileType);
+            stmt.bindLong(7, fileType);
         }
  
         Integer fileFrom = entity.getFileFrom();
         if (fileFrom != null) {
-            stmt.bindLong(7, fileFrom);
+            stmt.bindLong(8, fileFrom);
         }
  
         String autor = entity.getAutor();
         if (autor != null) {
-            stmt.bindString(8, autor);
+            stmt.bindString(9, autor);
         }
  
         Long fileId = entity.getFileId();
         if (fileId != null) {
-            stmt.bindLong(9, fileId);
+            stmt.bindLong(10, fileId);
         }
  
         String srcKey = entity.getSrcKey();
         if (srcKey != null) {
-            stmt.bindString(10, srcKey);
+            stmt.bindString(11, srcKey);
         }
  
         String fileMD5 = entity.getFileMD5();
         if (fileMD5 != null) {
-            stmt.bindString(11, fileMD5);
+            stmt.bindString(12, fileMD5);
         }
  
         String fileInfo = entity.getFileInfo();
         if (fileInfo != null) {
-            stmt.bindString(12, fileInfo);
+            stmt.bindString(13, fileInfo);
         }
  
         Boolean isUpLoad = entity.getIsUpLoad();
         if (isUpLoad != null) {
-            stmt.bindLong(13, isUpLoad ? 1L: 0L);
+            stmt.bindLong(14, isUpLoad ? 1L: 0L);
         }
  
         Integer nodeId = entity.getNodeId();
         if (nodeId != null) {
-            stmt.bindLong(14, nodeId);
+            stmt.bindLong(15, nodeId);
         }
     }
 
@@ -234,17 +246,18 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // fileName
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // filePath
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // fileSize
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // creatTime
-            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // fileType
-            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // fileFrom
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // autor
-            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // fileId
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // srcKey
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // fileMD5
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // fileInfo
-            cursor.isNull(offset + 12) ? null : cursor.getShort(offset + 12) != 0, // isUpLoad
-            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13) // nodeId
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // fileLocalPath
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // fileSize
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // creatTime
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // fileType
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // fileFrom
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // autor
+            cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9), // fileId
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // srcKey
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // fileMD5
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // fileInfo
+            cursor.isNull(offset + 13) ? null : cursor.getShort(offset + 13) != 0, // isUpLoad
+            cursor.isNull(offset + 14) ? null : cursor.getInt(offset + 14) // nodeId
         );
         return entity;
     }
@@ -254,17 +267,18 @@ public class LocalFileItemDao extends AbstractDao<LocalFileItem, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setFileName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setFilePath(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setFileSize(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
-        entity.setCreatTime(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setFileType(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
-        entity.setFileFrom(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
-        entity.setAutor(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setFileId(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
-        entity.setSrcKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setFileMD5(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setFileInfo(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setIsUpLoad(cursor.isNull(offset + 12) ? null : cursor.getShort(offset + 12) != 0);
-        entity.setNodeId(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
+        entity.setFileLocalPath(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setFileSize(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setCreatTime(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setFileType(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setFileFrom(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setAutor(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setFileId(cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9));
+        entity.setSrcKey(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setFileMD5(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setFileInfo(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setIsUpLoad(cursor.isNull(offset + 13) ? null : cursor.getShort(offset + 13) != 0);
+        entity.setNodeId(cursor.isNull(offset + 14) ? null : cursor.getInt(offset + 14));
      }
     
     @Override

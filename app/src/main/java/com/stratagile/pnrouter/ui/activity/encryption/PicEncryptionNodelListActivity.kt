@@ -121,6 +121,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 var localFileItem:LocalFileItem = LocalFileItem();
                 localFileItem.fileId = item.id.toLong()
                 localFileItem.filePath = item.paths;
+                localFileItem.fileLocalPath = folderInfo!!.path
                 localFileItem.fileType = item.type;
                 var souceName = String(Base58.decode(item.fname))
                 localFileItem.fileName = souceName

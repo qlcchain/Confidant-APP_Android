@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.file
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -10,6 +11,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
@@ -302,6 +304,32 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                 0x55 -> {
                     var data: Bundle = msg.data;
                     var fileId = data.getInt("msgID")
+                    // 配置压缩的参数
+                    var fileLocalPath = payLoad!!.fileLocalPath;
+                    var base58NameR = String(Base58.decode(payLoad!!.fileName))
+                    if( payLoad!!.fileType == 1)
+                    {
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = false;
+                        options.inSampleSize = 16
+                        val bmNew = BitmapFactory.decodeFile(fileLocalPath +"/"+base58NameR, options) // 解码文件
+                        val thumbPath = fileLocalPath +"/th"+base58NameR
+                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                    }else if( payLoad!!.fileType == 4)
+                    {
+                        val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
+                        val bitmap = EaseImageUtils.getVideoPhoto(fileLocalPath +"/"+base58NameR)
+                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                        val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = false;
+                        options.inSampleSize = 16
+                        val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                        DeleteUtils.deleteFile(thumbPath)
+                    }
+
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_success)
