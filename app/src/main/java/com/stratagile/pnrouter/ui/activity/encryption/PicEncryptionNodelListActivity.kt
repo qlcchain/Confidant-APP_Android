@@ -189,8 +189,8 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                     var data = obj as FileOpreateType
                                     when (data.name) {
                                         "Rename" -> {
-                                            var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.indexOf("."));
-                                            var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.indexOf("."),chooseFileData!!.fileName.length);
+                                            var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.lastIndexOf("."));
+                                            var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.lastIndexOf("."),chooseFileData!!.fileName.length);
                                             PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
                                                 override fun onSelect(position: Int, obj: Any) {
                                                     var map = obj as HashMap<String,String>

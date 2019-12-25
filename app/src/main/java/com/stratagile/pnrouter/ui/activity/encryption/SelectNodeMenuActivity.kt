@@ -116,7 +116,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
 
                 var localFileMenu: LocalFileMenu = LocalFileMenu();
                 var souceName = String(Base58.decode(item!!.pathName))
-                var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
+                var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ souceName
                 localFileMenu.id  = item!!.id.toLong();
                 localFileMenu.nodeId = item!!.id;
                 localFileMenu.fileName = souceName;
