@@ -155,10 +155,13 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
                                 "Rename" -> {
-                                    PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,chooseFileData!!.fileName, object : PopWindowUtil.OnSelectListener {
+                                    var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.indexOf("."));
+                                    var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.indexOf("."),chooseFileData!!.fileName.length);
+                                    PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
                                         override fun onSelect(position: Int, obj: Any) {
                                             var map = obj as HashMap<String,String>
                                             var folderNewname = map.get("foldername") as String
+                                            folderNewname += oldExit
                                             if(folderNewname.equals(""))
                                             {
                                                 toast(R.string.Name_cannot_be_empty)
@@ -171,6 +174,17 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                                 toast(R.string.This_name_folder_already_exists)
                                                 return;
                                             }
+
+                                            var thumPathPre = chooseFileData!!.filePath.substring(0,chooseFileData!!.filePath.lastIndexOf("/")+1)
+                                            var thumName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/")+1,chooseFileData!!.filePath.length).replace("mp4","jpg")
+                                            var thumPathPreNew = newPath.substring(0,newPath.lastIndexOf("/")+1)
+                                            var thumNameNew = newPath.substring(newPath.lastIndexOf("/")+1,newPath.length).replace("mp4","jpg")
+                                            var oldThumFile = File(thumPathPre +"th"+thumName)
+                                            if(oldThumFile.exists())
+                                            {
+                                                oldThumFile.renameTo(File(thumPathPreNew +"th"+thumNameNew))
+                                            }
+
                                             var oldFile = File(chooseFileData!!.filePath)
                                             if(oldFile.exists())
                                             {

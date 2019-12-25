@@ -64,17 +64,24 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
         {
             if(jFileActionRsp.params.react == 1)//重命名
             {
-
+                var thumPathPre = renameOldPath.substring(0,renameOldPath.lastIndexOf("/")+1)
+                var thumName = renameOldPath.substring(renameOldPath.lastIndexOf("/")+1,renameOldPath.length).replace("mp4","jpg")
+                var thumPathPreNew = renameNewPath.substring(0,renameNewPath.lastIndexOf("/")+1)
+                var thumNameNew = renameNewPath.substring(renameNewPath.lastIndexOf("/")+1,renameNewPath.length).replace("mp4","jpg")
+                var oldThumFile = File(thumPathPre +"th"+thumName)
+                if(oldThumFile.exists())
+                {
+                    oldThumFile.renameTo(File(thumPathPreNew +"th"+thumNameNew))
+                }
                 var oldFile = File(renameOldPath)
                 if(oldFile.exists())
                 {
                     oldFile.renameTo(File(renameNewPath))
-                    chooseFileData!!.filePath = renameNewPath
-                    chooseFileData!!.fileName = folderNewname
-                    runOnUiThread {
-                        picItemEncryptionAdapter!!.notifyItemChanged(renamePositon)
-                    }
-
+                }
+                chooseFileData!!.filePath = renameNewPath
+                chooseFileData!!.fileName = folderNewname
+                runOnUiThread {
+                    picItemEncryptionAdapter!!.notifyItemChanged(renamePositon)
                 }
             }
             else if(jFileActionRsp.params.react == 2)//删除
@@ -184,10 +191,13 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                     var data = obj as FileOpreateType
                                     when (data.name) {
                                         "Rename" -> {
-                                            PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,chooseFileData!!.fileName, object : PopWindowUtil.OnSelectListener {
+                                            var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.indexOf("."));
+                                            var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.indexOf("."),chooseFileData!!.fileName.length);
+                                            PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
                                                 override fun onSelect(position: Int, obj: Any) {
                                                     var map = obj as HashMap<String,String>
                                                     folderNewname = map.get("foldername") as String
+                                                    folderNewname+= oldExit
                                                     if(folderNewname.equals(""))
                                                     {
                                                         toast(R.string.Name_cannot_be_empty)
@@ -198,7 +208,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
 
                                                     var newPath = folderInfo!!.path +"/"+folderNewname
                                                     var newFile = File(newPath)
-                                                    renameOldPath = chooseFileData!!.filePath
+                                                    renameOldPath = folderInfo!!.path +"/"+chooseFileData!!.fileName
                                                     renameNewPath = newPath;
                                                     if(newFile.exists())
                                                     {
