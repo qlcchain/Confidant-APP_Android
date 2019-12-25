@@ -38,7 +38,6 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.encryption_file_list.*
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
-import net.coobird.thumbnailator.Thumbnails
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -111,7 +110,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var emaiAttach = picItemEncryptionAdapter!!.getItem(position)
                     var fileName = emaiAttach!!.fileName
                     var filePath= emaiAttach.filePath
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "temp"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -390,7 +389,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
 
                     var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "upload"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -621,7 +620,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         super.onResume()
     }
     override fun onDestroy() {
-        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

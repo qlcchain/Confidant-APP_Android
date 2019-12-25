@@ -143,8 +143,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/temp/")//删除外部查看文件的临时路径
             FileUtil.init()
             PathUtils.getInstance().initDirs("", "", AppConfig.instance)
-            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
             DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionWeChatNodePath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
             if(ConstantValue.encryptionType.equals("0"))
             {
                 ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
@@ -304,7 +306,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             {
                 needCreate = true
             }
-            var defaultfolder  = PathUtils.getInstance().getEncryptionLocalPath().toString() + "/defaultfolder"
+            var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumPath().toString() + "/defaultfolder"
             var defaultfolderFile = File(defaultfolder)
             if(needCreate && !defaultfolderFile.exists())
             {

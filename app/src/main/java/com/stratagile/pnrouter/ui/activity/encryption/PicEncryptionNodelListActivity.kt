@@ -21,10 +21,8 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.LocalFileItem
-import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.UpdateLocalEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.UpdateNodelEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -490,7 +488,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
 
     override fun onDestroy() {
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = null
-        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

@@ -27,8 +27,10 @@ public class PathUtils {
     private File tempPath = null;
     private File emailPath = null;
     private File encryptionPath = null;
-    private File encryptionLocalPath = null;
+    private File encryptionAlbumPath = null;
+    private File encryptionAlbumNodePath = null;
     private File encryptionWeChatPath = null;
+    private File encryptionWeChatNodePath = null;
     private PathUtils() {
     }
 
@@ -79,13 +81,23 @@ public class PathUtils {
         if(!this.encryptionPath.exists()) {
             this.encryptionPath.mkdirs();
         }
-        this.encryptionLocalPath=  generateEncryptionLocalPath(var1, var2, var3);
-        if(!this.encryptionLocalPath.exists()) {
-            this.encryptionLocalPath.mkdirs();
+        this.encryptionAlbumPath =  generateEncryptionLocalPath(var1, var2, var3);
+        if(!this.encryptionAlbumPath.exists()) {
+            this.encryptionAlbumPath.mkdirs();
         }
-        this.encryptionWeChatPath=  generateEncryptionWeChatPath(var1, var2, var3);
+        this.encryptionWeChatPath=  generateEncryptionLocalWeChatPath(var1, var2, var3);
         if(!this.encryptionWeChatPath.exists()) {
             this.encryptionWeChatPath.mkdirs();
+        }
+
+        this.encryptionAlbumNodePath =  generateEncryptionLocalNodePath(var1, var2, var3);
+        if(!this.encryptionAlbumNodePath.exists()) {
+            this.encryptionAlbumNodePath.mkdirs();
+        }
+
+        this.encryptionWeChatNodePath=  generateEncryptionWeChatNodePath(var1, var2, var3);
+        if(!this.encryptionWeChatNodePath.exists()) {
+            this.encryptionWeChatNodePath.mkdirs();
         }
     }
 
@@ -112,9 +124,10 @@ public class PathUtils {
     }
 
     public File getEncryptionPath(){return  this.encryptionPath;}
-    public File getEncryptionLocalPath(){return  this.encryptionLocalPath;}
+    public File getEncryptionAlbumPath(){return  this.encryptionAlbumPath;}
     public File getEncryptionWeChatPath(){return  this.encryptionWeChatPath;}
-
+    public File getEncryptionAlbumNodePath(){return  this.encryptionAlbumNodePath;}
+    public File getEncryptionWeChatNodePath(){return  this.encryptionWeChatNodePath;}
     private static File getStorageDir(Context var0) {
         if(storageDir == null) {
             File var1 = Environment.getExternalStorageDirectory();
@@ -208,12 +221,32 @@ public class PathUtils {
 
         return new File(var3);
     }
-    private static File generateEncryptionWeChatPath(String var0, String var1, Context var2) {
+    private static File generateEncryptionLocalNodePath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {
-            var3 = pathPrefix + var1 + "/encryption/wechat/";
+            var3 = pathPrefix + var1 + "/encryption/localnode/";
         } else {
-            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/wechat/";
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localnode/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionLocalWeChatPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/localwechat/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localwechat/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionWeChatNodePath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/wechatnode/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/wechatnode/";
         }
 
         return new File(var3);

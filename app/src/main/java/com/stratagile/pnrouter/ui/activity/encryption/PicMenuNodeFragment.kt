@@ -81,7 +81,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                 {
                     var localFileMenu:LocalFileMenu = LocalFileMenu();
                     var souceName = String(Base58.decode(jFileActionRsp.params!!.name))
-                    var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
+                    var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ souceName
                     localFileMenu.id  = jFileActionRsp.params!!.fileId.toLong();
                     localFileMenu.nodeId = jFileActionRsp.params!!.fileId;
                     localFileMenu.fileName = souceName;
@@ -125,7 +125,7 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
 
                 var localFileMenu:LocalFileMenu = LocalFileMenu();
                 var souceName = String(Base58.decode(item!!.pathName))
-                var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
+                var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ souceName
                 localFileMenu.id  = item!!.id.toLong();
                 localFileMenu.nodeId = item!!.id;
                 localFileMenu.fileName = souceName;

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.hyphenate.easeui.utils.PathUtils
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout
-import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -128,7 +127,7 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
                     var foldername = map.get("foldername") as String
                     var localFileMenu = LocalFileMenu();
                     try {
-                        var defaultfolder  = PathUtils.getInstance().getEncryptionLocalPath().toString() +"/"+ foldername
+                        var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ foldername
                         var defaultfolderFile = File(defaultfolder)
                         if(!defaultfolderFile.exists())
                         {
