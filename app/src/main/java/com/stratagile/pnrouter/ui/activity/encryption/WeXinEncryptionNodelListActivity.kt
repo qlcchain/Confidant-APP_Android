@@ -90,7 +90,10 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                 /*var deleteData:LocalFileItem ? = null
                            var deletePositon = -1;*/
                 var filePath = PathUtils.getInstance().filePath.toString()+"/"+deleteData!!.fileName;
+                var thumPre = filePath.substring(0,filePath.lastIndexOf("/")+1)
+                var thumEnd = "th"+filePath.substring(filePath.lastIndexOf("/")+1,filePath.length)
                 DeleteUtils.deleteFile(filePath)
+                DeleteUtils.deleteFile(thumPre + thumEnd)
                 runOnUiThread {
                     picItemEncryptionAdapter!!.remove(deletePositon)
                     picItemEncryptionAdapter!!.notifyDataSetChanged()
