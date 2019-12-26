@@ -20,10 +20,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.GestureDetector
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.WindowManager
+import android.view.*
 import android.widget.Toast
 import com.floatball.FloatPermissionManager
 import com.huxq17.floatball.libarary.FloatBallManager
@@ -144,6 +141,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         if(mFloatballManager != null)
         {
             mFloatballManager!!.showIFHasPermission()
+            if(mFloatballManager!!.isShow)
+            {
+                actionButton.visibility = View.GONE
+            }
         }
         picItemEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
@@ -192,6 +193,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             when (data.name) {
                                 "Node back up" -> {
                                     val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
+                                    intent.putExtra("fromType",3)
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
                                 "Rename" -> {
@@ -279,6 +281,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
         }
         addMenu.setOnClickListener()
+        {
+            setFloatballVisible(true)
+        }
+        actionButton.setOnClickListener()
         {
             setFloatballVisible(true)
         }
@@ -404,7 +410,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var fileUploadItem = FileUploadItem();
                 fileUploadItem.localFileItemId = chooseFileData!!.id;
-                fileUploadItem.depens = 1;
+                fileUploadItem.depens = 3;
                 fileUploadItem.userId = selfUserId;
                 fileUploadItem.type = chooseFileData!!.fileType
                 fileUploadItem.fileId = fileId
@@ -483,7 +489,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         list.add(localMediaUpdate!!)
                         var startIntent = Intent(this, FileTaskListActivity::class.java)
                         startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
-                        startIntent.putExtra("fromPorperty",3)
+                        startIntent.putExtra("fromPorperty",5)
                         startActivity(startIntent)
                     }
 
@@ -814,6 +820,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_close", this)) {
             override fun action() {
                 mFloatballManager!!.hide()
+                actionButton.visibility = View.VISIBLE
                /* runOnUiThread {
                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                             .setContentText(getString(R.string.Are_you_colse))
@@ -836,7 +843,12 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             //5.0 之后才允许使用屏幕截图
-
+            SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                    .setContentText(getString(R.string.not_support))
+                    .setConfirmClickListener {
+                         finish()
+                    }
+                    .show()
             return
         }
 
@@ -850,6 +862,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         {
             if (visible) {
                 mFloatballManager!!.show()
+                if(mFloatballManager!!.isShow)
+                {
+                    actionButton.visibility = View.GONE
+                }
             } else {
                 mFloatballManager!!.hide()
             }
@@ -879,6 +895,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         if(mFloatballManager != null)
         {
             mFloatballManager!!.showIFHasPermission()
+            if(mFloatballManager!!.isShow)
+            {
+                actionButton.visibility = View.GONE
+            }
         }
         //mFloatballManager!!.onFloatBallClick()
     }

@@ -244,6 +244,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
     var currentPosition = 0;
     var oldPath:String? = null
     var newPath:String? = null
+    var fromType = 1;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -256,9 +257,9 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
     override fun initData() {
         AppConfig.instance.messageReceiver?.nodeSelectFileCallback = this
         parentTarget = this;
-
+        fromType  = intent.getIntExtra("fromType",1)
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var filePathsPullReq = FilePathsPullReq( selfUserId!!, 1)
+        var filePathsPullReq = FilePathsPullReq( selfUserId!!, fromType)
         var sendData = BaseData(6, filePathsPullReq);
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -282,7 +283,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                     var foldername = map.get("foldername") as String
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var base58Name = Base58.encode(foldername.toByteArray())
-                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,3,0,0,base58Name,"")
+                    var filePathsPullReq = FileActionReq( selfUserId!!, fromType,2,3,0,0,base58Name,"")
                     var sendData = BaseData(6, filePathsPullReq);
                     if (ConstantValue.isWebsocketConnected) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

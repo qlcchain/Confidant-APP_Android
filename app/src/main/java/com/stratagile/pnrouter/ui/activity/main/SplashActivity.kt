@@ -123,6 +123,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
+        var aa = Base58.encode("Default Wechat Folder".toByteArray())
+        var bb = ""
         /*if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")

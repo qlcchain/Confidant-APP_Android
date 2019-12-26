@@ -351,13 +351,13 @@
             android:name=".ui.activity.email.EmailLoginActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >
-           <!-- <intent-filter>
+            <intent-filter>
                 <data android:mimeType="*/*"/>
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.ALTERNATIVE"/>
                 <category android:name="android.intent.category.ALTERNATIVE_SELECTED"/>
-            </intent-filter>-->
+            </intent-filter>
         </activity>
 
         <activity

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
@@ -150,6 +152,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             when (data.name) {
                                 "Node back up" -> {
                                     val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
+                                    intent.putExtra("fromType",1)
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
                                 "Rename" -> {
@@ -240,6 +243,9 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         }
         backBtn.setOnClickListener {
             onBackPressed()
+        }
+        actionButton.setOnClickListener {
+            selectPicFromLocal()
         }
     }
     fun showImagList(localPath:String)

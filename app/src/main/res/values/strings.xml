@@ -918,4 +918,5 @@ Then enter your Email address and password to log in.</string>
     <string name="There_is_a_file_with_the_same_name">There is a file with the same name</string>
     <string name="Destination_directory_error">Destination directory error</string>
     <string name="Delete_original_file">Do you want to delete the original file?</string>
+    <string name="not_support">Sorry, your system does not support screenshots!</string>
 </resources>

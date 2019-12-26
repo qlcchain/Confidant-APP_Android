@@ -50,6 +50,7 @@
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/allMenu"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/mainColor"
@@ -59,6 +60,7 @@
                 android:text=""/>
             <TextView
                 android:id="@+id/addMenu"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/mainColor"
@@ -106,31 +108,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </FrameLayout>
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/refreshLayout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srlEnableNestedScrolling="true"
-        app:srlPrimaryColor="@color/colorPrimary"
-        app:srlAccentColor="@android:color/white"
-        app:srlEnableAutoLoadMore="false">
-        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+        android:layout_height="match_parent">
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srlAccentColor="#aaa"
-            app:srlDrawableProgressSize="25dp"
-            app:srlDrawableProgress="@drawable/animation_loading_rotate"
-            app:srlPrimaryColor="@color/colorBackgroundDark"/>
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </android.support.v7.widget.RecyclerView>
-        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/gray"
-            app:srlClassicsSpinnerStyle="Translate"/>
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+            android:layout_height="match_parent"
+            app:srlEnableNestedScrolling="true"
+            app:srlPrimaryColor="@color/colorPrimary"
+            app:srlAccentColor="@android:color/white"
+            app:srlEnableAutoLoadMore="false">
+            <com.scwang.smartrefresh.layout.header.ClassicsHeader
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srlAccentColor="#aaa"
+                app:srlDrawableProgressSize="25dp"
+                app:srlDrawableProgress="@drawable/animation_loading_rotate"
+                app:srlPrimaryColor="@color/colorBackgroundDark"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
+            <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                app:srlClassicsSpinnerStyle="Translate"/>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        <com.stratagile.pnrouter.utils.DragFloatActionButton
+            android:id="@+id/actionButton"
+            android:layout_width="@dimen/x150"
+            android:layout_height="@dimen/x150"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="100px"
+            android:background="@mipmap/upload_hover"/>
+    </FrameLayout>
+
 </LinearLayout>

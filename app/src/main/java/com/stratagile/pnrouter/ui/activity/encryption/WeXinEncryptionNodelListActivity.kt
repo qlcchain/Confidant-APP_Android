@@ -226,7 +226,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                                     var base58Name = Base58.encode(chooseFileData!!.fileName.toByteArray())
                                                     var base58NewName = Base58.encode(folderNewname.toByteArray())
                                                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,1,1,chooseFileData!!.fileId,pathId,base58NewName,base58Name)
+                                                    var filePathsPullReq = FileActionReq( selfUserId!!, 3,1,1,chooseFileData!!.fileId,pathId,base58NewName,base58Name)
                                                     var sendData = BaseData(6, filePathsPullReq);
                                                     if (ConstantValue.isWebsocketConnected) {
                                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -259,7 +259,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                                         var foldername = data!!.fileName
                                                         var base58Name = Base58.encode(foldername.toByteArray())
                                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                        var filePathsPullReq = FileActionReq( selfUserId!!, 1,1,2,data!!.fileId,pathId,base58Name,"")
+                                                        var filePathsPullReq = FileActionReq( selfUserId!!, 3,1,2,data!!.fileId,pathId,base58Name,"")
                                                         var sendData = BaseData(6, filePathsPullReq);
                                                         if (ConstantValue.isWebsocketConnected) {
                                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -336,7 +336,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
         showProgressDialog()
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
-        var filesListPullReq = FilesListPullReq( selfUserId!!, 1,folderInfo!!.nodeId,base58Name,1,0,0)
+        var filesListPullReq = FilesListPullReq( selfUserId!!, 3,folderInfo!!.nodeId,base58Name,1,0,0)
         var sendData = BaseData(6, filesListPullReq);
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

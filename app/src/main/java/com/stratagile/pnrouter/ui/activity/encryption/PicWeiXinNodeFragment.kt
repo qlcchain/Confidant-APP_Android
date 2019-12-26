@@ -168,7 +168,7 @@ class PicWeiXinNodeFragment : BaseFragment(), PicWeiXinNodeContract.View, PNRout
                                         var foldername = data!!.fileName
                                         var base58Name = Base58.encode(foldername.toByteArray())
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                        var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,2,0,data.nodeId.toLong(),base58Name,"")
+                                        var filePathsPullReq = FileActionReq( selfUserId!!, 3,2,2,0,data.nodeId.toLong(),base58Name,"")
                                         var sendData = BaseData(6, filePathsPullReq);
                                         if (ConstantValue.isWebsocketConnected) {
                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -204,7 +204,7 @@ class PicWeiXinNodeFragment : BaseFragment(), PicWeiXinNodeContract.View, PNRout
                                     var base58NameOld = Base58.encode(foldername.toByteArray())
                                     var base58NameNew = Base58.encode(folderNewname.toByteArray())
                                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,1,0,data.nodeId.toLong(),base58NameNew,base58NameOld)
+                                    var filePathsPullReq = FileActionReq( selfUserId!!, 3,2,1,0,data.nodeId.toLong(),base58NameNew,base58NameOld)
                                     var sendData = BaseData(6, filePathsPullReq);
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -261,7 +261,7 @@ class PicWeiXinNodeFragment : BaseFragment(), PicWeiXinNodeContract.View, PNRout
                     var foldername = map.get("foldername") as String
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var base58Name = Base58.encode(foldername.toByteArray())
-                    var filePathsPullReq = FileActionReq( selfUserId!!, 1,2,3,0,0,base58Name,"")
+                    var filePathsPullReq = FileActionReq( selfUserId!!, 3,2,3,0,0,base58Name,"")
                     var sendData = BaseData(6, filePathsPullReq);
                     if (ConstantValue.isWebsocketConnected) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -293,7 +293,7 @@ class PicWeiXinNodeFragment : BaseFragment(), PicWeiXinNodeContract.View, PNRout
     fun updateUIFromData()
     {
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var filePathsPullReq = FilePathsPullReq( selfUserId!!, 1)
+        var filePathsPullReq = FilePathsPullReq( selfUserId!!, 3)
         var sendData = BaseData(6, filePathsPullReq);
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

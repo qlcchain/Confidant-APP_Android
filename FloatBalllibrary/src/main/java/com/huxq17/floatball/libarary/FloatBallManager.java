@@ -138,6 +138,10 @@ public class FloatBallManager {
         floatBall.attachToWindow(mWindowManager);
         floatMenu.detachFromWindow(mWindowManager);
     }
+    public boolean isShow()
+    {
+        return isShowing;
+    }
     public void showIFHasPermission() {
         if (mActivity == null) {
             if (mPermission == null) {

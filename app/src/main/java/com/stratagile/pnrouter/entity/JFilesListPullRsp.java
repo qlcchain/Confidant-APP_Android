@@ -1,13 +1,15 @@
 package com.stratagile.pnrouter.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class JFilesListPullRsp extends BaseEntity {
 
 
     /**
-     * timestamp : 1577090945
-     * params : {"Action":"FilesListPull","ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","RetCode":0,"PathId":1,"PathName":1,"Payload":[{"Depens":1,"Id":8,"Type":1,"Size":237019,"LastModify":1577088261,"Fname":"3Bqcqiy1K1oekpM5G594AJ5Jq8Ewace4qxtvd6YP21b1D6qyfsxj2BoEkwvMGrR9UBEoY5ud8qmfxp2ohKo71eer","Md5":"f908a0e774c41e2b21e5015368177944","Paths":"/user5/files/A005S08F1577088253","Finfo":",1440.0000000*2560.0000000","FKey":"2ez2bu7iPN0Dc0W/VoQrlJF8hrx1xFPv/uqUJ/MSpEjfmjmWVW6GQt67XbHbi5Je3nAttql1gE//4iw0v5qqRA56rIXi3btSKi+yMuiuRMI="}],"Num":1}
+     * timestamp : 1577343149
+     * params : {"Action":"FilesListPull","ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","RetCode":0,"PathId":4,"PathName":"3x39SkycMb32y","Payload":[{"Depens":1,"Id":51,"Type":1,"Size":733477,"LastModify":1577325557,"Fname":"3Bqcqiy1K1oekpM5G594AJ5JpAKqarDTX6qfNSsmasv2N6jUfMRjTpSFZuNA1hejqXJtxW4vJsun5i7ksFiiMhkz","Md5":"f04dd7a3374b9f2e4327da4410b44910","Paths":"/user5/files/A005S08F1577325546","Finfo":"1440.0000000*2560.0000000","FKey":"f5/R8OsBmvuMtUDU3e1ACD8WkXt1gz5BXe+t6QNfn1jRssPGCJTV9PCftUF6M+KSVGSCU4u+l+Cn4Q5RY7cbNv9XVNQXjXpdlmsLLBUo8dA="}],"Num":1}
      */
 
     private int timestampX;
@@ -34,9 +36,9 @@ public class JFilesListPullRsp extends BaseEntity {
          * Action : FilesListPull
          * ToId : wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=
          * RetCode : 0
-         * PathId : 1
-         * PathName : 1
-         * Payload : [{"Depens":1,"Id":8,"Type":1,"Size":237019,"LastModify":1577088261,"Fname":"3Bqcqiy1K1oekpM5G594AJ5Jq8Ewace4qxtvd6YP21b1D6qyfsxj2BoEkwvMGrR9UBEoY5ud8qmfxp2ohKo71eer","Md5":"f908a0e774c41e2b21e5015368177944","Paths":"/user5/files/A005S08F1577088253","Finfo":",1440.0000000*2560.0000000","FKey":"2ez2bu7iPN0Dc0W/VoQrlJF8hrx1xFPv/uqUJ/MSpEjfmjmWVW6GQt67XbHbi5Je3nAttql1gE//4iw0v5qqRA56rIXi3btSKi+yMuiuRMI="}]
+         * PathId : 4
+         * PathName : 3x39SkycMb32y
+         * Payload : [{"Depens":1,"Id":51,"Type":1,"Size":733477,"LastModify":1577325557,"Fname":"3Bqcqiy1K1oekpM5G594AJ5JpAKqarDTX6qfNSsmasv2N6jUfMRjTpSFZuNA1hejqXJtxW4vJsun5i7ksFiiMhkz","Md5":"f04dd7a3374b9f2e4327da4410b44910","Paths":"/user5/files/A005S08F1577325546","Finfo":"1440.0000000*2560.0000000","FKey":"f5/R8OsBmvuMtUDU3e1ACD8WkXt1gz5BXe+t6QNfn1jRssPGCJTV9PCftUF6M+KSVGSCU4u+l+Cn4Q5RY7cbNv9XVNQXjXpdlmsLLBUo8dA="}]
          * Num : 1
          */
 
@@ -44,7 +46,7 @@ public class JFilesListPullRsp extends BaseEntity {
         private String ToId;
         private int RetCode;
         private int PathId;
-        private int PathName;
+        private String PathName;
         private int Num;
         private List<NodeFileItem> Payload;
 
@@ -80,11 +82,11 @@ public class JFilesListPullRsp extends BaseEntity {
             this.PathId = PathId;
         }
 
-        public int getPathName() {
+        public String getPathName() {
             return PathName;
         }
 
-        public void setPathName(int PathName) {
+        public void setPathName(String PathName) {
             this.PathName = PathName;
         }
 
@@ -107,15 +109,15 @@ public class JFilesListPullRsp extends BaseEntity {
         public static class NodeFileItem {
             /**
              * Depens : 1
-             * Id : 8
+             * Id : 51
              * Type : 1
-             * Size : 237019
-             * LastModify : 1577088261
-             * Fname : 3Bqcqiy1K1oekpM5G594AJ5Jq8Ewace4qxtvd6YP21b1D6qyfsxj2BoEkwvMGrR9UBEoY5ud8qmfxp2ohKo71eer
-             * Md5 : f908a0e774c41e2b21e5015368177944
-             * Paths : /user5/files/A005S08F1577088253
-             * Finfo : ,1440.0000000*2560.0000000
-             * FKey : 2ez2bu7iPN0Dc0W/VoQrlJF8hrx1xFPv/uqUJ/MSpEjfmjmWVW6GQt67XbHbi5Je3nAttql1gE//4iw0v5qqRA56rIXi3btSKi+yMuiuRMI=
+             * Size : 733477
+             * LastModify : 1577325557
+             * Fname : 3Bqcqiy1K1oekpM5G594AJ5JpAKqarDTX6qfNSsmasv2N6jUfMRjTpSFZuNA1hejqXJtxW4vJsun5i7ksFiiMhkz
+             * Md5 : f04dd7a3374b9f2e4327da4410b44910
+             * Paths : /user5/files/A005S08F1577325546
+             * Finfo : 1440.0000000*2560.0000000
+             * FKey : f5/R8OsBmvuMtUDU3e1ACD8WkXt1gz5BXe+t6QNfn1jRssPGCJTV9PCftUF6M+KSVGSCU4u+l+Cn4Q5RY7cbNv9XVNQXjXpdlmsLLBUo8dA=
              */
 
             private int Depens;
