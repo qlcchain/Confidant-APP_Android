@@ -24,7 +24,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.UpdateLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -86,7 +86,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAddLocalEncryptionItemEvent(statusChange: UpdateLocalEncryptionItemEvent) {
+    fun onAddLocalEncryptionItemEvent(statusChange: UpdateAlbumEncryptionItemEvent) {
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
         picItemEncryptionAdapter!!.setNewData(picMenuList)
     }
@@ -215,7 +215,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                                         picMenuItem.fileNum = 0
                                                     AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                                                 }
-                                                EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
+                                                EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
                                             }
                                             .show()
                                 }
@@ -542,7 +542,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.addData(0,localFileItem)
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
-                                EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
+                                EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
 
 
 

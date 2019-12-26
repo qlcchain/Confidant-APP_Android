@@ -14,7 +14,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeiXinEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeiXinEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeiXinEncryptionModule
@@ -61,7 +61,7 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
         commonNavigator = CommonNavigator(this)
         //setContentView(R.layout.picencry_menu_list)
         setContentView(R.layout.activity_encrption_local)
-        title.text = getString(R.string.Album_encryption)
+        title.text = getString(R.string.Wechat_Folder)
     }
     override fun initData() {
         var _this = this;
@@ -148,10 +148,13 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAddWxLocalEncryptionItemEvent(statusChange: AddWxLocalEncryptionItemEvent) {
+    fun onUpdateWXEncryptionItemEvent(statusChange: UpdateWXEncryptionItemEvent) {
         picMenuWxFragment!!.upDateUI();
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateWxNodeEncryptionItemEvent(statusChange: UpdateWxNodeEncryptionItemEvent) {
+        //picWXNodeFragment!!.upDateUI();
+    }
     override fun setupActivityComponent() {
        DaggerWeiXinEncryptionComponent
                .builder()

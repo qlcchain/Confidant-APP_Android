@@ -41,7 +41,7 @@ import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage;
 import com.stratagile.pnrouter.entity.events.FileStatus;
-import com.stratagile.pnrouter.entity.events.UpdateLocalEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent;
 import com.stratagile.pnrouter.entity.file.UpLoadFile;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
@@ -474,7 +474,7 @@ public class FileMangerUtil {
                             fileItem.setUpLoad(true);
                             fileItem.setNodeId(FileIdResult);
                             AppConfig.instance.getMDaoMaster().newSession().getLocalFileItemDao().update(fileItem);
-                            EventBus.getDefault().post(new UpdateLocalEncryptionItemEvent());
+                            EventBus.getDefault().post(new UpdateAlbumEncryptionItemEvent());
                         }
                         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fileUploadItem.getFInfo(),fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");

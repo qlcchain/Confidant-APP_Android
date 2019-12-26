@@ -23,7 +23,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.UpdateNodelEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionNodelListComponent
@@ -92,7 +92,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     picItemEncryptionAdapter!!.remove(deletePositon)
                     picItemEncryptionAdapter!!.notifyDataSetChanged()
                 }
-                EventBus.getDefault().post(UpdateNodelEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateAlbumNodeEncryptionItemEvent())
                 /*var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
                 val fileItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.NodeId.eq(jFileActionRsp.params.fileId)).list()
                 if (fileItemList != null && fileItemList.size != 0)
@@ -102,7 +102,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     fileItem.upLoad = false
                     fileItem.nodeId = jFileActionRsp.params.fileId
                     AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(fileItem)
-                    EventBus.getDefault().post(UpdateLocalEncryptionItemEvent())
+                    EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
                 }*/
             }
         }else{

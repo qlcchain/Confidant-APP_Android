@@ -22,6 +22,7 @@ import com.hyphenate.easeui.utils.PathUtils
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
@@ -86,7 +87,8 @@ class PicWeiXinLocalFragment : BaseFragment(), PicWeiXinLocalContract.View {
                     var parentRoot = view.parent as SwipeMenuLayout
                     parentRoot.quickClose()
                     var choosePosition = position
-                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem, "",object : PopWindowUtil.OnSelectListener {
+                    var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
+                    PopWindowUtil.showRenameFolderWindow(parent, addMenuItem,data!!.fileName,object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             var map = obj as HashMap<String,String>
                             var foldername = map.get("foldername") as String
@@ -96,10 +98,27 @@ class PicWeiXinLocalFragment : BaseFragment(), PicWeiXinLocalContract.View {
                                 toast(R.string.This_name_folder_already_exists)
                                 return;
                             }
-                            var data = picMenuEncryptionAdapter!!.getItem(choosePosition)
-                            data!!.fileName = foldername
-                            AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
-                            picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
+
+                            //想命名的原文件夹的路径
+                            val file1 = File(data!!.path)
+                            //将原文件夹更改为A，其中路径是必要的。注意
+                            if(file1.exists())
+                            {
+                                var path = data!!.path.substring(0,data!!.path.lastIndexOf("/")+1)
+                                file1.renameTo(File(path +foldername))
+                                data!!.path = path +foldername
+                                data!!.fileName = foldername
+                                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(data)
+                                picMenuEncryptionAdapter!!.notifyItemChanged(choosePosition)
+                                var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(data!!.id)).list()
+                                for (item in picMenuList)
+                                {
+                                    var name = item.fileName
+                                    var newPath = data!!.path +"/" + name;
+                                    item.filePath = newPath;
+                                    AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(item)
+                                }
+                            }
                         }
                     })
                 }

@@ -52,7 +52,7 @@ import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.Sceen
-import com.stratagile.pnrouter.entity.events.AddWxLocalEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeXinEncryptionListContract
@@ -199,7 +199,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                                         picMenuItem.fileNum = 0
                                                     AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                                                 }
-                                                EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
+                                                EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
                                             }
                                             .show()
                                 }
@@ -385,7 +385,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 picItemEncryptionAdapter!!.addData(0,localFileItem)
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
-                                EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
+                                EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
                             }
                         }
 
@@ -821,7 +821,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                             }
-                            EventBus.getDefault().post(AddWxLocalEncryptionItemEvent())
+                            EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
                         }
                     }
                 }
