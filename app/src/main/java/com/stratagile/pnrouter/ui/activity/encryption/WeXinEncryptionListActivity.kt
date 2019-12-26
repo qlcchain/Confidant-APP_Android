@@ -490,6 +490,8 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         var startIntent = Intent(this, FileTaskListActivity::class.java)
                         startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
                         startIntent.putExtra("fromPorperty",5)
+                        var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
+                        startIntent.putExtra("aesKey",aesKey)
                         startActivity(startIntent)
                     }
 
