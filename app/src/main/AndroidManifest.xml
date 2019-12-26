@@ -406,6 +406,11 @@
             android:name=".ui.activity.encryption.PicEncryptionNodelListActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.encryption.WeXinEncryptionNodelListActivity"
+            android:screenOrientation="portrait" />
+
+
+        <activity
             android:name=".ui.activity.file.MiFileViewActivity"
             android:screenOrientation="portrait" />
         <!-- Rich push 核心功能 since 2.0.6-->

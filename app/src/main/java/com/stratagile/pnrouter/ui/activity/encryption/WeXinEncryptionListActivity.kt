@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
@@ -31,6 +32,7 @@ import com.huxq17.floatball.libarary.menu.FloatMenuCfg
 import com.huxq17.floatball.libarary.menu.MenuItem
 import com.huxq17.floatball.libarary.utils.BackGroudSeletor
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.hyphenate.util.DensityUtil
@@ -43,21 +45,20 @@ import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.LocalFileItem
-import com.stratagile.pnrouter.db.LocalFileItemDao
-import com.stratagile.pnrouter.db.LocalFileMenu
-import com.stratagile.pnrouter.db.LocalFileMenuDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeXinEncryptionListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeXinEncryptionListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeXinEncryptionListPresenter
+import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
@@ -68,9 +69,9 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.*
-import java.util.ArrayList
-
-import javax.inject.Inject;
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -85,7 +86,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     internal lateinit var mPresenter: WeXinEncryptionListPresenter
     var picItemEncryptionAdapter: PicItemEncryptionAdapter? = null
     var folderInfo: LocalFileMenu? = null
-    protected val REQUEST_CODE_MAP = 1
+    protected val REQUEST_CODE_MENU = 1
     protected val REQUEST_CODE_CAMERA = 2
     protected val REQUEST_CODE_LOCAL = 3
     protected val REQUEST_CODE_DING_MSG = 4
@@ -107,6 +108,16 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     private var mScreenDensity: Int = 0
     var REQUEST_MEDIA_PROJECTION = 1008
 
+    var localMediaUpdate: LocalMedia? = null
+
+    var chooseFileData:LocalFileItem? = null;
+    var chooseFolderData:LocalFileMenu? = null;
+
+    var clickTimeMap = ConcurrentHashMap<String, Long>()
+
+    var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
+    var _this:Activity?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -117,7 +128,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
     }
     override fun initData() {
-        var _this = this;
+        _this = this;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
@@ -168,27 +179,75 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 }
                 R.id.opMenu ->
                 {
+                    chooseFileData = picItemEncryptionAdapter!!.getItem(position)
                     var menuArray = arrayListOf<String>()
                     var iconArray = arrayListOf<String>()
-                    menuArray = arrayListOf<String>(getString(R.string.Node_back_up),getString(R.string.Delete))
-                    iconArray = arrayListOf<String>("statusbar_download_node","statusbar_delete")
+                    menuArray = arrayListOf<String>(getString(R.string.Node_back_up),getString(R.string.rename),getString(R.string.Delete))
+                    iconArray = arrayListOf<String>("statusbar_download_node","sheet_rename","statusbar_delete")
+                    var chooseItemPosition = position
                     PopWindowUtil.showPopMenuWindow(this@WeXinEncryptionListActivity, opMenu,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
                             var data = obj as FileOpreateType
                             when (data.name) {
                                 "Node back up" -> {
+                                    val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
+                                    startActivityForResult(intent,REQUEST_CODE_MENU)
+                                }
+                                "Rename" -> {
+                                    var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.lastIndexOf("."));
+                                    var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.lastIndexOf("."),chooseFileData!!.fileName.length);
+                                    PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
+                                        override fun onSelect(position: Int, obj: Any) {
+                                            var map = obj as HashMap<String, String>
+                                            var folderNewname = map.get("foldername") as String
+                                            folderNewname += oldExit
+                                            if(folderNewname.equals(""))
+                                            {
+                                                toast(R.string.Name_cannot_be_empty)
+                                                return;
+                                            }
+                                            var newPath = folderInfo!!.path +"/"+folderNewname
+                                            var newFile = File(newPath)
+                                            if(newFile.exists())
+                                            {
+                                                toast(R.string.This_name_folder_already_exists)
+                                                return;
+                                            }
 
+                                            var thumPathPre = chooseFileData!!.filePath.substring(0,chooseFileData!!.filePath.lastIndexOf("/")+1)
+                                            var thumName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/")+1,chooseFileData!!.filePath.length).replace("mp4","jpg")
+                                            thumName = thumName.replace(".png",".jpg")
+                                            var thumPathPreNew = newPath.substring(0,newPath.lastIndexOf("/")+1)
+                                            var thumNameNew = newPath.substring(newPath.lastIndexOf("/")+1,newPath.length).replace("mp4","jpg")
+                                            thumNameNew = thumNameNew.replace(".png",".jpg")
+                                            var oldThumFile = File(thumPathPre +"th"+thumName)
+                                            if(oldThumFile.exists())
+                                            {
+                                                oldThumFile.renameTo(File(thumPathPreNew +"th"+thumNameNew))
+                                            }
+
+                                            var oldFile = File(chooseFileData!!.filePath)
+                                            if(oldFile.exists())
+                                            {
+                                                oldFile.renameTo(File(newPath))
+                                                chooseFileData!!.filePath = newPath
+                                                chooseFileData!!.fileName = folderNewname
+                                                AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.update(chooseFileData!!)
+                                                picItemEncryptionAdapter!!.notifyItemChanged(chooseItemPosition)
+                                            }
+                                        }
+                                    })
                                 }
                                 "Delete" -> {
                                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                             .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                             .setConfirmClickListener {
-                                                var data = picItemEncryptionAdapter!!.getItem(position)
+                                                var data = picItemEncryptionAdapter!!.getItem(chooseItemPosition)
                                                 var filePath = data!!.filePath;
                                                 DeleteUtils.deleteFile(filePath)
                                                 AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.delete(data)
-                                                picItemEncryptionAdapter!!.remove(position)
+                                                picItemEncryptionAdapter!!.remove(chooseItemPosition)
                                                 picItemEncryptionAdapter!!.notifyDataSetChanged()
                                                 var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(folderInfo!!.id)).list()
                                                 if(picMenuList != null && picMenuList.size > 0)
@@ -324,10 +383,111 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 .isDragFrame(false)
                 .forResult(REQUEST_CODE_LOCAL)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.File_does_not_exist)
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
+        }else {
+
+            var  fileKey = fileStatus.fileKey;
+            var fileId = fileKey.substring(fileKey.indexOf("__")+2,fileKey.length);
+            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.queryBuilder().where(FileUploadItemDao.Properties.FileId.eq(fileId)).list()
+            if(picItemList ==null || picItemList.size == 0)
+            {
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var fileUploadItem = FileUploadItem();
+                fileUploadItem.localFileItemId = chooseFileData!!.id;
+                fileUploadItem.depens = 1;
+                fileUploadItem.userId = selfUserId;
+                fileUploadItem.type = chooseFileData!!.fileType
+                fileUploadItem.fileId = fileId
+                fileUploadItem.size = chooseFileData!!.fileSize
+                val fileMD5 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
+                fileUploadItem.md5 = fileMD5;
+                val fileNameBase58 = Base58.encode(chooseFileData!!.fileName.toByteArray())
+                fileUploadItem.setfName(fileNameBase58);
+                fileUploadItem.setfKey(chooseFileData!!.srcKey);
+                fileUploadItem.setfInfo(chooseFileData!!.fileInfo);
+                fileUploadItem.pathId = chooseFolderData!!.nodeId;
+                val folderNameBase58 = Base58.encode(chooseFolderData!!.fileName.toByteArray())
+                fileUploadItem.pathName =folderNameBase58;
+                AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.insert(fileUploadItem)
+            }
+
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_LOCAL)
+            if (requestCode == REQUEST_CODE_MENU) { //
+                chooseFolderData = data!!.getParcelableExtra<LocalFileMenu>("folderInfo")
+                var file = File(chooseFileData!!.filePath)
+                if (file.exists()) {
+                    var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
+                    var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
+                    var fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
+                    }
+                    fileTempPath += "/"+chooseFileData!!.fileName;
+                    var code = FileUtil.copySdcardToxFileAndDecrypt(chooseFileData!!.filePath,fileTempPath,aesKey)
+                    if(code == 1)
+                    {
+                        localMediaUpdate = LocalMedia()
+                        localMediaUpdate!!.path = fileTempPath
+                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1)
+                        localMediaUpdate!!.pictureType = "file"
+                        when (MsgType) {
+                            "png", "jpg", "jpeg", "webp" -> {
+                                localMediaUpdate!!.pictureType = "image/jpeg"
+                            }
+                            "mp4" -> {
+
+                                localMediaUpdate!!.pictureType = "video/mp4"
+                            }
+                        }
+                        // 配置压缩的参数
+                        var fileLocalPath = chooseFolderData!!.path ;
+                        var base58NameR = chooseFileData!!.fileName
+                        if(  localMediaUpdate!!.pictureType == "image/jpeg")
+                        {
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = false;
+                            options.inSampleSize = 16
+                            val bmNew = BitmapFactory.decodeFile(fileTempPath, options) // 解码文件
+                            val thumbPath = fileLocalPath +"/th"+base58NameR
+                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                        }else if(  localMediaUpdate!!.pictureType == "video/mp4")
+                        {
+                            val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
+                            val bitmap = EaseImageUtils.getVideoPhoto(fileTempPath)
+                            FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                            val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
+                            val options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = false;
+                            options.inSampleSize = 16
+                            val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                            DeleteUtils.deleteFile(thumbPath)
+                        }
+                        var list = arrayListOf<LocalMedia>()
+                        list.add(localMediaUpdate!!)
+                        var startIntent = Intent(this, FileTaskListActivity::class.java)
+                        startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+                        startIntent.putExtra("fromPorperty",3)
+                        startActivity(startIntent)
+                    }
+
+                }
+
+            }
+            else if (requestCode == REQUEST_CODE_LOCAL)
             { // send local image
                 KLog.i("选照片或者视频返回。。。")
                 val list = data!!.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
@@ -341,7 +501,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             var filePath = list.get(i).path
                             val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
                             val fileMD5 = FileUtil.getFileMD5(File(filePath))
-                            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5), LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).list()
+                            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5),LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).list()
                             if(picItemList != null && picItemList.size > 0)
                             {
                                 toast(imgeSouceName+" "+getString( R.string.file_already_exists))
@@ -355,20 +515,58 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
                             val base58files_dir = folderInfo!!.path +"/"+imgeSouceName
                             val code = FileUtil.copySdcardToxFileAndEncrypt(list.get(i).path, base58files_dir, fileKey.substring(0, 16))
+
                             if (code == 1) {
+
                                 var localFileItem = LocalFileItem();
                                 localFileItem.filePath = base58files_dir;
                                 localFileItem.fileName = imgeSouceName;
                                 localFileItem.fileSize = fileSize;
                                 localFileItem.creatTime = System.currentTimeMillis()
                                 localFileItem.fileMD5 = fileMD5;
-                                localFileItem.upLoad = false
+                                localFileItem.upLoad = false;
                                 val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
-                                when (MsgType) {
-                                    "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
-                                    "amr" ->  localFileItem.fileType = 2
-                                    "mp4" ->  localFileItem.fileType = 4
-                                    else ->  localFileItem.fileType = 5
+                                try {
+                                    when (MsgType) {
+                                        "png", "jpg", "jpeg", "webp" ->
+                                        {
+                                            // 配置压缩的参数
+                                            var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
+
+                                            var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                            localFileItem.fileType = 1
+                                            localFileItem.fileInfo = widthAndHeight;
+
+                                            val options = BitmapFactory.Options()
+                                            options.inJustDecodeBounds = false;
+                                            options.inSampleSize = 16
+                                            val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
+                                            val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                                        }
+                                        "amr" ->  localFileItem.fileType = 2
+                                        "mp4" ->
+                                        {
+
+                                            localFileItem.fileType = 4
+                                            localFileItem.fileInfo = "";
+                                            val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
+                                            FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                                            val thumbPath2 = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                            val options = BitmapFactory.Options()
+                                            options.inJustDecodeBounds = false;
+                                            options.inSampleSize = 16
+                                            val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                                            FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                                            DeleteUtils.deleteFile(thumbPath)
+                                        }
+                                        else ->  localFileItem.fileType = 5
+                                    }
+                                }catch (e:Exception)
+                                {
+
                                 }
                                 localFileItem.fileFrom = 0;
                                 localFileItem.autor = "";
@@ -390,7 +588,37 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         }
 
                     }
+                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                            .setContentText(getString(R.string.Delete_original_file))
+                            .setConfirmClickListener {
+                                for (i in 0 until len) {
+                                    var file = File(list.get(i).path);
+                                    var isHas = file.exists();
+                                    if (isHas) {
+                                        var filePath = list.get(i).path
+                                        val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
+                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                                        when (MsgType) {
+                                            "png", "jpg", "jpeg", "webp" ->
+                                            {
+                                                AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+                                            }
+                                            "amr" ->  {
 
+                                            }
+                                            "mp4" ->
+                                            {
+                                                AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
+                                            }
+                                            else -> {
+
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                            .show()
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }
@@ -750,7 +978,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     filePic = File(fileTempPath +"/"+fileScreenShotName)
                     val out = FileOutputStream(filePic)
                     if (out != null) {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
                         out.flush()
                         out.close()
                         /*val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
@@ -785,11 +1013,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         val fileKey = RxEncryptTool.generateAESKey()
                         var SrcKey = ByteArray(256)
                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
-
                         val base58files_dir = folderInfo!!.path +"/"+imgeSouceName
                         val code = FileUtil.copySdcardToxFileAndEncrypt(needPicPath, base58files_dir, fileKey.substring(0, 16))
                         if (code == 1) {
-                            DeleteUtils.deleteFile(filePath)
+
                             var localFileItem = LocalFileItem();
                             localFileItem.filePath = base58files_dir;
                             localFileItem.fileName = imgeSouceName;
@@ -798,11 +1025,47 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             localFileItem.fileMD5 = fileMD5;
                             localFileItem.upLoad = false
                             val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
-                            when (MsgType) {
-                                "png", "jpg", "jpeg", "webp" ->  localFileItem.fileType = 1
-                                "amr" ->  localFileItem.fileType = 2
-                                "mp4" ->  localFileItem.fileType = 4
-                                else ->  localFileItem.fileType = 5
+                            try {
+                                when (MsgType) {
+                                    "png", "jpg", "jpeg", "webp" ->
+                                    {
+                                        // 配置压缩的参数
+                                        var  bitmap = BitmapFactory.decodeFile(filePath);
+
+                                        var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                        localFileItem.fileType = 1
+                                        localFileItem.fileInfo = widthAndHeight;
+
+                                        val options = BitmapFactory.Options()
+                                        options.inJustDecodeBounds = false;
+                                        options.inSampleSize = 16
+                                        val bmNew = BitmapFactory.decodeFile(filePath, options) // 解码文件
+                                        val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                                    }
+                                    "amr" ->  localFileItem.fileType = 2
+                                    "mp4" ->
+                                    {
+
+                                        localFileItem.fileType = 4
+                                        localFileItem.fileInfo = "";
+                                        val thumbPath = folderInfo!!.path +"/thbig"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        val bitmap = EaseImageUtils.getVideoPhoto(filePath)
+                                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                                        val thumbPath2 = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
+                                        val options = BitmapFactory.Options()
+                                        options.inJustDecodeBounds = false;
+                                        options.inSampleSize = 16
+                                        val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                                        DeleteUtils.deleteFile(thumbPath)
+                                    }
+                                    else ->  localFileItem.fileType = 5
+                                }
+                            }catch (e:Exception)
+                            {
+
                             }
                             localFileItem.fileFrom = 0;
                             localFileItem.autor = "";
@@ -822,6 +1085,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                             }
                             EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
+                            DeleteUtils.deleteFile(filePath)
                         }
                     }
                 }
@@ -925,6 +1189,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         {
             mFloatballManager!!.hide()
         }
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

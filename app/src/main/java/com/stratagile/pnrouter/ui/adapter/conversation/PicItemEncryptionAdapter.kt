@@ -55,6 +55,7 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
             {
                 thumbPath = namePre + "th"+ name.replace("mp4","jpg")
             }
+            thumbPath = thumbPath.replace(".png",".jpg")
             var thumFile = File(thumbPath)
             if(thumFile.exists())
             {

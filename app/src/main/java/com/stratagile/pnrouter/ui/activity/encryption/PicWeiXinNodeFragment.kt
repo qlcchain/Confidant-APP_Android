@@ -151,7 +151,7 @@ class PicWeiXinNodeFragment : BaseFragment(), PicWeiXinNodeContract.View, PNRout
                         {
                             //AppConfig.instance.messageReceiver?.nodeFileCallback = null
                             var data = picMenuEncryptionAdapter!!.getItem(position)
-                            var intent =  Intent(activity!!, PicEncryptionNodelListActivity::class.java)
+                            var intent =  Intent(activity!!, WeXinEncryptionNodelListActivity::class.java)
                             intent.putExtra("folderInfo",data)
                             startActivity(intent)
                         }

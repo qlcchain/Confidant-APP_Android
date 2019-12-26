@@ -74,7 +74,7 @@ public class FileUtil {
     stringBuffer.append(SCREENSHOT_NAME);
     stringBuffer.append("_");
     stringBuffer.append(date);
-    stringBuffer.append(".png");
+    stringBuffer.append(".jpg");
 
     return stringBuffer.toString();
 

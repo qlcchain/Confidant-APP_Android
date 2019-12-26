@@ -150,7 +150,6 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             when (data.name) {
                                 "Node back up" -> {
                                     val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
-
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
                                 "Rename" -> {
@@ -384,10 +383,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                 chooseFolderData = data!!.getParcelableExtra<LocalFileMenu>("folderInfo")
                 var file = File(chooseFileData!!.filePath)
                 if (file.exists()) {
-
-
                     var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
-
                     var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                     var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
                     var fileTempPathFile = File(fileTempPath)
