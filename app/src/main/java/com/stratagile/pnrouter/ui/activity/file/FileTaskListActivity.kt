@@ -62,7 +62,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -75,7 +75,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -88,7 +88,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "video/mp4" -> {
-                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"",fromPorperty)
+                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"",fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -101,7 +101,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         else -> {
-                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"",fromPorperty)
+                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"",fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -135,6 +135,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
     var fromPorperty:Int? = null;
+    var aesKey:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -315,6 +316,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         if(intent.hasExtra("fromPorperty"))
         {
             fromPorperty = intent.getIntExtra("fromPorperty",-1)
+        }
+        if(intent.hasExtra("aesKey"))
+        {
+            aesKey = intent.getStringExtra("aesKey")
         }
         if (listData != null && listData.size > 0) {
             for (i in listData) {
@@ -617,7 +622,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false,fromPorperty)
+                                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {
@@ -644,7 +649,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId,fromPorperty)
+                                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {
@@ -670,7 +675,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId,fromPorperty)
+                                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {

@@ -474,8 +474,8 @@ public class FileMangerUtil {
                             fileItem.setUpLoad(true);
                             fileItem.setNodeId(FileIdResult);
                             AppConfig.instance.getMDaoMaster().newSession().getLocalFileItemDao().update(fileItem);
-                            EventBus.getDefault().post(new UpdateAlbumEncryptionItemEvent());
                         }
+                        EventBus.getDefault().post(new UpdateAlbumEncryptionItemEvent());
                         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fileUploadItem.getFInfo(),fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");
                         if(ConstantValue.INSTANCE.isWebsocketConnected())
@@ -1018,7 +1018,7 @@ public class FileMangerUtil {
     {
         fromPorperty = porperty;
     }
-    public static int sendImageFile(String imagePath,String msgId,boolean isCompress,Integer porperty) {
+    public static int sendImageFile(String imagePath,String msgId,boolean isCompress,Integer porperty,String aesKey) {
         if(sendFilePathMap.containsValue(imagePath))
         {
             return 0;
@@ -1091,6 +1091,10 @@ public class FileMangerUtil {
                             deleteFileMap.put(uuid,false);
 
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey != null && !aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
@@ -1117,6 +1121,10 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey != null && !aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
                             if(code == 1)
                             {
@@ -1535,7 +1543,7 @@ public class FileMangerUtil {
         }).start();
         return 1;
     }
-    public static int sendVideoFile(String videoPath,String msgId,Integer porperty) {
+    public static int sendVideoFile(String videoPath,String msgId,Integer porperty,String aesKey) {
         if(sendFilePathMap.containsValue(videoPath))
         {
             return 0;
@@ -1612,6 +1620,10 @@ public class FileMangerUtil {
                             deleteFileMap.put(uuid,false);
 
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey!= null &&!aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
@@ -1640,6 +1652,10 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey!= null &&!aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
@@ -1731,7 +1747,7 @@ public class FileMangerUtil {
         return 1;
     }
 
-    public static int sendOtherFile(String filePath,String msgId,Integer porperty) {
+    public static int sendOtherFile(String filePath,String msgId,Integer porperty,String aesKey) {
         if(sendFilePathMap.containsValue(filePath))
         {
             return 0;
@@ -1803,6 +1819,10 @@ public class FileMangerUtil {
 
 
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey!= null &&!aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
@@ -1830,6 +1850,10 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
+                            if(aesKey!= null &&!aesKey.equals(""))
+                            {
+                                fileKey = aesKey;
+                            }
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {

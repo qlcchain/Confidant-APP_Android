@@ -140,6 +140,7 @@
         </com.scwang.smartrefresh.layout.SmartRefreshLayout>
         <com.stratagile.pnrouter.utils.DragFloatActionButton
             android:id="@+id/actionButton"
+            android:visibility="gone"
             android:layout_width="@dimen/x150"
             android:layout_height="@dimen/x150"
             android:layout_gravity="bottom|right"

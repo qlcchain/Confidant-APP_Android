@@ -931,7 +931,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Override
     public void onBindViewHolder(K holder, int position) {
-        Log.i("", "走onBindViewHolder0");
+       // Log.i("", "走onBindViewHolder0");
         //Add up fetch logic, almost like load more, but simpler.
         autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
