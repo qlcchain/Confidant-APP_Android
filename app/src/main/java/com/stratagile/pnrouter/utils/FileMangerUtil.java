@@ -211,7 +211,7 @@ public class FileMangerUtil {
                             if(file.exists())
                             {
                                 long fileSize = file.length();
-                                //String fileMD5 = FileUtil.getFileMD5(file);
+                                String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
 
                                 byte[] fileBufferMi = fileBuffer;

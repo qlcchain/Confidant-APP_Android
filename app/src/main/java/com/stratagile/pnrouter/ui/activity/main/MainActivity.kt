@@ -2933,20 +2933,22 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToFile() {
-        rl1.setBackgroundResource(R.color.mainColor)
-        tvTitle.text = getString(R.string.file_)
+        rl1.setBackgroundResource(R.color.headmainColor)
+        tvTitle.text = getString(R.string.Encrypted_Vualt)
+        tvTitle.setTextColor(resources.getColor(R.color.emailtextColor))
         tvTitle.visibility = View.VISIBLE
-        mainIv1.visibility = View.VISIBLE
+        mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
         emailLook.visibility = View.GONE
         rootTitleParent.visibility = View.GONE
-        fileLook.visibility = View.VISIBLE
+        fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
         searchBtn.visibility = View.GONE
     }
 
     fun setToContact() {
         rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.contacts)
         mainIv1.visibility = View.GONE
@@ -2961,6 +2963,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     fun setToMy() {
         rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.my)
         mainIv1.visibility = View.GONE

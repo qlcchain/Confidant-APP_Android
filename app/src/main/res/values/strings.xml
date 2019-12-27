@@ -919,4 +919,5 @@ Then enter your Email address and password to log in.</string>
     <string name="Destination_directory_error">Destination directory error</string>
     <string name="Delete_original_file">Do you want to delete the original file?</string>
     <string name="not_support">Sorry, your system does not support screenshots!</string>
+    <string name="Encrypted_Vualt">Encrypted Vualt</string>
 </resources>

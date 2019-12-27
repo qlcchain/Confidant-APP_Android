@@ -36,6 +36,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_file_encryption, null);
+
         return view
     }
 

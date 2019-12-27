@@ -542,8 +542,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 fileUploadItem.fileId = fileId
                 fileUploadItem.type = chooseFileData!!.fileType
                 fileUploadItem.size = chooseFileData!!.fileSize
-                val fileMD5 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
-                fileUploadItem.md5 = fileMD5;
+                fileUploadItem.md5 = chooseFileData!!.fileMD5;
                 val fileNameBase58 = Base58.encode(chooseFileData!!.fileName.toByteArray())
                 fileUploadItem.setfName(fileNameBase58);
                 fileUploadItem.setfKey(chooseFileData!!.srcKey);
@@ -690,9 +689,22 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             var SrcKey = ByteArray(256)
                             SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
                             chooseFileData!!.srcKey = String(SrcKey);
-
                             chooseFileData!!.fileSize = file.length()
                             chooseFileData!!.filePath = list.get(i).path
+                            var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
+                            var fileTempPathFile = File(fileTempPath)
+                            if(!fileTempPathFile.exists()) {
+                                fileTempPathFile.mkdirs();
+                            }
+                            fileTempPath += "/"+base58NameR;
+                            var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey)
+                            if(code == 1)
+                            {
+                                val fileMD511 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
+                                val fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
+                                chooseFileData!!.fileMD5 = fileMD5;
+                                DeleteUtils.deleteFile(fileTempPath)
+                            }
                             chooseFileData!!.fileName = base58NameR;
                             startIntent.putExtra("aesKey",aesKey)
                             startActivity(startIntent)
