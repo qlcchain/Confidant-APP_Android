@@ -1,12 +1,37 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.app.Activity
+import android.app.Application
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.Image
+import android.media.ImageReader
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
+import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
+import android.os.Handler
+import android.util.DisplayMetrics
+import android.util.Log
+import android.view.*
+import com.floatball.FloatPermissionManager
+import com.huxq17.floatball.libarary.FloatBallManager
+import com.huxq17.floatball.libarary.floatball.FloatBallCfg
+import com.huxq17.floatball.libarary.menu.FloatMenuCfg
+import com.huxq17.floatball.libarary.menu.MenuItem
+import com.huxq17.floatball.libarary.utils.BackGroudSeletor
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
+import com.hyphenate.util.DensityUtil
 import com.luck.picture.lib.PicturePreviewActivity
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -21,17 +46,20 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.LocalFileItem
-import com.stratagile.pnrouter.db.LocalFileMenu
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionNodelListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeXinEncryptionNodelListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeXinEncryptionNodelListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeXinEncryptionNodelListPresenter
+import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.file.MiFileViewActivity
+import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
@@ -41,8 +69,7 @@ import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.File
-import java.io.Serializable
+import java.io.*
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.ConcurrentHashMap
@@ -299,11 +326,25 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     protected val REQUEST_CODE_DING_MSG = 4
     protected val REQUEST_CODE_FILE = 5
     protected val REQUEST_CODE_VIDEO = 6
+    var REQUEST_MEDIA_PROJECTION = 1008
     internal var previewImages: MutableList<LocalMedia> = ArrayList()
     var localMediaUpdate: LocalMedia? = null
     var pathId:Long = 0
     var chooseFileData: LocalFileItem? = null;
     var chooseFolderData: LocalFileMenu? = null;
+    private var mFloatballManager: FloatBallManager? = null
+    private var mFloatPermissionManager: FloatPermissionManager? = null
+    private var mMediaProjection: MediaProjection? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+    private var mImageReader: ImageReader? = null
+    private var mWindowManager: WindowManager? = null
+    private var mLayoutParams: WindowManager.LayoutParams? = null
+    private var mGestureDetector: GestureDetector? = null
+    private var resumed: Int = 0
+    private var mResultData: Intent? = null
+    private var mScreenWidth: Int = 0
+    private var mScreenHeight: Int = 0
+    private var mScreenDensity: Int = 0
 
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
@@ -330,9 +371,18 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
         _this = this;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
+        chooseFolderData = folderInfo
         titleShow.text = folderInfo!!.fileName
         initPicPlug()
-
+        initFlatBall()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.showIFHasPermission()
+            if(mFloatballManager!!.isShow)
+            {
+                actionButton.visibility = View.GONE
+            }
+        }
         showProgressDialog()
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
@@ -360,6 +410,10 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
         }
         backBtn.setOnClickListener {
             onBackPressed()
+        }
+        actionButton.setOnClickListener()
+        {
+            setFloatballVisible(true)
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -471,7 +525,542 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                 .isDragFrame(false)
                 .forResult(REQUEST_CODE_LOCAL)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.File_does_not_exist)
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
+        }else {
 
+            var  fileKey = fileStatus.fileKey;
+            var fileId = fileKey.substring(fileKey.indexOf("__")+2,fileKey.length);
+            var picItemList = AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.queryBuilder().where(FileUploadItemDao.Properties.FileId.eq(fileId)).list()
+            if(picItemList ==null || picItemList.size == 0)
+            {
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var fileUploadItem = FileUploadItem();
+                fileUploadItem.localFileItemId = 0;
+                fileUploadItem.depens = 3;
+                fileUploadItem.userId = selfUserId;
+                fileUploadItem.type = chooseFileData!!.fileType
+                fileUploadItem.fileId = fileId
+                fileUploadItem.size = chooseFileData!!.fileSize
+                fileUploadItem.md5 = chooseFileData!!.fileMD5;
+                val fileNameBase58 = Base58.encode(chooseFileData!!.fileName.toByteArray())
+                fileUploadItem.setfName(fileNameBase58);
+                fileUploadItem.setfKey(chooseFileData!!.srcKey);
+                fileUploadItem.setfInfo(chooseFileData!!.fileInfo);
+                fileUploadItem.pathId = chooseFolderData!!.nodeId;
+                val folderNameBase58 = Base58.encode(chooseFolderData!!.fileName.toByteArray())
+                fileUploadItem.pathName =folderNameBase58;
+                AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.insert(fileUploadItem)
+            }
+
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_MEDIA_PROJECTION) {
+                mResultData = data;
+
+            }
+        }
+    }
+    fun initFlatBall()
+    {
+        //1 初始化悬浮球配置，定义好悬浮球大小和icon的drawable
+        val ballSize = DensityUtil.dip2px(this, 45f)
+        val ballIcon = BackGroudSeletor.getdrawble("ic_floatball", this)
+        //可以尝试使用以下几种不同的config。
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.LEFT_CENTER,false);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.LEFT_BOTTOM, -100);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.RIGHT_TOP, 100);
+        val ballCfg = FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.RIGHT_CENTER)
+        //设置悬浮球不半隐藏
+        ballCfg.setHideHalfLater(false)
+        //2 需要显示悬浮菜单
+        //2.1 初始化悬浮菜单配置，有菜单item的大小和菜单item的个数
+        val menuSize = DensityUtil.dip2px(this, 180f)
+        val menuItemSize = DensityUtil.dip2px(this, 40f)
+        val menuCfg = FloatMenuCfg(menuSize, menuItemSize)
+        //3 生成floatballManager
+        mFloatballManager = FloatBallManager(applicationContext, ballCfg, menuCfg)
+        addFloatMenuItem()
+        setFloatPermission()
+
+        //5 如果没有添加菜单，可以设置悬浮球点击事件
+        if (mFloatballManager!!.getMenuItemSize() == 0) {
+            mFloatballManager!!.setOnFloatBallClickListener(FloatBallManager.OnFloatBallClickListener { toast("点击了悬浮球") })
+        }
+        //6 如果想做成应用内悬浮球，可以添加以下代码。
+        //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
+        createFloatView()
+        createImageReader()
+        requestCapturePermission()
+    }
+
+    private fun createFloatView() {
+        mGestureDetector = GestureDetector(applicationContext, FloatGestrueTouchListener())
+        mLayoutParams = WindowManager.LayoutParams()
+        mWindowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val metrics = DisplayMetrics()
+        mWindowManager!!.getDefaultDisplay().getMetrics(metrics)
+        mScreenDensity = metrics.densityDpi
+        mScreenWidth = metrics.widthPixels
+        mScreenHeight = metrics.heightPixels
+
+        mLayoutParams!!.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        mLayoutParams!!.format = PixelFormat.RGBA_8888
+        // 设置Window flag
+        mLayoutParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        mLayoutParams!!.gravity = Gravity.LEFT or Gravity.TOP
+        mLayoutParams!!.x = mScreenWidth
+        mLayoutParams!!.y = 100
+        mLayoutParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
+        mLayoutParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
+
+
+        //startScreenShot();
+    }
+
+    private inner class FloatGestrueTouchListener : GestureDetector.OnGestureListener {
+        internal var lastX: Int = 0
+        internal var lastY: Int = 0
+        internal var paramX: Int = 0
+        internal var paramY: Int = 0
+
+        override fun onDown(event: MotionEvent): Boolean {
+            lastX = event.rawX.toInt()
+            lastY = event.rawY.toInt()
+            paramX = mLayoutParams!!.x
+            paramY = mLayoutParams!!.y
+            return true
+        }
+
+        override fun onShowPress(e: MotionEvent) {
+
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            startScreenShot()
+            return true
+        }
+
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            val dx = e2.rawX.toInt() - lastX
+            val dy = e2.rawY.toInt() - lastY
+            mLayoutParams!!.x = paramX + dx
+            mLayoutParams!!.y = paramY + dy
+            // 更新悬浮窗位置
+            // 更新悬浮窗位置
+
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+
+        }
+
+        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            return false
+        }
+    }
+    private fun createImageReader() {
+
+        mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1)
+
+    }
+
+    fun startScreenShot() {
+        /*val handler1 = Handler()
+        handler1.postDelayed({
+            //start virtual
+            startVirtual()
+        }, 5)
+
+        handler1.postDelayed({
+            //capture the screen
+            startCapture()
+        }, 30)*/
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
+        val handler1 = Handler()
+        handler1.postDelayed({
+            startVirtual()
+            startCapture()
+        }, 5)
+
+    }
+
+    fun startVirtual() {
+        if (mMediaProjection != null) {
+            virtualDisplay()
+        } else {
+            setUpMediaProjection()
+            virtualDisplay()
+        }
+    }
+    private fun addFloatMenuItem() {
+        var _this = this;
+        val personItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_desktop", this)) {
+            override fun action() {
+                goToDesktop(AppConfig.instance)
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
+            override fun action() {
+
+                if(!AppConfig.instance.isBackGroud)//截应用内屏
+                {
+                    var screenshotsFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+                    if(screenshotsFlag.equals("1"))
+                    {
+                        runOnUiThread {
+                            SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setContentText(getString(R.string.screen_security))
+                                    .setConfirmClickListener {
+                                        var intent= Intent(_this, MyDetailActivity::class.java)
+                                        intent.putExtra("flag",1)
+                                        startActivity(intent)
+                                    }
+                                    .show()
+                        }
+                    }else{
+                        startScreenShot()
+                    }
+                }else{
+                    startScreenShot()
+                }
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_return", this)) {
+            override fun action() {
+                goToApp(AppConfig.instance)
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        val closeItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_close", this)) {
+            override fun action() {
+                mFloatballManager!!.hide()
+                actionButton.visibility = View.VISIBLE
+                /* runOnUiThread {
+                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                             .setContentText(getString(R.string.Are_you_colse))
+                             .setConfirmClickListener {
+
+                             }
+                             .show()
+                 }*/
+
+            }
+        }
+        mFloatballManager!!.addMenuItem(personItem)
+                .addMenuItem(settingItem)
+                .addMenuItem(walletItem)
+                .addMenuItem(closeItem)
+                .buildMenu()
+    }
+
+    fun requestCapturePermission() {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            //5.0 之后才允许使用屏幕截图
+            SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                    .setContentText(getString(R.string.not_support))
+                    .setConfirmClickListener {
+                        finish()
+                    }
+                    .show()
+            return
+        }
+
+        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(
+                mediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_MEDIA_PROJECTION)
+    }
+    private fun setFloatballVisible(visible: Boolean) {
+        if(mFloatballManager != null)
+        {
+            if (visible) {
+                mFloatballManager!!.show()
+                if(mFloatballManager!!.isShow)
+                {
+                    actionButton.visibility = View.GONE
+                }
+            } else {
+                mFloatballManager!!.hide()
+            }
+        }
+
+    }
+
+    fun isApplicationInForeground(): Boolean {
+        return resumed > 0
+    }
+    fun setUpMediaProjection() {
+        if (mResultData == null) {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            startActivity(intent)
+        } else {
+            mMediaProjection = getMediaProjectionManager().getMediaProjection(Activity.RESULT_OK, mResultData)
+        }
+    }
+    private fun getMediaProjectionManager(): MediaProjectionManager {
+
+        return getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.showIFHasPermission()
+            if(mFloatballManager!!.isShow)
+            {
+                actionButton.visibility = View.GONE
+            }
+        }
+        //mFloatballManager!!.onFloatBallClick()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+    }
+    inner class ActivityLifeCycleListener : Application.ActivityLifecycleCallbacks {
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {}
+
+        override fun onActivityStarted(activity: Activity) {}
+
+        override fun onActivityResumed(activity: Activity) {
+            ++resumed
+            setFloatballVisible(true)
+        }
+
+        override fun onActivityPaused(activity: Activity) {
+            --resumed
+            if (!isApplicationInForeground()) {
+                //setFloatballVisible(false);
+            }
+        }
+
+        override fun onActivityStopped(activity: Activity) {}
+
+        override fun onActivityDestroyed(activity: Activity) {}
+
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+    }
+    private fun setFloatPermission() {
+        // 设置悬浮球权限，用于申请悬浮球权限的，这里用的是别人写好的库，可以自己选择
+        //如果不设置permission，则不会弹出悬浮球
+        mFloatPermissionManager = FloatPermissionManager()
+        mFloatballManager!!.setPermission(object : FloatBallManager.IFloatBallPermission {
+            override fun onRequestFloatBallPermission(): Boolean {
+                requestFloatBallPermission(this@WeXinEncryptionNodelListActivity)
+                return true
+            }
+
+            override fun hasFloatBallPermission(context: Context): Boolean {
+                return mFloatPermissionManager!!.checkPermission(context)
+            }
+
+            override fun requestFloatBallPermission(activity: Activity) {
+                mFloatPermissionManager!!.applyPermission(activity)
+            }
+
+        })
+    }
+    private fun startCapture() {
+
+        val image = mImageReader!!.acquireLatestImage()
+
+        if (image == null) {
+            startScreenShot()
+        } else {
+            val mSaveTask = SaveTask()
+            mSaveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, image)
+            //AsyncTaskCompat.executeParallel(mSaveTask, image);
+        }
+    }
+
+
+    inner class SaveTask : AsyncTask<Image, Void, Bitmap>() {
+
+        override fun doInBackground(vararg params: Image): Bitmap? {
+
+            if (params == null || params.size < 1 || params[0] == null) {
+
+                return null
+            }
+
+            val image = params[0]
+
+            val width = image.width
+            val height = image.height
+            val planes = image.planes
+            val buffer = planes[0].buffer
+            //每个像素的间距
+            val pixelStride = planes[0].pixelStride
+            //总的间距
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * width
+            var bitmap: Bitmap? = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
+            bitmap!!.copyPixelsFromBuffer(buffer)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+            image.close()
+            var fileTempPathFile:File? = null
+            var filePic:File? = null
+            var fileScreenShotName = com.stratagile.pnrouter.screencapture.FileUtil.getOnlyScreenShotsName();
+            var fileTempPath  = PathUtils.getInstance().getEncryptionWeChatNodePath().toString() +"/"+ "sreenshots"
+            if (bitmap != null) {
+                try {
+                    fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
+                    }
+                    filePic = File(fileTempPath +"/"+fileScreenShotName)
+                    val out = FileOutputStream(filePic)
+                    if (out != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                        out.flush()
+                        out.close()
+                        /*val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                        val contentUri = Uri.fromFile(filePic)
+                        media.data = contentUri
+                        sendBroadcast(media)*/
+                    }
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    filePic = null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    filePic = null
+                }
+                var needPicPath = fileTempPath +"/"+fileScreenShotName
+                var file = File(needPicPath);
+                var isHas = file.exists();
+                if (isHas) {
+                    var filePath = needPicPath
+                    val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
+                    val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                    chooseFileData = LocalFileItem();
+                    localMediaUpdate = LocalMedia()
+                    localMediaUpdate!!.path = filePath
+                    val MsgType = filePath.substring(filePath.lastIndexOf(".") + 1)
+                    localMediaUpdate!!.pictureType = "file"
+                    when (MsgType) {
+                        "png", "jpg", "jpeg", "webp" -> {
+                            localMediaUpdate!!.pictureType = "image/jpeg"
+                            // 配置压缩的参数
+                            var  bitmap = BitmapFactory.decodeFile(filePath);
+                            var widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                            chooseFileData!!.fileType = 1
+                            chooseFileData!!.fileInfo = widthAndHeight
+                        }
+                        "mp4" -> {
+
+                            localMediaUpdate!!.pictureType = "video/mp4"
+                            chooseFileData!!.fileType = 4
+                        }
+                    }
+                    // 配置压缩的参数
+                    var fileLocalPath = chooseFolderData!!.path ;
+                    var base58NameR = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length)
+                    if(  localMediaUpdate!!.pictureType == "image/jpeg")
+                    {
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = false;
+                        options.inSampleSize = 16
+                        val bmNew = BitmapFactory.decodeFile(filePath, options) // 解码文件
+                        val thumbPath = fileLocalPath +"/th"+base58NameR
+                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                    }else if(  localMediaUpdate!!.pictureType == "video/mp4")
+                    {
+                        val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
+                        val bitmap = EaseImageUtils.getVideoPhoto(filePath)
+                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                        val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = false;
+                        options.inSampleSize = 16
+                        val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                        FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                        DeleteUtils.deleteFile(thumbPath)
+                    }
+                    var list = arrayListOf<LocalMedia>()
+                    list.add(localMediaUpdate!!)
+                    var startIntent = Intent(this@WeXinEncryptionNodelListActivity, FileTaskListActivity::class.java)
+                    startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+                    startIntent.putExtra("fromPorperty",5)
+                    var aesKey = RxEncryptTool.generateAESKey()
+                    var SrcKey = ByteArray(256)
+                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                    chooseFileData!!.srcKey = String(SrcKey);
+                    chooseFileData!!.fileSize = file.length()
+                    chooseFileData!!.filePath = filePath
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "upload"
+                    var fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
+                    }
+                    fileTempPath += "/tmep"+base58NameR;
+                    var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey.substring(0, 16))
+                    if(code == 1)
+                    {
+                        val fileMD511 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
+                        val fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
+                        chooseFileData!!.fileMD5 = fileMD5;
+                        DeleteUtils.deleteFile(fileTempPath)
+                    }
+                    chooseFileData!!.fileName = base58NameR;
+                    startIntent.putExtra("aesKey",aesKey)
+                    startActivity(startIntent)
+                }
+            }
+
+            return if (filePic != null) {
+                bitmap
+            } else null
+        }
+
+        override fun onPostExecute(bitmap: Bitmap?) {
+            super.onPostExecute(bitmap)
+            //预览图片
+            if (bitmap != null) {
+
+                (application as AppConfig).setmScreenCaptureBitmap(bitmap)
+                Log.e("ryze", "获取图片成功")
+                if(mFloatballManager != null)
+                {
+                    mFloatballManager!!.show()
+                }
+                //toast(R.string.screenshots_success)
+                //startActivity(PreviewPictureActivity.newIntent(applicationContext))
+            }
+
+        }
+    }
+
+    private fun virtualDisplay() {
+        if (mMediaProjection != null) {
+            mVirtualDisplay = mMediaProjection!!.createVirtualDisplay("screen-mirror",
+                    mScreenWidth, mScreenHeight, mScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    mImageReader!!.getSurface(), null, null)
+        }
+    }
     override fun setupActivityComponent() {
        DaggerWeXinEncryptionNodelListComponent
                .builder()
@@ -491,7 +1080,45 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    /**
+     * 跳转到桌面
+     */
+    fun goToDesktop(context: Context) {
+
+        try {
+            var intentWX = Intent(Intent.ACTION_MAIN);
+            var cmp =  ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+            intentWX.addCategory(Intent.CATEGORY_LAUNCHER);
+            intentWX.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intentWX.setComponent(cmp);
+            context.startActivity(intentWX)
+        }catch (e:Exception)
+        {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            context.startActivity(intent)
+        }
+
+    }
+    /**
+     * 跳转到桌面
+     */
+    fun goToApp(context: Context) {
+        /*val intent = Intent("android.intent.action.MAIN")
+        var currentActivity =  AppConfig.instance.mAppActivityManager.currentActivity() as Activity
+        intent.component = ComponentName(applicationContext.packageName, MainActivity::class.java.name)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        applicationContext.startActivity(intent)*/
+        var launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.stratagile.pnrouter");
+        //launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+        context.startActivity(launchIntent);
+    }
     override fun onDestroy() {
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = null
         DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         EventBus.getDefault().unregister(this)

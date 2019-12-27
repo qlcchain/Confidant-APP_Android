@@ -438,7 +438,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 if (file.exists()) {
                     var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
                     var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "upload"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -1214,7 +1214,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         {
             mFloatballManager!!.hide()
         }
-        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

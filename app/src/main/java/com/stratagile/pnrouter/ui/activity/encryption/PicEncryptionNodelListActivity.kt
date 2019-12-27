@@ -575,7 +575,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 if (file.exists()) {
                     var fileName = chooseFileData!!.filePath.substring(chooseFileData!!.filePath.lastIndexOf("/") + 1)
                     var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "upload"
                     var fileTempPathFile = File(fileTempPath)
                     if(!fileTempPathFile.exists()) {
                         fileTempPathFile.mkdirs();
@@ -702,7 +702,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             chooseFileData!!.srcKey = String(SrcKey);
                             chooseFileData!!.fileSize = file.length()
                             chooseFileData!!.filePath = list.get(i).path
-                            var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumPath().toString() +"/"+ "upload"
+                            var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "upload"
                             var fileTempPathFile = File(fileTempPath)
                             if(!fileTempPathFile.exists()) {
                                 fileTempPathFile.mkdirs();
