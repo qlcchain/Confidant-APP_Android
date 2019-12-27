@@ -72,8 +72,8 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                     var localFileMenu: LocalFileMenu = LocalFileMenu();
                     var souceName = String(Base58.decode(jFileActionRsp.params!!.name))
                     var defaultfolder  = PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ souceName
-                    localFileMenu.id  = jFileActionRsp.params!!.fileId.toLong();
-                    localFileMenu.nodeId = jFileActionRsp.params!!.fileId;
+                    localFileMenu.id  = jFileActionRsp.params!!.pathId.toLong();
+                    localFileMenu.nodeId = jFileActionRsp.params!!.pathId;
                     localFileMenu.fileName = souceName;
                     localFileMenu.fileNum = 0;
                     localFileMenu.size = 0;

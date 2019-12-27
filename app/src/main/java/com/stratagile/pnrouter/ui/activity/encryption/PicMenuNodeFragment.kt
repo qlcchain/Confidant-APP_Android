@@ -77,8 +77,35 @@ class PicMenuNodeFragment : BaseFragment(), PicMenuNodeContract.View, PNRouterSe
                         toast(R.string.success)
                     }
                 }
-                3-> {
-                    updateUIFromData()
+                3->
+                {
+                    var localFileMenu:LocalFileMenu = LocalFileMenu();
+                    var souceName = String(Base58.decode(jFileActionRsp.params!!.name))
+                    var defaultfolder  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ souceName
+                    localFileMenu.id  = jFileActionRsp.params!!.pathId.toLong();
+                    localFileMenu.nodeId = jFileActionRsp.params!!.pathId;
+                    localFileMenu.fileName = souceName;
+                    localFileMenu.fileNum = 0;
+                    localFileMenu.size = 0;
+                    localFileMenu.path = defaultfolder
+                    localFileMenu.type = "1";
+                    localFileMenu.lastModify = System.currentTimeMillis();
+                   runOnUiThread {
+                       picMenuEncryptionAdapter!!.addData(localFileMenu)
+                       picMenuEncryptionAdapter!!.notifyDataSetChanged()
+                       toast(R.string.success)
+                   }
+                    try {
+                        var defaultfolderFile = File(defaultfolder)
+                        if(!defaultfolderFile.exists())
+                        {
+                            defaultfolderFile.mkdirs();
+                        }
+                    }catch (e:Exception)
+                    {
+
+                    }
+
                 }
             }
         }else{

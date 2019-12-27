@@ -15,7 +15,7 @@ public class LocalFileMenu implements Parcelable {
     private String fileName;
     private String path;
     private Long fileNum;
-    private String type;//文件类型，0 本地，1微信
+    private String type;//文件类型，0 本地，1节点
     private Integer nodeId;//文件目录在服务器上的id
     private Long size;
     private Long LastModify;
