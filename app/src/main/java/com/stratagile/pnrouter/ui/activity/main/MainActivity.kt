@@ -153,6 +153,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         when (jBakFileRsp.params.retCode )
         {
             0->{
+                EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateAlbumNodeSuccessEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateWxNodeSuccessEncryptionItemEvent())
                 runOnUiThread {
                     toast(R.string.success)
                 }

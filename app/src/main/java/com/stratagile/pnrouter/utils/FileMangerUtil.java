@@ -42,6 +42,11 @@ import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage;
 import com.stratagile.pnrouter.entity.events.FileStatus;
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeSuccessEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateWxNodeEncryptionItemEvent;
+import com.stratagile.pnrouter.entity.events.UpdateWxNodeSuccessEncryptionItemEvent;
 import com.stratagile.pnrouter.entity.file.UpLoadFile;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
@@ -211,7 +216,7 @@ public class FileMangerUtil {
                             if(file.exists())
                             {
                                 long fileSize = file.length();
-                                String fileMD5 = FileUtil.getFileMD5(file);
+                                //String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
 
                                 byte[] fileBufferMi = fileBuffer;
@@ -475,7 +480,6 @@ public class FileMangerUtil {
                             fileItem.setNodeId(FileIdResult);
                             AppConfig.instance.getMDaoMaster().newSession().getLocalFileItemDao().update(fileItem);
                         }
-                        EventBus.getDefault().post(new UpdateAlbumEncryptionItemEvent());
                         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fileUploadItem.getFInfo(),fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");
                         if(ConstantValue.INSTANCE.isWebsocketConnected())

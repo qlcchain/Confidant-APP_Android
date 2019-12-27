@@ -23,11 +23,15 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.db.FileUploadItem
+import com.stratagile.pnrouter.db.FileUploadItemDao
+import com.stratagile.pnrouter.db.LocalFileItem
+import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeSuccessEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionNodelListComponent
@@ -119,7 +123,6 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
             }
         }
     }
-
     override fun filesListPull(jFilesListPullRsp: JFilesListPullRsp) {
 
         runOnUiThread {
@@ -329,6 +332,10 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
     override fun initView() {
         setContentView(R.layout.encryption_nodefile_list)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateAlbumNodeSuccessEncryptionItemEvent(statusChange: UpdateAlbumNodeSuccessEncryptionItemEvent) {
+        getData()
+    }
     override fun initData() {
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = this
         _this = this;
@@ -338,6 +345,24 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
         initPicPlug()
         chooseFolderData = folderInfo
         showProgressDialog()
+        getData()
+        allMenu.setOnClickListener()
+        {
+
+        }
+        addMenu.setOnClickListener()
+        {
+            selectPicFromLocal()
+        }
+        backBtn.setOnClickListener {
+            onBackPressed()
+        }
+        actionButton.setOnClickListener {
+            selectPicFromLocal()
+        }
+    }
+    fun getData()
+    {
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
         var filesListPullReq = FilesListPullReq( selfUserId!!, 1,folderInfo!!.nodeId,base58Name,1,0,0)
@@ -353,20 +378,6 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
-        }
-        allMenu.setOnClickListener()
-        {
-
-        }
-        addMenu.setOnClickListener()
-        {
-            selectPicFromLocal()
-        }
-        backBtn.setOnClickListener {
-            onBackPressed()
-        }
-        actionButton.setOnClickListener {
-            selectPicFromLocal()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -696,8 +707,8 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             if(!fileTempPathFile.exists()) {
                                 fileTempPathFile.mkdirs();
                             }
-                            fileTempPath += "/"+base58NameR;
-                            var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey)
+                            fileTempPath += "/tmep"+base58NameR;
+                            var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey.substring(0, 16))
                             if(code == 1)
                             {
                                 val fileMD511 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))

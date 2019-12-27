@@ -15,6 +15,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeSuccessEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
@@ -152,6 +153,10 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdateNodelEncryptionItemEvent(statusChange: UpdateAlbumNodeEncryptionItemEvent) {
+        picMenuNodeFragment!!.upDateUI();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateAlbumNodeSuccessEncryptionItemEvent(statusChange: UpdateAlbumNodeSuccessEncryptionItemEvent) {
         picMenuNodeFragment!!.upDateUI();
     }
     override fun setupActivityComponent() {
