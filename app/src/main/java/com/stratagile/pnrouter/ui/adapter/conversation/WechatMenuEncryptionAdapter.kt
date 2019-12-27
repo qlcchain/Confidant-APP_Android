@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.entity.PicMenu
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.DrawableEnTextView
+import com.stratagile.pnrouter.view.DrawableNodeMenuEnTextView
 import com.stratagile.pnrouter.view.ImageButtonWithText
 import com.stratagile.pnrouter.view.SmoothCheckBox
 import java.util.*
@@ -32,7 +33,7 @@ class WechatMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQ
         helper.addOnClickListener(R.id.btnRename)
         var menuRoot = helper.getView<SwipeMenuLayout>(R.id.menuRoot)
         menuRoot.isSwipeEnable = false;
-        var userAvatar = helper.getView<DrawableEnTextView>(R.id.menuItem)
+        var menuItem = helper.getView<DrawableNodeMenuEnTextView>(R.id.menuItem)
         /*if(item.type.equals("0"))
         {
             userAvatar.setTitleText(item.fileName)
@@ -40,8 +41,14 @@ class WechatMenuEncryptionAdapter(arrayList: MutableList<LocalFileMenu>) : BaseQ
             var souceName = String(Base58.decode(item.fileName))
             userAvatar.setTitleText(souceName)
         }*/
-        userAvatar.setTitleText(item.fileName)
-        userAvatar.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))
+        if(item.isChoose == null)
+        {
+            menuItem.setShowNext(false)
+        }else{
+            menuItem.setShowNext(item.isChoose)
+        }
+        menuItem.setTitleText(item.fileName)
+        menuItem.setRightTitleText(item.fileNum.toString() +" "+mContext.getString(R.string.file_))
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 public class FileUploadUtils {
    private static ZipUnTask task;
     public static void doZipUnWork(String from, String to, Context context, Boolean replaceAll, Handler handler){
-        task = new ZipUnTask(from, to, context, replaceAll,handler);
+        task = new ZipUnTask(from, to, context, replaceAll,handler,true);
         task.execute();
     }
     public static void destroyZipUnTask()

@@ -2022,7 +2022,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                     var zipFile = File(zipPath)
                     if(zipFile.exists())
                     {
-                        zipUnTask = ZipUnTask(zipPath, fileFromPath, AppConfig.instance, false, handlerUnZip)
+                        zipUnTask = ZipUnTask(zipPath, fileFromPath, AppConfig.instance, false, handlerUnZip,true)
                         zipUnTask!!.execute()
                     }
                 }

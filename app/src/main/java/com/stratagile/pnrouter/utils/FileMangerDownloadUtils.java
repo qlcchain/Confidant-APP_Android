@@ -24,7 +24,7 @@ public class FileMangerDownloadUtils {
     private static HashMap<String, String> downFilePathMap = new HashMap<>();
     private static HashMap<String, FileMangerDownLoaderTask> taskListMap = new HashMap<>();
     public static void doZipUnWork(String from, String to, Context context, Boolean replaceAll, Handler handler){
-        task = new ZipUnTask(from, to, context, replaceAll,handler);
+        task = new ZipUnTask(from, to, context, replaceAll,handler,true);
         task.execute();
     }
     public static void destroyZipUnTask()
