@@ -18,7 +18,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWexinChatC
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WexinChatContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WexinChatModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WexinChatPresenter
-import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
+import com.stratagile.pnrouter.ui.adapter.conversation.WechatMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.picencry_wechat_list.*
@@ -37,7 +37,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
 
     @Inject
     internal lateinit var mPresenter: WexinChatPresenter
-    var picMenuEncryptionAdapter: PicMenuEncryptionAdapter? = null
+    var picMenuEncryptionAdapter: WechatMenuEncryptionAdapter? = null
     var sharedTextContent:String? = ""
     var sharedText:String? = ""
     var imageUris:ArrayList<Uri>? = null
@@ -88,7 +88,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
             zipCompressTask!!.execute()
         }
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
-        picMenuEncryptionAdapter = PicMenuEncryptionAdapter(picMenuList)
+        picMenuEncryptionAdapter = WechatMenuEncryptionAdapter(picMenuList)
         recyclerViewNodeMenu.adapter = picMenuEncryptionAdapter
         picMenuEncryptionAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
