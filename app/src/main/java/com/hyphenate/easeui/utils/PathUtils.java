@@ -180,6 +180,15 @@ public class PathUtils {
         }
         return var3;
     }
+    public static String generateWechatMessagePath(String name) {
+        String var3 = null;
+        var3 = pathPrefix + "/wechat/"+name+"/";
+        File newFile = new File(var3);
+        if(!newFile.exists()) {
+            newFile.mkdirs();
+        }
+        return var3;
+    }
     private static File generateVoicePath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {

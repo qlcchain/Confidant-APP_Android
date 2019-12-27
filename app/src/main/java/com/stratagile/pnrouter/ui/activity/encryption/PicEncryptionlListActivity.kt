@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.FileStatus
+import com.stratagile.pnrouter.entity.events.SanXingEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncryptionlListComponent
@@ -91,6 +92,10 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     fun onAddLocalEncryptionItemEvent(statusChange: UpdateAlbumEncryptionItemEvent) {
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
         picItemEncryptionAdapter!!.setNewData(picMenuList)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSanXingEvent(sanXingEvent: SanXingEvent) {
+        //selectPicFromLocal()
     }
     override fun initData() {
         _this = this;
@@ -247,6 +252,12 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
         actionButton.setOnClickListener {
             selectPicFromLocal()
         }
+       /* actionButton.setOnTouchListener(object : View.OnTouchListener {
+                    override fun onTouch(v: View, event: MotionEvent): Boolean {
+                        selectPicFromLocal()
+                        return false
+                    }
+                })*/
     }
     fun showImagList(localPath:String)
     {

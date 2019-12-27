@@ -8,6 +8,8 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import com.stratagile.pnrouter.entity.events.SanXingEvent
+import org.greenrobot.eventbus.EventBus
 
 
 /**
@@ -18,13 +20,14 @@ import android.widget.ImageView
  * 尺寸大小，样式及背景图片遵循ImageView即可。
  */
 class DragFloatActionButton : ImageView {
-    private var parentHeight: Int = 0
-    private var parentWidth: Int = 0
+
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    private var parentHeight: Int = 0
+    private var parentWidth: Int = 0
     private var lastX: Int = 0
     private var lastY: Int = 0
 
@@ -57,7 +60,7 @@ class DragFloatActionButton : ImageView {
                 val dy = rawY - lastY
                 //这里修复一些华为手机无法触发点击事件
                 val distance = Math.sqrt((dx * dx + dy * dy).toDouble()).toInt()
-                if (distance == 0) {
+                if (distance < 20) {
                     isDrag = false
                 } else {
                     var x = x + dx
@@ -69,33 +72,41 @@ class DragFloatActionButton : ImageView {
                     setY(y)
                     lastX = rawX
                     lastY = rawY
-                    Log.i("aa", "isDrag=" + isDrag + "getX=" + getX() + ";getY=" + getY() + ";parentWidth=" + parentWidth)
+                    //Log.i("aa", "isDrag=" + isDrag + "getX=" + getX() + ";getY=" + getY() + ";parentWidth=" + parentWidth)
                 }
             }
-            MotionEvent.ACTION_UP -> if (!isNotDrag()) {
-                //恢复按压效果
-                isPressed = false
-                //Log.i("getX="+getX()+"；screenWidthHalf="+screenWidthHalf);
-                if (rawX >= parentWidth / 2) {
-                    //靠右吸附
-                    animate().setInterpolator(DecelerateInterpolator())
-                            .setDuration(500)
-                            .xBy(parentWidth - width - x)
-                            .start()
-                } else {
-                    //靠左吸附
-                    val oa = ObjectAnimator.ofFloat(this, "x", x, 0F)
-                    oa.setInterpolator(DecelerateInterpolator())
-                    oa.setDuration(500)
-                    oa.start()
+            MotionEvent.ACTION_UP ->
+            {
+                if (!isNotDrag()) {
+                    //恢复按压效果
+                    isPressed = false
+                    Log.i("aa","getX="+getX()+"；screenWidthHalf=");
+                    if (rawX >= parentWidth / 2) {
+                        //靠右吸附
+                        animate().setInterpolator(DecelerateInterpolator())
+                                .setDuration(500)
+                                .xBy(parentWidth - width - x)
+                                .start()
+                    } else {
+                        //靠左吸附
+                        val oa = ObjectAnimator.ofFloat(this, "x", x, 0F)
+                        oa.setInterpolator(DecelerateInterpolator())
+                        oa.setDuration(500)
+                        oa.start()
+                    }
+
                 }
             }
         }
+        var drag = isNotDrag()
+        var result = !isNotDrag() || super.onTouchEvent(event)
+        Log.i("aa", "isNotDrag=" + drag+  "##result=" + result)
         //如果是拖拽则消s耗事件，否则正常传递即可。
-        return !isNotDrag() || super.onTouchEvent(event)
+        return result
     }
 
     private fun isNotDrag(): Boolean {
+        Log.i("aa", "isDrag=" + isDrag+  "##x=" + x+  "##parentWidth=" + parentWidth+  "##width=" + width)
         return !isDrag && (x == 0f || x == (parentWidth - width).toFloat())
     }
 }

@@ -153,7 +153,11 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdateWxNodeEncryptionItemEvent(statusChange: UpdateWxNodeEncryptionItemEvent) {
-        //picWXNodeFragment!!.upDateUI();
+        picWXNodeFragment!!.upDateUI();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateWxNodeSuccessEncryptionItemEvent(statusChange: UpdateWxNodeSuccessEncryptionItemEvent) {
+        picWXNodeFragment!!.upDateUI();
     }
     override fun setupActivityComponent() {
        DaggerWeiXinEncryptionComponent

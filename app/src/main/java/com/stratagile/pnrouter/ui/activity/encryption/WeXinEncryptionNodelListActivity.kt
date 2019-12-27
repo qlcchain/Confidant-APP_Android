@@ -48,9 +48,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.FileStatus
-import com.stratagile.pnrouter.entity.events.UpdateAlbumNodeEncryptionItemEvent
-import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionNodelListComponent
@@ -366,6 +364,29 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     override fun initView() {
         setContentView(R.layout.encryption_nodefile_list)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateAlbumNodeSuccessEncryptionItemEvent(statusChange: UpdateWxNodeSuccessEncryptionItemEvent) {
+        getData()
+    }
+    fun getData()
+    {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
+        var filesListPullReq = FilesListPullReq( selfUserId!!, 3,folderInfo!!.nodeId,base58Name,1,0,0)
+        var sendData = BaseData(6, filesListPullReq);
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
     override fun initData() {
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = this
         _this = this;
@@ -384,22 +405,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
             }
         }
         showProgressDialog()
-        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var base58Name = Base58.encode(folderInfo!!.fileName.toByteArray())
-        var filesListPullReq = FilesListPullReq( selfUserId!!, 3,folderInfo!!.nodeId,base58Name,1,0,0)
-        var sendData = BaseData(6, filesListPullReq);
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = sendData
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
+        getData()
         allMenu.setOnClickListener()
         {
 
