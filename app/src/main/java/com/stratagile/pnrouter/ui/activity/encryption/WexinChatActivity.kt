@@ -229,6 +229,31 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                     toast(R.string.Compression_failure)
                 }
                 0x56 -> {
+
+                    var zipFile = File(zipSavePath)
+                    if(zipFile.exists())
+                    {
+                        var fileSize = zipFile.length();
+                        runOnUiThread {
+                            if(fileSize >= 1024 * 1024)
+                            {
+                                val str :String = String.format("%.2f",fileSize / (1024 *1024).toFloat())
+                                fileSizeCount.text = str +"M";
+                            }else{
+
+
+                                if(fileSize >= 1024)
+                                {
+                                    val str :String = String.format("%.2f",(fileSize / 1024).toFloat())
+                                    fileSizeCount.text = str +"K";
+                                }else{
+                                           fileSizeCount.text = fileSize.toString() +"B";
+                                }
+                            }
+
+                        }
+                    }
+
                     /* var zipFile = File(zipSavePath)
                      if(zipFile.exists())
                      {

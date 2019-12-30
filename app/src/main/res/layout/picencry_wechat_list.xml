@@ -32,7 +32,7 @@
             android:textSize="16sp"
             android:textColor="#9496A1"
             android:layout_below="@+id/chatName"
-            android:text="100K"/>
+            android:text=""/>
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView
         android:layout_weight="1"
