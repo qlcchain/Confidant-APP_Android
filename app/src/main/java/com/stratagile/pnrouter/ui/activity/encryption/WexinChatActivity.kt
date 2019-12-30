@@ -31,6 +31,7 @@ import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
 import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateWXShareEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWexinChatComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WexinChatContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WexinChatModule
@@ -181,7 +182,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                 val fileKey = RxEncryptTool.generateAESKey()
                 var SrcKey = ByteArray(256)
                 SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm")
                 val date = simpleDateFormat.format(Date())
                 var imgeSouceNamePre = imgeSouceName.substring(0,imgeSouceName.indexOf("."))
                 var imgeSouceNameEnd = imgeSouceName.substring(imgeSouceName.indexOf("."),imgeSouceName.length)
@@ -210,7 +211,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                         AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                     }
                     toast(imgeSouceName + " " + getString(R.string.Encryption_succeeded))
-                    EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
+                    EventBus.getDefault().post(UpdateWXShareEncryptionItemEvent())
                     AppConfig.instance.sharedText=  ""
                     AppConfig.instance.sharedTextContent=  ""
                     AppConfig.instance.imageUris=  null

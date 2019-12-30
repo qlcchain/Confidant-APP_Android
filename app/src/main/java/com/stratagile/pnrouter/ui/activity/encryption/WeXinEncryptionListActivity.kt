@@ -49,6 +49,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateWXShareEncryptionItemEvent
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeXinEncryptionListComponent
@@ -133,14 +134,29 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
         initPicPlug()
+        initFlatBall()
+        updatUI()
+        allMenu.setOnClickListener()
+        {
+
+        }
+        addMenu.setOnClickListener()
+        {
+            setFloatballVisible(true)
+        }
+        actionButton.setOnClickListener()
+        {
+            setFloatballVisible(true)
+        }
+        backBtn.setOnClickListener {
+            onBackPressed()
+        }
+    }
+    fun updatUI()
+    {
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileId.eq(folderInfo!!.id)).orderDesc(LocalFileItemDao.Properties.CreatTime).list()
         picItemEncryptionAdapter = PicItemEncryptionAdapter(picMenuList)
         recyclerView.adapter = picItemEncryptionAdapter
-        /*picItemEncryptionAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var taskFile = picItemEncryptionAdapter!!.getItem(position)
-            //startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
-        }*/
-        initFlatBall()
         if(mFloatballManager != null)
         {
             mFloatballManager!!.showIFHasPermission()
@@ -287,21 +303,6 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
             }
         }
-        allMenu.setOnClickListener()
-        {
-
-        }
-        addMenu.setOnClickListener()
-        {
-            setFloatballVisible(true)
-        }
-        actionButton.setOnClickListener()
-        {
-            setFloatballVisible(true)
-        }
-        backBtn.setOnClickListener {
-            onBackPressed()
-        }
     }
     fun showImagList(localPath:String)
     {
@@ -402,6 +403,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 .videoMinSecond(1)
                 .isDragFrame(false)
                 .forResult(REQUEST_CODE_LOCAL)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateWXShareEncryptionItemEvent(statusChange: UpdateWXShareEncryptionItemEvent) {
+        updatUI()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {

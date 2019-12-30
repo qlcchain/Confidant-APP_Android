@@ -152,6 +152,10 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
         picMenuWxFragment!!.upDateUI();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdateWXShareEncryptionItemEvent(statusChange: UpdateWXShareEncryptionItemEvent) {
+        picMenuWxFragment!!.upDateUI();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdateWxNodeEncryptionItemEvent(statusChange: UpdateWxNodeEncryptionItemEvent) {
         picWXNodeFragment!!.upDateUI();
     }
