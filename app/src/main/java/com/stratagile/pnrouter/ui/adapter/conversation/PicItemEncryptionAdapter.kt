@@ -81,6 +81,9 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
                 else if(item.fileType == 4)
                 {
                     itemTypeIcon.setImageResource(R.mipmap.mp4)
+                }else if(item.fileType == 5)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.zip)
                 }
 
             }
@@ -115,6 +118,9 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
                 else if(item.fileType == 4)
                 {
                     itemTypeIcon.setImageResource(R.mipmap.mp4)
+                }else if(item.fileType == 5)
+                {
+                    itemTypeIcon.setImageResource(R.mipmap.zip)
                 }
 
             }

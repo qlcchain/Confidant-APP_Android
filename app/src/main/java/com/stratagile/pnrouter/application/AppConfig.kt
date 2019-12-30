@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.net.Uri
 import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
@@ -66,7 +67,9 @@ class AppConfig : MultiDexApplication() {
     var applicationComponent: AppComponent? = null
 
     var isBackGroud = false
-
+    var isOpenSplashActivity = false
+    var sharedText:String? = ""
+    var imageUris:ArrayList<Uri>? = null
     var onToxMessageReceiveListener: WebSocketConnection.OnMessageReceiveListener? = null
 
     var messageReceiver: PNRouterServiceMessageReceiver? = null

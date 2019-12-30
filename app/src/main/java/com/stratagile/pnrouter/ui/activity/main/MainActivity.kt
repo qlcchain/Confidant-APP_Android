@@ -35,7 +35,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
-import com.stratagile.pnrouter.screencapture.FloatWindowsService
+import com.floatball.FloatPermissionManager
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
@@ -64,7 +64,6 @@ import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
-import com.floatball.FloatPermissionManager
 import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GmailAuthCallback
@@ -95,10 +94,10 @@ import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileEncryptionFragment
-import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailEditActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailSendActivity
+import com.stratagile.pnrouter.ui.activity.encryption.WexinChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -3781,6 +3780,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         editBtn.setOnClickListener {
             startActivity(Intent(this, EmailEditActivity::class.java))
+        }
+        if(!AppConfig.instance.sharedText.equals(""))
+        {
+            val intent = Intent(AppConfig.instance, WexinChatActivity::class.java)
+            startActivity(intent)
+
         }
         mDrawer.setDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerStateChanged(arg0: Int) {

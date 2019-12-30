@@ -34,12 +34,15 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWexinChatC
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WexinChatContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WexinChatModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WexinChatPresenter
+import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.WechatMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.picencry_wechat_list.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -66,27 +69,35 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
     var chooseMenuData: LocalFileMenu?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if(intent != null)
+        if(AppConfig.instance.sharedText.equals(""))
         {
-            val action = intent.action
-            val type = intent.type
-            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            if(sharedText != null && sharedText!!.contains("\n"))
+            if(intent != null)
             {
-                sharedTextContent = sharedText!!.substring(0,sharedText!!.indexOf("\n"))
-                if(sharedTextContent!!.contains("如下"))
+                KLog.i("微信调试：11"+this)
+                val action = intent.action
+                val type = intent.type
+                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+                if(sharedText != null && sharedText!!.contains("\n"))
                 {
-                    sharedTextContent = sharedTextContent!!.substring(0,sharedTextContent!!.indexOf("如下"))
+                    sharedTextContent = sharedText!!.substring(0,sharedText!!.indexOf("\n"))
+                    if(sharedTextContent!!.contains("如下"))
+                    {
+                        sharedTextContent = sharedTextContent!!.substring(0,sharedTextContent!!.indexOf("如下"))
+                    }
                 }
+                imageUris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                var size = 0;
+                if(imageUris != null)
+                {
+                    size = imageUris!!.size
+                }
+                KLog.i("微信,EmailLoginActivity" + action+"#####"+type+"#####"+sharedText +"#####"+ size)
             }
-            imageUris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
-            var size = 0;
-            if(imageUris != null)
-            {
-                size = imageUris!!.size
-            }
-            KLog.i("微信,EmailLoginActivity" + action+"#####"+type+"#####"+sharedText +"#####"+ size)
+        }else{
+            sharedTextContent =  AppConfig.instance.sharedText
+            imageUris = AppConfig.instance.imageUris
         }
+
         super.onCreate(savedInstanceState)
     }
 
@@ -94,11 +105,18 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
         setContentView(R.layout.picencry_wechat_list)
     }
     override fun initData() {
+        if(!AppConfig.instance.isOpenSplashActivity)
+        {
+            AppConfig.instance.sharedText=  sharedTextContent
+            AppConfig.instance.imageUris=  imageUris
+            val intent = Intent(AppConfig.instance, SplashActivity::class.java)
+            startActivity(intent)
+            return;
+        }
         chatName.text = sharedTextContent
-        var base58files_dir =  PathUtils.getInstance().tempPath.toString() + "/"
+        title.text = getString(R.string.Wechat_Records)
         var  path = PathUtils.generateWechatMessagePath("temp")+"htmlContent.txt";
         var  result = FileUtil.writeStr_to_txt(path,sharedText)
-        var  pathJpg = PathUtils.generateWechatMessagePath("temp")+"htmlContent.jpg";
         if(result)
         {
             zipFileSoucePath.add(path)
@@ -138,6 +156,11 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
         {
             //val result = FileUtil.copyAppFileToSdcard(zipSavePath, toFileUrl)
 
+            if(chooseMenuData == null)
+            {
+                toast(getString(R.string.Please_select_a_folder))
+                return@setOnClickListener
+            }
             var file = File(zipSavePath);
             var isHas = file.exists();
             if (isHas) {
@@ -154,15 +177,18 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                 val fileKey = RxEncryptTool.generateAESKey()
                 var SrcKey = ByteArray(256)
                 SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
-
-                val base58files_dir = chooseMenuData!!.path + "/" + imgeSouceName
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                val date = simpleDateFormat.format(Date())
+                var imgeSouceNamePre = imgeSouceName.substring(0,imgeSouceName.indexOf("."))
+                var imgeSouceNameEnd = imgeSouceName.substring(imgeSouceName.indexOf("."),imgeSouceName.length)
+                val base58files_dir = chooseMenuData!!.path + "/" + imgeSouceNamePre+"_"+date+imgeSouceNameEnd;
                 val code = FileUtil.copySdcardToxFileAndEncrypt(zipSavePath, base58files_dir, fileKey.substring(0, 16))
 
                 if (code == 1) {
 
                     var localFileItem = LocalFileItem();
                     localFileItem.filePath = base58files_dir;
-                    localFileItem.fileName = imgeSouceName;
+                    localFileItem.fileName = imgeSouceNamePre+"_"+date+imgeSouceNameEnd;
                     localFileItem.fileSize = fileSize;
                     localFileItem.creatTime = System.currentTimeMillis()
                     localFileItem.fileMD5 = fileMD5;
@@ -181,6 +207,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                     }
                     toast(imgeSouceName + " " + getString(R.string.Encryption_succeeded))
                     EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
+                    finish();
                 }
             }
 

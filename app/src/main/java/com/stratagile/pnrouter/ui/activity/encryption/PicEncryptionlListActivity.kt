@@ -134,6 +134,12 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                             val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                             intent.putExtra("path", fileTempPath)
                             startActivity(intent)
+                        }else if(fileName.contains("zip"))
+                        {
+                            val intent = Intent(AppConfig.instance, ShowZipInfoActivity::class.java)
+                            intent.putExtra("path", fileTempPath)
+                            intent.putExtra("id", emaiAttach.id)
+                            startActivity(intent)
                         }else{
                             OpenFileUtil.getInstance(AppConfig.instance)
                             val intent = OpenFileUtil.openFile(fileTempPath)

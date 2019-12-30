@@ -349,7 +349,6 @@
 
         <activity
             android:name=".ui.activity.email.EmailLoginActivity"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
 
@@ -366,7 +365,10 @@
             </intent-filter>
         </activity>
 
-
+        <activity
+            android:name=".ui.activity.encryption.ShowZipInfoActivity"
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name=".ui.activity.email.EmailMainActivity"
             android:screenOrientation="portrait" />

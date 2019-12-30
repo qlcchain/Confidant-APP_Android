@@ -114,6 +114,8 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
     var _this:Activity?= null
+    var isShowOld = false;
+    var isClick = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -126,6 +128,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     }
     override fun initData() {
         _this = this;
+        isClick = false;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
@@ -169,6 +172,14 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                         {
                             val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                             intent.putExtra("path", fileTempPath)
+                            startActivity(intent)
+                        }else if(fileName.contains("zip"))
+                        {
+                            isClick = true;
+                            val intent = Intent(AppConfig.instance, ShowZipInfoActivity::class.java)
+                            intent.putExtra("path", fileTempPath)
+                            var id = emaiAttach!!.id;
+                            intent.putExtra("id", id.toString())
                             startActivity(intent)
                         }else{
                             OpenFileUtil.getInstance(AppConfig.instance)
@@ -789,6 +800,11 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
             override fun action() {
 
+                if(mResultData == null)
+                {
+                    toast(R.string.fail)
+                    return
+                }
                 if(!AppConfig.instance.isBackGroud)//截应用内屏
                 {
                     var screenshotsFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
@@ -1209,9 +1225,40 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
+
+    override fun onPause() {
+        if(mFloatballManager != null)
+        {
+            if(mFloatballManager!!.isShow)
+            {
+                isShowOld = true;
+            }else{
+                isShowOld = false;
+            }
+            if(isClick)
+            {
+                mFloatballManager!!.hide()
+                isClick = false;
+            }
+
+        }
+        super.onPause()
+    }
+
+    override fun onResume() {
+        if(mFloatballManager != null)
+        {
+            if(isShowOld)
+            {
+                mFloatballManager!!.show()
+            }
+        }
+        super.onResume()
+    }
     override fun onDestroy() {
         if(mFloatballManager != null)
         {
+
             mFloatballManager!!.hide()
         }
         DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionWeChatPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
