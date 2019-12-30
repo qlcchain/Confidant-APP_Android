@@ -724,7 +724,15 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
         }
         val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
             override fun action() {
-
+                if(mResultData == null)
+                {
+                    val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                    startActivityForResult(
+                            mediaProjectionManager.createScreenCaptureIntent(),
+                            REQUEST_MEDIA_PROJECTION)
+                    toast(R.string.Please_click_again)
+                    return
+                }
                 if(!AppConfig.instance.isBackGroud)//截应用内屏
                 {
                     var screenshotsFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
@@ -816,9 +824,11 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     }
     fun setUpMediaProjection() {
         if (mResultData == null) {
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_LAUNCHER)
-            startActivity(intent)
+            val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            startActivityForResult(
+                    mediaProjectionManager.createScreenCaptureIntent(),
+                    REQUEST_MEDIA_PROJECTION)
+            toast(R.string.Please_click_again)
         } else {
             mMediaProjection = getMediaProjectionManager().getMediaProjection(Activity.RESULT_OK, mResultData)
         }

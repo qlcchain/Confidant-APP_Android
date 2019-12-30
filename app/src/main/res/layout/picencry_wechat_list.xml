@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/color_f2f2f2"
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x450">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/x15"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/wechat"/>
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        >
+        <FrameLayout
+            android:id="@+id/imageparent"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/background_picture"/>
+        </FrameLayout>
+
         <TextView
+            android:layout_below="@+id/imageparent"
             android:id="@+id/chatName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:layout_marginLeft="@dimen/x40"
             android:layout_marginRight="@dimen/x40"
-            android:layout_centerInParent="true"
-            android:paddingTop="@dimen/x180"
+            android:layout_centerHorizontal="true"
             android:textSize="16sp"
             android:text="聊天记录"/>
         <TextView
             android:id="@+id/fileSizeCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:textSize="16sp"
             android:textColor="#9496A1"
+            android:layout_centerHorizontal="true"
             android:layout_below="@+id/chatName"
+            android:layout_marginBottom="@dimen/x40"
             android:text=""/>
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView

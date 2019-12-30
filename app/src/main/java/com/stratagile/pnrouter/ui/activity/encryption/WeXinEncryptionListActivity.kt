@@ -807,7 +807,11 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
 
                 if(mResultData == null)
                 {
-                    toast(R.string.fail)
+                    val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                    startActivityForResult(
+                            mediaProjectionManager.createScreenCaptureIntent(),
+                            REQUEST_MEDIA_PROJECTION)
+                    toast(R.string.Please_click_again)
                     return
                 }
                 if(!AppConfig.instance.isBackGroud)//截应用内屏
@@ -901,9 +905,11 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
     }
     fun setUpMediaProjection() {
         if (mResultData == null) {
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_LAUNCHER)
-            startActivity(intent)
+            val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            startActivityForResult(
+                    mediaProjectionManager.createScreenCaptureIntent(),
+                    REQUEST_MEDIA_PROJECTION)
+            toast(R.string.Please_click_again)
         } else {
             mMediaProjection = getMediaProjectionManager().getMediaProjection(Activity.RESULT_OK, mResultData)
         }

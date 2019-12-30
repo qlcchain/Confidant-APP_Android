@@ -922,5 +922,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Encrypted_Vualt">Encrypted Vualt</string>
     <string name="Please_select_a_folder">Please select a folder</string>
     <string name="Wechat_Records">Wechat Records</string>
+    <string name="Please_click_again">Please click again</string>
 
 </resources>
