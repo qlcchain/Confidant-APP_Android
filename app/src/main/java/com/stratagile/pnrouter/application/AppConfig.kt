@@ -69,6 +69,7 @@ class AppConfig : MultiDexApplication() {
     var isBackGroud = false
     var isOpenSplashActivity = false
     var sharedText:String? = ""
+    var sharedTextContent:String? = ""
     var imageUris:ArrayList<Uri>? = null
     var onToxMessageReceiveListener: WebSocketConnection.OnMessageReceiveListener? = null
 

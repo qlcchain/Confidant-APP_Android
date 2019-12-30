@@ -37,9 +37,18 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
         var timeStr = DateUtil.getTimestampString(Date(item.creatTime), AppConfig.instance)
         if(item.fileSize >= 1024 * 1024)
         {
-            helper.setText(R.id.tvFileSize,timeStr +" "+(item.fileSize / (1024 *1024)).toFloat().toString() +"M")
+            val str :String = String.format("%.2f",item.fileSize / (1024 *1024).toFloat())
+            helper.setText(R.id.tvFileSize,timeStr +" "+str +"M")
         }else{
-            helper.setText(R.id.tvFileSize,timeStr +" "+(item.fileSize / 1024).toFloat().toString() +"K")
+
+
+            if(item.fileSize >= 1024)
+            {
+                val str :String = String.format("%.2f",(item.fileSize / 1024).toFloat())
+                helper.setText(R.id.tvFileSize,timeStr +" "+str +"K")
+            }else{
+                helper.setText(R.id.tvFileSize,timeStr +" "+item.fileSize  +"B")
+            }
         }
         if(item.isUpLoad == null)
         {

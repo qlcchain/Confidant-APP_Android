@@ -30,6 +30,7 @@ import com.stratagile.pnrouter.db.LocalFileItemDao
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.entity.events.UpdateAlbumEncryptionItemEvent
+import com.stratagile.pnrouter.entity.events.UpdateWXEncryptionItemEvent
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWexinChatComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WexinChatContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WexinChatModule
@@ -94,7 +95,8 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                 KLog.i("微信,EmailLoginActivity" + action+"#####"+type+"#####"+sharedText +"#####"+ size)
             }
         }else{
-            sharedTextContent =  AppConfig.instance.sharedText
+            sharedText =  AppConfig.instance.sharedText
+            sharedTextContent =  AppConfig.instance.sharedTextContent
             imageUris = AppConfig.instance.imageUris
         }
 
@@ -107,10 +109,12 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
     override fun initData() {
         if(!AppConfig.instance.isOpenSplashActivity)
         {
-            AppConfig.instance.sharedText=  sharedTextContent
+            AppConfig.instance.sharedText=  sharedText
+            AppConfig.instance.sharedTextContent=  sharedTextContent
             AppConfig.instance.imageUris=  imageUris
             val intent = Intent(AppConfig.instance, SplashActivity::class.java)
             startActivity(intent)
+            finish()
             return;
         }
         chatName.text = sharedTextContent
@@ -206,7 +210,10 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                         AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
                     }
                     toast(imgeSouceName + " " + getString(R.string.Encryption_succeeded))
-                    EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
+                    EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
+                    AppConfig.instance.sharedText=  ""
+                    AppConfig.instance.sharedTextContent=  ""
+                    AppConfig.instance.imageUris=  null
                     finish();
                 }
             }
