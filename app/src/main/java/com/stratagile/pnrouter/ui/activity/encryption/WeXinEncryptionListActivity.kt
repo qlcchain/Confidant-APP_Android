@@ -202,6 +202,8 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             val intent = OpenFileUtil.openFile(fileTempPath)
                             startActivity(intent)
                         }
+                    }else{
+                        toast(R.string.Decryption_failed)
                     }
 
                 }

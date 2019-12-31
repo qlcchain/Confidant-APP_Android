@@ -79,7 +79,7 @@ class ShowZipInfoActivity : BaseActivity(), ShowZipInfoContract.View {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {
-                    toast(R.string.Failure_of_decompression)
+                    toast(R.string.File_corruption)
                 }
                 0x56 -> {
                     updateUIByZipData()

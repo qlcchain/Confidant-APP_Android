@@ -114,6 +114,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                 llNoFile.visibility = View.VISIBLE
                 tvFileName.text = file.name
                 tvFileSie.text = "100KB"
+                tvFileOpreate.visibility = View.GONE
                 tvFileOpreate.text = "Open with other applications"
                 tvFileOpreate.setOnClickListener {
                     try {
@@ -123,6 +124,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                     }
                 }
             }
+            tvFileOpreate.visibility = View.GONE
             tvFileOpreate.text = "Open with other applications"
             tvFileOpreate.setOnClickListener {
                 openFile(filePath)
@@ -154,6 +156,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                     progressBar.progress = (floatResult * 100).toInt()
                     if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
                     {
+                        tvFileOpreate.visibility = View.GONE
                         tvFileOpreate.text = "Open with other applications"
                         tvFileOpreate.setTextColor(resources.getColor(R.color.white))
                         tvFileOpreate.background = resources.getDrawable(R.drawable.filepreview_bg)
@@ -170,6 +173,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
     }
     fun downLoadFile() {
         tvFileOpreate.text = "Downloading"
+        tvFileOpreate.visibility = View.VISIBLE
         tvFileOpreate.setOnClickListener {
         }
         tvFileOpreate.setTextColor(resources.getColor(R.color.mainColor))
