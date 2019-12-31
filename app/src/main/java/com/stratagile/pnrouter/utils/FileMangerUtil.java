@@ -481,7 +481,12 @@ public class FileMangerUtil {
                             AppConfig.instance.getMDaoMaster().newSession().getLocalFileItemDao().update(fileItem);
                         }
                         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                        BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fileUploadItem.getFInfo(),fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");
+                        String fInfo = fileUploadItem.getFInfo();
+                        if(fInfo == null)
+                        {
+                            fInfo = "";
+                        }
+                        BakFileReq bakFileReq = new BakFileReq( fileUploadItem.getDepens(), userId,fileUploadItem.getType(),FileIdResult,fileUploadItem.getSize(),fileUploadItem.getMd5(),fileUploadItem.getFName(),fileUploadItem.getFKey(),fInfo,fileUploadItem.getPathId(),fileUploadItem.getPathName(),"BakFile");
                         if(ConstantValue.INSTANCE.isWebsocketConnected())
                         {
                             AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(6,bakFileReq));
@@ -1756,6 +1761,7 @@ public class FileMangerUtil {
         {
             return 0;
         }
+        fromPorperty = porperty;
         new Thread(new Runnable(){
             public void run(){
 

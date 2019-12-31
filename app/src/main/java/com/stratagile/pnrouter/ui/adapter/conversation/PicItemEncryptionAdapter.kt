@@ -34,6 +34,10 @@ class PicItemEncryptionAdapter(arrayList: MutableList<LocalFileItem>) : BaseQuic
         helper.addOnClickListener(R.id.itemInfo)
         helper.addOnClickListener(R.id.opMenu)
         helper.setText(R.id.tvFileName,item.fileName)
+        if(item.creatTime.toString().length <13)
+        {
+            item.creatTime *= 1000;
+        }
         var timeStr = DateUtil.getTimestampString(Date(item.creatTime), AppConfig.instance)
         if(item.fileSize >= 1024 * 1024)
         {

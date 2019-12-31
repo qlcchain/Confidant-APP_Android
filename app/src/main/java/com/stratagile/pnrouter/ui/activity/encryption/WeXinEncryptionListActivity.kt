@@ -436,7 +436,12 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                 val fileNameBase58 = Base58.encode(chooseFileData!!.fileName.toByteArray())
                 fileUploadItem.setfName(fileNameBase58);
                 fileUploadItem.setfKey(chooseFileData!!.srcKey);
-                fileUploadItem.setfInfo(chooseFileData!!.fileInfo);
+                if(chooseFileData!!.fileInfo == null)
+                {
+                    fileUploadItem.setfInfo("");
+                }else{
+                    fileUploadItem.setfInfo(chooseFileData!!.fileInfo);
+                }
                 fileUploadItem.pathId = chooseFolderData!!.nodeId;
                 val folderNameBase58 = Base58.encode(chooseFolderData!!.fileName.toByteArray())
                 fileUploadItem.pathName =folderNameBase58;
@@ -571,7 +576,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                             val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
                                             FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
                                         }
-                                        "amr" ->  localFileItem.fileType = 2
+                                        "amr" ->  {
+                                            localFileItem.fileInfo = "";
+                                            localFileItem.fileType = 2
+                                        }
                                         "mp4" ->
                                         {
 
@@ -589,7 +597,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                             FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
                                             DeleteUtils.deleteFile(thumbPath)
                                         }
-                                        else ->  localFileItem.fileType = 5
+                                        else ->  {
+                                            localFileItem.fileInfo = "";
+                                            localFileItem.fileType = 5
+                                        }
                                     }
                                 }catch (e:Exception)
                                 {
@@ -1095,7 +1106,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                         val thumbPath = folderInfo!!.path +"/th"+imgeSouceName.substring(0,imgeSouceName.lastIndexOf("."))+".jpg"
                                         FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
                                     }
-                                    "amr" ->  localFileItem.fileType = 2
+                                    "amr" ->  {
+                                        localFileItem.fileType = 2
+                                        localFileItem.fileInfo = "";
+                                    }
                                     "mp4" ->
                                     {
 
@@ -1113,7 +1127,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                         FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
                                         DeleteUtils.deleteFile(thumbPath)
                                     }
-                                    else ->  localFileItem.fileType = 5
+                                    else ->  {
+                                        localFileItem.fileInfo = "";
+                                        localFileItem.fileType = 5
+                                    }
                                 }
                             }catch (e:Exception)
                             {
