@@ -118,27 +118,11 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
             finish()
             return;
         }
-        chatName.text = sharedTextContent
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm")
+        val date = simpleDateFormat.format(Date())
+        chatName.setText(sharedTextContent+"_"+date)
         title.text = getString(R.string.Wechat_Records)
-        var  path = PathUtils.generateWechatMessagePath("temp")+"htmlContent.txt";
-        var  result = FileUtil.writeStr_to_txt(path,sharedText)
-        if(result)
-        {
-            zipFileSoucePath.add(path)
-            for (item in imageUris!!)
-            {
-                //var path: String = getPathByUri(item)
-                var realPath = RxFileTool.getFPUriToPath(this,item)
-                var fileTemp = File(realPath)
-                if(fileTemp.exists())
-                {
-                    zipFileSoucePath.add(realPath)
-                }
-            }
-            zipSavePath = PathUtils.generateWechatMessagePath("temp")+sharedTextContent+".zip";
-            zipCompressTask = ZipCompressTask(zipFileSoucePath!!, zipSavePath, this, false, handlerCompressZip!!)
-            zipCompressTask!!.execute()
-        }
+
         var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
         picMenuEncryptionAdapter = WechatMenuEncryptionAdapter(picMenuList)
         recyclerViewNodeMenu.adapter = picMenuEncryptionAdapter
@@ -161,63 +145,37 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
         {
             //val result = FileUtil.copyAppFileToSdcard(zipSavePath, toFileUrl)
 
+            if(chatName.text.equals(""))
+            {
+                toast(getString(R.string.Name_cannot_be_empty))
+                return@setOnClickListener
+            }
             if(chooseMenuData == null)
             {
                 toast(getString(R.string.Please_select_a_folder))
                 return@setOnClickListener
             }
-            var file = File(zipSavePath);
-            var isHas = file.exists();
-            if (isHas) {
-                var filePath = zipSavePath
-                val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
-                val fileMD5 = FileUtil.getFileMD5(File(filePath))
-                var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5), LocalFileItemDao.Properties.FileId.eq(chooseMenuData!!.id)).list()
-                if (picItemList != null && picItemList.size > 0) {
-                    toast(imgeSouceName + " " + getString(R.string.file_already_exists))
-                    return@setOnClickListener
-                }
 
-                var fileSize = file.length();
-                val fileKey = RxEncryptTool.generateAESKey()
-                var SrcKey = ByteArray(256)
-                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm")
-                val date = simpleDateFormat.format(Date())
-                var imgeSouceNamePre = imgeSouceName.substring(0,imgeSouceName.indexOf("."))
-                var imgeSouceNameEnd = imgeSouceName.substring(imgeSouceName.indexOf("."),imgeSouceName.length)
-                val base58files_dir = chooseMenuData!!.path + "/" + imgeSouceNamePre+"_"+date+imgeSouceNameEnd;
-                val code = FileUtil.copySdcardToxFileAndEncrypt(zipSavePath, base58files_dir, fileKey.substring(0, 16))
-
-                if (code == 1) {
-
-                    var localFileItem = LocalFileItem();
-                    localFileItem.filePath = base58files_dir;
-                    localFileItem.fileName = imgeSouceNamePre+"_"+date+imgeSouceNameEnd;
-                    localFileItem.fileSize = fileSize;
-                    localFileItem.creatTime = System.currentTimeMillis()
-                    localFileItem.fileMD5 = fileMD5;
-                    localFileItem.upLoad = false;
-                    localFileItem.fileType = 5
-                    localFileItem.fileFrom = 0;
-                    localFileItem.autor = "";
-                    localFileItem.fileId = chooseMenuData!!.id;
-                    localFileItem.srcKey = String(SrcKey)
-                    AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.insert(localFileItem)
-                    var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(chooseMenuData!!.id)).list()
-                    if (picMenuList != null && picMenuList.size > 0) {
-                        var picMenuItem = picMenuList.get(0)
-                        picMenuItem.fileNum += 1;
-                        AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
+            var  path = PathUtils.generateWechatMessagePath("temp")+"htmlContent.txt";
+            var  result = FileUtil.writeStr_to_txt(path,sharedText)
+            if(result)
+            {
+                zipFileSoucePath.add(path)
+                for (item in imageUris!!)
+                {
+                    //var path: String = getPathByUri(item)
+                    var realPath = RxFileTool.getFPUriToPath(this,item)
+                    var fileTemp = File(realPath)
+                    if(fileTemp.exists())
+                    {
+                        zipFileSoucePath.add(realPath)
                     }
-                    toast(imgeSouceName + " " + getString(R.string.Encryption_succeeded))
-                    EventBus.getDefault().post(UpdateWXShareEncryptionItemEvent())
-                    AppConfig.instance.sharedText=  ""
-                    AppConfig.instance.sharedTextContent=  ""
-                    AppConfig.instance.imageUris=  null
-                    finish();
                 }
+                zipSavePath = PathUtils.generateWechatMessagePath("temp")+chatName.text+".zip";
+                zipCompressTask = ZipCompressTask(zipFileSoucePath!!, zipSavePath, this, false, handlerCompressZip!!)
+                zipCompressTask!!.execute()
             }
+
 
         }
     }
@@ -253,7 +211,58 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
 
                         }
                     }
+                    var file = File(zipSavePath);
+                    var isHas = file.exists();
+                    if (isHas) {
+                        var filePath = zipSavePath
+                        val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
+                        val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                        var picItemList = AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.queryBuilder().where(LocalFileItemDao.Properties.FileMD5.eq(fileMD5), LocalFileItemDao.Properties.FileId.eq(chooseMenuData!!.id)).list()
+                        if (picItemList != null && picItemList.size > 0) {
+                            toast(imgeSouceName + " " + getString(R.string.file_already_exists))
+                            return
+                        }
 
+                        var fileSize = file.length();
+                        val fileKey = RxEncryptTool.generateAESKey()
+                        var SrcKey = ByteArray(256)
+                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
+                        /*val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm")
+                        val date = simpleDateFormat.format(Date())
+                        var imgeSouceNamePre = imgeSouceName.substring(0,imgeSouceName.indexOf("."))
+                        var imgeSouceNameEnd = imgeSouceName.substring(imgeSouceName.indexOf("."),imgeSouceName.length)*/
+                        val base58files_dir = chooseMenuData!!.path + "/" + imgeSouceName;
+                        val code = FileUtil.copySdcardToxFileAndEncrypt(zipSavePath, base58files_dir, fileKey.substring(0, 16))
+
+                        if (code == 1) {
+
+                            var localFileItem = LocalFileItem();
+                            localFileItem.filePath = base58files_dir;
+                            localFileItem.fileName = imgeSouceName;
+                            localFileItem.fileSize = fileSize;
+                            localFileItem.creatTime = System.currentTimeMillis()
+                            localFileItem.fileMD5 = fileMD5;
+                            localFileItem.upLoad = false;
+                            localFileItem.fileType = 5
+                            localFileItem.fileFrom = 0;
+                            localFileItem.autor = "";
+                            localFileItem.fileId = chooseMenuData!!.id;
+                            localFileItem.srcKey = String(SrcKey)
+                            AppConfig.instance.mDaoMaster!!.newSession().localFileItemDao.insert(localFileItem)
+                            var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Id.eq(chooseMenuData!!.id)).list()
+                            if (picMenuList != null && picMenuList.size > 0) {
+                                var picMenuItem = picMenuList.get(0)
+                                picMenuItem.fileNum += 1;
+                                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.update(picMenuItem);
+                            }
+                            toast(imgeSouceName + " " + getString(R.string.Encryption_succeeded))
+                            EventBus.getDefault().post(UpdateWXShareEncryptionItemEvent())
+                            AppConfig.instance.sharedText=  ""
+                            AppConfig.instance.sharedTextContent=  ""
+                            AppConfig.instance.imageUris=  null
+                            finish();
+                        }
+                    }
                     /* var zipFile = File(zipSavePath)
                      if(zipFile.exists())
                      {

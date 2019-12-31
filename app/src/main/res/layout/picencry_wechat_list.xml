@@ -8,6 +8,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:background="@color/white"
         >
         <FrameLayout
@@ -16,12 +18,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/x300"
+                android:layout_height="@dimen/x300"
                 android:src="@mipmap/background_picture"/>
         </FrameLayout>
 
-        <TextView
+        <EditText
             android:layout_below="@+id/imageparent"
             android:id="@+id/chatName"
             android:layout_width="wrap_content"

@@ -60,6 +60,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String files_Temp_dir = "";
 	private String FileNameOld;
 	private boolean isCancel = false;
+	private boolean deleteSouce = true;
 
 	/**
 	 *

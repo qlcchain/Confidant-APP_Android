@@ -71,7 +71,7 @@ class ShowZipInfoActivity : BaseActivity(), ShowZipInfoContract.View {
             showProgressDialog()
             var fileName = zipPath!!.substring(zipPath!!.lastIndexOf("/")+1,zipPath!!.lastIndexOf("."))
             inboxTitle.text = fileName
-            zipUnTask = ZipUnTask(zipPath, fileToPath, AppConfig.instance, false, handlerUnZip,true)
+            zipUnTask = ZipUnTask(zipPath, fileToPath, AppConfig.instance, false, handlerUnZip,false)
             zipUnTask!!.execute()
         }
     }
