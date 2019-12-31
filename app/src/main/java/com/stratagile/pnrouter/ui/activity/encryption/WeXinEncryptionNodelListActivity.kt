@@ -190,12 +190,20 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                             {
                                 var fileName = localFileItem!!.fileName
                                 var fileTempPath  = filePathLocal
-                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                if (fileName.toLowerCase().contains("jpg") || fileName.toLowerCase().contains("png")|| fileName.toLowerCase().contains("jpeg")) {
                                     showImagList(fileTempPath)
                                 }else if(fileName.contains("mp4"))
                                 {
                                     val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                                     intent.putExtra("path", fileTempPath)
+                                    startActivity(intent)
+                                }else if(fileName.contains("zip"))
+                                {
+                                    isClick = true;
+                                    val intent = Intent(AppConfig.instance, ShowZipInfoActivity::class.java)
+                                    intent.putExtra("path", fileTempPath)
+                                    var id = localFileItem!!.fileId;
+                                    intent.putExtra("id", id.toString())
                                     startActivity(intent)
                                 }else{
                                     OpenFileUtil.getInstance(AppConfig.instance)
@@ -343,6 +351,8 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     private var mScreenWidth: Int = 0
     private var mScreenHeight: Int = 0
     private var mScreenDensity: Int = 0
+    var isClick = false;
+    var isShowOld = false;
 
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
@@ -390,6 +400,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
     override fun initData() {
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = this
         _this = this;
+        isClick = false;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         chooseFolderData = folderInfo
@@ -974,7 +985,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                     chooseFileData = LocalFileItem();
                     localMediaUpdate = LocalMedia()
                     localMediaUpdate!!.path = filePath
-                    val MsgType = filePath.substring(filePath.lastIndexOf(".") + 1)
+                    val MsgType = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase()
                     localMediaUpdate!!.pictureType = "file"
                     when (MsgType) {
                         "png", "jpg", "jpeg", "webp" -> {
@@ -1129,6 +1140,35 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
         var launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.stratagile.pnrouter");
         //launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
         context.startActivity(launchIntent);
+    }
+    override fun onPause() {
+        if(mFloatballManager != null)
+        {
+            if(mFloatballManager!!.isShow)
+            {
+                isShowOld = true;
+            }else{
+                isShowOld = false;
+            }
+            if(isClick)
+            {
+                mFloatballManager!!.hide()
+                isClick = false;
+            }
+
+        }
+        super.onPause()
+    }
+
+    override fun onResume() {
+        if(mFloatballManager != null)
+        {
+            if(isShowOld)
+            {
+                mFloatballManager!!.show()
+            }
+        }
+        super.onResume()
     }
     override fun onDestroy() {
         if(mFloatballManager != null)

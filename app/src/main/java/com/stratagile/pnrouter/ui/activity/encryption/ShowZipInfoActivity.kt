@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.GridLayoutManager
+import android.view.View
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
@@ -140,6 +141,7 @@ class ShowZipInfoActivity : BaseActivity(), ShowZipInfoContract.View {
         }
         if(attachListEntity.size >0)
         {
+            attchtitle.visibility = View.VISIBLE
             attachListEntityNode = attachListEntity
             runOnUiThread {
                 emaiAttachAdapter = EmaiAttachAdapter(attachListEntity)

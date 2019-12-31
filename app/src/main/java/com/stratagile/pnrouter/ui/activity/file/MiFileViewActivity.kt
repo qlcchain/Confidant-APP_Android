@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.entity.PullFileReq
 import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.UpLoadFile
+import com.stratagile.pnrouter.ui.activity.encryption.ShowZipInfoActivity
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerMiFileViewComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.MiFileViewContract
 import com.stratagile.pnrouter.ui.activity.file.module.MiFileViewModule
@@ -231,6 +232,13 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
             {
                 val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                 intent.putExtra("path", filePath)
+                startActivity(intent)
+            }else if(fileName.contains("zip"))
+            {
+                val intent = Intent(AppConfig.instance, ShowZipInfoActivity::class.java)
+                intent.putExtra("path", filePath)
+                var id = payLoad!!.fileId;
+                intent.putExtra("id", id.toString())
                 startActivity(intent)
             }else{
                 run {

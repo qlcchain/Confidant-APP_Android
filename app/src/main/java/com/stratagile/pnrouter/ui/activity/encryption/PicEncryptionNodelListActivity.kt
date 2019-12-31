@@ -170,12 +170,19 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             {
                                 var fileName = localFileItem!!.fileName
                                 var fileTempPath  = filePathLocal
-                                if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                if (fileName.toLowerCase().contains("jpg") || fileName.toLowerCase().contains("png")|| fileName.toLowerCase().contains("jpeg")) {
                                     showImagList(fileTempPath)
                                 }else if(fileName.contains("mp4"))
                                 {
                                     val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                                     intent.putExtra("path", fileTempPath)
+                                    startActivity(intent)
+                                }else if(fileName.contains("zip"))
+                                {
+                                    val intent = Intent(AppConfig.instance, ShowZipInfoActivity::class.java)
+                                    intent.putExtra("path", fileTempPath)
+                                    var id = localFileItem!!.fileId;
+                                    intent.putExtra("id", id.toString())
                                     startActivity(intent)
                                 }else{
                                     OpenFileUtil.getInstance(AppConfig.instance)
@@ -323,6 +330,8 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
     var renameNewFilePath = "";
     var folderNewname = "";
     var widthAndHeight:String? = null;
+    var isClick = false;
+    var isShowOld = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -339,6 +348,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
     override fun initData() {
         AppConfig.instance.messageReceiver?.nodeFilesListPullCallback = this
         _this = this;
+        isClick = false;
         EventBus.getDefault().register(this)
         folderInfo = intent.getParcelableExtra("folderInfo")
         titleShow.text = folderInfo!!.fileName
@@ -586,7 +596,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                     {
                         localMediaUpdate = LocalMedia()
                         localMediaUpdate!!.path = fileTempPath
-                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1)
+                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1).toLowerCase()
                         localMediaUpdate!!.pictureType = "file"
                         when (MsgType) {
                             "png", "jpg", "jpeg", "webp" -> {
@@ -649,7 +659,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                             chooseFileData = LocalFileItem();
                             localMediaUpdate = LocalMedia()
                             localMediaUpdate!!.path = list.get(i).path
-                            val MsgType = list.get(i).path.substring(list.get(i).path.lastIndexOf(".") + 1)
+                            val MsgType = list.get(i).path.substring(list.get(i).path.lastIndexOf(".") + 1).toLowerCase()
                             localMediaUpdate!!.pictureType = "file"
                             when (MsgType) {
                                 "png", "jpg", "jpeg", "webp" -> {

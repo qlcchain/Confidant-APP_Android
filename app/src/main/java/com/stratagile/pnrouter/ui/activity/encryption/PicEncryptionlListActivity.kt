@@ -127,7 +127,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     var code = FileUtil.copySdcardToxFileAndDecrypt(filePath,fileTempPath,aesKey)
                     if(code == 1)
                     {
-                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        if (fileName.toLowerCase().contains("jpg") || fileName.toLowerCase().contains("png")|| fileName.toLowerCase().contains("jpeg")) {
                             showImagList(fileTempPath)
                         }else if(fileName.contains("mp4"))
                         {
@@ -427,7 +427,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                     {
                         localMediaUpdate = LocalMedia()
                         localMediaUpdate!!.path = fileTempPath
-                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1)
+                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1).toLowerCase()
                         localMediaUpdate!!.pictureType = "file"
                         when (MsgType) {
                             "png", "jpg", "jpeg", "webp" -> {
@@ -595,7 +595,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                     if (isHas) {
                                         var filePath = list.get(i).path
                                         val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
-                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1).toLowerCase()
                                         when (MsgType) {
                                             "png", "jpg", "jpeg", "webp" ->
                                             {

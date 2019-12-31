@@ -182,7 +182,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     var code = FileUtil.copySdcardToxFileAndDecrypt(filePath,fileTempPath,aesKey)
                     if(code == 1)
                     {
-                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        if (fileName.toLowerCase().contains("jpg") || fileName.toLowerCase().contains("png")|| fileName.toLowerCase().contains("jpeg")) {
                             showImagList(fileTempPath)
                         }else if(fileName.contains("mp4"))
                         {
@@ -470,7 +470,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     {
                         localMediaUpdate = LocalMedia()
                         localMediaUpdate!!.path = fileTempPath
-                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1)
+                        val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1).toLowerCase()
                         localMediaUpdate!!.pictureType = "file"
                         when (MsgType) {
                             "png", "jpg", "jpeg", "webp" -> {
@@ -557,7 +557,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                 localFileItem.creatTime = System.currentTimeMillis()
                                 localFileItem.fileMD5 = fileMD5;
                                 localFileItem.upLoad = false;
-                                val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                                val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1).toLowerCase()
                                 try {
                                     when (MsgType) {
                                         "png", "jpg", "jpeg", "webp" ->
@@ -635,7 +635,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                                     if (isHas) {
                                         var filePath = list.get(i).path
                                         val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
-                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                                        val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1).toLowerCase()
                                         when (MsgType) {
                                             "png", "jpg", "jpeg", "webp" ->
                                             {
@@ -1087,7 +1087,7 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                             localFileItem.creatTime = System.currentTimeMillis()
                             localFileItem.fileMD5 = fileMD5;
                             localFileItem.upLoad = false
-                            val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
+                            val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1).toLowerCase()
                             try {
                                 when (MsgType) {
                                     "png", "jpg", "jpeg", "webp" ->
