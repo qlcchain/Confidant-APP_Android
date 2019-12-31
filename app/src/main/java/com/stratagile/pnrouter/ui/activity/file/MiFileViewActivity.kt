@@ -260,6 +260,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
 
                 }
             }
+        finish()
     }
     fun isOfficeFile(fileName : String) : Intent?{
         if (fileName.contains(".xls") || fileName.contains(".word") || fileName.contains(".ppt")) {
@@ -342,6 +343,7 @@ class MiFileViewActivity : BaseActivity(), MiFileViewContract.View {
                         closeProgressDialog()
                         toast(R.string.Download_success)
                     }
+                    openFile(filePath)
                 }
             }//goMain();
             //goMain();

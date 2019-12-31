@@ -48,7 +48,7 @@
         <TextView
             android:id="@+id/selectbtn"
             android:layout_width="0dp"
-            android:layout_weight="0.8"
+            android:layout_weight="1"
             android:gravity="center"
             android:textSize="16sp"
             android:textColor="@color/white"
