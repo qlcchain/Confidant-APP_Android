@@ -211,6 +211,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                     startActivity(intent)
                                 }
                             }else{
+                                isClick = true;
                                 startActivity(Intent(this, MiFileViewActivity::class.java).putExtra("file", localFileItem).putExtra("folderPath", folderInfo!!.path))
                             }
                         }
