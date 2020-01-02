@@ -115,7 +115,10 @@ class AppConfig : MultiDexApplication() {
                 .build()
         emailConfig = EmailConfig()
         name = System.currentTimeMillis()
-        CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
+        if(! BuildConfig.DEBUG)
+        {
+            CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
+        }
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
         instance = this
