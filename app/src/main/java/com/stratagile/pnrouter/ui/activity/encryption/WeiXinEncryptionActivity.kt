@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -19,6 +20,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerWeiXinEncr
 import com.stratagile.pnrouter.ui.activity.encryption.contract.WeiXinEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.WeiXinEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.WeiXinEncryptionPresenter
+import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_encrption_local.*
@@ -54,6 +56,7 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
     private var picWXNodeFragment: PicWeiXinNodeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -61,7 +64,7 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
         commonNavigator = CommonNavigator(this)
         //setContentView(R.layout.picencry_menu_list)
         setContentView(R.layout.activity_encrption_local)
-        title.text = getString(R.string.Wechat_Folder)
+        tvTitle.text = getString(R.string.Wechat_Folder)
     }
     override fun initData() {
         var _this = this;
@@ -146,6 +149,9 @@ class WeiXinEncryptionActivity : BaseActivity(), WeiXinEncryptionContract.View {
         titleContainer.dividerDrawable = resources.getDrawable(R.drawable.simple_splitter)
         ViewPagerHelper.bind(indicator, viewPager);
 
+        fileLook.setOnClickListener {
+            startActivity(Intent(this, FileTaskListActivity::class.java))
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdateWXEncryptionItemEvent(statusChange: UpdateWXEncryptionItemEvent) {

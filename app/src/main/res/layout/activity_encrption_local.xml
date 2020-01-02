@@ -5,7 +5,73 @@
     android:orientation="vertical"
     android:background="@color/white"
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x114"
+        android:layout_below="@+id/statusBar"
+        android:background="@color/headmainColor"
+        android:minHeight="?attr/actionBarSize">
 
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/Encrypted_Vualt"
+            android:visibility="visible"
+            android:textColor="#1E1E24"
+            android:textSize="21sp" />
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/x70">
+
+            <ImageView
+                android:id="@+id/searchBtn"
+                android:layout_width="@dimen/x60"
+                android:padding="@dimen/x10"
+                android:layout_height="@dimen/x60"
+                android:src="@mipmap/statusbar_search_n"
+                android:visibility="visible" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/x10">
+
+            <ImageView
+                android:id="@+id/fileLook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/statusbar_remind"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/ivQrCode"
+                android:layout_width="@dimen/x60"
+                android:padding="@dimen/x10"
+                android:layout_height="@dimen/x60"
+                android:src="@mipmap/icon_add_friend"
+                android:visibility="gone" />
+            <ImageView
+                android:id="@+id/ivNewGroup"
+                android:layout_width="@dimen/x60"
+                android:layout_marginLeft="@dimen/x15"
+                android:padding="@dimen/x10"
+                android:layout_height="@dimen/x60"
+                android:src="@mipmap/statusbar_plus"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
     <RelativeLayout
         android:id="@+id/magicIndicator"
         android:layout_width="match_parent"

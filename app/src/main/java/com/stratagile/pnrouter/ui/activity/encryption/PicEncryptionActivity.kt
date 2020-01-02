@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerPicEncrypt
 import com.stratagile.pnrouter.ui.activity.encryption.contract.PicEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.PicEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionPresenter
+import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_encrption_local.*
@@ -53,6 +55,7 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
     private var picMenuLocalFragment: PicMenuLocalFragment? = null
     private var picMenuNodeFragment: PicMenuNodeFragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -60,7 +63,7 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
         commonNavigator = CommonNavigator(this)
         //setContentView(R.layout.picencry_menu_list)
         setContentView(R.layout.activity_encrption_local)
-        title.text = getString(R.string.Album_encryption)
+        tvTitle.text = getString(R.string.Album_encryption)
 
     }
     override fun initData() {
@@ -145,6 +148,10 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
         titleContainer.dividerPadding = UIUtil.dip2px(AppConfig.instance, 15.0)
         titleContainer.dividerDrawable = resources.getDrawable(R.drawable.simple_splitter)
         ViewPagerHelper.bind(indicator, viewPager);
+
+        fileLook.setOnClickListener {
+            startActivity(Intent(this, FileTaskListActivity::class.java))
+        }
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

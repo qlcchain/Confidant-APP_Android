@@ -69,6 +69,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
     var zipSavePathTemp =""
     var zipUnTask:ZipUnTask? = null
     var chooseMenuData: LocalFileMenu?= null
+    var isCanClick = true;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if(AppConfig.instance.sharedText.equals(""))
@@ -108,6 +109,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
         setContentView(R.layout.picencry_wechat_list)
     }
     override fun initData() {
+        isCanClick = true;
         if(!AppConfig.instance.isOpenSplashActivity)
         {
             AppConfig.instance.sharedText=  sharedText
@@ -155,7 +157,12 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                 toast(getString(R.string.Please_select_a_folder))
                 return@setOnClickListener
             }
-
+            if(!isCanClick)
+            {
+                toast(getString(R.string.waiting))
+                return@setOnClickListener
+            }
+            isCanClick = false;
             var  path = PathUtils.generateWechatMessagePath("temp")+"htmlContent.txt";
             var  result = FileUtil.writeStr_to_txt(path,sharedText)
             if(result)
@@ -184,6 +191,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
             when (msg.what) {
                 0x404 -> {
 
+                    isCanClick = true;
                     toast(R.string.Compression_failure)
                 }
                 0x56 -> {
@@ -260,6 +268,7 @@ class WexinChatActivity : BaseActivity(), WexinChatContract.View {
                             AppConfig.instance.sharedText=  ""
                             AppConfig.instance.sharedTextContent=  ""
                             AppConfig.instance.imageUris=  null
+                            isCanClick = true;
                             finish();
                         }
                     }
