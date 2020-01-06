@@ -1220,6 +1220,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
@@ -1526,6 +1527,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
     override fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         var msgData = GroupSysPushRsp(0, userId!!)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jGroupSysPushRsp.msgid))
@@ -1658,7 +1660,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                     }
                     //需要细化处理 ，弹窗告知详情等
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
                 }else{
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
@@ -1699,7 +1701,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     }
                     toast(R.string.You_removed)
                     //需要细化处理 ，弹窗告知详情等
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
                 }else{//是别人
                     var adminName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
@@ -1714,7 +1716,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     var GroupLocal = groupList.get(0)
                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                 }
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                 runOnUiThread {
 
                     toast(R.string.Group_disbanded)
@@ -1938,6 +1940,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     fun pushGroupFileMsgRsp(jPushFileMsgRsp: JGroupMsgPushRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val gson = Gson()
         val Message = Message()
         Message.msgType = jPushFileMsgRsp.params.msgType
@@ -1950,9 +1953,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         Message.chatType = EMMessage.ChatType.GroupChat
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
         } else {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
         }
 
         if (jPushFileMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天

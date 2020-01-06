@@ -473,6 +473,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
@@ -1018,6 +1019,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgData = GroupSysPushRsp(0, userId!!)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jGroupSysPushRsp.msgid))
@@ -1042,10 +1044,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 3, 4 -> {
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
                     val keyMap = SpUtil.getAll(AppConfig.instance)
                     for (key in keyMap.keys) {
 
-                        if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
+                        if (key.contains(ConstantValue.message) && key.contains(userSn!! + "_")) {
                             val tempkey = key.replace(ConstantValue.message, "")
                             val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                             if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null" && toChatUserId.equals(jGroupSysPushRsp.params.gId)) {
@@ -1114,7 +1117,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                         }
                         //需要细化处理 ，弹窗告知详情等
-                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     }
                 }
                 243 -> {//有人被移除群
@@ -1151,7 +1154,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                         }
                         //需要细化处理 ，弹窗告知详情等
-                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                         if (ConstantValue.isInit) {
                             runOnUiThread {
                                 if (isAddEmail) {
@@ -1174,7 +1177,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                     }
                     //需要细化处理 ，弹窗告知详情等
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     runOnUiThread {
 
                         toast(R.string.Group_disbanded)
@@ -1443,6 +1446,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgDataPushFileRsp = PushFileRespone(0, jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, jPushFileMsgRsp.params.msgId)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5, msgDataPushFileRsp, jPushFileMsgRsp.msgid))
@@ -1469,7 +1473,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.fileName = jPushFileMsgRsp.params.fileName
             Message.timeStamp = jPushFileMsgRsp.timestamp
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, "")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1479,9 +1483,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             val baseDataJson = gson.toJson(Message)
             if (Message.sender == 0) {
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
             } else {
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
             }
             if (ConstantValue.isInit) {
                 runOnUiThread {
@@ -1524,10 +1528,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             val keyMap = SpUtil.getAll(AppConfig.instance)
             for (key in keyMap.keys) {
 
-                if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
+                if (key.contains(ConstantValue.message) && key.contains(userSn!! + "_")) {
                     val tempkey = key.replace(ConstantValue.message, "")
                     val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                     if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
@@ -1764,8 +1769,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             if (pushMsgRsp.params.point == 1 || pushMsgRsp.params.point == 2) {
-                SpUtil.putString(AppConfig.instance, ConstantValue.messageAT + userId + "_" + pushMsgRsp.params.gId, "1")
+                SpUtil.putString(AppConfig.instance, ConstantValue.messageAT + userSn + "_" + pushMsgRsp.params.gId, "1")
             }
             if (pushMsgRsp.params.from != userId) {
                 val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
@@ -1882,7 +1888,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.timeStamp = pushMsgRsp?.timestamp
                             Message.chatType = EMMessage.ChatType.GroupChat
                             Message.msgId = pushMsgRsp?.params.msgId
-                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, "")
                             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                             var unReadCount = 0
                             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1892,7 +1898,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
                             var baseDataJson = gson.toJson(Message)
-                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, baseDataJson)
                             KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -1931,7 +1937,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Message.fileName = pushMsgRsp.params.fileName
                     Message.timeStamp = pushMsgRsp.timestamp
 
-                    var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                    var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, "")
                     val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                     var unReadCount = 0
                     if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1940,7 +1946,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Message.unReadCount = unReadCount + 1;
 
                     val baseDataJson = gson.toJson(Message)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, baseDataJson)
                     if (ConstantValue.isInit) {
                         runOnUiThread {
                             var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
@@ -1968,6 +1974,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 defaultMediaPlayer()
             }
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
 
             var sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
@@ -2027,7 +2034,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.msgId = pushMsgRsp?.params.msgId
 
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -2037,7 +2044,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
             var baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, baseDataJson)
             KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
             //conversation.insertMessage(message)
             //}
@@ -2760,10 +2767,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var hasUnReadMsgCount = 0
         var hasUnReadMsg: Boolean = false;
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val keyMap = SpUtil.getAll(AppConfig.instance)
         for (key in keyMap.keys) {
 
-            if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
+            if (key.contains(ConstantValue.message) && key.contains(userSn + "_")) {
                 val tempkey = key.replace(ConstantValue.message, "")
                 val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
@@ -2789,6 +2797,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                         var freindStatusData = FriendEntity()
                         freindStatusData.friendLocalStatus = 7
+                        val localFriendStatusListTemp = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().list();
                         val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
                         if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
                         if (freindStatusData.friendLocalStatus != 0) {
@@ -4302,6 +4311,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Thread.sleep(1000);
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
                         var sendData = BaseData(3,msgData, pushMsgRsp?.msgid)
                         if (ConstantValue.encryptionType.equals("1")) {
@@ -4348,7 +4358,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.setTo(pushMsgRsp.getParams().getToId())
                                 Message.chatType = EMMessage.ChatType.Chat
 
-                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
+                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, "")
                                 val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                                 var unReadCount = 0
                                 if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -4358,7 +4368,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                 var baseDataJson = gson.toJson(Message)
                                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, baseDataJson)
                                 KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
                                 //conversation.insertMessage(message)
                             }

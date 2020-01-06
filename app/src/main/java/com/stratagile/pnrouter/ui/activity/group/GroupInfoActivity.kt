@@ -68,7 +68,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      */
     override fun quitGroup(jGroupQuitRsp: JGroupQuitRsp) {
         if (jGroupQuitRsp.params.retCode == 0) {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupQuitRsp.params.gId, "")//移除临时会话UI
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupQuitRsp.params.gId, "")//移除临时会话UI
             EventBus.getDefault().post(jGroupQuitRsp)
             EventBus.getDefault().post(groupEntity)
             AppConfig.instance.mDaoMaster?.newSession()?.groupEntityDao?.delete(groupEntity)
@@ -208,8 +208,10 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     }
 
     var userId = ""
+    var userSn = ""
     override fun initData() {
         userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!
+        userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")!!
         groupEntity = intent.getParcelableExtra(EaseConstant.EXTRA_CHAT_GROUP)
         var list = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(groupEntity!!.gId)).list()
         if (list.size > 0) {
