@@ -157,6 +157,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
      */
     fun showSendDialog() {
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val strBase58 = Base58.encode(fileName!!.toByteArray())
         var contactSelectedList: ArrayList<UserEntity> = fragment!!.getAllSelectedFriend()
         var groupSelectedList  = fragment!!.getAllSelectedGroup()
@@ -195,7 +196,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             Message.unReadCount = 0
             Message.chatType = EMMessage.ChatType.Chat
             val baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
         }
         for (i in groupSelectedList) {
             val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
@@ -229,7 +230,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             Message.unReadCount = 0
             Message.chatType = EMMessage.ChatType.GroupChat
             val baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
         }
         finish()
     }

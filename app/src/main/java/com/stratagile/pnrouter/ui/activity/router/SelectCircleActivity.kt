@@ -134,6 +134,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username, username)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)

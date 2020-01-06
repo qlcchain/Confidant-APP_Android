@@ -581,6 +581,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)

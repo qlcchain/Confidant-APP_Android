@@ -1230,6 +1230,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
@@ -1784,6 +1785,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val gson = Gson()
         val Message = Message()
         Message.msgType = jPushFileMsgRsp.params.fileType
@@ -1798,9 +1800,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         Message.unReadCount = 0
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
         } else {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
         }
         var msgDataPushFileRsp = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
         var msgId:String = jPushFileMsgRsp?.params.msgId.toString()

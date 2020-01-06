@@ -144,6 +144,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             toast(R.string.noSelected)
             return
         }
+        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         if (contactSelectedList.size != 0) {//给好友列表
             for (i in contactSelectedList) {
                 when (message!!.type) {
@@ -151,7 +153,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                         try {
                             var eMTextMessageBody: EMTextMessageBody = message!!.body as EMTextMessageBody
                             var msg:String = eMTextMessageBody!!.message
-                            val userId = SpUtil.getString(this, ConstantValue.userId, "")
+
                             if(ConstantValue.encryptionType.equals("1"))
                             {
                                 var friendMiPublic = RxEncodeTool.base64Decode(i.miPublicKey)
@@ -202,7 +204,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             Message.unReadCount = 0
                             Message.chatType = EMMessage.ChatType.Chat
                             val baseDataJson = gson.toJson(Message)
-                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
                         }
@@ -336,7 +338,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.Chat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -478,7 +480,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.Chat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -612,7 +614,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.Chat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -660,7 +662,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             Message.unReadCount = 0
                             Message.chatType = EMMessage.ChatType.GroupChat
                             val baseDataJson = gson.toJson(Message)
-                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
                         }
@@ -778,7 +780,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.GroupChat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
                                     }
                                 } catch (e: Exception) {
 
@@ -901,7 +903,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.GroupChat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
                                     } else {
 
                                     }
@@ -1020,7 +1022,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         Message.unReadCount = 0
                                         Message.chatType = EMMessage.ChatType.GroupChat
                                         val baseDataJson = gson.toJson(Message)
-                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
                                     } else {
 
                                     }

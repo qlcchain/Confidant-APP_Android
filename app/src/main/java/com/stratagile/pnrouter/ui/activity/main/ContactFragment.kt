@@ -395,6 +395,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var newFriendCount = 0
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         for (i in localFriendStatusList) {
             if (i.userId.equals(userId)) {
                 if (i.friendLocalStatus == 0) {
@@ -463,7 +464,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             Message.unReadCount = 0
             Message.chatType = EMMessage.ChatType.Chat
             val baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + adminTemp.userId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + adminTemp.userId, baseDataJson)
         }
         //一对多数据处理begin
         var contactMapList = HashMap<String, MyFriend>()
