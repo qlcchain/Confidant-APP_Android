@@ -1,13 +1,17 @@
 package com.stratagile.pnrouter.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v4.content.FileProvider;
 
 import com.hyphenate.easeui.utils.EaseImageUtils;
@@ -1678,4 +1682,25 @@ public class FileUtil {
         }
         return "";
     }
+    /** Exporting contacts from the phone */
+    public static void exportContacts(Context context,String path) throws Exception {
+        ContentResolver cr = context.getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        int index = cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
+        FileOutputStream fout = new FileOutputStream(path);
+        byte[] data = new byte[1024 * 1];
+        while (cur.moveToNext()) {
+            String lookupKey = cur.getString(index);
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+            AssetFileDescriptor fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
+            FileInputStream fin = fd.createInputStream();
+            int len = -1;
+            while ((len = fin.read(data)) != -1) {
+                fout.write(data, 0, len);
+            }
+            fin.close();
+        }
+        fout.close();
+    }
+
 }

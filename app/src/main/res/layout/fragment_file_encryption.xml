@@ -240,12 +240,13 @@
         android:layout_marginRight="@dimen/x30"
         android:layout_marginTop="@dimen/x15"
         android:background="@color/white"
-        android:visibility="gone"
+        android:visibility="visible"
+        android:id="@+id/contactsParent"
         android:layout_height="wrap_content">
         <com.stratagile.pnrouter.view.DrawableMyTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/x82"
-            app:srcmy="@mipmap/tabbar_wechat_encryption"
+            app:srcmy="@mipmap/tabbar_contacts"
             app:textmy="@string/maillist_encryption">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
@@ -314,7 +315,7 @@
         <com.stratagile.pnrouter.view.DrawableMyTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/x82"
-            app:srcmy="@mipmap/navibar_chats_unselected"
+            app:srcmy="@mipmap/tabbar_wechat_encryption"
             app:textmy="@string/msg_encryption">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>

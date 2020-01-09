@@ -924,6 +924,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Wechat_Records">Wechat Records</string>
     <string name="Please_click_again">Please click again</string>
     <string name="File_corruption">File corruption</string>
-
+    <string name="recovery">recovery</string>
 
 </resources>

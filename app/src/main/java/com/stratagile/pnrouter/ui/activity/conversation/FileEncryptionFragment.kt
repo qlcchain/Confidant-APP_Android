@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.WeiXinEncryptionActivity
 import kotlinx.android.synthetic.main.fragment_file_encryption.*
@@ -57,6 +58,10 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
         }
         wechatMenu.setOnClickListener {
             var intent =  Intent(activity!!, WeiXinEncryptionActivity::class.java)
+            startActivity(intent);
+        }
+        contactsParent.setOnClickListener {
+            var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
             startActivity(intent);
         }
     }
