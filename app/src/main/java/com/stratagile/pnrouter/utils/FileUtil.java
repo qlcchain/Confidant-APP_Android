@@ -1683,24 +1683,31 @@ public class FileUtil {
         return "";
     }
     /** Exporting contacts from the phone */
-    public static void exportContacts(Context context,String path) throws Exception {
-        ContentResolver cr = context.getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-        int index = cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
-        FileOutputStream fout = new FileOutputStream(path);
-        byte[] data = new byte[1024 * 1];
-        while (cur.moveToNext()) {
-            String lookupKey = cur.getString(index);
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
-            AssetFileDescriptor fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
-            FileInputStream fin = fd.createInputStream();
-            int len = -1;
-            while ((len = fin.read(data)) != -1) {
-                fout.write(data, 0, len);
+    public static boolean exportContacts(Context context,String path) throws Exception {
+        try{
+            ContentResolver cr = context.getContentResolver();
+            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+            int index = cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
+            FileOutputStream fout = new FileOutputStream(path);
+            byte[] data = new byte[1024 * 1];
+            while (cur.moveToNext()) {
+                String lookupKey = cur.getString(index);
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+                AssetFileDescriptor fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
+                FileInputStream fin = fd.createInputStream();
+                int len = -1;
+                while ((len = fin.read(data)) != -1) {
+                    fout.write(data, 0, len);
+                }
+                fin.close();
             }
-            fin.close();
+            fout.close();
+        }catch (Exception e)
+        {
+            return false;
         }
-        fout.close();
+
+        return true;
     }
 
 }

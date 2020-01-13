@@ -31,6 +31,8 @@ public class PathUtils {
     private File encryptionAlbumNodePath = null;
     private File encryptionWeChatPath = null;
     private File encryptionWeChatNodePath = null;
+    private File encryptionContantsLocalPath = null;
+    private File encryptionContantsNodePath = null;
     private PathUtils() {
     }
 
@@ -99,6 +101,16 @@ public class PathUtils {
         if(!this.encryptionWeChatNodePath.exists()) {
             this.encryptionWeChatNodePath.mkdirs();
         }
+
+        this.encryptionContantsLocalPath =  generateEncryptionLocalContantsPath(var1, var2, var3);
+        if(!this.encryptionContantsLocalPath.exists()) {
+            this.encryptionContantsLocalPath.mkdirs();
+        }
+
+        this.encryptionContantsNodePath=  generateEncryptionNodeContantsPath(var1, var2, var3);
+        if(!this.encryptionContantsNodePath.exists()) {
+            this.encryptionContantsNodePath.mkdirs();
+        }
     }
 
     public File getImagePath() {
@@ -128,6 +140,13 @@ public class PathUtils {
     public File getEncryptionWeChatPath(){return  this.encryptionWeChatPath;}
     public File getEncryptionAlbumNodePath(){return  this.encryptionAlbumNodePath;}
     public File getEncryptionWeChatNodePath(){return  this.encryptionWeChatNodePath;}
+
+    public File getEncryptionContantsLocalPath() {
+        return encryptionContantsLocalPath;
+    }
+    public File getEncryptionContantsNodePath() {
+        return encryptionContantsNodePath;
+    }
     private static File getStorageDir(Context var0) {
         if(storageDir == null) {
             File var1 = Environment.getExternalStorageDirectory();
@@ -265,6 +284,28 @@ public class PathUtils {
             var3 = pathPrefix + var1 + "/encryption/wechatnode/";
         } else {
             var3 = pathPrefix + var0 + "/" + var1 + "/encryption/wechatnode/";
+        }
+
+        return new File(var3);
+    }
+
+    private static File generateEncryptionLocalContantsPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/localcontants/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localcontants/";
+        }
+
+        return new File(var3);
+    }
+
+    private static File generateEncryptionNodeContantsPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/nodecontants/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/nodecontants/";
         }
 
         return new File(var3);

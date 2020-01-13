@@ -824,3 +824,9 @@ data class BakFileReq(var Depens :Int,var UserId : String,  var Type : Int,var F
  * (1)	请求（APP-->Router）
  */
 data class FileActionReq(var UserId : String, var Depens :Int, var Type : Int,var React:Int,var FileId:Long,var PathId:Long,var Name : String,var OldName : String,var Action : String = "FileAction")
+
+/**
+ * 102.	用户查询自己账户下备份的通信录用户数量
+ * (1)	请求（APP-->Router）
+ */
+data class BakAddrUserNumReq(var User : String, var FileId :Int,var Action : String = "BakAddrBookInfo")

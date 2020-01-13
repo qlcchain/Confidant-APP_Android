@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/loginbtnColor"
                 android:textSize="37sp"
-                android:text="100"/>
+                android:text="0"/>
         </LinearLayout>
         <View
             android:layout_width="@dimen/x4"
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/loginbtnColor"
                 android:textSize="37sp"
-                android:text="100"/>
+                android:text="0"/>
         </LinearLayout>
     </LinearLayout>
 

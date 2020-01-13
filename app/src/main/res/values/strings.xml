@@ -925,5 +925,8 @@ Then enter your Email address and password to log in.</string>
     <string name="Please_click_again">Please click again</string>
     <string name="File_corruption">File corruption</string>
     <string name="recovery">recovery</string>
-
+    <string name="Album_Contacts">Encrypted Contacts</string>
+    <string name="Incremental_updating">Sync to node</string>
+    <string name="Coverage_update">Recover to local</string>
+    <string name="Incremental_updating">Sync to node</string>
 </resources>

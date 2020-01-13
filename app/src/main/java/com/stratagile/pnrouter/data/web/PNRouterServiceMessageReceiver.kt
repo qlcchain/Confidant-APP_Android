@@ -620,6 +620,10 @@ val credentialsProvider: CredentialsProvider, private
                     val jBakFileRsp = gson.fromJson(text, JBakFileRsp::class.java)
                     mainInfoBack?.bakFileBack(jBakFileRsp)
                 }
+                "BakAddrBookInfo" -> {
+                    val jBakAddrUserNumRsp = gson.fromJson(text, JBakAddrUserNumRsp::class.java)
+                    bakAddrUserNumCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
+                }
             }
         }
 
@@ -720,6 +724,8 @@ val credentialsProvider: CredentialsProvider, private
     var nodeSelectFileCallback:NodeFileCallback? = null;
 
     var nodeFilesListPullCallback:NodeFilesListPullCallback? = null;
+
+    var bakAddrUserNumCallback:BakAddrUserNumCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1129,5 +1135,9 @@ val credentialsProvider: CredentialsProvider, private
         fun filesListPull(jFilesListPullRsp: JFilesListPullRsp)
         fun fileAction(jFileActionRsp: JFileActionRsp)
     }
- }
+    interface BakAddrUserNumCallback {
+        fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
+    }
+}
+
 
