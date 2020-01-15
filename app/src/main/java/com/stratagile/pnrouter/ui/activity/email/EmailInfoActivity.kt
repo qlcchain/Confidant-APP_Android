@@ -2003,7 +2003,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             //goMain();
         }
     }
-    internal var handlerDownLoad: Handler = object : Handler() {
+        internal var handlerDownLoad: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {

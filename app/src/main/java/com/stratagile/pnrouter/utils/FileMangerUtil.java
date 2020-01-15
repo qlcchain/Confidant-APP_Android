@@ -384,7 +384,7 @@ public class FileMangerUtil {
                                             sended = 0;
                                         KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
                                         UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgId);
-                                        if(!localUpLoadFile.isStop().equals("1"))
+                                        if(localUpLoadFile!= null && !localUpLoadFile.isStop().equals("1"))
                                         {
                                             UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
                                             MyFile myRouter = new MyFile();

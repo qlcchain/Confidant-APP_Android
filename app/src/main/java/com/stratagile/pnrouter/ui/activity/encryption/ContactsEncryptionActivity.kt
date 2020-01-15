@@ -125,18 +125,9 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
 
     override fun getScanPermissionSuccess() {
-
-
-        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-        var result = FileUtil.exportContacts(this,toPath);
-        if(result)
-        {
-            var fromPath = toPath;
-            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
-            if(addressBeans!= null)
-            {
-                localContacts.text = addressBeans!!.size.toString();
-            }
+        var count = FileUtil.getContantsCount(this@ContactsEncryptionActivity)
+        runOnUiThread {
+            localContacts.text = count.toString();
         }
     }
 
@@ -228,13 +219,16 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
                         }
                         "sheet_cover" -> {
+                            runOnUiThread { showProgressDialog() }
                             var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-                            var file = File(toPath)
-                            if (file.exists()) {
-                                runOnUiThread { showProgressDialog() }
+                            var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
+                            if(result)
+                            {
                                 msgID = (System.currentTimeMillis() / 1000).toInt()
                                 fileAESKey = RxEncryptTool.generateAESKey()
                                 FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
+                            }else{
+                                runOnUiThread { closeProgressDialog() }
                             }
                         }
                     }
@@ -379,6 +373,10 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 val info = addressBeans.get(i)
                 if (doAddContact(context, info)) {
                     successCount++
+                }
+                var count = FileUtil.getContantsCount(this@ContactsEncryptionActivity)
+                runOnUiThread {
+                    localContacts.text = count.toString();
                 }
             }
         } catch (e: Exception) {

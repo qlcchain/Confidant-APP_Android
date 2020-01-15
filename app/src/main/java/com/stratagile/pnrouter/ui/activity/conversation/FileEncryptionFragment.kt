@@ -45,16 +45,9 @@ import kotlinx.android.synthetic.main.fragment_file_encryption.*
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
     override fun getScanPermissionSuccess() {
-        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-        var result = FileUtil.exportContacts(activity,toPath);
-        if(result)
-        {
-            var fromPath = toPath;
-            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
-            if(addressBeans!= null)
-            {
-                localContacts.text = addressBeans!!.size.toString();
-            }
+        var count = FileUtil.getContantsCount(this@FileEncryptionFragment.context)
+        runOnUiThread {
+            localContacts.text = count.toString();
         }
     }
 

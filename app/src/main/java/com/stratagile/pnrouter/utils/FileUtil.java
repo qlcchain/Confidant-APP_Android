@@ -46,6 +46,7 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +64,13 @@ public class FileUtil {
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private static final char[] HEX_CHARKong = {' '};
+    // 号码
+    public final static String NUM = ContactsContract.CommonDataKinds.Phone.NUMBER;
+    // 联系人姓名
+    public final static String NAME = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
+    //联系人提供者的uri
+    private static Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+
     public static void init() {
         new Thread(new Runnable() {
             @Override
@@ -1689,7 +1697,7 @@ public class FileUtil {
             Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
             int index = cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
             FileOutputStream fout = new FileOutputStream(path);
-            byte[] data = new byte[1024 * 1];
+            byte[] data = new byte[1024 * 2];
             while (cur.moveToNext()) {
                 String lookupKey = cur.getString(index);
                 Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
@@ -1709,5 +1717,14 @@ public class FileUtil {
 
         return true;
     }
-
+    //获取所有联系人
+    public static int getContantsCount(Context context){
+        int count = 0;
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(phoneUri,new String[]{"_id"},null,null,null);
+        while (cursor.moveToNext()){
+            count ++;
+        }
+        return count;
+    }
 }
