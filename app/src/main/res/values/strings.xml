@@ -928,4 +928,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Album_Contacts">Encrypted Contacts</string>
     <string name="Incremental_updating">Upload (update the Node contacts)</string>
     <string name="Coverage_update">Upload (replace the Node contacts)</string>
+    <string name="Recover_merge">Recover (merge to local contacts)</string>
+    <string name="Recover_replace">Recover (replace all local contacts)</string>
 </resources>
