@@ -930,4 +930,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Coverage_update">Upload (replace the Node contacts)</string>
     <string name="Recover_merge">Recover (merge to local contacts)</string>
     <string name="Recover_replace">Recover (replace all local contacts)</string>
+    <string name="Recover_merge_tisp">Are you sure you want to merge Node contacts to local contacts?</string>
+    <string name="Recover_replace_tisp">The local contacts will be replaced by the Node contacts. Are you sure you want to continue?</string>
 </resources>

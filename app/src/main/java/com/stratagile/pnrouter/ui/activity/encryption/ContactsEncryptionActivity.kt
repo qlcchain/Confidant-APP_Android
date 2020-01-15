@@ -112,6 +112,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 0x55 -> {
                     var data: Bundle = msg.data;
                     var msgId = data.getInt("msgID")
+                    val uri = Uri.parse("content://com.android.contacts/raw_contacts")
+                    contentResolver.delete(uri, "_id!=-1", null)
                     var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
                     addContact(fileSavePath)
                     //restore(this@ContactsEncryptionActivity,fileSavePath)
@@ -121,21 +123,197 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         }
     }
 
-    fun restore(context: Context, filePath: String) {
-        val intent = Intent()
-        intent.setPackage("com.android.contacts")
-        val uri = Uri.fromFile(File(filePath))
-        intent.setAction(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "text/x-vcard")
-        context.startActivity(intent)
+
+    override fun getScanPermissionSuccess() {
+
+
+        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+        var result = FileUtil.exportContacts(this,toPath);
+        if(result)
+        {
+            var fromPath = toPath;
+            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
+            if(addressBeans!= null)
+            {
+                localContacts.text = addressBeans!!.size.toString();
+            }
+        }
     }
 
+    @Inject
+    internal lateinit var mPresenter: ContactsEncryptionPresenter
+    var msgID = 0
+    var fileAESKey:String? = null;
+    var isRecover = false;
+    var addThread: Thread? = null// 增加联系人线程
+    var ADD_FAIL = 0// 导入失败标识
+    var ADD_SUCCESS = 1// 导入成功标识
+    var successCount = 0// 导入成功的计数
+    var failCount = 0// 导入失败的计数
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun initView() {
+        setContentView(R.layout.picencry_contacts_list)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.File_does_not_exist)
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
+        }else {
+
+            if(fileStatus.complete)
+            {
+                var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
+                var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                var file = File(toPath)
+                if (file.exists()) {
+                    var fileId = fileID;
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var fileMD5 = ""
+
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp"
+                    var fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
+                        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+                    }
+                    fileTempPath += "/contants.vcf"
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(toPath, fileTempPath, fileAESKey!!.substring(0, 16))
+                    if (code == 1) {
+                        fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
+                    }
+                    val fileNameBase58 = Base58.encode("contants.vcf".toByteArray())
+                    var SrcKey = ByteArray(256)
+                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey!!, ConstantValue.libsodiumpublicMiKey!!))
+                    val bakFileReq = BakFileReq(4, selfUserId!!, 6, fileId.toInt(), file.length(), fileMD5, fileNameBase58, String(SrcKey), localContacts.text.toString(), 0xF0, "AddrBook", "BakFile")
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakFileReq))
+                    } else if (ConstantValue.isToxConnected) {
+                        val baseData = BaseData(6, bakFileReq)
+                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                        } else {
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                        }
+                    }
+                }
+
+            }
+
+
+        }
+    }
+    override fun initData() {
+        EventBus.getDefault().register(this)
+        AppConfig.instance.messageReceiver?.bakAddrUserNumCallback = this
+        title.text = getString(R.string.Album_Contacts)
+        selectNodeBtn.setOnClickListener {
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            menuArray = arrayListOf<String>(getString(R.string.Incremental_updating),getString(R.string.Coverage_update))
+            iconArray = arrayListOf<String>("sheet_added","sheet_cover")
+            PopWindowUtil.showPopMenuWindow(this@ContactsEncryptionActivity, selectNodeBtn,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    var data = obj as FileOpreateType
+                    when (data.icon) {
+                        "sheet_added" -> {
+
+                        }
+                        "sheet_cover" -> {
+                            var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                            var file = File(toPath)
+                            if (file.exists()) {
+                                runOnUiThread { showProgressDialog() }
+                                msgID = (System.currentTimeMillis() / 1000).toInt()
+                                fileAESKey = RxEncryptTool.generateAESKey()
+                                FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
+                            }
+                        }
+                    }
+                }
+
+            })
+
+
+        }
+        recoveryBtn.setOnClickListener {
+
+
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            menuArray = arrayListOf<String>(getString(R.string.Recover_merge),getString(R.string.Recover_replace))
+            iconArray = arrayListOf<String>("sheet_added","sheet_cover")
+            PopWindowUtil.showPopMenuWindow(this@ContactsEncryptionActivity, selectNodeBtn,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    var data = obj as FileOpreateType
+                    when (data.icon) {
+                        "sheet_added" -> {
+
+                        }
+                        "sheet_cover" -> {
+                            SweetAlertDialog(this@ContactsEncryptionActivity, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setContentText(getString(R.string.Recover_replace_tisp))
+                                    .setConfirmClickListener {
+                                        isRecover = true;
+                                        getNodeData();
+                                    }
+                                    .show()
+
+                        }
+                    }
+                }
+
+            })
+
+
+            var fromPath = Environment.getExternalStorageDirectory().toString()+"/contants.vcf";
+            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
+            println(addressBeans.size)
+            for (addressBean in addressBeans) {
+                println("tureName : " + addressBean.getTrueName())
+                println("mobile : " + addressBean.getMobile())
+                println("workMobile : " + addressBean.getWorkMobile())
+                println("Email : " + addressBean.getEmail())
+                println("--------------------------------")
+            }
+        }
+        mPresenter.getScanPermission()
+        getNodeData();
+    }
+    fun getNodeData()
+    {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
+        var sendData = BaseData(6, filesListPullReq);
+        showProgressDialog();
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
     /**
      * 导入联系人入口
      */
     private fun addContact(vcfPath:String ) {
         if (!File(vcfPath).exists()) {
-            Toast.makeText(this, "文件不存在!", Toast.LENGTH_SHORT).show()
+            toast(R.string.nofile)
             return
         }
         if (addThread != null) {
@@ -143,31 +321,12 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             addThread = null
         }
         addThread = Thread(AddRunnable(this, vcfPath))
-        createDialog(this, "警告", "确保你是第一次导入，重复导入会创建新的联系人，请慎用！")
+        startAddContact()
     }
-
-    /**
-     * 创建提示对话框
-     *
-     * @param context
-     * @param title
-     * @param message
-     */
-    private fun createDialog(context: Context, title: String, message: String) {
-        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
-                .setContentText(getString(R.string.Delete_original_file))
-                .setConfirmClickListener {
-
-                    startAddContact()
-                }
-                .show()
-    }
-
     /**
      * 开启导入线程
      */
     private fun startAddContact() {
-        setAddWidgetEnabled(false)
         if (addThread != null) {
             addThread!!.start()
         }
@@ -192,28 +351,17 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         override  fun handleMessage(msg: Message) {
             when (msg.what) {
                 ADD_FAIL -> {
-                    //show.setText("导入联系人失败")
-                    setAddWidgetEnabled(true)
+                    toast(R.string.fail)
+                    runOnUiThread { closeProgressDialog() }
                 }
                 ADD_SUCCESS -> {
-                    //show.setText(String.format("导入联系人成功 %d 条，失败 %d 条",successCount, failCount))
-                    setAddWidgetEnabled(true)
+                    toast(R.string.success)
+                    runOnUiThread { closeProgressDialog() }
                 }
             }
         }
     }
 
-    /**
-     * 设置导入组件的可用性
-     *
-     * @param enabled
-     */
-    private fun setAddWidgetEnabled(enabled: Boolean) {
-        //btn.setEnabled(enabled)
-        if (!enabled) {
-            //show.setText("")
-        }
-    }
 
     /**
      * 导入联系人
@@ -422,188 +570,6 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             return false
         }
         return true
-    }
-    override fun getScanPermissionSuccess() {
-
-
-        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-        var result = FileUtil.exportContacts(this,toPath);
-        if(result)
-        {
-            var fromPath = toPath;
-            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
-            if(addressBeans!= null)
-            {
-                localContacts.text = addressBeans!!.size.toString();
-            }
-        }
-    }
-
-    @Inject
-    internal lateinit var mPresenter: ContactsEncryptionPresenter
-    var localMediaUpdate: LocalMedia? = null
-
-    var chooseFileData: LocalFileItem? = null;
-    var chooseFolderData: LocalFileMenu? = null;
-    var msgID = 0
-    var fileAESKey:String? = null;
-    var isRecover = false;
-    var addThread: Thread? = null// 增加联系人线程
-    var ADD_FAIL = 0// 导入失败标识
-    var ADD_SUCCESS = 1// 导入成功标识
-    var successCount = 0// 导入成功的计数
-    var failCount = 0// 导入失败的计数
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun initView() {
-        setContentView(R.layout.picencry_contacts_list)
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onFileStatusChange(fileStatus: FileStatus) {
-        if (fileStatus.result == 1) {
-            toast(R.string.File_does_not_exist)
-        } else if (fileStatus.result == 2) {
-            toast(R.string.Files_100M)
-        } else if (fileStatus.result == 3) {
-            toast(R.string.Files_0M)
-        }else {
-
-            if(fileStatus.complete)
-            {
-                var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
-                var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-                var file = File(toPath)
-                if (file.exists()) {
-                    var fileId = fileID;
-                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var fileMD5 = ""
-
-                    var fileTempPath  = PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp"
-                    var fileTempPathFile = File(fileTempPath)
-                    if(!fileTempPathFile.exists()) {
-                        fileTempPathFile.mkdirs();
-                        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
-                    }
-                    fileTempPath += "/contants.vcf"
-                    val code = FileUtil.copySdcardToxFileAndEncrypt(toPath, fileTempPath, fileAESKey!!.substring(0, 16))
-                    if (code == 1) {
-                        fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
-                    }
-                    val fileNameBase58 = Base58.encode("contants.vcf".toByteArray())
-                    var SrcKey = ByteArray(256)
-                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey!!, ConstantValue.libsodiumpublicMiKey!!))
-                    val bakFileReq = BakFileReq(4, selfUserId!!, 6, fileId.toInt(), file.length(), fileMD5, fileNameBase58, String(SrcKey), localContacts.text.toString(), 0xF0, "AddrBook", "BakFile")
-                    if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakFileReq))
-                    } else if (ConstantValue.isToxConnected) {
-                        val baseData = BaseData(6, bakFileReq)
-                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                        } else {
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                        }
-                    }
-                }
-
-            }
-
-
-        }
-    }
-    override fun initData() {
-        EventBus.getDefault().register(this)
-        AppConfig.instance.messageReceiver?.bakAddrUserNumCallback = this
-        title.text = getString(R.string.Album_Contacts)
-        selectNodeBtn.setOnClickListener {
-            var menuArray = arrayListOf<String>()
-            var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.Incremental_updating),getString(R.string.Coverage_update))
-            iconArray = arrayListOf<String>("sheet_added","sheet_cover")
-            PopWindowUtil.showPopMenuWindow(this@ContactsEncryptionActivity, selectNodeBtn,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
-                override fun onSelect(position: Int, obj: Any) {
-                    KLog.i("" + position)
-                    var data = obj as FileOpreateType
-                    when (data.icon) {
-                        "sheet_added" -> {
-
-                        }
-                        "sheet_cover" -> {
-                            var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-                            var file = File(toPath)
-                            if (file.exists()) {
-                                runOnUiThread { showProgressDialog() }
-                                msgID = (System.currentTimeMillis() / 1000).toInt()
-                                fileAESKey = RxEncryptTool.generateAESKey()
-                                FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
-                            }
-                        }
-                    }
-                }
-
-            })
-
-
-        }
-        recoveryBtn.setOnClickListener {
-
-
-            var menuArray = arrayListOf<String>()
-            var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.Recover_merge),getString(R.string.Recover_replace))
-            iconArray = arrayListOf<String>("sheet_added","sheet_cover")
-            PopWindowUtil.showPopMenuWindow(this@ContactsEncryptionActivity, selectNodeBtn,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
-                override fun onSelect(position: Int, obj: Any) {
-                    KLog.i("" + position)
-                    var data = obj as FileOpreateType
-                    when (data.icon) {
-                        "sheet_added" -> {
-
-                        }
-                        "sheet_cover" -> {
-                            isRecover = true;
-                            getNodeData();
-                        }
-                    }
-                }
-
-            })
-
-
-            var fromPath = Environment.getExternalStorageDirectory().toString()+"/contants.vcf";
-            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
-            println(addressBeans.size)
-            for (addressBean in addressBeans) {
-                println("tureName : " + addressBean.getTrueName())
-                println("mobile : " + addressBean.getMobile())
-                println("workMobile : " + addressBean.getWorkMobile())
-                println("Email : " + addressBean.getEmail())
-                println("--------------------------------")
-            }
-        }
-        mPresenter.getScanPermission()
-        getNodeData();
-    }
-    fun getNodeData()
-    {
-        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
-        var sendData = BaseData(6, filesListPullReq);
-        showProgressDialog();
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = sendData
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
     }
     override fun setupActivityComponent() {
         DaggerContactsEncryptionComponent
