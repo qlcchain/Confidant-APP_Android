@@ -234,11 +234,11 @@ public class FileMangerUtil {
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
                                         sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
-                                        if(!fileKey.equals("") && !fileKey.equals("zip"))//头像不用加密
+                                        if(!fileKey.equals("") && !fileKey.equals("zip"))//特殊不用处理记录任务列表
                                         {
                                             int segSeqTotal = sendFileTotalSegment.get(filePath);
                                             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileTransformEntity.getToId());
-                                            if(!localUpLoadFile.isStop().equals("1"))
+                                            if(localUpLoadFile!= null && !localUpLoadFile.isStop().equals("1"))
                                             {
                                                 UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
                                                 MyFile myRouter = new MyFile();
@@ -571,6 +571,9 @@ public class FileMangerUtil {
                     break;
                 case "mp4":
                     action = 4;
+                    break;
+                case "vcf":
+                    action = 9;
                     break;
                 default:
                     action = 5;
@@ -1619,7 +1622,7 @@ public class FileMangerUtil {
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                 }
-                                sendFileKeyByteMap.put(uuid+"","zip");
+                                sendFileKeyByteMap.put(uuid+"",fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid+"",SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid+"",DstKey);
                             }catch (Exception e){

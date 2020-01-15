@@ -1,11 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
-import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
+import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.utils.PathUtils
-import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -15,21 +13,15 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.FileUploadItem
-import com.stratagile.pnrouter.db.FileUploadItemDao
 import com.stratagile.pnrouter.db.LocalFileItem
 import com.stratagile.pnrouter.db.LocalFileMenu
-import com.stratagile.pnrouter.entity.BakAddrUserNumReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.FilesListPullReq
-import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerContactsEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.ContactsEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.ContactsEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.ContactsEncryptionPresenter
-import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.picencry_contacts_list.*
@@ -48,6 +40,22 @@ import javax.inject.Inject;
  */
 
 class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumCallback{
+    override fun bakFileBack(jBakFileRsp: JBakFileRsp) {
+        if(jBakFileRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.success)
+            }
+
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.fail)
+            }
+        }
+    }
+
     override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {
 
         runOnUiThread {
@@ -56,7 +64,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         if(jBakAddrUserNumRsp.params.retCode == 0)
         {
             runOnUiThread {
-                localContacts.text = jBakAddrUserNumRsp.params.num.toString();
+                nodeContacts.text = jBakAddrUserNumRsp.params.num.toString();
             }
         }else{
 
@@ -85,6 +93,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
     var chooseFileData: LocalFileItem? = null;
     var chooseFolderData: LocalFileMenu? = null;
+    var msgID = 0
+    var fileAESKey:String? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +113,46 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             toast(R.string.Files_0M)
         }else {
 
-            var  fileKey = fileStatus.fileKey;
+            if(fileStatus.complete)
+            {
+
+                var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                var file = File(toPath)
+                if (file.exists()) {
+                    var  fileReturnData = fileStatus.fileKey;
+                    var fileId = fileReturnData.substring(fileReturnData.indexOf("__")+2,fileReturnData.length);
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var fileMD5 = ""
+
+                    var fileTempPath  = PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp"
+                    var fileTempPathFile = File(fileTempPath)
+                    if(!fileTempPathFile.exists()) {
+                        fileTempPathFile.mkdirs();
+                        DeleteUtils.deleteDirectorySubs(PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/"+ "temp")//删除外部查看文件的临时路径
+                    }
+                    fileTempPath += "/contants.vcf"
+                    val code = FileUtil.copySdcardToxFileAndEncrypt(toPath, fileTempPath, fileAESKey!!.substring(0, 16))
+                    if (code == 1) {
+                        fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
+                    }
+                    val fileNameBase58 = Base58.encode("contants.vcf".toByteArray())
+                    var SrcKey = ByteArray(256)
+                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey!!, ConstantValue.libsodiumpublicMiKey!!))
+                    val bakFileReq = BakFileReq(4, selfUserId!!, 6, fileId.toInt(), file.length(), fileMD5, fileNameBase58, String(SrcKey), localContacts.text.toString(), 0xF0, "AddrBook", "BakFile")
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakFileReq))
+                    } else if (ConstantValue.isToxConnected) {
+                        val baseData = BaseData(6, bakFileReq)
+                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                        } else {
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                        }
+                    }
+                }
+
+            }
+           /* var  fileKey = fileStatus.fileKey;
             var fileId = fileKey.substring(fileKey.indexOf("__")+2,fileKey.length);
             var picItemList = AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.queryBuilder().where(FileUploadItemDao.Properties.FileId.eq(fileId)).list()
             if(picItemList ==null || picItemList.size == 0)
@@ -131,7 +180,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 val folderNameBase58 = Base58.encode(chooseFolderData!!.fileName.toByteArray())
                 fileUploadItem.pathName =folderNameBase58;
                 AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.insert(fileUploadItem)
-            }
+            }*/
 
         }
     }
@@ -143,20 +192,24 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
             menuArray = arrayListOf<String>(getString(R.string.Incremental_updating),getString(R.string.Coverage_update))
-            iconArray = arrayListOf<String>("statusbar_download_node","sheet_rename")
+            iconArray = arrayListOf<String>("sheet_added","sheet_cover")
             PopWindowUtil.showPopMenuWindow(this@ContactsEncryptionActivity, selectNodeBtn,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     var data = obj as FileOpreateType
                     when (data.icon) {
-                        "statusbar_download_node" -> {
+                        "sheet_added" -> {
 
                         }
-                        "sheet_rename" -> {
+                        "sheet_cover" -> {
                             var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
                             var file = File(toPath)
                             if (file.exists()) {
-                                var fileTempPath = toPath;
+                                runOnUiThread { showProgressDialog() }
+                                msgID = (System.currentTimeMillis() / 1000).toInt()
+                                fileAESKey = RxEncryptTool.generateAESKey()
+                                FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
+                               /* var fileTempPath = toPath;
                                 localMediaUpdate = LocalMedia()
                                 localMediaUpdate!!.path = fileTempPath
                                 localMediaUpdate!!.pictureType = "file"
@@ -176,7 +229,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                 chooseFolderData!!.nodeId = 0;
                                 chooseFileData!!.fileName = "contants.vcf"
                                 startIntent.putExtra("aesKey", fileKey)
-                                startActivity(startIntent)
+                                startActivity(startIntent)*/
                             }
                         }
                     }

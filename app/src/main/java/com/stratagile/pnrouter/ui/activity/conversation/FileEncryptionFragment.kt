@@ -17,10 +17,23 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileEncryption
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import com.hyphenate.easeui.utils.PathUtils
+import com.pawegio.kandroid.runOnUiThread
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.BakAddrUserNumReq
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
+import com.stratagile.pnrouter.entity.JBakFileRsp
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.WeiXinEncryptionActivity
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.ImportVCFUtil
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.fragment_file_encryption.*
 
 /**
@@ -30,7 +43,34 @@ import kotlinx.android.synthetic.main.fragment_file_encryption.*
  * @date 2019/11/20 10:12:15
  */
 
-class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
+class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
+    override fun getScanPermissionSuccess() {
+        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+        var result = FileUtil.exportContacts(activity,toPath);
+        if(result)
+        {
+            var fromPath = toPath;
+            val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
+            if(addressBeans!= null)
+            {
+                localContacts.text = addressBeans!!.size.toString();
+            }
+        }
+    }
+
+    override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jBakAddrUserNumRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                nodeContacts.text = jBakAddrUserNumRsp.params.num.toString();
+            }
+        }else{
+
+        }
+    }
 
     @Inject
     lateinit internal var mPresenter: FileEncryptionPresenter
@@ -40,8 +80,33 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
 
         return view
     }
-
-
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if(isVisibleToUser)
+        {
+            mPresenter.getScanPermission()
+            getNodeData()
+        }
+    }
+    fun getNodeData()
+    {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
+        var sendData = BaseData(6, filesListPullReq);
+        showProgressDialog();
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
     override fun setupFragmentComponent() {
         DaggerFileEncryptionComponent
                 .builder()
@@ -52,6 +117,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AppConfig.instance.messageReceiver?.bakAddrUserNumOutCallback = this
         albumMenuRoot.setOnClickListener {
             var intent =  Intent(activity!!, PicEncryptionActivity::class.java)
             startActivity(intent);
@@ -64,6 +130,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
             var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
             startActivity(intent);
         }
+
     }
     override fun setPresenter(presenter: FileEncryptionContract.FileEncryptionContractPresenter) {
         mPresenter = presenter as FileEncryptionPresenter
@@ -79,5 +146,10 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View {
 
     override fun closeProgressDialog() {
         progressDialog.hide()
+    }
+
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.bakAddrUserNumOutCallback = null;
+        super.onDestroy()
     }
 }

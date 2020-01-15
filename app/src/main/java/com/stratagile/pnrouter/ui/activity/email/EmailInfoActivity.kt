@@ -2231,22 +2231,26 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             toast(R.string.Files_0M)
         }else {
 
-            var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
-            var file = File(zipSavePath)
-            var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
-            var type = AppConfig.instance.emailConfig().emailType.toInt()
-            var fileSize = file.length().toInt()
-            var fileMD5 = FileUtil.getFileMD5(file);
-            var uuid = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
-            var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
-            mailInfo.dsKey = pulicSignKey
-            mailInfo.flags = 1;
-            var mailInfoJson = mailInfo.baseDataToJson()
-            val contentBuffer = mailInfoJson.toByteArray()
-            var fileKey16 = fileAESKey.substring(0,16)
-            var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
-            var saveEmailConf = BakupEmail(type,fileID.toInt(),fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+            if(fileStatus.complete)
+            {
+                var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
+                var file = File(zipSavePath)
+                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var type = AppConfig.instance.emailConfig().emailType.toInt()
+                var fileSize = file.length().toInt()
+                var fileMD5 = FileUtil.getFileMD5(file);
+                var uuid = AppConfig.instance.emailConfig().account+"_"+ConstantValue.chooseEmailMenuName +"_"+emailMeaasgeData!!.msgId
+                var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
+                mailInfo.dsKey = pulicSignKey
+                mailInfo.flags = 1;
+                var mailInfoJson = mailInfo.baseDataToJson()
+                val contentBuffer = mailInfoJson.toByteArray()
+                var fileKey16 = fileAESKey.substring(0,16)
+                var mailInfoMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
+                var saveEmailConf = BakupEmail(type,fileID.toInt(),fileSize,fileMD5 ,accountBase64,uuid, pulicSignKey,mailInfoMiStr)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+            }
+
         }
     }
     fun showDialog() {

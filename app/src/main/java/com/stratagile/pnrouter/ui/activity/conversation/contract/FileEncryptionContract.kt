@@ -19,12 +19,11 @@ interface FileEncryptionContract {
          *
          */
         fun closeProgressDialog()
+
+        abstract fun getScanPermissionSuccess()
     }
 
     interface FileEncryptionContractPresenter : BasePresenter {
-//        /**
-//         *
-//         */
-//        fun getBusinessInfo(map : Map)
+        abstract fun getScanPermission()
     }
 }

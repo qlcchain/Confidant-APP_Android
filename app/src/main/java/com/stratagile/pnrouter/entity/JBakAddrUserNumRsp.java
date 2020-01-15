@@ -6,9 +6,10 @@ public class JBakAddrUserNumRsp extends BaseEntity {
 
 
     /**
-     * timestamp : 1578908380
-     * params : {"Action":"BakAddrBookInfo","RetCode":0,"ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","FileId":0,"Num":0,"Fpath":"","Fkey":""}
+     * timestamp : 1579069822
+     * params : {"Action":"BakAddrBookInfo","RetCode":0,"ToId":"wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=","FileId":0,"Num":1,"Fpath":"/user5/files/B005S11F1579069796","Fkey":"vSKmtlH78h5nlVxSHlUkAbQlEr/X5P+bouzrX8oSDkOpwZgdE+qOMmpPRCrbud+xAAC1zPd5xTTO98V8WPdxtA8sWZ0AQRJK5or5N1HFuBA="}
      */
+
     private int timestampX;
     private ParamsBean params;
 
@@ -34,9 +35,9 @@ public class JBakAddrUserNumRsp extends BaseEntity {
          * RetCode : 0
          * ToId : wBJBnl9pUAhqTq9eyI0blEMDOWFIsloTsckao5OYEKA=
          * FileId : 0
-         * Num : 0
-         * Fpath :
-         * Fkey :
+         * Num : 1
+         * Fpath : /user5/files/B005S11F1579069796
+         * Fkey : vSKmtlH78h5nlVxSHlUkAbQlEr/X5P+bouzrX8oSDkOpwZgdE+qOMmpPRCrbud+xAAC1zPd5xTTO98V8WPdxtA8sWZ0AQRJK5or5N1HFuBA=
          */
 
         private String Action;
