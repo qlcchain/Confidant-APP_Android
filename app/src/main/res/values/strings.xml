@@ -726,7 +726,7 @@
     <string name="Add_a_New_Circle">Add a New Circle</string>
     <string name="Mark_Unread">Mark Unread</string>
     <string name="Star">Starred</string>
-    <string name="Node_back_up">Node back up</string>
+    <string name="Node_back_up">Sync to Node</string>
     <string name="Move_to">Move to</string>
     <string name="Delete">Delete</string>
     <string name="Reply">Reply</string>
@@ -924,7 +924,7 @@ Then enter your Email address and password to log in.</string>
     <string name="Wechat_Records">Wechat Records</string>
     <string name="Please_click_again">Please click again</string>
     <string name="File_corruption">File corruption</string>
-    <string name="recovery">recovery</string>
+    <string name="recovery">Recover to Local</string>
     <string name="Album_Contacts">Encrypted Contacts</string>
     <string name="Incremental_updating">Upload (update the Node contacts)</string>
     <string name="Coverage_update">Upload (replace the Node contacts)</string>

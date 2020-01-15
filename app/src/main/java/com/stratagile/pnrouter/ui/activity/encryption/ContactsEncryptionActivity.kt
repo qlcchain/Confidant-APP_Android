@@ -115,12 +115,11 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
             if(fileStatus.complete)
             {
-
+                var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
                 var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
                 var file = File(toPath)
                 if (file.exists()) {
-                    var  fileReturnData = fileStatus.fileKey;
-                    var fileId = fileReturnData.substring(fileReturnData.indexOf("__")+2,fileReturnData.length);
+                    var fileId = fileID;
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var fileMD5 = ""
 
