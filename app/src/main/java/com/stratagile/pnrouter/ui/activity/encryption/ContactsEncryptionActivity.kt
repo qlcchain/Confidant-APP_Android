@@ -178,6 +178,10 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                         vcardsAdd.add(vCard)
                                     }
                                 }
+                                for (vCard in vcards)
+                                {
+                                    vcardsAdd.add(vCard)
+                                }
                                 if(vcardsAdd.size >0)
                                 {
                                     Ezvcard.write(vcardsAdd).go(file);
@@ -279,6 +283,11 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             {
                 var fileID = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("##")+2,fileStatus.fileKey.indexOf("__"))
                 var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                if(isUpload)
+                {
+                    toPath = PathUtils.getInstance().getEncryptionContantsNodePath().toString()+"/contants.vcf";
+                    isUpload = false;
+                }
                 var file = File(toPath)
                 if (file.exists()) {
                     var fileId = fileID;
@@ -299,7 +308,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                     val fileNameBase58 = Base58.encode("contants.vcf".toByteArray())
                     var SrcKey = ByteArray(256)
                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey!!, ConstantValue.libsodiumpublicMiKey!!))
-                    val bakFileReq = BakFileReq(4, selfUserId!!, 6, fileId.toInt(), file.length(), fileMD5, fileNameBase58, String(SrcKey), localContacts.text.toString(), 0xF0, "AddrBook", "BakFile")
+                    val addressBeans = ImportVCFUtil.importVCFFileContact(toPath)
+                    val bakFileReq = BakFileReq(4, selfUserId!!, 6, fileId.toInt(), file.length(), fileMD5, fileNameBase58, String(SrcKey), addressBeans.size.toString(), 0xF0, "AddrBook", "BakFile")
                     if (ConstantValue.isWebsocketConnected) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakFileReq))
                     } else if (ConstantValue.isToxConnected) {
@@ -333,10 +343,11 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                     var data = obj as FileOpreateType
                     when (data.icon) {
                         "sheet_added" -> {
-                            runOnUiThread { showProgressDialog(getString(R.string.waiting)) }
+                            VCardmapLocalToNode = HashMap<String,VCard>();
+                            runOnUiThread { showProgressNoCanelDialog(getString(R.string.waiting)) }
                             Thread(Runnable() {
                                 run() {
-
+                                    runOnUiThread { showProgressNoCanelDialog(getString(R.string.waiting)) }
                                     var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
                                     var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
                                     if(result)
@@ -355,7 +366,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                             }).start()
                         }
                         "sheet_cover" -> {
-                            runOnUiThread { showProgressDialog(getString(R.string.waiting)) }
+                            VCardmapLocalToNode = HashMap<String,VCard>();
+                            runOnUiThread { showProgressNoCanelDialog(getString(R.string.waiting)) }
                             Thread(Runnable() {
                                 run() {
 
@@ -400,7 +412,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                     .setContentText(getString(R.string.Recover_merge_tisp))
                                     .setConfirmClickListener {
                                         runOnUiThread {
-                                            showProgressDialog(getString(R.string.waiting));
+                                            showProgressNoCanelDialog(getString(R.string.waiting));
                                         }
                                         var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
                                         var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
@@ -444,6 +456,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                             SweetAlertDialog(this@ContactsEncryptionActivity, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Recover_replace_tisp))
                                     .setConfirmClickListener {
+                                        VCardmapNodeToLocal = HashMap<String,VCard>();
                                         isNeedDownLoad = true;
                                         isNeedRecover = true;
                                         isUpload = false;
@@ -477,7 +490,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         var sendData = BaseData(6, filesListPullReq);
         if(show)
         {
-            showProgressDialog(getString(R.string.waiting));
+            showProgressNoCanelDialog(getString(R.string.waiting));
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
