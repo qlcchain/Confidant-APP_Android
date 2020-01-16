@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
-import android.app.AlertDialog
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
@@ -12,10 +11,8 @@ import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Contacts.Data
 import android.provider.ContactsContract.RawContacts
-import android.widget.Toast
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.utils.PathUtils
-import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -23,8 +20,6 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.LocalFileItem
-import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
@@ -35,6 +30,9 @@ import com.stratagile.pnrouter.ui.activity.encryption.presenter.ContactsEncrypti
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
+import ezvcard.Ezvcard
+import ezvcard.VCard
+import ezvcard.VCardVersion
 import kotlinx.android.synthetic.main.picencry_contacts_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -61,12 +59,14 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             runOnUiThread {
                 closeProgressDialog()
                 toast(R.string.success)
+                getNodeData();
             }
 
         }else{
             runOnUiThread {
                 closeProgressDialog()
                 toast(R.string.fail)
+                getNodeData();
             }
         }
     }
@@ -86,6 +86,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 var fileName = "contants.vcf"
                 var fileNameBase58 = Base58.encode(fileName.toByteArray())
                 var msgID = (System.currentTimeMillis() / 1000) .toInt()
+                var fileSavePathDelete =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
+                DeleteUtils.deleteFile(fileSavePathDelete);
                 FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, msgID, handlerDownLoad, jBakAddrUserNumRsp.params.fkey,"0")
                 isRecover = false;
             }else{
@@ -114,6 +116,9 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                     var msgId = data.getInt("msgID")
                     val uri = Uri.parse("content://com.android.contacts/raw_contacts")
                     contentResolver.delete(uri, "_id!=-1", null)
+                    runOnUiThread {
+                        localContacts.text = "0";
+                    }
                     var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
                     addContact(fileSavePath)
                     //restore(this@ContactsEncryptionActivity,fileSavePath)
@@ -219,17 +224,26 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
                         }
                         "sheet_cover" -> {
-                            runOnUiThread { showProgressDialog() }
-                            var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-                            var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
-                            if(result)
-                            {
-                                msgID = (System.currentTimeMillis() / 1000).toInt()
-                                fileAESKey = RxEncryptTool.generateAESKey()
-                                FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
-                            }else{
-                                runOnUiThread { closeProgressDialog() }
-                            }
+                            runOnUiThread { showProgressDialog(getString(R.string.waiting)) }
+                            Thread(Runnable() {
+                                run() {
+
+                                    var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                                    var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
+                                    if(result)
+                                    {
+                                        msgID = (System.currentTimeMillis() / 1000).toInt()
+                                        fileAESKey = RxEncryptTool.generateAESKey()
+                                        FileMangerUtil.sendContantsFile(toPath,msgID, false,6,fileAESKey)
+                                    }else{
+                                        runOnUiThread {
+                                            toast(R.string.fail)
+                                            closeProgressDialog()
+                                        }
+                                    }
+                                }
+                            }).start()
+
                         }
                     }
                 }
@@ -273,10 +287,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             val addressBeans = ImportVCFUtil.importVCFFileContact(fromPath)
             println(addressBeans.size)
             for (addressBean in addressBeans) {
-                println("tureName : " + addressBean.getTrueName())
-                println("mobile : " + addressBean.getMobile())
-                println("workMobile : " + addressBean.getWorkMobile())
-                println("Email : " + addressBean.getEmail())
+                println("tureName : " + addressBean.structuredName)
+
                 println("--------------------------------")
             }
         }
@@ -490,16 +502,21 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
      * @param contactInfo
      * @return
      */
-    private fun doAddContact(context: Context, contactInfo: AddressBean): Boolean {
+    private fun doAddContact(context: Context, contactInfo: VCard): Boolean {
         try {
-            val contentValues = ContentValues()
+
+            var  text = Ezvcard.write(contactInfo).version(VCardVersion.V3_0).go();
+            var aa = "";
+             var operations = ContactOperations(context);
+            operations.insertContact(contactInfo);
+            /*val contentValues = ContentValues()
             val uri = context.contentResolver.insert(
                     RawContacts.CONTENT_URI, contentValues)
             val rowId = ContentUris.parseId(uri)
 
-            val name = contactInfo.trueName
-            val mobileNum = contactInfo.mobile
-            val homeNum = contactInfo.mobile
+            val name = contactInfo.formattedName.value
+            val mobileNum = contactInfo.telephoneNumbers[0].text
+            val homeNum = contactInfo.telephoneNumbers[0].text
 
             // 插入姓名
             if (name != null) {
@@ -507,20 +524,9 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 contentValues.put(Data.RAW_CONTACT_ID, rowId)
                 contentValues.put(Data.MIMETYPE,
                         StructuredName.CONTENT_ITEM_TYPE)
-                val index = name!!.length / 2
-                var givenName: String? = null
-                var familyName: String? = null
-                // 检查是否是英文名称
-                if (checkEnglishName(name!!) == false) {
-                    givenName = name!!.substring(index)
-                    familyName = name!!.substring(0, index)
-                } else {
-                    familyName = name
-                    givenName = familyName
-                }
-                contentValues.put(StructuredName.DISPLAY_NAME, name)
-                contentValues.put(StructuredName.GIVEN_NAME, givenName)
-                contentValues.put(StructuredName.FAMILY_NAME, familyName)
+                contentValues.put(StructuredName.DISPLAY_NAME, contactInfo.formattedName.value)
+                contentValues.put(StructuredName.GIVEN_NAME, contactInfo.structuredName.given)
+                contentValues.put(StructuredName.FAMILY_NAME, contactInfo.structuredName.family)
                 context.contentResolver.insert(
                         ContactsContract.Data.CONTENT_URI, contentValues)
             }
@@ -545,7 +551,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 contentValues.put(Phone.TYPE, Phone.TYPE_HOME)
                 context.contentResolver.insert(
                         ContactsContract.Data.CONTENT_URI, contentValues)
-            }
+            }*/
         } catch (e: Exception) {
             return false
         }

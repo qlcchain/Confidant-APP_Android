@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.io.text.VCardReader;
+
 
 /**
  * .vcf格式文件的导入导出
@@ -23,27 +27,23 @@ import java.util.regex.Pattern;
 public class ImportVCFUtil {
 
     public void importVcf() {
-        List<AddressBean> addressBeans = this.importVCFFileContact("src/00003.vcf");
+        List<VCard> addressBeans = this.importVCFFileContact("src/00003.vcf");
         System.out.println(addressBeans.size());
-        for (AddressBean addressBean : addressBeans) {
-            System.out.println("tureName : " + addressBean.getTrueName());
-            System.out.println("mobile : " + addressBean.getMobile());
-            System.out.println("workMobile : " + addressBean.getWorkMobile());
-            System.out.println("Email : " + addressBean.getEmail());
+        for (VCard addressBean : addressBeans) {
+            System.out.println("tureName : " + addressBean.getNickname());
             System.out.println("--------------------------------");
         }
     }
-
     public void exportVcf() {
         try {
             List<AddressBean> addressBeans = new ArrayList<AddressBean>();
             AddressBean addressBean = new AddressBean();
-            addressBean.setTrueName("zhangjie");
+            addressBean.setFN("zhangjie");
             addressBean.setMobile("18255963695");
             addressBeans.add(addressBean);
 
             addressBean = new AddressBean();
-            addressBean.setTrueName("张三");
+            addressBean.setFN("张三");
             addressBean.setMobile("15255963695");
             addressBeans.add(addressBean);
 
@@ -57,7 +57,7 @@ public class ImportVCFUtil {
                 reader.write("\r\n");
                 reader.write("VERSION:2.1");
                 reader.write("\r\n");
-                reader.write("N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:" + this.qpEncodeing(bean.getTrueName()) + ";");
+                reader.write("N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:" + this.qpEncodeing(bean.getFN()) + ";");
                 reader.write("\r\n");
                 if ("" != bean.getMobile() && bean.getMobile() != null) {
                     reader.write("TEL;CELL:" + bean.getMobile() + "");
@@ -91,16 +91,17 @@ public class ImportVCFUtil {
      * @param path
      * @return
      */
-    public static List<AddressBean> importVCFFileContact(String path)
-             {
-        List<AddressBean> addressBeans = new ArrayList<AddressBean>();
+    public static List<VCard> importVCFFileContact(String path)
+    {
+        List<VCard> vcards = new ArrayList<VCard>();
         try {
             File formFile = new File(path);
             if(!formFile.exists())
             {
-                return addressBeans;
+                return vcards;
             }
-            FileInputStream fis = new FileInputStream(new File(path));
+            vcards = Ezvcard.parse(formFile).all();
+            /*FileInputStream fis = new FileInputStream(new File(path));
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
             StringBuffer bu = new StringBuffer();
 
@@ -123,26 +124,28 @@ public class ImportVCFUtil {
                         name = name.substring(name.indexOf(":") + 1);
                         if (name.indexOf(";") > -1) {
                             name = name.substring(0, name.indexOf(";"));
-                            be.setTrueName(ImportVCFUtil.qpDecoding(name));
+                            be.setFN(ImportVCFUtil.qpDecoding(name));
                         } else {
-                            be.setTrueName(ImportVCFUtil.qpDecoding(name));
+                            be.setFN(ImportVCFUtil.qpDecoding(name));
                         }
                     } else {
                         Pattern pnn = Pattern.compile("CHARSET=([A-Za-z0-9-]*?):");
                         Matcher mnn = pnn.matcher(mn.group(1));
                         while (mnn.find()) {
                             name = mn.group(1).substring(mn.group(1).indexOf(mnn.group(0)) + mnn.group(0).length());
-                            be.setTrueName(name);
+                            be.setFN(name);
                         }
                     }
                 }
 
                 String cell = "";
-                Pattern p1 = Pattern.compile("TEL;CELL:([\\s*\\d*\\s*\\d*\\s*\\d*]*?)([\\r\\n])");
+                Pattern p1 = Pattern.compile("TEL;(.*)CELL:([\\s-*\\d*\\s*\\d*\\s*\\d*]*)([\\r\\n])");
                 Matcher m1 = p1.matcher(str);
                 while (m1.find()) {
                     String tel = m1.group(0);
-                    cell = tel.substring("TEL;CELL:".length());
+                    tel = tel.replaceAll("\\r\\n","");
+                    int beginIndex = tel.indexOf("CELL:"+"CELL:".length());
+                    cell = tel.substring(beginIndex);
                 }
                 be.setMobile(cell);
 
@@ -172,11 +175,11 @@ public class ImportVCFUtil {
                 be.setEmail(email);
                 addressBeans.add(be);
             }
-            reader.close();
+            reader.close();*/
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return addressBeans;
+        return vcards;
     }
 
     public static String nextLine(BufferedReader reader) throws IOException {
