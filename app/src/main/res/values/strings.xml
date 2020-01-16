@@ -932,4 +932,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Recover_replace">Recover (replace all local contacts)</string>
     <string name="Recover_merge_tisp">Are you sure you want to merge Node contacts to local contacts?</string>
     <string name="Recover_replace_tisp">The local contacts will be replaced by the Node contacts. Are you sure you want to continue?</string>
+    <string name="There_is_no_contacts">There is no contacts has been backuped to Local. You may create new contacts and then sync to Node.</string>
+    <string name="There_is_no_Node">The contacts haven\'t been backuped to Node. You may sync to Node firstly.</string>
 </resources>

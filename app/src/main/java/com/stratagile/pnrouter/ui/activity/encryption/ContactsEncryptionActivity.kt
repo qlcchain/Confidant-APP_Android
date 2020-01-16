@@ -1,16 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
-import android.content.*
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Message
-import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.Phone
-import android.provider.ContactsContract.CommonDataKinds.StructuredName
-import android.provider.ContactsContract.Contacts.Data
-import android.provider.ContactsContract.RawContacts
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
@@ -33,7 +28,6 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import ezvcard.Ezvcard
 import ezvcard.VCard
-import ezvcard.VCardVersion
 import kotlinx.android.synthetic.main.picencry_contacts_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -60,14 +54,14 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             runOnUiThread {
                 closeProgressDialog()
                 toast(R.string.success)
-                getNodeData();
+                getNodeData(false);
             }
 
         }else{
             runOnUiThread {
                 closeProgressDialog()
                 toast(R.string.fail)
-                getNodeData();
+                getNodeData(false);
             }
         }
     }
@@ -82,15 +76,23 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             }
             if(isNeedDownLoad)
             {
-                var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + jBakAddrUserNumRsp.params.fpath
-                var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString()
-                var fileName = "contants.vcf"
-                var fileNameBase58 = Base58.encode(fileName.toByteArray())
-                var msgID = (System.currentTimeMillis() / 1000) .toInt()
-                var fileSavePathDelete =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
-                DeleteUtils.deleteFile(fileSavePathDelete);
-                FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, msgID, handlerDownLoad, jBakAddrUserNumRsp.params.fkey,"0")
-                isNeedDownLoad = false;
+                if(jBakAddrUserNumRsp.params.fpath != "")
+                {
+                    var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + jBakAddrUserNumRsp.params.fpath
+                    var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString()
+                    var fileName = "contants.vcf"
+                    var fileNameBase58 = Base58.encode(fileName.toByteArray())
+                    var msgID = (System.currentTimeMillis() / 1000) .toInt()
+                    var fileSavePathDelete =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
+                    DeleteUtils.deleteFile(fileSavePathDelete);
+                    FileDownloadUtils.doDownLoadWork(filledUri,fileNameBase58, fileSavePath, this, msgID, handlerDownLoad, jBakAddrUserNumRsp.params.fkey,"0")
+                    isNeedDownLoad = false;
+                }else{
+                    runOnUiThread {
+                        toast(R.string.There_is_no_Node)
+                    }
+                    isNeedDownLoad = false;
+                }
             }else{
                 runOnUiThread {
                     closeProgressDialog()
@@ -115,20 +117,76 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 0x55 -> {
                     var data: Bundle = msg.data;
                     var msgId = data.getInt("msgID")
-                    if(isNeedRecover)
+                    if(isUpload)//如果是上传
                     {
-                        val uri = Uri.parse("content://com.android.contacts/raw_contacts")
-                        contentResolver.delete(uri, "_id!=-1", null)
-                        runOnUiThread {
-                            localContacts.text = "0";
+                        var  vcardsAdd = arrayListOf<VCard>()
+                        var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
+                        try {
+                            var file = File(fileSavePath!!)
+                            if(file.exists())
+                            {
+                                var  vcards = ImportVCFUtil.importVCFFileContact(fileSavePath)
+                                for (vCard in vcards)
+                                {
+                                    var firstTelephone = vCard.telephoneNumbers.get(0)
+                                    var phoneNum = "";
+                                    if(firstTelephone!= null)
+                                    {
+                                        phoneNum = firstTelephone.text;
+                                    }
+                                    var familyName = "";
+                                    var givenName = ""
+                                    if(vCard.structuredName!= null)
+                                    {
+                                        if(vCard.structuredName.family!= null)
+                                        {
+                                            familyName = vCard.structuredName.family
+                                        }
+                                        if(vCard.structuredName.given!= null)
+                                        {
+                                            givenName = vCard.structuredName.given
+                                        }
+                                    }
+                                    if(VCardmapLocalToNode.get(familyName +"_"+givenName+"_"+phoneNum) == null)
+                                    {
+                                        vcardsAdd.add(vCard)
+                                    }
+                                }
+                                if(vcardsAdd.size >0)
+                                {
+                                    Ezvcard.write(vcardsAdd).go(file);
+                                    msgID = (System.currentTimeMillis() / 1000).toInt()
+                                    fileAESKey = RxEncryptTool.generateAESKey()
+                                    FileMangerUtil.sendContantsFile(fileSavePath,msgID, false,6,fileAESKey)
+                                }else{
+                                    runOnUiThread {
+                                        toast(R.string.success)
+                                        closeProgressDialog()
+                                    }
+                                }
+
+                            }
+                        }catch (e:Exception)
+                        {
+
                         }
-                        successCount = 0
+
+
                     }else{
-                        successCount =  localContacts.text.toString().toInt();
+                        if(isNeedRecover)
+                        {
+                            val uri = Uri.parse("content://com.android.contacts/raw_contacts")
+                            contentResolver.delete(uri, "_id!=-1", null)
+                            runOnUiThread {
+                                localContacts.text = "0";
+                            }
+                            successCount = 0
+                        }else{
+                            successCount =  localContacts.text.toString().toInt();
+                        }
+                        var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
+                        addContact(fileSavePath)
                     }
-                    var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
-                    addContact(fileSavePath)
-                    //restore(this@ContactsEncryptionActivity,fileSavePath)
                 }
             }//goMain();
             //goMain();
@@ -149,12 +207,14 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
     var fileAESKey:String? = null;
     var isNeedDownLoad = false;
     var isNeedRecover = false;//是否覆盖，true 覆盖，false 新增
+    var isUpload = false;
     var addThread: Thread? = null// 增加联系人线程
     var ADD_FAIL = 0// 导入失败标识
     var ADD_SUCCESS = 1// 导入成功标识
     var successCount = 0// 导入成功的计数
     var failCount = 0// 导入失败的计数
-    var VCardmap = HashMap<String,VCard>();
+    var VCardmapLocalToNode = HashMap<String,VCard>();
+    var VCardmapNodeToLocal = HashMap<String,VCard>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +233,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
         if (fileStatus.result == 1) {
-            toast(R.string.File_does_not_exist)
+            toast(R.string.There_is_no_contacts)
             runOnUiThread {
                 closeProgressDialog()
             }
@@ -233,7 +293,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
     }
     override fun initData() {
         EventBus.getDefault().register(this)
-        VCardmap = HashMap<String,VCard>();
+        VCardmapNodeToLocal = HashMap<String,VCard>();
         AppConfig.instance.messageReceiver?.bakAddrUserNumCallback = this
         title.text = getString(R.string.Album_Contacts)
         selectNodeBtn.setOnClickListener {
@@ -247,7 +307,51 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                     var data = obj as FileOpreateType
                     when (data.icon) {
                         "sheet_added" -> {
+                            runOnUiThread { showProgressDialog(getString(R.string.waiting)) }
+                            Thread(Runnable() {
+                                run() {
 
+                                    var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                                    var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
+                                    if(result)
+                                    {
+                                        var  vcards = ImportVCFUtil.importVCFFileContact(toPath)
+                                        VCardmapLocalToNode = HashMap<String,VCard>();
+                                        for (vCard in vcards)
+                                        {
+                                            var firstTelephone = vCard.telephoneNumbers.get(0)
+                                            var phoneNum = "";
+                                            if(firstTelephone!= null)
+                                            {
+                                                phoneNum = firstTelephone.text;
+                                            }
+                                            var familyName = "";
+                                            var givenName = ""
+                                            if(vCard.structuredName!= null)
+                                            {
+                                                if(vCard.structuredName.family!= null)
+                                                {
+                                                    familyName = vCard.structuredName.family
+                                                }
+                                                if(vCard.structuredName.given!= null)
+                                                {
+                                                    givenName = vCard.structuredName.given
+                                                }
+                                            }
+                                            VCardmapLocalToNode.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
+                                        }
+                                        isNeedDownLoad = true;
+                                        isNeedRecover = false;
+                                        isUpload = true;
+                                        getNodeData(false);
+                                    }else{
+                                        runOnUiThread {
+                                            toast(R.string.fail)
+                                            closeProgressDialog()
+                                        }
+                                    }
+                                }
+                            }).start()
                         }
                         "sheet_cover" -> {
                             runOnUiThread { showProgressDialog(getString(R.string.waiting)) }
@@ -294,12 +398,15 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                             SweetAlertDialog(this@ContactsEncryptionActivity, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Recover_merge_tisp))
                                     .setConfirmClickListener {
+                                        runOnUiThread {
+                                            showProgressDialog(getString(R.string.waiting));
+                                        }
                                         var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
                                         var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
                                         if(result)
                                         {
                                             var  vcards = ImportVCFUtil.importVCFFileContact(toPath)
-                                            VCardmap = HashMap<String,VCard>();
+                                            VCardmapNodeToLocal = HashMap<String,VCard>();
                                             for (vCard in vcards)
                                             {
                                                 var firstTelephone = vCard.telephoneNumbers.get(0)
@@ -322,12 +429,13 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                                     }
                                                 }
 
-                                                VCardmap.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
+                                                VCardmapNodeToLocal.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
                                             }
                                         }
                                         isNeedDownLoad = true;
                                         isNeedRecover = false;
-                                        getNodeData();
+                                        isUpload = false;
+                                        getNodeData(false);
                                     }
                                     .show()
                         }
@@ -337,7 +445,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                     .setConfirmClickListener {
                                         isNeedDownLoad = true;
                                         isNeedRecover = true;
-                                        getNodeData();
+                                        isUpload = false;
+                                        getNodeData(true);
                                     }
                                     .show()
 
@@ -358,14 +467,17 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
             }
         }
         mPresenter.getScanPermission()
-        getNodeData();
+        getNodeData(true);
     }
-    fun getNodeData()
+    fun getNodeData(show: Boolean)
     {
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
         var sendData = BaseData(6, filesListPullReq);
-        showProgressDialog();
+        if(show)
+        {
+            showProgressDialog(getString(R.string.waiting));
+        }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
@@ -470,7 +582,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                             givenName = info.structuredName.given
                         }
                     }
-                    if(VCardmap.get(familyName +"_"+givenName+"_"+phoneNum) != null)
+                    if(VCardmapNodeToLocal.get(familyName +"_"+givenName+"_"+phoneNum) != null)
                     {
                         continue;
                     }
