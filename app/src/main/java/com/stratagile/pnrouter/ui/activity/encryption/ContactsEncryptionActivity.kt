@@ -125,7 +125,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
 
 
     override fun getScanPermissionSuccess() {
-        var count = FileUtil.getContantsCount(this@ContactsEncryptionActivity)
+        var count = FileUtil.getContactCount(this@ContactsEncryptionActivity)
         runOnUiThread {
             localContacts.text = count.toString();
         }
@@ -374,7 +374,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                 if (doAddContact(context, info)) {
                     successCount++
                 }
-                var count = FileUtil.getContantsCount(this@ContactsEncryptionActivity)
+                var count = FileUtil.getContactCount(this@ContactsEncryptionActivity)
                 runOnUiThread {
                     localContacts.text = count.toString();
                 }

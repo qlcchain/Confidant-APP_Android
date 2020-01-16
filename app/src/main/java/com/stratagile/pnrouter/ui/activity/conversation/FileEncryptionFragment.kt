@@ -45,7 +45,8 @@ import kotlinx.android.synthetic.main.fragment_file_encryption.*
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
     override fun getScanPermissionSuccess() {
-        var count = FileUtil.getContantsCount(this@FileEncryptionFragment.context)
+        //var count = FileUtil.getContantsCount(this@FileEncryptionFragment.context)
+        var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
         runOnUiThread {
             localContacts.text = count.toString();
         }

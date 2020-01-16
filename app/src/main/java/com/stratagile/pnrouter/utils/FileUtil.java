@@ -1721,10 +1721,28 @@ public class FileUtil {
     public static int getContantsCount(Context context){
         int count = 0;
         ContentResolver cr = context.getContentResolver();
-        Cursor cursor = cr.query(phoneUri,new String[]{"_id"},null,null,null);
+        Cursor cursor = cr.query(phoneUri,new String[]{NUM,NAME},null,null,null);
         while (cursor.moveToNext()){
+            String name = cursor.getString(cursor.getColumnIndex(NAME));
+            String phone = cursor.getString(cursor.getColumnIndex(NUM));
             count ++;
         }
         return count;
+    }
+
+    /**
+     * 获取联系人的个数
+     * @return 手里通讯录中联系人的个数
+     */
+    public static int getContactCount(Context context){
+        Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
+        try{
+            c.moveToFirst();
+            return c.getInt(0);
+        }catch(Exception e){
+            return 0;
+        }finally{
+            c.close();
+        }
     }
 }
