@@ -382,6 +382,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                             }).start()
                         }
                         "sheet_cover" -> {
+                            isUpload = false;
                             VCardmapLocalToNode = HashMap<String,VCard>();
                             runOnUiThread { showProgressNoCanelDialog(getString(R.string.waiting)) }
                             Thread(Runnable() {
