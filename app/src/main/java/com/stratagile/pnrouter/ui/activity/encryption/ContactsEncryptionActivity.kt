@@ -469,7 +469,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                                 isUpload = false;
                                                 getNodeData(false);
                                             }
-                                        })
+                                        }).start()
 
                                     }
                                     .show()
