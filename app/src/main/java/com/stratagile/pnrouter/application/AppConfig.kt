@@ -41,6 +41,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp
 import com.stratagile.pnrouter.entity.JPushMsgRsp
+import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.KotlinToxService
@@ -317,6 +318,7 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
                 LogUtil.addLog("当前程序切换到前台")
+                EventBus.getDefault().post(ForegroundCallBack(true))
                 isBackGroud = false
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime, 0)
                 KLog.i(unlockTime)
@@ -355,7 +357,7 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
                 LogUtil.addLog("当前程序切换到后台")
-//                EventBus.getDefault().post(BackgroudEvent())
+                EventBus.getDefault().post(ForegroundCallBack(false))
                 isBackGroud = true
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))

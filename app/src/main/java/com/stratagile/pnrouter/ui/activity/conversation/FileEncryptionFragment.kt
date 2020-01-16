@@ -26,6 +26,8 @@ import com.stratagile.pnrouter.entity.BakAddrUserNumReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
 import com.stratagile.pnrouter.entity.JBakFileRsp
+import com.stratagile.pnrouter.entity.events.FileStatus
+import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.WeiXinEncryptionActivity
@@ -35,6 +37,9 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.fragment_file_encryption.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * @author zl
@@ -111,6 +116,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver?.bakAddrUserNumOutCallback = this
         albumMenuRoot.setOnClickListener {
             var intent =  Intent(activity!!, PicEncryptionActivity::class.java)
@@ -125,6 +131,13 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             startActivity(intent);
         }
 
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(foregroundCallBack: ForegroundCallBack) {
+        if(foregroundCallBack.isForeground)
+        {
+            mPresenter.getScanPermission()
+        }
     }
     override fun setPresenter(presenter: FileEncryptionContract.FileEncryptionContractPresenter) {
         mPresenter = presenter as FileEncryptionPresenter
