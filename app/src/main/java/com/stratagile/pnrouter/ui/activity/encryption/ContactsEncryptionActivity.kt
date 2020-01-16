@@ -120,13 +120,39 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                     if(isUpload)//如果是上传
                     {
                         var  vcardsAdd = arrayListOf<VCard>()
+                        var fileLocalPath =   PathUtils.getInstance().getEncryptionContantsLocalPath().toString() +"/contants.vcf"
                         var fileSavePath =   PathUtils.getInstance().getEncryptionContantsNodePath().toString() +"/contants.vcf"
                         try {
                             var file = File(fileSavePath!!)
                             if(file.exists())
                             {
                                 var  vcards = ImportVCFUtil.importVCFFileContact(fileSavePath)
+                                VCardmapLocalToNode = HashMap<String,VCard>();
                                 for (vCard in vcards)
+                                {
+                                    var firstTelephone = vCard.telephoneNumbers.get(0)
+                                    var phoneNum = "";
+                                    if(firstTelephone!= null)
+                                    {
+                                        phoneNum = firstTelephone.text;
+                                    }
+                                    var familyName = "";
+                                    var givenName = ""
+                                    if(vCard.structuredName!= null)
+                                    {
+                                        if(vCard.structuredName.family!= null)
+                                        {
+                                            familyName = vCard.structuredName.family
+                                        }
+                                        if(vCard.structuredName.given!= null)
+                                        {
+                                            givenName = vCard.structuredName.given
+                                        }
+                                    }
+                                    VCardmapLocalToNode.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
+                                }
+                                var  vcardsLocal = ImportVCFUtil.importVCFFileContact(fileLocalPath)
+                                for (vCard in vcardsLocal)
                                 {
                                     var firstTelephone = vCard.telephoneNumbers.get(0)
                                     var phoneNum = "";
@@ -315,31 +341,6 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                     var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
                                     if(result)
                                     {
-                                        var  vcards = ImportVCFUtil.importVCFFileContact(toPath)
-                                        VCardmapLocalToNode = HashMap<String,VCard>();
-                                        for (vCard in vcards)
-                                        {
-                                            var firstTelephone = vCard.telephoneNumbers.get(0)
-                                            var phoneNum = "";
-                                            if(firstTelephone!= null)
-                                            {
-                                                phoneNum = firstTelephone.text;
-                                            }
-                                            var familyName = "";
-                                            var givenName = ""
-                                            if(vCard.structuredName!= null)
-                                            {
-                                                if(vCard.structuredName.family!= null)
-                                                {
-                                                    familyName = vCard.structuredName.family
-                                                }
-                                                if(vCard.structuredName.given!= null)
-                                                {
-                                                    givenName = vCard.structuredName.given
-                                                }
-                                            }
-                                            VCardmapLocalToNode.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
-                                        }
                                         isNeedDownLoad = true;
                                         isNeedRecover = false;
                                         isUpload = true;
