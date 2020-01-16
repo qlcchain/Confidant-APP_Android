@@ -504,54 +504,8 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
      */
     private fun doAddContact(context: Context, contactInfo: VCard): Boolean {
         try {
-
-            var  text = Ezvcard.write(contactInfo).version(VCardVersion.V3_0).go();
-            var aa = "";
-             var operations = ContactOperations(context);
+            var operations = ContactOperations(context);
             operations.insertContact(contactInfo);
-            /*val contentValues = ContentValues()
-            val uri = context.contentResolver.insert(
-                    RawContacts.CONTENT_URI, contentValues)
-            val rowId = ContentUris.parseId(uri)
-
-            val name = contactInfo.formattedName.value
-            val mobileNum = contactInfo.telephoneNumbers[0].text
-            val homeNum = contactInfo.telephoneNumbers[0].text
-
-            // 插入姓名
-            if (name != null) {
-                contentValues.clear()
-                contentValues.put(Data.RAW_CONTACT_ID, rowId)
-                contentValues.put(Data.MIMETYPE,
-                        StructuredName.CONTENT_ITEM_TYPE)
-                contentValues.put(StructuredName.DISPLAY_NAME, contactInfo.formattedName.value)
-                contentValues.put(StructuredName.GIVEN_NAME, contactInfo.structuredName.given)
-                contentValues.put(StructuredName.FAMILY_NAME, contactInfo.structuredName.family)
-                context.contentResolver.insert(
-                        ContactsContract.Data.CONTENT_URI, contentValues)
-            }
-
-            if (mobileNum != null) {
-                // 插入手机电话
-                contentValues.clear()
-                contentValues.put(Data.RAW_CONTACT_ID, rowId)
-                contentValues.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-                contentValues.put(Phone.NUMBER, mobileNum)
-                contentValues.put(Phone.TYPE, Phone.TYPE_MOBILE)
-                context.contentResolver.insert(
-                        ContactsContract.Data.CONTENT_URI, contentValues)
-            }
-
-            if (homeNum != null) {
-                // 插入家庭号码
-                contentValues.clear()
-                contentValues.put(Data.RAW_CONTACT_ID, rowId)
-                contentValues.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-                contentValues.put(Phone.NUMBER, homeNum)
-                contentValues.put(Phone.TYPE, Phone.TYPE_HOME)
-                context.contentResolver.insert(
-                        ContactsContract.Data.CONTENT_URI, contentValues)
-            }*/
         } catch (e: Exception) {
             return false
         }
