@@ -106,7 +106,6 @@ public class ContactOperations {
 
 		// handle Iphone kinda of group properties. which are grouped together.
 		convertGroupedProperties(contentValues, vcard);
-
 		convertBirthdays(contentValues, vcard);
 
 		convertWebsites(contentValues, vcard);
