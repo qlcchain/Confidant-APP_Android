@@ -431,41 +431,46 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                         runOnUiThread {
                                             showProgressNoCanelDialog(getString(R.string.waiting));
                                         }
-                                        var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
-                                        var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
-                                        if(result)
-                                        {
-                                            var  vcards = ImportVCFUtil.importVCFFileContact(toPath)
-                                            VCardmapNodeToLocal = HashMap<String,VCard>();
-                                            for (vCard in vcards)
-                                            {
-                                                var firstTelephone = vCard.telephoneNumbers.get(0)
-                                                var phoneNum = "";
-                                                if(firstTelephone!= null)
+                                        Thread(Runnable() {
+                                            run() {
+                                                var toPath = PathUtils.getInstance().getEncryptionContantsLocalPath().toString()+"/contants.vcf";
+                                                var result = FileUtil.exportContacts(this@ContactsEncryptionActivity,toPath);
+                                                if(result)
                                                 {
-                                                    phoneNum = firstTelephone.text;
-                                                }
-                                                var familyName = "";
-                                                var givenName = ""
-                                                if(vCard.structuredName!= null)
-                                                {
-                                                    if(vCard.structuredName.family!= null)
+                                                    var  vcards = ImportVCFUtil.importVCFFileContact(toPath)
+                                                    VCardmapNodeToLocal = HashMap<String,VCard>();
+                                                    for (vCard in vcards)
                                                     {
-                                                        familyName = vCard.structuredName.family
-                                                    }
-                                                    if(vCard.structuredName.given!= null)
-                                                    {
-                                                        givenName = vCard.structuredName.given
-                                                    }
-                                                }
+                                                        var firstTelephone = vCard.telephoneNumbers.get(0)
+                                                        var phoneNum = "";
+                                                        if(firstTelephone!= null)
+                                                        {
+                                                            phoneNum = firstTelephone.text;
+                                                        }
+                                                        var familyName = "";
+                                                        var givenName = ""
+                                                        if(vCard.structuredName!= null)
+                                                        {
+                                                            if(vCard.structuredName.family!= null)
+                                                            {
+                                                                familyName = vCard.structuredName.family
+                                                            }
+                                                            if(vCard.structuredName.given!= null)
+                                                            {
+                                                                givenName = vCard.structuredName.given
+                                                            }
+                                                        }
 
-                                                VCardmapNodeToLocal.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
+                                                        VCardmapNodeToLocal.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
+                                                    }
+                                                }
+                                                isNeedDownLoad = true;
+                                                isNeedRecover = false;
+                                                isUpload = false;
+                                                getNodeData(false);
                                             }
-                                        }
-                                        isNeedDownLoad = true;
-                                        isNeedRecover = false;
-                                        isUpload = false;
-                                        getNodeData(false);
+                                        })
+
                                     }
                                     .show()
                         }
