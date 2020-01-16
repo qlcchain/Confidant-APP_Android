@@ -152,6 +152,14 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                     VCardmapLocalToNode.put(familyName +"_"+givenName+"_"+phoneNum,vCard);
                                 }
                                 var  vcardsLocal = ImportVCFUtil.importVCFFileContact(fileLocalPath)
+                                if(vcardsLocal.size ==0)
+                                {
+                                    runOnUiThread {
+                                        toast(R.string.There_is_no_contacts)
+                                        closeProgressDialog()
+                                    }
+                                    return;
+                                }
                                 for (vCard in vcardsLocal)
                                 {
                                     var firstTelephone = vCard.telephoneNumbers.get(0)
@@ -177,6 +185,14 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
                                     {
                                         vcardsAdd.add(vCard)
                                     }
+                                }
+                                if(vcardsAdd.size ==0)
+                                {
+                                    runOnUiThread {
+                                        toast(R.string.No_need_to_update)
+                                        closeProgressDialog()
+                                    }
+                                    return;
                                 }
                                 for (vCard in vcards)
                                 {
