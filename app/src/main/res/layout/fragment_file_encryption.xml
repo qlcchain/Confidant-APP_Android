@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
     android:layout_width="match_parent"
     android:background="@color/color_f2f2f2"
     android:layout_height="match_parent"
@@ -306,13 +309,14 @@
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/messagesParent"
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_marginLeft="@dimen/x30"
         android:layout_marginRight="@dimen/x30"
         android:layout_marginTop="@dimen/x15"
         android:background="@color/white"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_height="wrap_content">
         <com.stratagile.pnrouter.view.DrawableMyTextView
             android:layout_width="match_parent"
@@ -334,13 +338,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/localMessags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
                     android:textColor="#6646F7"
                     android:textStyle="bold"
                     android:layout_gravity="center"
-                    android:text="103"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -356,21 +361,23 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/nodeMessags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
                     android:textColor="#6646F7"
                     android:textStyle="bold"
                     android:layout_gravity="center"
-                    android:text="200"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/x15"
                     android:textSize="14sp"
                     android:textColor="#9496A1"
+                    android:text="@string/nodemsg_local"
                     android:layout_gravity="center"
-                    android:text="@string/nomsg_local"/>
+                    />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -378,13 +385,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/filterMessags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
                     android:textColor="#6646F7"
                     android:textStyle="bold"
                     android:layout_gravity="center"
-                    android:text="200"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -392,8 +400,35 @@
                     android:textSize="14sp"
                     android:textColor="#9496A1"
                     android:layout_gravity="center"
-                    android:text="@string/nodemsg_local"/>
+                    android:text="@string/nomsg_local"
+                   />
             </LinearLayout>
+        </LinearLayout>
+        <View style="@style/divide_line_nomarge"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_marginBottom="@dimen/x20"
+            android:layout_marginRight="@dimen/x30"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#7ED321"
+                android:textSize="12sp"
+                android:layout_weight="1"
+                android:text="@string/new_message_add_tips"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#323233"
+                android:textSize="14sp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="@string/sy_message_tips"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

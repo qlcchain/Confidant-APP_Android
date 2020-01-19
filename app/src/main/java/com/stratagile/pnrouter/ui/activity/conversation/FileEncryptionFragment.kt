@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.view.LayoutInflater
@@ -17,6 +19,7 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileEncryption
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import com.google.common.reflect.Reflection.getPackageName
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.runOnUiThread
 import com.stratagile.pnrouter.R
@@ -55,6 +58,12 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         runOnUiThread {
             localContacts.text = count.toString();
         }
+        var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+        runOnUiThread {
+            localMessags.text = msgCount.toString();
+        }
+        var aa = FileUtil.getAllSms(this@FileEncryptionFragment.context)
+        var bb = aa;
     }
 
     override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {
@@ -130,7 +139,19 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
             startActivity(intent);
         }
-
+        messagesParent.setOnClickListener {
+            var localIntent = Intent();
+            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (Build.VERSION.SDK_INT >= 9) {
+                localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                localIntent.setData(Uri.fromParts("package", "com.stratagile.pnrouter", null));
+            } else if (Build.VERSION.SDK_INT <= 8) {
+                localIntent.setAction(Intent.ACTION_VIEW);
+                localIntent.setClassName("com.stratagile.pnrouter", "com.android.settings.InstalledAppDetails");
+                localIntent.putExtra("com.android.settings.ApplicationPkgName","com.stratagile.pnrouter");
+            }
+            startActivity(localIntent);
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(foregroundCallBack: ForegroundCallBack) {

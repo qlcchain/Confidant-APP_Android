@@ -936,6 +936,6 @@ Then enter your Email address and password to log in.</string>
     <string name="There_is_no_Node">The contacts haven\'t been backuped to Node. You may sync to Node firstly.</string>
     <string name="No_need_to_update">No need to update</string>
 
-
-
+    <string name="new_message_add_tips">新增多条来往短信</string>
+    <string name="sy_message_tips">马上同步</string>
 </resources>
