@@ -140,6 +140,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             startActivity(intent);
         }
         messagesParent.setOnClickListener {
+            
             var localIntent = Intent();
             localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= 9) {
