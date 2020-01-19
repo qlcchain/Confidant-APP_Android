@@ -47,10 +47,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
-
 /**
  * Created by zhangsong on 17-10-12.
  */
@@ -137,8 +133,8 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
                 BaseData baseData = new BaseData(msgData);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
-                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }

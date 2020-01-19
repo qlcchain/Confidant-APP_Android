@@ -19,7 +19,7 @@ class GroupUserAdapter (arrayList: ArrayList<JGroupUserPullRsp.ParamsBean.Payloa
         val imageButtonWithText = helper.getView<ImageButtonWithText>(R.id.memberView)
 
         if ("1".equals(item.toxId)) {
-            imageButtonWithText.setImage(R.mipmap.add_contacts)
+            imageButtonWithText.setImage(R.mipmap.add_groupcontacts)
         } else if ("0".equals(item.toxId)) {
             imageButtonWithText.setImage(R.mipmap.delete_contacts)
         } else {

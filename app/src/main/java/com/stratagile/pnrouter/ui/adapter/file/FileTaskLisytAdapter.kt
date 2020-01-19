@@ -128,8 +128,8 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             }
         }
 
-        helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
-        helper.setImageDrawable(R.id.stopBtn, mContext.resources.getDrawable(R.mipmap.platform_n))
+        helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.noun_play_b))
+        helper.setImageDrawable(R.id.stopBtn, mContext.resources.getDrawable(R.mipmap.noun_pause_a))
         if (fileOriginalName.contains("jpg")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
         } else if (fileOriginalName.contains("pdf")) {

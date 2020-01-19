@@ -1,7 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.user
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,14 +8,11 @@ import android.os.Message
 import android.text.Editable
 import android.text.Html
 import android.text.TextWatcher
-import android.view.KeyEvent
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.stratagile.pnrouter.R
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.application.AppConfig
@@ -26,11 +22,8 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
-import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
-import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerCreateLocalAccountComponent
@@ -39,15 +32,7 @@ import com.stratagile.pnrouter.ui.activity.user.module.CreateLocalAccountModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.CreateLocalAccountPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.NetUtils.isMacAddress
-import com.stratagile.tox.toxcore.KotlinToxService
-import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_create_local_account.*
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.ArrayList
 
@@ -435,8 +420,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     var baseData = BaseData(2,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }else{
 
                         ConstantValue.unSendMessage.put("recovery",baseDataJson)
@@ -475,8 +460,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -928,8 +913,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
              var baseData = BaseData(2, recovery)
              var baseDataJson = baseData.baseDataToJson().replace("\\", "")
              if (ConstantValue.isAntox) {
-                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                 //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
              }else{
                  ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
              }

@@ -4,6 +4,7 @@ import android.os.Build;
 import android.text.Html;
 import android.util.Base64;
 
+import com.smailnet.eamil.Utils.AESCipher;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
 import java.io.UnsupportedEncodingException;

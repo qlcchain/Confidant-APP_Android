@@ -36,7 +36,7 @@ object SpUtil {
         {
             return
         }
-        if(key.indexOf("UserId") > -1)
+        if(key.indexOf("message_") > -1)
         {
             var aa =""
         }
@@ -50,6 +50,10 @@ object SpUtil {
         if(context ==null  ||  key == null)
         {
             return ""
+        }
+        if("autoLoginRouterSn" == key)
+        {
+            var aa = ""
         }
         if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)

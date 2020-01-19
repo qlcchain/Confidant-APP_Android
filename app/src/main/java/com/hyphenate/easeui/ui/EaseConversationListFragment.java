@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -46,6 +47,8 @@ import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu;
+import com.stratagile.pnrouter.entity.events.UnReadMessageCount;
+import com.stratagile.pnrouter.entity.events.UnReadMessageZero;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -67,13 +70,15 @@ import java.util.Map;
  */
 public class EaseConversationListFragment extends EaseBaseFragment {
     private final static int MSG_REFRESH = 2;
+    private final static int showSearch = 3;
     protected EditText query;
     protected ImageButton clearSearch;
+    protected RelativeLayout searchParent;
     protected boolean hidden;
     protected List<UnReadEMMessage> conversationList = new ArrayList<UnReadEMMessage>();
     protected EaseConversationList conversationListView;
     protected FrameLayout errorItemContainer;
-
+    protected String from = "";
     protected boolean isConflict;
 
     protected EMConversationListener convListener = new EMConversationListener() {
@@ -127,12 +132,20 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
     @Override
     protected void initView() {
+        if (getArguments() != null) {
+            from = getArguments().getString("from","");
+        }
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         conversationListView = (EaseConversationList) getView().findViewById(R.id.list);
         query = (EditText) getView().findViewById(R.id.query);
         // button to clear content in search bar
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
+        searchParent = (RelativeLayout) getView().findViewById(R.id.searchParent);
+        if(searchParent != null)
+        {
+            searchParent.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -211,20 +224,21 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                         public void onClick(View view) {
                             UnReadEMMessage conversation = conversationListView.getItem(i);
                             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                             if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.Chat) {
                                 KLog.i("清除和 " + conversation.getEmMessage().getTo() + " 的对话");
                                 if (userId.equals(conversation.getEmMessage().getFrom())) {
                                     KLog.i("自己的id为：" + userId + " 的对话");
                                     LogUtil.addLog("清除和" + conversation.getEmMessage().getTo() + "的对话");
-                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");
+                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + conversation.getEmMessage().getTo(), "");
                                 } else {
                                     KLog.i("自己的id为：" + userId + " 的对话");
                                     LogUtil.addLog("清除和" + conversation.getEmMessage().getFrom() + "的对话");
-                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getFrom(), "");
+                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + conversation.getEmMessage().getFrom(), "");
                                 }
                             } else {
                                 //需要细化处理 ，弹窗告知详情等
-                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");//移除临时会话UI
+                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + conversation.getEmMessage().getTo(), "");//移除临时会话UI
                             }
                             refresh();
                             commonDialog.cancel();
@@ -275,6 +289,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                 return false;
             }
         });
+        if(from!= null && !from.equals(""))
+        {
+            shouUI(true);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -322,6 +340,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                         conversationListView.refresh();
                     break;
                 }
+                case showSearch:
+                {
+                    shouUI(true);
+                    break;
+                }
                 default:
                     break;
             }
@@ -350,9 +373,31 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
         if (!handler.hasMessages(MSG_REFRESH)) {
             handler.sendEmptyMessage(MSG_REFRESH);
+            EventBus.getDefault().post(new UnReadMessageCount(0));
         }
     }
-
+    public void shouUIMSG(boolean flag)
+    {
+        if (!handler.hasMessages(showSearch)) {
+            handler.sendEmptyMessage(showSearch);
+        }
+    }
+    public void shouUI(boolean flag)
+    {
+        if(searchParent != null)
+        {
+            searchParent.setVisibility(flag ? View.VISIBLE :View.GONE);
+        }
+        /*if(flag)
+        {
+            String key= query.getText().toString();
+            if(key == null  || key.equals(""))
+            {
+                key = "a";
+            }
+            //conversationListView.filter(key);
+        }*/
+    }
     public int removeFriend() {
         conversationList.clear();
         List<UnReadEMMessage> list = loadLocalConversationList();
@@ -384,9 +429,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
              */
             Map<String, Object> keyMap = SpUtil.INSTANCE.getAll(AppConfig.instance);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+            int countUnMessage = 0;
             for (String key : keyMap.keySet()) {
 
-                if (key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId + "_")) {
+                if (key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userSn + "_")) {
                     String tempkey = key.replace(ConstantValue.INSTANCE.getMessage(),"");
                     String toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length());
                     if (toChatUserId != null && !toChatUserId.equals("") && !toChatUserId.equals("null")) {
@@ -407,6 +454,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                             }
                             FriendEntity freindStatusData = new FriendEntity();
                             freindStatusData.setFriendLocalStatus(7);
+                            List<FriendEntity> localFriendStatusListTemp = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().list();
                             List<FriendEntity> localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
                             if (localFriendStatusList.size() > 0)
                                 freindStatusData = localFriendStatusList.get(0);
@@ -502,12 +550,21 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                     }
                                 }
 
-                                message.setMsgTime(Message.getTimeStamp()*1000);
+                                String time = Message.getTimeStamp() + "";
+                                if(time.length() == 10)
+                                {
+                                    message.setMsgTime(Message.getTimeStamp()*1000);
+                                }else if(time.length() == 16){
+                                    message.setMsgTime(Long.valueOf(Message.getTimeStamp() /1000));
+                                }else{
+                                    message.setMsgTime(Message.getTimeStamp());
+                                }
                                 message.setMsgId(Message.getMsgId() + "");
                                 if(Message.getChatType() != null)
                                 {
                                     message.setChatType(Message.getChatType());
                                 }
+                                countUnMessage += Message.getUnReadCount();
                                 if (draftEntity != null && !draftEntity.getContent().equals("")) {
                                     conversations.put(toChatUserId, new UnReadEMMessage(message, draftEntity.getContent(), Message.getUnReadCount()));
                                 } else {
@@ -520,12 +577,19 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
                 }
             }
+            if(countUnMessage == 0)
+            {
+                EventBus.getDefault().post(new UnReadMessageZero());
+            }
             synchronized (conversations) {
                 for (UnReadEMMessage conversation : conversations.values()) {
-                    if (conversation.getEmMessage().getMsgTime() / 1000000000 > 2) {
+                    String time = conversation.getEmMessage().getMsgTime() + "";
+                    if (time.length() == 10) {
                         LogUtil.addLog("用户最后一条的时间为：" + conversation.getEmMessage().getMsgTime());
-                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() / 1000, conversation));
-                    } else {
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() * 1000, conversation));
+                    }else if (time.length() == 16) {
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() /1000, conversation));
+                    } else{
                         sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime(), conversation));
                     }
                 }

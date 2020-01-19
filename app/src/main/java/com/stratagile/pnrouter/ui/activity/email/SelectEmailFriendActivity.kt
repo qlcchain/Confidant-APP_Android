@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.email
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
@@ -55,7 +56,7 @@ class SelectEmailFriendActivity : BaseActivity(), SelectEmailFriendContract.View
                     val view = f.createView(name, null, attrs)
                     if (view is TextView) {
                         view.setTextColor(resources.getColor(R.color.mainColor))
-                        view.isAllCaps = false
+                        view.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
                     }
                     return@LayoutInflaterFactory view
                 } catch (e: InflateException) {

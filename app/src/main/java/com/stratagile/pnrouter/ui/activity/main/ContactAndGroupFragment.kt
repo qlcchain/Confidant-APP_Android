@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
@@ -37,12 +35,9 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact_group.*
-import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
-import scalaz.Alpha
 import java.util.*
 import javax.inject.Inject
 
@@ -155,6 +150,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
                     j.signPublicKey = i.userKey
                     j.routeId = i.routeId
                     j.routeName = i.routeName
+                    j.mails = i.mails
                     var dst_public_MiKey_Friend = ByteArray(32)
                     var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
                     if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
@@ -172,6 +168,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
                 userEntity.signPublicKey = i.userKey
                 userEntity.routeId = i.routeId
                 userEntity.routeName = i.routeName
+                userEntity.mails = i.mails
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
                 if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
@@ -357,7 +354,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
         if (ConstantValue.encryptionType.equals("1")) {
-            sendData = BaseData(4, pullFriend)
+            sendData = BaseData(6, pullFriend)
         }
         Log.i("pullFriendList", "tox " + ConstantValue.isToxConnected)
         if (ConstantValue.isWebsocketConnected) {
@@ -368,8 +365,8 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

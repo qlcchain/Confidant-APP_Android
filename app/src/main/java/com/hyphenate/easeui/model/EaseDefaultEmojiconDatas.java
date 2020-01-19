@@ -22,6 +22,15 @@ public class EaseDefaultEmojiconDatas {
             EaseSmileUtils.ee_12,
             EaseSmileUtils.ee_13,
             EaseSmileUtils.ee_14,
+
+            EaseSmileUtils.ee_106,
+            EaseSmileUtils.ee_107,
+            EaseSmileUtils.ee_108,
+            EaseSmileUtils.ee_109,
+            EaseSmileUtils.ee_110,
+            EaseSmileUtils.ee_111,
+            EaseSmileUtils.ee_112,
+
             EaseSmileUtils.ee_15,
             EaseSmileUtils.ee_16,
             EaseSmileUtils.ee_17,
@@ -131,6 +140,15 @@ public class EaseDefaultEmojiconDatas {
             R.drawable.ee_12,
             R.drawable.ee_13,
             R.drawable.ee_14,
+
+            R.drawable.ee_106,
+            R.drawable.ee_107,
+            R.drawable.ee_108,
+            R.drawable.ee_109,
+            R.drawable.ee_110,
+            R.drawable.ee_111,
+            R.drawable.ee_112,
+
             R.drawable.ee_15,
             R.drawable.ee_16,
             R.drawable.ee_17,

@@ -3,7 +3,6 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -17,18 +16,13 @@ import android.widget.TextView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
-import com.hyphenate.chat.adapter.message.EMAMessage;
-import com.hyphenate.easeui.EaseUI;
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
-import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
-import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
+import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.UserEntity;
@@ -39,10 +33,7 @@ import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
-import java.util.Date;
 import java.util.List;
-
-import sourcecode.Line;
 
 public abstract class EaseChatRow extends LinearLayout {
     public interface EaseChatRowActionCallback {
@@ -82,7 +73,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
 
-    private EaseChatRowActionCallback itemActionCallback;
+    protected EaseChatRowActionCallback itemActionCallback;
     private int count;
 
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {

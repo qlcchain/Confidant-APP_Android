@@ -10,47 +10,43 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
-import com.message.UserProvider
+import com.message.Message
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
-
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactComponent
-import com.stratagile.pnrouter.ui.activity.main.contract.ContactContract
-import com.stratagile.pnrouter.ui.activity.main.module.ContactModule
-import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
-
-import javax.inject.Inject;
-
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.PullFriendReq_V4
-import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.events.FriendAvatarChange
+import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.RouterChange
+import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.group.GroupChatsActivity
+import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactComponent
+import com.stratagile.pnrouter.ui.activity.main.contract.ContactContract
+import com.stratagile.pnrouter.ui.activity.main.module.ContactModule
+import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
-import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.ui.adapter.user.UserItem
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
@@ -58,6 +54,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -116,6 +113,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     j.signPublicKey = i.userKey
                     j.routeId = i.routeId
                     j.routeName = i.routeName
+                    j.mails = i.mails
                     var dst_public_MiKey_Friend = ByteArray(32)
                     var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
                     if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
@@ -133,6 +131,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.signPublicKey = i.userKey
                 userEntity.routeId = i.routeId
                 userEntity.routeName = i.routeName
+                userEntity.mails = i.mails
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
                 if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
@@ -194,8 +193,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     //等待验证的S好友，不能处理
                     continue
                 }
-
-                var isLocalDeletedFriend = true
+                //临时会话切换
+               /* var isLocalDeletedFriend = true
                 for (j in jPullFriendRsp.params.payload) {
                     if (i.friendId.equals(j.id)) {
                         LogUtil.addLog("freindName:" + j.name, "ContactFragment")
@@ -206,7 +205,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     LogUtil.addLog("deletefreindName:" + i.friendId, "ContactFragment")
                     i.friendLocalStatus = 7
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
-                }
+                }*/
             } else {
                 LogUtil.addLog("freindStatusOther:" + i.userId + "_" + i.friendId + "_" + i.friendLocalStatus, "ContactFragment")
             }
@@ -328,7 +327,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
         if (ConstantValue.encryptionType.equals("1")) {
-            sendData = BaseData(4, pullFriend)
+            sendData = BaseData(6, pullFriend)
         }
         Log.i("pullFriendList", "tox " + ConstantValue.isToxConnected)
         if (ConstantValue.isWebsocketConnected) {
@@ -339,8 +338,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -396,6 +395,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var newFriendCount = 0
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         for (i in localFriendStatusList) {
             if (i.userId.equals(userId)) {
                 if (i.friendLocalStatus == 0) {
@@ -408,6 +408,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     {
                         if(it.routeId != null && it.routeId.equals(routerId))
                         {
+                            it.validationInfo = "removeGroup"
                             contactList.add(it)
                         }
                     }else{
@@ -448,6 +449,22 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
         contactList.sortBy {
             it.nickSouceName
+        }
+
+        if(contactList.size == 1 && ConstantValue.isNewUser)
+        {
+            var adminTemp = contactList.get(0)
+            val gson = Gson()
+            val Message = Message()
+            Message.msg = "  "
+            Message.from = userId
+            Message.to = adminTemp.userId
+            Message.status = 0
+            Message.timeStamp = System.currentTimeMillis() / 1000
+            Message.unReadCount = 0
+            Message.chatType = EMMessage.ChatType.Chat
+            val baseDataJson = gson.toJson(Message)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + adminTemp.userId, baseDataJson)
         }
         //一对多数据处理begin
         var contactMapList = HashMap<String, MyFriend>()

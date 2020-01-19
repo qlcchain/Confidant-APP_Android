@@ -7,25 +7,20 @@ import android.os.Handler
 import android.os.Message
 import android.view.KeyEvent
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.NameChange
 import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
@@ -40,11 +35,9 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxSendInfoEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
+import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
+import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
+import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_select_circle.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -54,9 +47,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
-import java.util.ArrayList
-
-import javax.inject.Inject;
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -142,6 +134,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username, username)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
@@ -251,6 +244,46 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         finish()
     }
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
+
+        if(jLogOutRsp.params.retCode == 0)
+        {
+            Thread(Runnable() {
+                run() {
+                    ConstantValue.isHasWebsocketInit = true
+                    if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()
+                    ConstantValue.loginOut = true
+                    ConstantValue.logining = false
+                    ConstantValue.isHeart = false
+                    ConstantValue.currentRouterIp = ""
+                    resetUnCompleteFileRecode()
+                    if (ConstantValue.isWebsocketConnected) {
+                        FileMangerDownloadUtils.init()
+                        ConstantValue.webSockeFileMangertList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSockeFileMangertList.remove(it)
+                        }
+                        ConstantValue.webSocketFileList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSocketFileList.remove(it)
+                        }
+                    }else{
+                        val intentTox = Intent(this, KotlinToxService::class.java)
+                        this.stopService(intentTox)
+                    }
+                    ConstantValue.loginReq = null
+                    ConstantValue.isWebsocketReConnect = false
+                    ConstantValue.hasLogin = true
+                    ConstantValue.isHeart = true
+                    resetUnCompleteFileRecode()
+                    AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                    Thread.sleep(1000)
+                    connectRouter(currentRouterEntity!!)
+                }
+
+        }).start()
+
+        }
 
        /* if(jLogOutRsp.params.retCode == 0)
         {
@@ -367,8 +400,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -403,7 +436,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()
@@ -522,7 +555,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 {
 
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                        //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
                     }
@@ -567,7 +600,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     isFromScan = false
                 }else{
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend(routerId,this)
+                        //InterfaceScaleUtil.addFriend(routerId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
@@ -624,7 +657,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
                         ConstantValue.unSendMessageSendCount.put("login",0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
 
@@ -878,6 +911,10 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     //先退出当前的路由器
     fun logOutRouter(router : RouterEntity) {
         KLog.i("路由器登出："+router.routerName)
+        runOnUiThread {
+            closeProgressDialog()
+            showProgressNoCanelDialog("Connecting...")
+        }
         if(ConstantValue.logining)
         {
             var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -888,43 +925,14 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 val baseData = BaseData(2,msgData)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerEntity!!.routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(routerEntity!!.routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity!!.routerId.substring(0, 64))
                 }
             }
         }
-        ConstantValue.isHasWebsocketInit = true
-        if(AppConfig.instance.messageReceiver != null)
-            AppConfig.instance.messageReceiver!!.close()
 
-        ConstantValue.loginOut = true
-        ConstantValue.logining = false
-        ConstantValue.isHeart = false
-        ConstantValue.currentRouterIp = ""
-        resetUnCompleteFileRecode()
-        if (ConstantValue.isWebsocketConnected) {
-            FileMangerDownloadUtils.init()
-            ConstantValue.webSockeFileMangertList.forEach {
-                it.disconnect(true)
-                //ConstantValue.webSockeFileMangertList.remove(it)
-            }
-            ConstantValue.webSocketFileList.forEach {
-                it.disconnect(true)
-                //ConstantValue.webSocketFileList.remove(it)
-            }
-        }else{
-            val intentTox = Intent(this, KotlinToxService::class.java)
-            this.stopService(intentTox)
-        }
-        ConstantValue.loginReq = null
-        ConstantValue.isWebsocketReConnect = false
-        ConstantValue.hasLogin = true
-        ConstantValue.isHeart = true
-        resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-        connectRouter(currentRouterEntity!!)
 
     }
 
@@ -993,7 +1001,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             ConstantValue.lastNetworkType =""
             isClickLogin = true
             try {
-                MessageHelper.clearAllMessage()
+                //MessageHelper.clearAllMessage()
             }catch (e:Exception)
             {
                 e.printStackTrace()
@@ -1008,11 +1016,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     {
         ConstantValue.currentRouterIp = ""
         islogining = false
-        runOnUiThread {
-            KLog.i("777")
-            closeProgressDialog()
-            showProgressNoCanelDialog("Connecting...")
-        }
         if(WiFiUtil.isWifiConnect())
         {
             var count =0;
@@ -1031,7 +1034,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -1047,7 +1050,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("") &&!autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1076,7 +1079,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("") &&!autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1089,7 +1092,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     KLog.i("没有远程，开启tox")
                                                     startTox(startToxFlag)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                                    if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1103,7 +1106,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                         } catch (e: Exception) {
                                             startTox(startToxFlag)
                                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                            if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                             {
                                                 runOnUiThread {
                                                     startLogin()
@@ -1140,7 +1143,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         override fun onFailure( e :Exception) {
                             startTox(startToxFlag)
                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                            if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                             {
                                 runOnUiThread {
                                     startLogin()
@@ -1175,7 +1178,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 //                                            closeProgressDialog()
                                         }
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1186,7 +1189,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     }else{
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                        if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1200,7 +1203,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                             } catch (e: Exception) {
                                 startTox(startToxFlag)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+                                if(!autoLoginRouterSn.equals("")&&!autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -1297,8 +1300,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     })
                 }
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
@@ -1323,8 +1326,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
                 if(ConstantValue.isAntox)
                 {
-                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)
+                    /*var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)*/
                 }else{
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
@@ -1437,7 +1440,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         }else{

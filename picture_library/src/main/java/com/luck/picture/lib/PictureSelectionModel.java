@@ -386,7 +386,13 @@ public class PictureSelectionModel {
         selectionConfig.isDragFrame = isDragFrame;
         return this;
     }
-
+    /**
+     * 是否可拖动裁剪框(setFreeStyleCropEnabled 为true 有效)
+     */
+    public PictureSelectionModel isReturnQuick(boolean returnQick) {
+        selectionConfig.returnQick = returnQick;
+        return this;
+    }
     /**
      * @param selectionMedia Select the selected picture set
      * @return

@@ -3,34 +3,23 @@ package com.stratagile.pnrouter.ui.activity.add
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterUserEntity
-import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullTmpAccountRsp
-import com.stratagile.pnrouter.entity.PullTmpAccountReq
 import com.stratagile.pnrouter.ui.activity.add.component.DaggeraddFriendOrGroupComponent
 import com.stratagile.pnrouter.ui.activity.add.contract.addFriendOrGroupContract
 import com.stratagile.pnrouter.ui.activity.add.module.addFriendOrGroupModule
 import com.stratagile.pnrouter.ui.activity.add.presenter.addFriendOrGroupPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
-import com.stratagile.pnrouter.ui.activity.router.RouterQRCodeActivity
 import com.stratagile.pnrouter.ui.activity.router.ShareTempQRCodeActivity
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
-import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.layout_add.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -76,7 +65,7 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
 
     override fun initView() {
         setContentView(R.layout.layout_add)
-        setTitle(getString(R.string.button_add))
+        setTitle(getString(R.string.Add_Contacts))
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.pullTmpAccountBack = this
@@ -109,6 +98,12 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
             setResult(RESULT_OK, intent)
             finish()
         }
+        InviteFriends.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra("result", "4")
+            setResult(RESULT_OK, intent)
+            finish()
+        }
         var routerEntity : RouterEntity
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         routerList.forEach {
@@ -138,8 +133,8 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
                             var baseData = BaseData(4,pullTmpAccountReq)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                             }

@@ -14,11 +14,11 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.chat.EMVideoMessageBody;
-import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
 import com.hyphenate.easeui.utils.OpenFileUtil;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
@@ -39,6 +39,7 @@ import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
+import com.stratagile.pnrouter.entity.events.ReplyMsgEvent;
 import com.stratagile.pnrouter.entity.events.SaveMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.AlbumNotifyHelper;
@@ -53,12 +54,6 @@ import com.stratagile.tox.toxcore.ToxCoreJni;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
-import scala.App;
-import scalaz.Alpha;
 
 
 /**
@@ -121,8 +116,8 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                 BaseData baseData = new BaseData(msgData);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
-                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
@@ -208,7 +203,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                         {
                             floatMenu.inflate(R.menu.popup_menu_pic_video);
                         }else{
-                            floatMenu.inflate(R.menu.popup_menu_file);
+                            floatMenu.inflate(R.menu.popup_replaymenu_file);
                         }
 
                     }else{
@@ -251,6 +246,12 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             getContext().startActivity(intent);
                             ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                             break;
+                        case "Reply":
+                            String  msgIdReply = message.getMsgId();
+                            String msg = ((EMFileMessageBody) message.getBody()).getFileName();
+                            String userIdTemp = message.getFrom();
+                            EventBus.getDefault().post(new ReplyMsgEvent(msgIdReply,msg,userIdTemp));
+                            break;
                         case "Withdraw":
                             String  msgId = message.getMsgId();
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
@@ -267,8 +268,8 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                                     {
                                         String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                         if (ConstantValue.INSTANCE.isAntox()) {
-                                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                            //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                         }
@@ -283,8 +284,8 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                                         BaseData baseData = new BaseData(msgData);
                                         String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                         if (ConstantValue.INSTANCE.isAntox()) {
-                                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                            //FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                         }

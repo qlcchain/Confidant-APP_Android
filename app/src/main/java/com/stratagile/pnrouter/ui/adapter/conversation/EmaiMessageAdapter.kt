@@ -32,32 +32,70 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var formName = ""
         var  from = item.from;
         var account = ""
-        if(from.contains(item.account))
+        var menu = item.menu
+        if(menu.contains("Sent") || menu.contains("已发") || menu.contains("Drafts")|| menu.contains("草稿"))
         {
             from = item.to;
-            account = from.substring(from.indexOf("<") +1,from.length - 1)
-            var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
-            if(localEmailContacts.size != 0)
+            if(from.contains(","))
             {
-                var localEmailContactsItem = localEmailContacts.get(0)
-                formName = localEmailContactsItem.name
-            }else{
-                if(from.indexOf("<") >=0)
-                {
-                    formName = from.substring(0,from.indexOf("<"))
-                }else{
-                    formName = from.substring(0,from.indexOf("@"))
-                }
+                var formList = from.split(",")
+                for(item in formList){
 
+                    account += item.substring(item.indexOf("<") +1,item.length - 1) +","
+                    var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(item)).list()
+                    if(localEmailContacts.size != 0)
+                    {
+                        var localEmailContactsItem = localEmailContacts.get(0)
+                        formName += localEmailContactsItem.name +","
+                    }else{
+                        if(item.indexOf("<") >=0)
+                        {
+                            var name = item.substring(0,item.indexOf("<")).trim().replace("\"","").replace("\"","")
+                            formName += name +","
+                        }else{
+                            formName += item.substring(0,item.indexOf("@")) +","
+                        }
+
+                    }
+                }
+                if(account.contains(","))
+                {
+                    account = account.substring(0,account.lastIndexOf(","))
+                }
+                if(formName.contains(","))
+                {
+                    formName = formName.substring(0,formName.lastIndexOf(","))
+                }
+            }else{
+                account = from.substring(from.indexOf("<") +1,from.length - 1)
+                var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
+                if(localEmailContacts.size != 0)
+                {
+                    var localEmailContactsItem = localEmailContacts.get(0)
+                    formName = localEmailContactsItem.name
+                }else{
+                    if(from.indexOf("<") >=0)
+                    {
+                        formName = from.substring(0,from.indexOf("<"))
+                    }else{
+                        formName = from.substring(0,from.indexOf("@"))
+                    }
+
+                }
             }
+
         }else{
             if(from.indexOf("<") >=0)
             {
                 formName = from.substring(0,from.indexOf("<"))
+            }else{
+                formName = from.substring(0,from.indexOf("@"))
             }
         }
 
         var title = helper.getView<TextView>(R.id.title)
+        formName = formName.replace("\"","")
+        formName = formName.replace("\"","")
         title.setText(formName)
         var subject = helper.getView<TextView>(R.id.subject)
         subject.setText(item.subject)
@@ -65,14 +103,14 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         if(item.originalText != null && item.originalText != "")
         {
             var originalTextCun = StringUitl.StripHT(item.originalText)
-            var originalTextCunNew = originalTextCun
+            /*var originalTextCunNew = originalTextCun
             var endIndex = originalTextCunNew.indexOf(" ")
             if(endIndex < 0)
             {
                 endIndex = originalTextCunNew.length
             }
-            originalTextCunNew =  originalTextCunNew.substring(0,endIndex)
-            message.setText(originalTextCunNew)
+            originalTextCunNew =  originalTextCunNew.substring(0,endIndex)*/
+            message.setText(originalTextCun)
         }else{
             message.setText(item.contentText)
         }
@@ -94,17 +132,31 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             startPic.visibility = View.GONE
         }
         var lockPic = helper.getView<TextView>(R.id.lockPic)
-        if(item.content!= "" && item.content.contains("confidantkey"))
+        if(item.originalText != null && item.originalText != "")
         {
             lockPic.visibility = View.VISIBLE
         }else{
-            lockPic.visibility = View.GONE
+            if(item.content.contains("newconfidantpass"))
+            {
+                lockPic.visibility = View.VISIBLE
+            }else
+            {
+                lockPic.visibility = View.GONE
+            }
+
         }
         var attach = helper.getView<TextView>(R.id.attach)
-        if(item.attachmentCount >0)
+        /*if(item.attachmentCount >0)
         {
             attach.visibility = View.VISIBLE
             attach.text = item.attachmentCount.toString();
+        }else{
+            attach.visibility = View.GONE
+        }*/
+        if(item.isContainerAttachment())
+        {
+            attach.visibility = View.VISIBLE
+            attach.text = "";
         }else{
             attach.visibility = View.GONE
         }

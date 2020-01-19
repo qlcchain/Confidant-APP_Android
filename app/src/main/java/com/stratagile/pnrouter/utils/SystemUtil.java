@@ -16,6 +16,9 @@ import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -149,5 +152,22 @@ public class SystemUtil {
         }
         return false;
     }
+    /**
+     * Check that Google Play services APK is installed and up to date. Will
+     * launch an error dialog for the user to update Google Play Services if
+     * possible.
+     * @return true if Google Play Services is available and up to
+     *     date on this device; false otherwise.
+     */
+    public static boolean isGooglePlayServicesAvailable(Context context) {
+        final int connectionStatusCode =
+                GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
 
+            return false;
+        } else if (connectionStatusCode != ConnectionResult.SUCCESS ) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -11,24 +11,17 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Base64;
 
 
+import com.smailnet.eamil.Utils.AESCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
@@ -36,11 +29,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import okhttp3.OkHttpClient;
 
 public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private final String TAG = "FileDownLoaderTask";
@@ -214,6 +204,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			mOutputStream.close();
 		} catch (IOException e) {
+			bytesCopied = -1;
 			DeleteUtils.deleteFile(mFile.getPath());
 			e.printStackTrace();
 		}finally {
@@ -235,7 +226,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}else{
 					if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
 					{
-						aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+						aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr,ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
 					}else{
 						aesKey =  RxEncodeTool.getAESKey(keyStr);
 

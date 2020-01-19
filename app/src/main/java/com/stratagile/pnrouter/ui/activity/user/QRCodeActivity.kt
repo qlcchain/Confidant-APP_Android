@@ -33,6 +33,7 @@ import kotlin.concurrent.thread
 import android.opengl.ETC1.getHeight
 import android.opengl.ETC1.getWidth
 import com.hyphenate.easeui.utils.PathUtils
+import com.smailnet.eamil.Utils.AESCipher
 
 
 /**
@@ -126,14 +127,22 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
                     {
                         bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatar)
                     }else{
-                        bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatar)
+                        var aesSourceStr = ConstantValue.currentRouterSN.substring(0,6)+","+ConstantValue.libsodiumpublicSignKey!!+","+ConstantValue.currentRouterId+","+selfNickNameBase64+","+userId
+                        var routerCodeDataByte = aesSourceStr.toByteArray();
+                        var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
+                        bitmap =   QRCodeEncoder.syncEncodeQRCode("type_5,"+base64Str, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatar)
+                        //bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatar)
                     }
                 } else {
                     if(flag == 1)
                     {
                         bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                     }else{
-                        bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                        var aesSourceStr = ConstantValue.currentRouterSN.substring(0,6)+","+ConstantValue.libsodiumpublicSignKey!!+","+ConstantValue.currentRouterId+","+selfNickNameBase64+","+userId
+                        var routerCodeDataByte = aesSourceStr.toByteArray();
+                        var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
+                        bitmap =   QRCodeEncoder.syncEncodeQRCode("type_5,"+base64Str, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                        //bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                     }
                 }
                 runOnUiThread {

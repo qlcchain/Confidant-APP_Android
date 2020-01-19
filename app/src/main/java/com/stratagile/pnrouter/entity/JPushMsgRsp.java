@@ -25,7 +25,7 @@ public class JPushMsgRsp extends BaseEntity {
         private String Action;
         private String FromId;
         private String ToId;
-
+        private int SrcMsgId;
         private String From;//发送消息用户hashid，14位字符串,不可为空
         private String To;//接收消息用户hashid，14位字符串,不可为空
 
@@ -127,6 +127,9 @@ public class JPushMsgRsp extends BaseEntity {
 
         private String PriKey;
 
+        private String PubKey ;
+        private int AssocId;
+
         public String getSign() {
             return Sign;
         }
@@ -149,6 +152,31 @@ public class JPushMsgRsp extends BaseEntity {
 
         public void setPriKey(String priKey) {
             PriKey = priKey;
+        }
+
+        public String getPubKey() {
+            return PubKey;
+        }
+
+        public void setPubKey(String pubKey) {
+            PubKey = pubKey;
+        }
+
+
+        public int getAssocId() {
+            return AssocId;
+        }
+
+        public void setAssocId(int assocId) {
+            AssocId = assocId;
+        }
+
+        public int getSrcMsgId() {
+            return SrcMsgId;
+        }
+
+        public void setSrcMsgId(int srcMsgId) {
+            SrcMsgId = srcMsgId;
         }
     }
 }

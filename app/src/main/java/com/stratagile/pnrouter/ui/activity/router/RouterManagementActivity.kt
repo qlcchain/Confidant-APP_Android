@@ -8,8 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -24,7 +22,6 @@ import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
-import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterManagementContract
@@ -39,16 +36,12 @@ import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import kotlinx.android.synthetic.main.activity_adduser.*
+import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_router_management.*
-import kotlinx.android.synthetic.main.activity_routeraliasset.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
-import kotlin.concurrent.thread
 
 /**
  * @author hzp
@@ -249,8 +242,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             var baseData = BaseData(6, msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -274,8 +267,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 var baseData = BaseData(3, msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -338,8 +331,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 var baseData = BaseData(4,pullTmpAccountReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                 }
@@ -365,12 +358,18 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
 
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-        autoLoginSwitch.isChecked = autoLoginRouterSn.equals(selectedRouter.userSn)
+        if(autoLoginRouterSn.equals(""))
+        {
+            autoLoginSwitch.isChecked = true
+        }else{
+            autoLoginSwitch.isChecked = autoLoginRouterSn.equals(selectedRouter.userSn)
+        }
+
         autoLoginSwitch.setOnClickListener {
             if (autoLoginSwitch.isChecked) {
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, selectedRouter.userSn)
             } else {
-                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
+                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "no")
             }
         }
 
@@ -389,8 +388,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 var baseData = BaseData(6, msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -426,8 +425,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             var baseData = BaseData(3, msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -691,8 +690,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 var baseData = BaseData(4, resetRouterNameReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }

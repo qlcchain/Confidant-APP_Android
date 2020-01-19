@@ -43,6 +43,7 @@ public class Message {
     private int unReadCount;
     private  EMMessage.ChatType chatType;
     private String FileKey;//从文件转发过来的消息特有
+    private int AssocId;
     public String getFileInfo() {
         return FileInfo;
     }
@@ -180,6 +181,11 @@ public class Message {
     }
 
     public void setTimeStamp(long TimeStatmp) {
+        String TimeStatmpStr = TimeStatmp +"";
+        if(TimeStatmpStr.length() > 10)
+        {
+            TimeStatmp = Long.valueOf(TimeStatmp / 1000);
+        }
         this.TimeStamp = TimeStatmp;
     }
 
@@ -377,5 +383,13 @@ public class Message {
 
     public void setFileKey(String fileKey) {
         FileKey = fileKey;
+    }
+
+    public int getAssocId() {
+        return AssocId;
+    }
+
+    public void setAssocId(int assocId) {
+        AssocId = assocId;
     }
 }

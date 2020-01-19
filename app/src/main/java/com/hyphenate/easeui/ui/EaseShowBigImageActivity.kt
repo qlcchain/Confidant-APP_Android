@@ -27,72 +27,53 @@ import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.KeyEvent
 import android.view.View
-import android.view.View.OnClickListener
 import android.widget.ProgressBar
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
-
+import cn.bingoogolapple.qrcode.zxing.QRCodeDecoder
+import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
 import com.hyphenate.EMCallBack
 import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.easeui.model.EaseCompat
 import com.hyphenate.easeui.model.EaseImageCache
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.widget.photoview.EasePhotoView
 import com.hyphenate.util.EMLog
 import com.hyphenate.util.ImageUtils
+import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
+import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
-import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
-import com.stratagile.pnrouter.view.CustomPopWindow
-
-import org.greenrobot.eventbus.EventBus
-
-import java.io.File
-import java.util.ArrayList
-import java.util.Calendar
-
-import javax.xml.transform.Result
-
-import cn.bingoogolapple.qrcode.zxing.QRCodeDecoder
-import com.alibaba.fastjson.JSONObject
-import com.google.gson.Gson
-import com.hyphenate.easeui.utils.PathUtils
-import com.pawegio.kandroid.toast
-import com.socks.library.KLog
-import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
+import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
+import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.pnrouter.view.RxDialogLoading
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxSendInfoEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
-import scalaz.Alpha
+import java.io.File
+import java.util.*
 
 /**
  * download and show original image
@@ -238,8 +219,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
                 }
@@ -335,6 +316,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
@@ -523,8 +505,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                     var baseData = BaseData(4,regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }else{
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                     }
@@ -601,8 +583,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                         var baseData = BaseData(4,regeister)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                         }
@@ -1005,10 +987,12 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
 
                                             if (freindStatusData.friendLocalStatus == 0) {
                                                 intent.putExtra("user", i)
+                                                intent.putExtra("typeData", "type_0")
                                                 startActivity(intent)
                                             } else {
                                                 intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
                                                 intent.putExtra("user", i)
+                                                intent.putExtra("typeData", "type_0")
                                                 startActivity(intent)
                                             }
 
@@ -1030,14 +1014,90 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                     val newFriendStatus = FriendEntity()
                                     newFriendStatus.userId = userId
-                                    newFriendStatus.friendId = toAddUserId
+                                    newFriendStatus.friendId = toAddUserIdTemp
                                     newFriendStatus.friendLocalStatus = 7
                                     newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
                                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
                                     intent.putExtra("user", userEntity)
+                                    intent.putExtra("typeData", "type_0")
                                     startActivity(intent)
                                 }
-                            } else if (hasQRCode!!.contains("type_1")) {
+                            } else if (hasQRCode!!.contains("type_5")) {
+                                var toAddUserId = hasQRCode!!.substring(7, hasQRCode!!.length)
+                                toAddUserId = String(AESCipher.aesDecryptByte(toAddUserId,"welcometoqlc0101"))
+                                val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                if (toAddUserId.contains(selfUserId!!)) {
+                                    runOnUiThread {
+                                        runOnUiThread {
+                                            toast(R.string.The_same_user)
+                                        }
+
+                                    }
+                                    return
+                                }
+                                if (!"".equals(toAddUserId))
+                                {
+                                    var userEntity = UserEntity()
+                                    var intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+                                    var toAddUserKey = ""
+                                    var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                                    toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
+                                    var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
+                                    var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+
+                                    var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                                    var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                                    var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                                    var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
+                                    var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                                    for (i in useEntityList) {
+                                        if (i.userId.equals(toAddUserIdTemp)) {
+                                            i.nickName = nickName
+                                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                                            var freindStatusData = FriendEntity()
+                                            freindStatusData.friendLocalStatus = 7
+                                            val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                                            if (localFriendStatusList.size > 0)
+                                                freindStatusData = localFriendStatusList[0]
+
+                                            if (freindStatusData.friendLocalStatus == 0) {
+                                                intent.putExtra("user", i)
+                                                intent.putExtra("typeData", "type_5")
+                                                startActivity(intent)
+                                            } else {
+                                                intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+                                                intent.putExtra("user", i)
+                                                intent.putExtra("typeData", "type_5")
+                                                startActivity(intent)
+                                            }
+                                            return
+                                        }
+                                    }
+                                    intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
+
+                                    //userEntity.friendStatus = 7
+                                    userEntity.userId = toAddUserIdTemp
+                                    userEntity.nickName = nickName
+                                    userEntity.signPublicKey = toAddUserKey
+                                    userEntity.routeId = FriendDevId
+                                    userEntity.timestamp = Calendar.getInstance().timeInMillis
+                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                    userEntity.routerUserId = selfUserId
+                                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+
+
+                                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                    var newFriendStatus = FriendEntity()
+                                    newFriendStatus.userId = userId;
+                                    newFriendStatus.friendId = toAddUserIdTemp
+                                    newFriendStatus.friendLocalStatus = 7
+                                    newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                                    intent.putExtra("user", userEntity)
+                                    intent.putExtra("typeData", "type_5")
+                                    startActivity(intent)
+                                }
+                            }else if (hasQRCode!!.contains("type_1")) {
 
                                 scanType = 1
                                 val keyId:ByteArray = ByteArray(6) //密钥ID
@@ -1120,12 +1180,12 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                                     try {
                                                                                         if (json != null) {
                                                                                             httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                                             {
                                                                                                 ConstantValue.curreantNetworkType = "WIFI"
-                                                                                                ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                                ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                                 if(ConstantValue.isHasWebsocketInit)
@@ -1182,12 +1242,12 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                         try {
                                                                             if (json != null) {
                                                                                 var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                                 {
                                                                                     ConstantValue.curreantNetworkType = "WIFI"
-                                                                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                    ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                     ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                     if(ConstantValue.isHasWebsocketInit)
@@ -1397,6 +1457,199 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     }
                                 }
 
+                            }else if (hasQRCode!!.contains("type_4")) {
+                                var beginIndex = result.lastIndexOf(",")
+                                ConstantValue.waitAddFreind = result.substring(7,beginIndex);
+                                var data = result.substring(beginIndex+1,result.length);
+                                var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                                scanType = 1
+                                val keyId:ByteArray = ByteArray(6) //密钥ID
+                                val RouterId:ByteArray = ByteArray(76) //路由器id
+                                val UserSn:ByteArray = ByteArray(32)  //用户SN
+                                System.arraycopy(soureData, 0, keyId, 0, 6)
+                                System.arraycopy(soureData, 6, RouterId, 0, 76)
+                                System.arraycopy(soureData, 82, UserSn, 0, 32)
+                                var keyIdStr = String(keyId)
+                                var RouterIdStr = String(RouterId)
+                                var UserSnStr = String(UserSn)
+
+                                ConstantValue.scanRouterId = RouterIdStr
+                                ConstantValue.scanRouterSN = UserSnStr
+                                if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
+                                {
+                                    if(ConstantValue.currentRouterId.equals(RouterIdStr))
+                                    {
+                                        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
+                                        {
+                                            doWaitAddFreind(ConstantValue.waitAddFreind)
+                                            ConstantValue.waitAddFreind = "";
+                                        }
+                                        runOnUiThread {
+                                            toast(R.string.The_same_circle_without_switching)
+                                        }
+
+                                        return
+                                    }
+                                    runOnUiThread {
+                                        SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
+                                                .setConfirmClickListener {
+                                                    showProgressDialog("wait...")
+                                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                                    var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                                    if (ConstantValue.isWebsocketConnected) {
+                                                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                                    } else if (ConstantValue.isToxConnected) {
+                                                        val baseData = BaseData(2,msgData)
+                                                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                                    }
+                                                    ConstantValue.loginReq = null
+                                                    isScanSwitch = true
+                                                    if(AppConfig.instance.messageReceiver != null)
+                                                        AppConfig.instance.messageReceiver!!.close()
+                                                    ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
+
+                                                    ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
+                                                    ConstantValue.lastPort=  ConstantValue.port
+                                                    ConstantValue.lastFilePort= ConstantValue.filePort
+                                                    ConstantValue.lastRouterId =   ConstantValue.currentRouterId
+                                                    ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+
+                                                    isFromScan = true
+                                                    ConstantValue.currentRouterIp = ""
+                                                    if(WiFiUtil.isWifiConnect())
+                                                    {
+                                                        showProgressDialog("wait...")
+                                                        var count =0;
+                                                        KLog.i("测试计时器" + count)
+                                                        Thread(Runnable() {
+                                                            run() {
+                                                                Thread.sleep(1500)
+                                                                while (true)
+                                                                {
+                                                                    if(count >=3)
+                                                                    {
+                                                                        if(!ConstantValue.currentRouterIp.equals(""))
+                                                                        {
+                                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                            break;
+                                                                        }else{
+
+                                                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                                                                override fun onFailure( e :Exception) {
+                                                                                    startToxAndRecovery()
+                                                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                                }
+                                                                                override fun  onResponse(json:String ) {
+
+                                                                                    val gson = GsonUtil.getIntGson()
+                                                                                    var httpData: HttpData? = null
+                                                                                    try {
+                                                                                        if (json != null) {
+                                                                                            httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
+                                                                                            {
+                                                                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                                                                ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                                                if(ConstantValue.isHasWebsocketInit)
+                                                                                                {
+                                                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                                                }else{
+                                                                                                    ConstantValue.isHasWebsocketInit = true
+                                                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                                                }
+                                                                                                //KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                                                //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                                                Thread.currentThread().interrupt() //方法调用终止线程
+                                                                                            }else{
+                                                                                                startToxAndRecovery()
+                                                                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                                            }
+
+                                                                                        }
+                                                                                    } catch (e: Exception) {
+                                                                                        startToxAndRecovery()
+                                                                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                                    }
+                                                                                }
+                                                                            })
+                                                                            break;
+                                                                        }
+
+                                                                    }
+                                                                    count ++;
+                                                                    MobileSocketClient.getInstance().init(handler,AppConfig.instance)
+                                                                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                    MobileSocketClient.getInstance().destroy()
+                                                                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                                    MobileSocketClient.getInstance().receive()
+                                                                    KLog.i("测试计时器" + count)
+                                                                    Thread.sleep(1000)
+                                                                }
+
+                                                            }
+                                                        }).start()
+                                                    }else{
+                                                        showProgressDialog("wait...")
+                                                        Thread(Runnable() {
+                                                            run() {
+                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                                                    override fun onFailure( e :Exception) {
+                                                                        startToxAndRecovery()
+                                                                    }
+
+                                                                    override fun  onResponse(json:String ) {
+
+                                                                        val gson = GsonUtil.getIntGson()
+                                                                        var httpData: HttpData? = null
+                                                                        try {
+                                                                            if (json != null) {
+                                                                                var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
+                                                                                {
+                                                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                                                    ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                                    if(ConstantValue.isHasWebsocketInit)
+                                                                                    {
+                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                                    }else{
+                                                                                        ConstantValue.isHasWebsocketInit = true
+                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                                    }
+                                                                                    //KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                                    //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                                }else{
+                                                                                    startToxAndRecovery()
+                                                                                }
+
+                                                                            }
+                                                                        } catch (e: Exception) {
+                                                                            startToxAndRecovery()
+                                                                        }
+                                                                    }
+                                                                })
+                                                            }
+                                                        }).start()
+                                                    }
+                                                }
+                                                .show()
+                                    }
+
+
+                                }else{
+                                    runOnUiThread {
+                                        toast(R.string.code_error)
+                                    }
+                                }
                             }else{
                                 runOnUiThread {
                                     closeProgressDialog()
@@ -1532,6 +1785,33 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
         }
     }
+    fun doWaitAddFreind(waitAddFreind:String)
+    {
+
+        KLog.i("doWaitAddFreind")
+        var userId = waitAddFreind!!.substring(0, waitAddFreind!!.indexOf(","))
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
+        var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+        if (waitAddFreind!!.contains(selfUserId!!)) {
+            return
+        }
+        KLog.i("doWaitAddFreind2")
+        var emailId= ""
+        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId,emailId)
+        var sendData = BaseData(6,AddFriendsAutoReq);
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
@@ -1560,8 +1840,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     if(sendCount < 5)
                                     {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
                                         }else{
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
@@ -1596,7 +1876,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()
@@ -1633,7 +1913,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 {
 
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                        //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
                     }
@@ -1678,7 +1958,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                     isFromScan = false
                 }else{
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend(routerId,this)
+                        //InterfaceScaleUtil.addFriend(routerId,this)
                     }else{
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
@@ -1734,7 +2014,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                         ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
                         ConstantValue.unSendMessageSendCount.put("login",0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
 
@@ -1806,7 +2086,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         }else{
@@ -1896,8 +2176,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                     })
                 }
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
@@ -1922,8 +2202,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
 
                 if(ConstantValue.isAntox)
                 {
-                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)
+                    /*var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)*/
                 }else{
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
@@ -2195,11 +2475,11 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         } else {
-            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            ////var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -2212,7 +2492,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             KLog.i("没有初始化。。设置loginBackListener")
             //AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
-                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
             }else{
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
@@ -2221,8 +2501,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }

@@ -1,15 +1,14 @@
 package com.message
 
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
@@ -58,7 +57,11 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         var msgSouce = ""
         if(ConstantValue.encryptionType.equals("1"))
         {
-            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+            var friendEntity = UserEntity()
+            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+            if (localFriendList.size > 0)
+                friendEntity = localFriendList[0]
+            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
         }else{
             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
         }
@@ -85,8 +88,8 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -112,7 +115,11 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 var msgSouce = ""
                 if(ConstantValue.encryptionType.equals("1"))
                 {
-                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign)
+                    var friendEntity = UserEntity()
+                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(it.from)).list()
+                    if (localFriendList.size > 0)
+                        friendEntity = localFriendList[0]
+                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
                 }else{
                     //msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
                 }
@@ -254,7 +261,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             messageList = userMessageList.get(userId)
 
             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var pullMsgList = PullMsgReq(selfUserId!!, userId, 0, 0, 10)
+            var pullMsgList = PullMsgReq(selfUserId!!, userId, 0, 0, 10,0)
             var sendData = BaseData(5,pullMsgList)
             if(ConstantValue.encryptionType.equals("1"))
             {
@@ -266,8 +273,8 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }

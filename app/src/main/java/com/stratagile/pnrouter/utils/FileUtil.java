@@ -1,24 +1,31 @@
 package com.stratagile.pnrouter.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
+import com.smailnet.eamil.Utils.AESCipher;
+import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.RecentFileDao;
 
-import org.apache.http.util.EncodingUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedInputStream;
@@ -41,7 +48,10 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +68,13 @@ public class FileUtil {
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private static final char[] HEX_CHARKong = {' '};
+    // 号码
+    public final static String NUM = ContactsContract.CommonDataKinds.Phone.NUMBER;
+    // 联系人姓名
+    public final static String NAME = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
+    //联系人提供者的uri
+    private static Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+
     public static void init() {
         new Thread(new Runnable() {
             @Override
@@ -1118,7 +1135,7 @@ public class FileUtil {
             {
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];
@@ -1151,7 +1168,7 @@ public class FileUtil {
                 {
                     InputStream fosfrom = new FileInputStream(tempPath);
                     byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-                    byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                     fosfrom = FileUtil.byteTOInputStream(miFile);
                     OutputStream fosto = new FileOutputStream(toFile);
                     byte bt[] = new byte[1024];
@@ -1184,7 +1201,7 @@ public class FileUtil {
         {
             InputStream fosfrom = new FileInputStream(fromFile);
             byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-            byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            byte [] miFile = AESToolsCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
             fosfrom = FileUtil.byteTOInputStream(miFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];
@@ -1241,7 +1258,7 @@ public class FileUtil {
 
     }
     /**
-     * 拷贝下载的临时文件并解密到file文件
+     * 拷贝下载的临时文件并解密到toFile文件
      * @param fromFile
      * @param toFile
      * @return
@@ -1365,7 +1382,7 @@ public class FileUtil {
      * @param bitmap
      * @param path
      */
-    public static void saveBitmpToFileNoThread(Bitmap bitmap, String path) {
+    public static void saveBitmpToFileNoThread(Bitmap bitmap, String path,int quality) {
         if(new File(path).exists())
         {
             return;
@@ -1375,7 +1392,7 @@ public class FileUtil {
                 // 图片文件路径
                 File file = new File(path);
                 FileOutputStream os = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
                 os.flush();
                 os.close();
             } catch (Exception e) {
@@ -1638,7 +1655,7 @@ public class FileUtil {
         }
         EventBus.getDefault().post(recentFile);
     }
-    public static void writeStr_to_txt(String path,String content) throws IOException{
+    public static boolean writeStr_to_txt(String path,String content) throws IOException{
 
         File F=new File(path);
         //如果文件不存在,就动态创建文件
@@ -1651,6 +1668,7 @@ public class FileUtil {
             fw=new FileWriter(F);
             //回车并换行
             fw.write(content);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }finally{
@@ -1658,6 +1676,192 @@ public class FileUtil {
                 fw.close();
             }
         }
+        return false;
+    }
+    public static String readTxtFile(File file){
+        String content = "";
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            int len=inputStream.available();
+            byte []buffer=new byte[len];
+            inputStream.read(buffer);
+            inputStream.close();
+            content=new String(buffer);
+            return content;
+        }catch (Exception e)
+        {
 
+        }
+        return "";
+    }
+    /** Exporting contacts from the phone */
+    public static boolean exportContacts(Context context,String path) throws Exception {
+        try{
+            ContentResolver cr = context.getContentResolver();
+            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+            int index = cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
+            FileOutputStream fout = new FileOutputStream(path);
+            byte[] data = new byte[1024 * 2];
+            while (cur.moveToNext()) {
+                String lookupKey = cur.getString(index);
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+                AssetFileDescriptor fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
+                FileInputStream fin = fd.createInputStream();
+                int len = -1;
+                while ((len = fin.read(data)) != -1) {
+                    fout.write(data, 0, len);
+                }
+                fin.close();
+            }
+            fout.close();
+        }catch (Exception e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    //获取所有联系人
+    public static int getContantsCount(Context context){
+        int count = 0;
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(phoneUri,new String[]{NUM,NAME},null,null,null);
+        while (cursor.moveToNext()){
+            String name = cursor.getString(cursor.getColumnIndex(NAME));
+            String phone = cursor.getString(cursor.getColumnIndex(NUM));
+            count ++;
+        }
+        return count;
+    }
+
+    /**
+     * 获取联系人的个数
+     * @return 手里通讯录中联系人的个数
+     */
+    public static int getContactCount(Context context){
+        Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
+        try{
+            c.moveToFirst();
+            return c.getInt(0);
+        }catch(Exception e){
+            return 0;
+        }finally{
+            c.close();
+        }
+    }
+
+    //得到未读短信的数量  通过查询数据库得到
+    public static int getAllSmsCount(Context context) {
+        int result = 0;
+        try {
+            Uri uri = Uri.parse("content://sms");
+            Cursor cur = context.getContentResolver().query(uri, null, null,
+                    null, "date desc"); // 获取手机内部短信
+            // 获取短信中最新的未读短信
+            // Cursor cur = getContentResolver().query(uri, projection,
+            // "read = ?", new String[]{"0"}, "date desc");
+            if (cur.moveToFirst()) {
+                do {
+                    result ++;
+                } while (cur.moveToNext());
+
+                if (!cur.isClosed()) {
+                    cur.close();
+                    cur = null;
+                }
+            } else {
+
+            }
+        } catch (SQLiteException ex) {
+            Log.d("SQLiteException", ex.getMessage());
+        }
+        return result;
+    }
+    //得到未读短信的数量  通过查询数据库得到
+    public static int getUnreadSmsCount(Context context) {
+        int result = 0;
+        Cursor csr = context.getContentResolver().query(Uri.parse("content://sms"), null,
+                "type = 1 and read =0", null, null);
+        if (csr != null) {
+            result = csr.getCount();
+            csr.close();
+        }
+        return result;
+    }
+    //得到未读短信的数量  通过查询数据库得到
+    public static String getAllSms(Context context) {
+        StringBuilder smsBuilder = new StringBuilder();
+        try {
+            Uri uri = Uri.parse("content://sms/sent");
+            String[] projection = new String[] { "_id", "address", "person",
+                    "body", "date", "type", };
+            Cursor cur = context.getContentResolver().query(uri, projection, null,
+                    null, "date desc"); // 获取手机内部短信
+            // 获取短信中最新的未读短信
+            // Cursor cur = getContentResolver().query(uri, projection,
+            // "read = ?", new String[]{"0"}, "date desc");
+
+            if (cur.moveToFirst()) {
+                int index_Address = cur.getColumnIndex("address");
+                int index_Person = cur.getColumnIndex("person");
+                int index_Body = cur.getColumnIndex("body");
+                int index_Date = cur.getColumnIndex("date");
+                int index_Type = cur.getColumnIndex("type");
+
+                do {
+                    int getColumnCount = cur.getColumnCount();
+                    int getCount = cur.getCount();
+                    String[] getColumnCountNames = cur.getColumnNames();
+                    String strAddress = cur.getString(index_Address);
+                    int intPerson = cur.getInt(index_Person);
+                    String strbody = cur.getString(index_Body);
+                    long longDate = cur.getLong(index_Date);
+                    int intType = cur.getInt(index_Type);
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                            "yyyy-MM-dd hh:mm:ss");
+                    Date d = new Date(longDate);
+                    String strDate = dateFormat.format(d);
+
+                    String strType = "";
+                    if (intType == 1) {
+                        strType = "接收";
+                    } else if (intType == 2) {
+                        strType = "发送";
+                    } else if (intType == 3) {
+                        strType = "草稿";
+                    } else if (intType == 4) {
+                        strType = "发件箱";
+                    } else if (intType == 5) {
+                        strType = "发送失败";
+                    } else if (intType == 6) {
+                        strType = "待发送列表";
+                    } else if (intType == 0) {
+                        strType = "所以短信";
+                    } else {
+                        strType = "null";
+                    }
+
+                    smsBuilder.append("[ ");
+                    smsBuilder.append(strAddress + ", ");
+                    smsBuilder.append(intPerson + ", ");
+                    smsBuilder.append(strbody + ", ");
+                    smsBuilder.append(strDate + ", ");
+                    smsBuilder.append(strType);
+                    smsBuilder.append(" ]\n\n");
+                } while (cur.moveToNext());
+
+                if (!cur.isClosed()) {
+                    cur.close();
+                    cur = null;
+                }
+            } else {
+                smsBuilder.append("no result!");
+            }
+            smsBuilder.append("getSmsInPhone has executed!");
+        } catch (SQLiteException ex) {
+            Log.d("SQLiteException", ex.getMessage());
+        }
+        return smsBuilder.toString();
     }
 }

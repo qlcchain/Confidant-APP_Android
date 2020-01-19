@@ -232,24 +232,29 @@ public final class EaseUI {
      */
     private String getAppName(int pID) {
         String processName = null;
-        ActivityManager am = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List l = am.getRunningAppProcesses();
-        Iterator i = l.iterator();
-        PackageManager pm = appContext.getPackageManager();
-        while (i.hasNext()) {
-            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
-            try {
-                if (info.pid == pID) {
-                    CharSequence c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
-                    // Log.d("Process", "Id: "+ info.pid +" ProcessName: "+
-                    // info.processName +"  Label: "+c.toString());
-                    // processName = c.toString();
-                    processName = info.processName;
-                    return processName;
+        try {
+            ActivityManager am = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
+            List l = am.getRunningAppProcesses();
+            Iterator i = l.iterator();
+            PackageManager pm = appContext.getPackageManager();
+            while (i.hasNext()) {
+                ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
+                try {
+                    if (info.pid == pID) {
+                        CharSequence c = pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
+                        // Log.d("Process", "Id: "+ info.pid +" ProcessName: "+
+                        // info.processName +"  Label: "+c.toString());
+                        // processName = c.toString();
+                        processName = info.processName;
+                        return processName;
+                    }
+                } catch (Exception e) {
+                    // Log.d("Process", "Error>> :"+ e.toString());
                 }
-            } catch (Exception e) {
-                // Log.d("Process", "Error>> :"+ e.toString());
             }
+        }catch (Exception e)
+        {
+
         }
         return processName;
     }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x180"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/x20"
+        android:layout_gravity="center"
+        android:alpha="0.93"
+        app:cardElevation="3dp"
+        android:orientation="vertical"
+        app:cardCornerRadius="@dimen/x25">
+        <LinearLayout
+            android:id="@+id/ll_popup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x40"
+            android:orientation="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:layout_margin="@dimen/x10"
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>

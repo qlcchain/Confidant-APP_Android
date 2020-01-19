@@ -38,7 +38,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -71,7 +71,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -98,7 +98,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -131,7 +131,7 @@ open class BaseData() {
         {
             var paramsStr = params.baseDataToJson()
             var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
-            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp,ConstantValue.libsodiumprivateSignKey!!)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
@@ -191,7 +191,7 @@ data class CancellationRsp(var RouteId : String, var UserId : String, var Action
  * (1)	请求（APP-->Router）
  */
 data class AddFriendReq(var UserId : String, var NickName :String, var FriendId : String,var UserKey:String ,var Msg:String,var Action : String = "AddFriendReq")
-
+data class AddFriendReq2(var UserId : String, var NickName :String, var FriendId : String,var UserKey:String,var FriendDevId:String ,var Msg:String,var Action : String = "AddFriendReq")
 /**
  * 5.	添加好友，发送好友请求
  * (2)	响应（Router->APP）
@@ -284,7 +284,7 @@ data class SendMsgReq(var FromId :String ,var ToId :String, var Msg : String, va
  * 场景：用户A向自己的好友用户B发送消息，A发送消息到router
  * (1)	请求（APP-->Router）
  */
-data class SendMsgReqV3(var From :String ,var To:String, var Msg : String, var Sign : String, var Nonce : String, var PriKey: String,var Action : String = "SendMsg")
+data class SendMsgReqV3(var From :String ,var To:String, var Msg : String, var Sign : String, var Nonce : String, var PriKey: String,var AssocId:String,var Action : String = "SendMsg")
 
 /**
  * 11.	发送消息
@@ -336,7 +336,7 @@ data class ShareBean(var avatar : String, var name : String)
  * 场景：用户A拉取自己跟好友B的聊天记录
  * (2)	响应（APP->Router）
  */
-data class PullMsgReq(var UserId :String, var FriendId : String, var MsgType : Int, var MsgStartId :Int,var MsgNum : Int ,var Action : String = "PullMsg")
+data class PullMsgReq(var UserId :String, var FriendId : String, var MsgType : Int, var MsgStartId :Int,var MsgNum : Int ,var SrcMsgId:Int,var Action : String = "PullMsg")
 
 
 data class SendStrMsg(var FromId :String, var ToId : String, var FileName : String, var FileSize :Long,var FileMD5 : String ,var Action : String = "SendFile")
@@ -590,7 +590,7 @@ data class GroupUserPullReq(var UserId : String, var RouterId : String, var GId 
  * 69.	拉取群消息列表
  * (2)	响应（APP->Router）
  */
-data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId : String, var MsgType : Int, var MsgStartId : Int, var MsgNum : Int,var Action : String = "GroupMsgPull")
+data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId : String, var MsgType : Int, var MsgStartId : Int, var MsgNum : Int,var SrcMsgId:Int,var Action : String = "GroupMsgPull")
 
 
 
@@ -598,7 +598,7 @@ data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId :
  * 70.	群组会话中发文本消息
  * (2)	响应（APP->Router）
  */
-data class GroupSendMsgReq(var UserId : String, var GId : String, var Point : String, var Msg : String,var Action : String = "GroupSendMsg")
+data class GroupSendMsgReq(var UserId : String, var GId : String, var Point : String, var Msg : String, var AssocId : String,var Action : String = "GroupSendMsg")
 
 
 /**
@@ -746,7 +746,7 @@ data class PullMailList(var Type:Int,var User :String,var StartId :Int,var Num :
  * 93.	用户备份邮件到节点上
  * (2)	响应（APP->Router）
  */
-data class BakupEmail(var Type:Int,var FileId :Int,var Uuid :Int,var FileSize :Int,var FileMd5 :String,var User :String,var UserKey :String,var MailInfo :String,var Action : String = "BakupEmail")
+data class BakupEmail(var Type:Int,var FileId :Int,var FileSize :Int,var FileMd5 :String,var User :String,var Uuid :String,var UserKey :String,var MailInfo :String,var Action : String = "BakupEmail")
 /**
  * 94.	用户删除节点上备份邮件
  * (2)	响应（APP->Router）
@@ -771,9 +771,62 @@ data class GetCapactiy(var UserId :String,var Action : String = "GetCapactiy")
  * 98.	邮件加密时用户根据邮箱名查询目标公钥
  * (2)	响应（APP->Router）
  */
-data class CheckmailUkey(var Unum:Int ,var Users :String,var Action : String = "CheckmailUkey")
+data class CheckmailUkey(var Unum:Int ,var Type:Int,var Users :String,var Action : String = "CheckmailUkey")
 /**
  * 99.	用户查询自己账户下备份的邮件数量
  * (2)	响应（APP->Router）
  */
 data class BakMailsNum(var User :String,var Action : String = "BakMailsNum")
+
+/**
+ * 99.	用户查询自己账户下备份的邮件数量
+ * (2)	响应（APP->Router）
+ */
+data class BakMailsCheck(var User :String,var Uuid :String,var Action : String = "BakMailsCheck")
+/**
+ * 93.	用户发送邮件提醒
+ * (2)	响应（APP->Router）
+ */
+data class MailSendNotice(var MailsTo :String,var Action : String = "MailSendNotice")
+
+/**
+ * 94.	系统提醒通知
+ * (2)	响应（APP->Router）
+ */
+data class SysMsgPush(var Retcode :Int,var ToId:String,var Action : String = "SysMsgPush")
+/**
+ * 95.	自动添加好友
+ * (1)	请求（APP-->Router）
+ */
+data class AddFriendsAutoReq(var Type : Int, var UserId :String, var Friends : String,var EmailId:String ,var Action : String = "AddFriendsAuto")
+/**
+ * 97.	用户数据同步接口
+ * (1)	请求（APP-->Router）
+ */
+data class UserDataSysnReq(var UserId : String, var DType :Int, var Direction : Int,var Increment:Int,var FriendSeq:Int,var UinfoSeq:Int,var Data : String,var Action : String = "UserDataSysn")
+/**
+ * 98.	拉取文件夹列表
+ * (1)	请求（APP-->Router）
+ */
+data class FilePathsPullReq(var UserId : String, var Type :Int,var Action : String = "FilePathsPull")
+/**
+ * 99.	拉取特定文件夹下文件列表
+ * (1)	请求（APP-->Router）
+ */
+data class FilesListPullReq(var UserId : String, var Depens :Int, var PathId : Int,var PathName:String,var Sort:Int,var StartId:Int,var Num : Int,var Action : String = "FilesListPull")
+/**
+ * 100.	用户备份邮件到节点上
+ * (1)	请求（APP-->Router）
+ */
+data class BakFileReq(var Depens :Int,var UserId : String,  var Type : Int,var FileId:Int,var Size:Long,var Md5:String,var FName : String,var FKey : String,var FInfo : String,var PathId : Int,var PathName : String,var Action : String = "BakFile")
+/**
+ * 101.	用户文件目录或者文件更新（新建，改名，删除）
+ * (1)	请求（APP-->Router）
+ */
+data class FileActionReq(var UserId : String, var Depens :Int, var Type : Int,var React:Int,var FileId:Long,var PathId:Long,var Name : String,var OldName : String,var Action : String = "FileAction")
+
+/**
+ * 102.	用户查询自己账户下备份的通信录用户数量
+ * (1)	请求（APP-->Router）
+ */
+data class BakAddrUserNumReq(var User : String, var FileId :Int,var Action : String = "BakAddrBookInfo")

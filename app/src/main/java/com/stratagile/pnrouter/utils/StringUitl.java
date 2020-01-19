@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -8,6 +9,11 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.application.AppConfig;
 
 import org.libsodium.jni.Sodium;
 
@@ -19,8 +25,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import qlc.mng.AccountMng;
+import qlc.network.QlcException;
+import qlc.rpc.AccountRpc;
+import qlc.utils.Helper;
 
 
 /**
@@ -809,11 +821,34 @@ public class StringUitl {
     public static boolean isHomepage( String str ){
         String regex = "http://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
         String regex2 = "https://(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        /*String regex = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;
+        String regex2 = "(([a-zA-z0-9]|-){1,}\\.){1,}[a-zA-z0-9]{1,}-*" ;*/
         if(match( regex ,str ) || match( regex2 ,str ))
         {
             return true;
         }
         return false;
+    }
+    public static String addHrefToURL(String str)
+    {
+        String regex = "(http:|https:)//[^[A-Za-z0-9\\._\\?%&+\\-=/#]]*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            StringBuffer replace = new StringBuffer();
+            replace.append("<a href=\"").append(matcher.group());
+            replace.append("\" target=\"_blank\"></a>");
+            matcher.appendReplacement(result, replace.toString());
+        }
+        matcher.appendTail(result);
+        return  result.toString();
+    }
+    public static boolean isPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || "".equals(phoneNumber))
+            return false;
+        String regex = "^1[3|4|5|8|6][0-9]\\d{8}$";
+        return phoneNumber.matches(regex);
     }
     /**
      * @param str 待验证的字符串
@@ -936,5 +971,71 @@ public class StringUitl {
     public static int sp2px(Context context, float spValue) {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
+    }
+    /**
+     * 该函数判断一个字符串是否包含标点符号（中文英文标点符号）。
+     * 原理是原字符串做一次清洗，清洗掉所有标点符号。
+     * 此时，如果原字符串包含标点符号，那么清洗后的长度和原字符串长度不同。返回true。
+     * 如果原字符串未包含标点符号，则清洗后长度不变。返回false。
+     * @param s
+     * @return
+     */
+    public static boolean checkBiaoD(String s) {
+        boolean b = false;
+
+        String tmp = s;
+        tmp = tmp.replaceAll("\\p{P}", "");
+        if (s.length() != tmp.length()) {
+            b = true;
+        }
+
+        return b;
+
+    }
+    public static String getUUID()
+    {
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+        return  uuid;
+    }
+    public static String getBaseReplyMsg(String content, int length) {
+        for (int i = content.length(); i > 0; i--) {
+            byte[] result = (content.substring(0, i)).getBytes();
+            if (result.length < length) {
+                return new String(result);
+            }
+        }
+        return "";
+    }
+    public static void wallet()
+    {
+       /* String seed = QlcUtil.generateSeed().toLowerCase();
+        try {
+            JSONObject jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
+            String priKey = jsonObject.getString("privKey");
+            String pubKey = jsonObject.getString("pubKey");
+            KLog.i(jsonObject.toJSONString());
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.add(seed);
+            String mnemonics = AccountRpc.seedToMnemonics(jsonArray);
+            KLog.i(mnemonics);
+            String address =  QlcUtil.publicToAddress(pubKey).toLowerCase();
+            QLCAccount qlcAccount = new QLCAccount();
+            qlcAccount.setPrivKey(priKey.toLowerCase());
+            qlcAccount.setPubKey(pubKey);
+            qlcAccount.setAddress(address);
+            qlcAccount.setMnemonic(mnemonics);
+            qlcAccount.setIsCurrent(true);
+            qlcAccount.setAccountName(QLCAPI.Companion.getQlcWalletName());
+            qlcAccount.setSeed(seed);
+            qlcAccount.setIsAccountSeed(true);
+            qlcAccount.setWalletIndex(0);
+            AppConfig.instance.getDaoSession().getQLCAccountDao().insert(qlcAccount);
+            closeProgressDialog();
+            startActivityForResult(new Intent(this, QlcWalletCreatedActivity.class).putExtra("wallet", qlcAccount), 0);
+        } catch (QlcException e) {
+            e.printStackTrace();
+        }*/
+
+
     }
 }

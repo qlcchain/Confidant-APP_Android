@@ -209,6 +209,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
 //                avatarView.setRadius(avatarOptions.getAvatarRadius());
 //        }
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        String userSn = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserSnSp(), "");
         if (lastMessage.getUnReadCount() != 0) {
             holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0 ? "" : lastMessage.getUnReadCount() + "");
             holder.unreadLabel.setVisibility(View.VISIBLE);
@@ -218,7 +219,10 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         String time = lastMessage.getEmMessage().getMsgTime() + "";
         if (time.length() == 10) {
             holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() * 1000), getContext()));
-        } else {
+        } else if(time.length() == 16){
+            long timeTemp = Long.valueOf(lastMessage.getEmMessage().getMsgTime() /1000);
+            holder.time.setText(DateUtil.getTimestampString(new Date(timeTemp), getContext()));
+        }else{
             holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
         }
         if (lastMessage.getEmMessage().isUnread()) {
@@ -271,7 +275,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                 String messageContent =  holder.message.getText().toString();
                 String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
 
-                String cotainAt = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessageAT()+ userId + "_" + lastMessage.getEmMessage().getTo(), "0");
+                String cotainAt = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessageAT()+ userSn + "_" + lastMessage.getEmMessage().getTo(), "0");
                 if(cotainAt.equals("1"))
                 {
 

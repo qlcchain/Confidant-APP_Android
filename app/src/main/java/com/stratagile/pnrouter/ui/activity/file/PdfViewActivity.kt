@@ -7,15 +7,12 @@ import android.os.Environment
 import android.os.Handler
 import android.view.View
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.bumptech.glide.Glide
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -33,18 +30,13 @@ import com.stratagile.pnrouter.ui.activity.file.module.PdfViewModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.PdfViewPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_pdf_view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import rx.lang.scala.schedulers.AndroidMainThreadScheduler
 import java.io.File
 import java.lang.Exception
-import java.util.HashMap
-import java.util.concurrent.TimeUnit
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -213,8 +205,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

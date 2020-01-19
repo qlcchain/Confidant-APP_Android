@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.data.web
 
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
@@ -12,7 +10,6 @@ import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import java.io.IOException
 
 
@@ -106,8 +103,8 @@ val credentialsProvider: CredentialsProvider, private
                             var baseData = BaseData(4, msgData, jOnlineStatusPushRsp.msgid)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
@@ -398,8 +395,8 @@ val credentialsProvider: CredentialsProvider, private
                         var baseData = BaseData(4, msgData, jOnlineStatusPushRsp.msgid)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         } else {
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
@@ -559,13 +556,82 @@ val credentialsProvider: CredentialsProvider, private
                 "SaveEmailConf" -> {
                     val jSaveEmailConfRsp = gson.fromJson(text, JSaveEmailConfRsp::class.java)
                     saveEmailConfCallback?.saveEmailConf(jSaveEmailConfRsp)
+                    saveEmailConfChooseCallback?.saveEmailConf(jSaveEmailConfRsp)
                 }
                 "CheckmailUkey" -> {
                     val jCheckmailUkeyRsp = gson.fromJson(text, JCheckmailUkeyRsp::class.java)
                     checkmailUkeyCallback?.checkmailUkey(jCheckmailUkeyRsp)
                 }
+                "BakupEmail" -> {
+                    val JBakupEmailRsp = gson.fromJson(text, JBakupEmailRsp::class.java)
+                    bakupEmailCallback?.BakupEmailBack(JBakupEmailRsp)
+                }
+                "PullMailList" -> {
+                    val JPullMailListRsp = gson.fromJson(text, JPullMailListRsp::class.java)
+                    pullMailListCallback?.PullMailListBack(JPullMailListRsp)
+                }
+                "DelEmailConf" -> {
+                    val JDelEmailConfRsp = gson.fromJson(text, JDelEmailConfRsp::class.java)
+                    delEmailConfCallback?.DelEmailConfBack(JDelEmailConfRsp)
+                }
+                "DelEmail" -> {
+                    val JDelEmailRsp = gson.fromJson(text, JDelEmailRsp::class.java)
+                    dlEmailCallback?.DelEmailBack(JDelEmailRsp)
+                }
+                "BakMailsNum" -> {
+                    val JBakMailsNumRsp = gson.fromJson(text, JBakMailsNumRsp::class.java)
+                    bakMailsNumCallback?.BakMailsNumBack(JBakMailsNumRsp)
+                }
+                "BakMailsCheck" -> {
+                    val JBakMailsCheckRsp = gson.fromJson(text, JBakMailsCheckRsp::class.java)
+                    bakMailsCheckCallback?.BakMailsCheckBack(JBakMailsCheckRsp)
+                }
+                "MailSendNotice" -> {
+                    val JMailSendNoticeRsp = gson.fromJson(text, JMailSendNoticeRsp::class.java)
+                    mailSendNoticeCallback?.MailSendNoticeBack(JMailSendNoticeRsp)
+                }
+                "SysMsgPush" -> {
+                    val JSysMsgPushRsp = gson.fromJson(text, JSysMsgPushRsp::class.java)
+                    mainInfoBack?.sysMsgPushRsp(JSysMsgPushRsp)
+                }
+                "AddFriendsAuto" -> {
+                    val JAddFriendsAutoRsp = gson.fromJson(text, JAddFriendsAutoRsp::class.java)
+                    checkmailUkeyCallback?.addFriendsAuto(JAddFriendsAutoRsp)
+                }
+                "FileAction" -> {
+                    val jFileActionRsp = gson.fromJson(text, JFileActionRsp::class.java)
+                    if(nodeFilesListPullCallback == null)
+                    {
+                        nodeFileCallback?.fileAction(jFileActionRsp)
+                    }
+                    nodeSelectFileCallback?.fileAction(jFileActionRsp)
+                    nodeFilesListPullCallback?.fileAction(jFileActionRsp)
+                }
+                "FilePathsPull" -> {
+                    val jFilePathsPulRsp = gson.fromJson(text, JFilePathsPulRsp::class.java)
+                    nodeFileCallback?.filePathsPull(jFilePathsPulRsp)
+                    nodeSelectFileCallback?.filePathsPull(jFilePathsPulRsp)
+                }
+                "FilesListPull" -> {
+                    val jFilesListPullRsp = gson.fromJson(text, JFilesListPullRsp::class.java)
+                    nodeFilesListPullCallback?.filesListPull(jFilesListPullRsp)
+                }
+                "BakFile" -> {
+                    val jBakFileRsp = gson.fromJson(text, JBakFileRsp::class.java)
+                    if(bakAddrUserNumCallback == null)
+                    {
+                        mainInfoBack?.bakFileBack(jBakFileRsp)
+                    }
+
+                    bakAddrUserNumCallback?.bakFileBack(jBakFileRsp)
 
 
+                }
+                "BakAddrBookInfo" -> {
+                    val jBakAddrUserNumRsp = gson.fromJson(text, JBakAddrUserNumRsp::class.java)
+                    bakAddrUserNumCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
+                    bakAddrUserNumOutCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
+                }
             }
         }
 
@@ -643,7 +709,33 @@ val credentialsProvider: CredentialsProvider, private
 
     var saveEmailConfCallback: SaveEmailConfCallback? = null
 
+    var saveEmailConfChooseCallback: SaveEmailConfCallback? = null
+
     var checkmailUkeyCallback: CheckmailUkeyCallback? = null
+
+    var bakupEmailCallback:BakupEmailCallback? = null
+
+    var pullMailListCallback:PullMailListCallback? = null
+
+    var delEmailConfCallback:DelEmailConfCallback? = null
+
+    var dlEmailCallback:DelEmailCallback? = null
+
+    var bakMailsNumCallback:BakMailsNumCallback?= null
+
+    var bakMailsCheckCallback: BakMailsCheckCallback? = null
+
+    var mailSendNoticeCallback:MailSendNoticeCallback? = null;
+
+    var nodeFileCallback:NodeFileCallback? = null;
+
+    var nodeSelectFileCallback:NodeFileCallback? = null;
+
+    var nodeFilesListPullCallback:NodeFilesListPullCallback? = null;
+
+    var bakAddrUserNumCallback:BakAddrUserNumCallback? = null;
+
+    var bakAddrUserNumOutCallback:BakAddrUserNumOutCallback? = null;
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -710,13 +802,16 @@ val credentialsProvider: CredentialsProvider, private
      * @return A SignalServiceMessagePipe for receiving Signal Service messages.
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
-        KLog.i("没有初始化。。createMessagePipe" + pipe)
+        /*KLog.i("没有初始化。。createMessagePipe" + pipe)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver" + this)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver loginBackListener" + loginBackListener)
+        KLog.i("超时调试：1" + pipe)*/
         if (pipe == null) {
+            KLog.i("超时调试：webSocketConnection createMessagePipe")
             val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
+            KLog.i("超时调试：webSocket createMessagePipe" + webSocket)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
-            KLog.i("pipe 重新设置监听。。。")
+            KLog.i("超时调试：pipe createMessagePipe" + pipe)
             pipe!!.messagePipeCallback = this
             return pipe!!
         } else {
@@ -800,6 +895,8 @@ val credentialsProvider: CredentialsProvider, private
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
+        fun sysMsgPushRsp(jSysMsgPushRsp:JSysMsgPushRsp)
+        fun bakFileBack(jBakFileRsp: JBakFileRsp)
     }
     interface BigImageBack {
         fun registerBack(registerRsp: JRegisterRsp)
@@ -884,7 +981,7 @@ val credentialsProvider: CredentialsProvider, private
 
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey: String, Msg: String);
-        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey: String, Msg: String): String;
+        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey: String, Msg: String,AssocId:String): String;
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
@@ -905,7 +1002,7 @@ val credentialsProvider: CredentialsProvider, private
     }
 
     interface GroupChatCallBack {
-        fun sendGroupMsg(userId: String, gId: String, point: String, Msg: String, userKey: String): String;
+        fun sendGroupMsg(userId: String, gId: String, point: String, Msg: String, userKey: String,AssocId:String): String;
         fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
         fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)
@@ -1018,6 +1115,44 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface CheckmailUkeyCallback {
         fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp)
+        fun addFriendsAuto(jAddFriendsAutoRsp: JAddFriendsAutoRsp)
+    }
+    interface BakupEmailCallback {
+        fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp)
+    }
+    interface PullMailListCallback {
+        fun PullMailListBack(JPullMailListRsp: JPullMailListRsp)
+    }
+    interface DelEmailConfCallback {
+        fun DelEmailConfBack(JDelEmailConfRsp: JDelEmailConfRsp)
+    }
+    interface DelEmailCallback {
+        fun DelEmailBack(JDelEmailRsp: JDelEmailRsp)
+    }
+    interface BakMailsNumCallback {
+        fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp)
+    }
+    interface BakMailsCheckCallback {
+        fun BakMailsCheckBack(JBakMailsCheckRsp: JBakMailsCheckRsp)
+    }
+    interface MailSendNoticeCallback {
+        fun MailSendNoticeBack(JMailSendNoticeRsp: JMailSendNoticeRsp)
+    }
+    interface NodeFileCallback {
+        fun fileAction(jFileActionRsp: JFileActionRsp)
+        fun filePathsPull(jFilePathsPulRsp: JFilePathsPulRsp)
+    }
+    interface NodeFilesListPullCallback {
+        fun filesListPull(jFilesListPullRsp: JFilesListPullRsp)
+        fun fileAction(jFileActionRsp: JFileActionRsp)
+    }
+    interface BakAddrUserNumCallback {
+        fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
+        fun bakFileBack(jBakFileRsp: JBakFileRsp)
+    }
+    interface BakAddrUserNumOutCallback {
+        fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
     }
 }
+
 

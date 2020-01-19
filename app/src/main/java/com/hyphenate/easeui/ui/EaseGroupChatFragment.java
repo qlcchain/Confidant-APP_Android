@@ -79,6 +79,8 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.observable.ImagesObservable;
 import com.message.Message;
+import com.smailnet.eamil.Utils.AESCipher;
+import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -112,15 +114,14 @@ import com.stratagile.pnrouter.entity.UpdateAvatarReq;
 import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
-import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
+import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FromChat;
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupMembersActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
-import com.stratagile.pnrouter.utils.AESCipher;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
@@ -151,10 +152,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -266,6 +263,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     private long faBegin;
     private long faEnd;
     private boolean isContainAt = false;
+    private Message sendMessageData;
     //是否正在录音，正在录音，其他点击不能生效
 //    private boolean isRecording = false;
 
@@ -306,7 +304,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         groupEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_CHAT_GROUP);
         this.turnOnTyping = turnOnTyping();
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessageAT() + userId + "_" + toChatUserId, "0");
+        String userSn = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserSnSp(), "");
+        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessageAT() + userSn + "_" + toChatUserId, "0");
         super.onActivityCreated(savedInstanceState);
     }
     public void setChatUserId(String id) {
@@ -447,7 +446,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String videoName = files_dir.substring(beginIndex, endIndex);
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath);
+                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,80);
                         messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                         break;
                     case 5:
@@ -498,8 +497,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }
                     }
 
-                    messageData.setMsgTime(message.getTimeStamp() * 1000);
+                    //messageData.setMsgTime(message.getTimeStamp() * 1000);
                     messageData.setMsgId(msgId + "");
+                    messageData.setMsgTime(Long.valueOf(msgId));
                     sendMessageTo(messageData);
                 }
             }
@@ -703,16 +703,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onSendMessage(String content,String point) {
+            public void onSendMessage(String content,String point,String AssocId,String AssocContent,String userName) {
                 if(point.toLowerCase().contains("all"))
                 {
                     point = "all";
                 }
-                sendTextMessage(content,point.toLowerCase());
+                sendTextMessage(content,point.toLowerCase(),AssocId,AssocContent,userName);
             }
             @Override
             public void onSendMessage(String content) {
-                sendTextMessage(content,"");
+                sendTextMessage(content,"","","","");
             }
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
@@ -951,6 +951,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }*/
         if (conversation != null) {
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
             EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
@@ -981,13 +982,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(eMMessage.getMsgTime() / 1000);
+                //Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
             } else {
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
             }
 
         }
@@ -1010,6 +1012,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         //deleteFileMap.put(msgId, true);
         if (conversation != null) {
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
             EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
@@ -1041,13 +1044,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                 Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(eMMessage.getMsgTime() / 1000);
+                //Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
             } else {
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
             }
 
         }
@@ -1117,11 +1121,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     public void onAgreeReceivwFileStart(int fileNumber, String key, String fileName) {
         if (ConstantValue.INSTANCE.isAntox()) {
-            FriendKey friendKey = new FriendKey(key);
+            /*FriendKey friendKey = new FriendKey(key);
             if (friendKey != null) {
                 receiveToxFileNameMap.put(fileNumber + "", fileName);
                 MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance, fileNumber, friendKey);
-            }
+            }*/
         } else {
             receiveToxFileNameMap.put(fileNumber + "", fileName);
         }
@@ -1149,9 +1153,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                     if(message.getFileKey() != null && !message.getFileKey().equals(""))
                     {
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getFileKey());
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getFileKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());//,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!
                     }else{
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     }
 
                     int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dirTemp, fileKey);
@@ -1223,7 +1227,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 }
                             }
 
-                            messageData.setMsgTime(message.getTimeStamp() * 1000);
+                            //messageData.setMsgTime(message.getTimeStamp() * 1000);
+                            messageData.setMsgTime(Long.valueOf(message.getMsgId()));
                             messageData.setMsgId(message.getMsgId() + "");
                             sendMessageTo(messageData);
                         }
@@ -1243,12 +1248,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     public void onToxFileSendRsp(JGroupSendFileDoneRsp jSendToxFileRsp) {
         if (jSendToxFileRsp.getParams().getRetCode() == 0) {
+
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+            Gson gson = new Gson();
+            sendMessageData.setTimeStamp(jSendToxFileRsp.getTimestamp());
+
+            String baseDataJson = gson.toJson(sendMessageData);
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+
+
             String msgId = sendTLogIdFileIdMap.get(jSendToxFileRsp.getParams().getFileId() + "");
             String msgServerId = jSendToxFileRsp.getParams().getMsgId() + "";
             EMMessage eMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
             conversation.removeMessage(msgId);
             eMMessage.setMsgId(msgServerId);
             eMMessage.setAcked(true);
+            eMMessage.setMsgTime(Long.valueOf(msgServerId));
             sendMessageTo(eMMessage);
             conversation.updateMessage(eMMessage);
             if (eMMessage.getType().equals(EMMessage.Type.IMAGE))
@@ -1296,7 +1312,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 {
                     previewImages  = new ArrayList<LocalMedia>();
                     String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                    String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
                 }
                 KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData2_" + conversation.getAllMessages().size());
             }
@@ -1328,6 +1345,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             messageListTemp = messageList;
         }
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         ArrayList<EMMessage> messages = new ArrayList<>();
         String msgIdStrLocal = SpUtil.INSTANCE.getString(AppConfig.instance,"insertTipMessage"+ "_" + toChatUserId,"");
@@ -1338,6 +1356,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
+            if(Message.getAssocId() != 0)
+            {
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        loadAssocIdMessages(Message.getAssocId(),Message.getMsgId());
+                    }
+                }, 10);
+            }
             if (Message.getFrom().equals("")) {
                 Message.setFrom(userId);
             } else {
@@ -1386,7 +1414,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String msgSouce = "";
             if (Message.getMsg() != null && !Message.getMsg().equals("")) {
                 try {
-                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     byte[] base64Scoure = RxEncodeTool.base64Decode(Message.getMsg());
                     msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
                 } catch (Exception e) {
@@ -1433,7 +1461,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1449,8 +1477,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1474,7 +1502,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1489,8 +1517,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1519,7 +1547,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
@@ -1535,8 +1563,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1565,7 +1593,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 String save_dir = PathUtils.getInstance().getFilePath() + "/";
                                 if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                                 {
-                                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                     String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                     FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                                 }else{
@@ -1580,8 +1608,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 BaseData baseData = new BaseData(msgData);
                                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                    //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                                 } else {
                                     ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 }
@@ -1606,7 +1634,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
                             if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
                             {
-                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                             }else{
@@ -1621,8 +1649,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
-                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
@@ -1669,7 +1697,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStamp() * 1000);
+            //message.setMsgTime(Message.getTimeStamp() * 1000);
+            message.setMsgTime(Message.getMsgId());
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -1687,7 +1716,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
                 if (currentPage == 1) {
-                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
                 }
             }
             if(Message.getPoint() == 1 || Message.getPoint() == 2)
@@ -1768,7 +1797,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                     }
                     if (!PriKey.equals("") && !Nonce.equals("") && !PriKey.equals("")) {
-                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey);
+                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey(), ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                         EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
                         message.setFrom(userIdL);
                         message.setTo(friendId);
@@ -1904,6 +1933,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
             EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
@@ -1934,7 +1964,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(eMMessage.getMsgTime() / 1000);
+                //Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                 /*String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -1951,9 +1982,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
             } else {
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
             }
 
 
@@ -2061,7 +2092,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     public void run() {
                         loadMoreRoamingMessages();
                     }
-                }, 600);
+                }, 50);
             }
         });
     }
@@ -2070,7 +2101,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         swipeRefreshLayout.setRefreshing(true);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0, MsgStartId, 10, "GroupMsgPull");
+        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0, MsgStartId, 10, 0,"GroupMsgPull");
         BaseData sendData = new BaseData(pullMsgList);
         if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
             sendData = new BaseData(4, pullMsgList);
@@ -2083,8 +2114,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
             if (ConstantValue.INSTANCE.isAntox()) {
-                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
             } else {
                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
             }
@@ -2092,7 +2123,35 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         }
 
+        if(currentPage > 1)
+        {
+            easeChatMessageList.scrollLast(0);
+        }
+    }
+    private void loadAssocIdMessages(int AssocId,int msgID) {
 
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        GroupMsgPullReq pullMsgList = new GroupMsgPullReq(userId, ConstantValue.INSTANCE.getCurrentRouterId(), UserDataManger.currentGroupData.getGId() + "", 0,AssocId+1, 1,msgID, "GroupMsgPull");
+        BaseData sendData = new BaseData(pullMsgList);
+        if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+            sendData = new BaseData(4, pullMsgList);
+        }
+
+        if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData);
+        } else if (ConstantValue.INSTANCE.isToxConnected()) {
+            BaseData baseData = sendData;
+            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+
+            if (ConstantValue.INSTANCE.isAntox()) {
+                //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+            } else {
+                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+            }
+
+
+        }
     }
     private void initPictureSelector() {
         PictureSelector.create(this)
@@ -2301,7 +2360,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      */
     private void setDraft() {
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        String content = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+        String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+        String content = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
         List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
         if (drafts != null && drafts.size() > 0) {
             DraftEntity draftEntity = drafts.get(0);
@@ -2580,13 +2640,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
         }
     };
-
+    public void inputReplyMsg(String msgId, String content) {
+        int inserResult = inputMenu.insertReplyText(content,msgId);
+    }
     /**
      * input @
      *
      * @param userId
      */
-    protected void inputAtUsername(String userId, boolean autoAddAtSymbol) {
+    public void inputAtUsername(String userId, boolean autoAddAtSymbol) {
         String userSelftId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if(userSelftId.equals(userId))
         {
@@ -2698,26 +2760,35 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     //send message
-    public void sendTextMessage(String content,String point) {
+    public void sendTextMessage(String content,String point,String AssocId,String AssocContent,String userName) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
+        String contentTemp = content;
+        if(!AssocId.equals(""))
+        {
+            //contentTemp = AssocContent +"\n……………………………………\n" +contentTemp;
+        }
         if (EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
         } else {
-            EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
+            EMMessage message = EMMessage.createTxtSendMessage(contentTemp, toChatUserId);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
             if (AppConfig.instance.getMessageReceiver() != null) {
-                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey());
+                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey(),AssocId);
 
                 if(msgId.equals("0"))
                 {
                     return;
                 }
+                //String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                message.setAttribute("username",userName);
+                message.setAttribute("AssocContent",AssocContent);
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
                 message.setDelivered(true);
@@ -2728,15 +2799,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 ConstantValue.INSTANCE.getSendFileMsgMap().put(msgId, message);
                 Gson gson = new Gson();
                 Message Message = new Message();
-                Message.setMsg(content);
+
+                Message.setMsg(contentTemp);
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis()/1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+                sendMessageData = Message;
                 sendMessageTo(message);
             }
 
@@ -2753,6 +2826,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             int msgIdIndex = Integer.valueOf(currentSendMsg.getMsgId());
             ImagesObservable.getInstance().removeLocalMedia(msgIdIndex,"chat");
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
             EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
@@ -2783,7 +2857,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
-                Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(eMMessage.getMsgTime() / 1000);
+                //Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                /* String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -2795,14 +2870,68 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
             } else {
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, "");
             }
         }
 
     }
+    public void upateAssocIdMessage(Message messageData,int SrcMsgId) {
+        if(currentPage == 1)
+        {
+            easeChatMessageList.scrollLast(1);
+        }else{
+            easeChatMessageList.scrollLast(0);
+        }
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(SrcMsgId+ "");
+        KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
+        LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
+        if (forward_msg != null) {
+            String msgSouce = "";
+            if (messageData.getMsg() != null && !messageData.getMsg().equals("")) {
+                try {
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
+                    byte[] base64Scoure = RxEncodeTool.base64Decode(messageData.getMsg());
+                    msgSouce = new String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.getBytes()));
+                } catch (Exception e) {
 
+                }
+            }
+            if (msgSouce != null && !msgSouce.equals("")) {
+                messageData.setMsg(msgSouce);
+            }
+            //final EMTextMessageBody body = (EMTextMessageBody) forward_msg.getBody();
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            String from = messageData.getFrom();
+            if(!from.equals( ""))
+            {
+                List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(from)).list();
+                if (userList.size() > 0) {
+                    UserEntity user = userList.get(0);
+                    String username = new String(RxEncodeTool.base64Decode(user.getNickName()));
+                    forward_msg.setAttribute("username",username);
+                }
+            }else{
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                forward_msg.setAttribute("username",name);
+            }
+            switch (messageData.getMsgType()) {
+                case 0:
+                    forward_msg.setAttribute("AssocContent",messageData.getMsg());
+                    break;
+                case 5:
+                    forward_msg.setAttribute("AssocContent",messageData.getFileName());
+                    break;
+            }
+            conversation.updateMessage(forward_msg);
+            if (isMessageListInited) {
+                easeChatMessageList.refresh();
+            }
+
+        }
+
+    }
     public void upateMessage(JGroupSendMsgRsp jSendMsgRsp) {
         if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
@@ -2813,11 +2942,19 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
+                String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+                Gson gson = new Gson();
+                sendMessageData.setTimeStamp(jSendMsgRsp.getTimestamp());
+                String baseDataJson = gson.toJson(sendMessageData);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
                 if (conversation != null) {
                     if (forward_msg != null) {
                         conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setAcked(true);
+                        //forward_msg.setMsgTime(jSendMsgRsp.getTimestamp() *1000);
+                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getMsgId());
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
                         if (isMessageListInited) {
@@ -2872,10 +3009,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
+                String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+                Gson gson = new Gson();
+                sendMessageData.setTimeStamp(jSendMsgRsp.getTimestamp());
+                String baseDataJson = gson.toJson(sendMessageData);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
                 if (conversation != null) {
                     if (forward_msg != null) {
                         conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
-                        forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setMsgId(jSendMsgRsp.getParams().getNewId() + "");
+                        forward_msg.setMsgTime(jSendMsgRsp.getParams().getNewId());
                         forward_msg.setAcked(true);
                         conversation.insertMessage(forward_msg);
                         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
@@ -3059,12 +3203,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
                 String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
                 message.setDelivered(true);
                 message.setAcked(false);
                 message.setUnread(true);
-
+                message.setMsgTime(System.currentTimeMillis());
                 if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     message.setMsgId(uuid);
@@ -3132,7 +3277,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
                     String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                    String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                     if (code == 1) {
                         int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3177,8 +3322,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
                         String fileNumber = "";
                         if (ConstantValue.INSTANCE.isAntox()) {
-                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                            /*FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                         } else {
                             String groupIdPre = UserDataManger.currentGroupData.getGId();
                             groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3198,7 +3343,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+                sendMessageData = Message;
                 sendMessageTo(message);
             }
         } catch (Exception e) {
@@ -3272,12 +3418,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }*/
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                         message.setFrom(userId);
                         message.setAttribute("wh", widthAndHeight.replace(",", ""));
                         message.setTo(UserDataManger.currentGroupData.getGId() + "");
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = (int) (System.currentTimeMillis() / 1000) +"";
                             message.setMsgId(uuid);
@@ -3314,7 +3462,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey.substring(0, 16), isCompress);
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3361,8 +3509,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3387,7 +3535,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+                        sendMessageData = Message;
                         sendMessageTo(message);
 
 
@@ -3444,6 +3593,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         currentSendMsg = message;
 
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
@@ -3527,8 +3677,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3627,12 +3777,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                         message.setFrom(userId);
                         message.setTo(UserDataManger.currentGroupData.getGId() + "");
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
-
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
@@ -3700,7 +3851,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         } else {
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3746,8 +3897,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                   /* FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3768,7 +3919,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+                        sendMessageData = Message;
                         sendMessageTo(message);
                     } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
@@ -3833,11 +3985,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                         message.setFrom(userId);
                         message.setTo(UserDataManger.currentGroupData.getGId() + "");
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
+                        message.setMsgTime(System.currentTimeMillis());
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             int result = FileUtil.copyAppFileToSdcard(filePath, files_dir);
                             if(result == 0)
@@ -3915,7 +4069,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
-                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                             int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
@@ -3961,8 +4115,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                    /*FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);*/
                                 } else {
                                     String groupIdPre = UserDataManger.currentGroupData.getGId();
                                     groupIdPre = groupIdPre.substring(0, groupIdPre.indexOf("_"));
@@ -3985,7 +4139,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
+                        sendMessageData = Message;
                         sendMessageTo(message);
                     } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
@@ -4123,12 +4278,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     }
                     Gson gsonData = new Gson();
                     String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                    String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
                     message.setAttribute("fileData",gsonData.toJson(fileData));
                     message.setFrom(userId);
                     message.setTo(UserDataManger.currentGroupData.getGId());
                     message.setDelivered(true);
                     message.setAcked(false);
                     message.setUnread(true);
+                    message.setMsgTime(System.currentTimeMillis());
                     EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(fileData.getMsgId()+"");
                     if(forward_msg == null)
                     {
@@ -4154,9 +4311,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     }
 
-                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());
-                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
-                    String FileKeyBase64 = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(fileSouceKey.getBytes(), aesKey.getBytes()));
+                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
+                    String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
+                    String FileKeyBase64 = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(fileSouceKey.getBytes(), aesKey.getBytes()));
                     String fileInfo  = fileData.getFileInfo();
                     if(fileInfo == null || fileInfo.equals(""))
                     {
@@ -4170,8 +4327,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         BaseData baseData = new BaseData(4,fileForwardReq);
                         String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                         if (ConstantValue.INSTANCE.isAntox()) {
-                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                            //FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                         }
@@ -4188,9 +4345,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     Message.setUnReadCount(0);
                     Message.setChatType(ChatType.GroupChat);
                     String baseDataJson = gson.toJson(Message);
-                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
                     Message.setFileName(fileMiName);
                     message.setAttribute("Message",gsonData.toJson(Message));
+                    sendMessageData = Message;
                     sendMessageTo(message);
 
 
@@ -4234,7 +4392,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param jPushMsgRsp
      */
     public void receiveTxtMessageV3(JGroupMsgPushRsp jPushMsgRsp) {
-        String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+        String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey(),ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
         byte[] base64Scoure = RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getMsg());
         String msgSouce = "";
         try {
@@ -4242,24 +4400,36 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if (msgSouce != null && !msgSouce.equals("")) {
                 jPushMsgRsp.getParams().setMsg(msgSouce);
             }
+            if(jPushMsgRsp.getParams().getAssocId() != 0 && currentPage == 1)
+            {
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        loadAssocIdMessages(jPushMsgRsp.getParams().getAssocId(),jPushMsgRsp.getParams().getMsgId());
+                    }
+                }, 10);
+            }
             EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
             message.setDirection(EMMessage.Direct.RECEIVE);
             message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
             message.setFrom(jPushMsgRsp.getParams().getFrom());
             message.setTo(jPushMsgRsp.getParams().getGId());
-
+            message.setMsgTime(jPushMsgRsp.getParams().getMsgId());
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg(jPushMsgRsp.getParams().getMsg());
             Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
             Message.setFrom(jPushMsgRsp.getParams().getFrom());
             Message.setTo(jPushMsgRsp.getParams().getGId());
-            Message.setTimeStamp(System.currentTimeMillis() / 1000);
+            Message.setTimeStamp(jPushMsgRsp.getTimestamp());
+            //Message.setTimeStamp(System.currentTimeMillis() / 1000);
             Message.setUnReadCount(0);
             Message.setChatType(ChatType.GroupChat);
             String baseDataJson = gson.toJson(Message);
             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            String userSn = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserSnSp(), "");
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userSn + "_" + toChatUserId, baseDataJson);
             sendMessageTo(message);           ;
             String name = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getUserName()));
         } catch (Exception e) {
@@ -4324,6 +4494,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (message != null) {
             message.setDirection(EMMessage.Direct.RECEIVE);
             message.setMsgId(msgId);
+            message.setMsgTime(Long.valueOf(msgId));
             message.setFrom(fromId);
             message.setTo(toId);
             sendMessageTo(message);
@@ -4767,7 +4938,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
-                    sendTextMessage(content,"");
+                    sendTextMessage(content,"","","","");
                 }
                 break;
             case IMAGE:
@@ -5081,7 +5252,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 }
 
-                                messageData.setMsgTime(message.getTimeStamp() * 1000);
+                                //messageData.setMsgTime(message.getTimeStamp() * 1000);
+                                messageData.setMsgTime(message.getMsgId());
                                 messageData.setMsgId(message.getMsgId() + "");
                                 sendMessageTo(messageData);
                             }

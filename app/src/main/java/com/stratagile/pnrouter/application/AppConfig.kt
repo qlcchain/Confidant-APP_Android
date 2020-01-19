@@ -1,22 +1,26 @@
 package com.stratagile.pnrouter.application
 
 import android.app.ActivityManager
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Point
+import android.net.Uri
 import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
 import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import chat.tox.antox.tox.ToxService
-import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
+import cn.jpush.android.api.JPushInterface
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.ExponentialBackOff
+import com.google.api.services.gmail.GmailRequestInitializer
+import com.google.api.services.gmail.GmailScopes
 import com.huawei.android.hms.agent.HMSAgent
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
@@ -28,7 +32,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
-import com.stratagile.pnrouter.data.service.MyService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.data.web.Optional
@@ -38,17 +41,12 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp
 import com.stratagile.pnrouter.entity.JPushMsgRsp
-import com.stratagile.pnrouter.entity.events.BackgroudEvent
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
-import com.stratagile.pnrouter.qmui.QMUISwipeBackActivityManager
-import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
-import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -70,7 +68,10 @@ class AppConfig : MultiDexApplication() {
     var applicationComponent: AppComponent? = null
 
     var isBackGroud = false
-
+    var isOpenSplashActivity = false
+    var sharedText:String? = ""
+    var sharedTextContent:String? = ""
+    var imageUris:ArrayList<Uri>? = null
     var onToxMessageReceiveListener: WebSocketConnection.OnMessageReceiveListener? = null
 
     var messageReceiver: PNRouterServiceMessageReceiver? = null
@@ -93,12 +94,32 @@ class AppConfig : MultiDexApplication() {
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .priority(Priority.HIGH)
 
+    var credential: GoogleAccountCredential? = null
+
+    var mService: com.google.api.services.gmail.Gmail? = null
+    var SCOPES = arrayOf(GmailScopes.GMAIL_LABELS, GmailScopes.MAIL_GOOGLE_COM, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY)
+    var transport = AndroidHttp.newCompatibleTransport()
+    var jsonFactory = GsonFactory.getDefaultInstance()
+    private var mScreenCaptureBitmap: Bitmap? = null
+
     override fun onCreate() {
         super.onCreate()
+        KLog.i("超时调试：10"+this)
 //        CrashHandler.instance.init(this)
+        credential = GoogleAccountCredential.usingOAuth2(
+                applicationContext, Arrays.asList(*SCOPES))
+                .setBackOff(ExponentialBackOff())
+        mService = com.google.api.services.gmail.Gmail.Builder(
+                transport, jsonFactory, credential)
+                .setApplicationName("com.stratagile.pnrouter")
+                .setGmailRequestInitializer(GmailRequestInitializer("873428561545-i01gqi3hsp0rkjs2u21ql0msjgu0qgnv.apps.googleusercontent.com"))
+                .build()
         emailConfig = EmailConfig()
         name = System.currentTimeMillis()
-        CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
+        if(! BuildConfig.DEBUG)
+        {
+            CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
+        }
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
         instance = this
@@ -111,15 +132,17 @@ class AppConfig : MultiDexApplication() {
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
             HMSAgent.init(this)
+        }else{
+            initMiPush()
         }
-        initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {
            ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }*/
-
+        JPushInterface.setDebugMode(BuildConfig.DEBUG)    // 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this)            // 初始化 JPush
 
         /* var intent =  Intent(this, MyService::class.java)
          var sender= PendingIntent.getService(this, 0, intent, 0);
@@ -135,6 +158,13 @@ class AppConfig : MultiDexApplication() {
         return messageReceiver
     }
 
+    fun getmScreenCaptureBitmap(): Bitmap {
+        return mScreenCaptureBitmap!!
+    }
+
+    fun setmScreenCaptureBitmap(mScreenCaptureBitmap: Bitmap) {
+        this.mScreenCaptureBitmap = mScreenCaptureBitmap
+    }
     fun getPNRouterServiceMessageToxReceiver(): PNRouterServiceMessageReceiver {
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
@@ -165,6 +195,7 @@ class AppConfig : MultiDexApplication() {
     }
 
     fun getPNRouterServiceMessageReceiver(): PNRouterServiceMessageReceiver {
+        KLog.i("超时调试：getPNRouterServiceMessageReceiver"+messageSender)
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
@@ -178,9 +209,11 @@ class AppConfig : MultiDexApplication() {
     }
 
     fun getPNRouterServiceMessageSender(): PNRouterServiceMessageSender {
-        KLog.i("没有初始化。。 PNRouterServiceMessageSender  AAAAA " + this + "##" + messageSender)
+        KLog.i("超时调试：getPNRouterServiceMessageSender"+messageSender)
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+        }else{
+            messageSender!!.setPipe(Optional.fromNullable(MessageRetrievalService.getPipe()))
         }
         return messageSender!!
     }
@@ -204,8 +237,8 @@ class AppConfig : MultiDexApplication() {
         val intent = Intent(this, MessageRetrievalService::class.java)
         this.stopService(intent)
         if (ConstantValue.isAntox) {
-            val intentAnTox = Intent(this, ToxService::class.java)
-            this.stopService(intentAnTox)
+            /*val intentAnTox = Intent(this, ToxService::class.java)
+            this.stopService(intentAnTox)*/
         } else {
             val intentTox = Intent(this, KotlinToxService::class.java)
             this.stopService(intentTox)
@@ -285,6 +318,7 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
                 LogUtil.addLog("当前程序切换到前台")
+                EventBus.getDefault().post(ForegroundCallBack(true))
                 isBackGroud = false
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime, 0)
                 KLog.i(unlockTime)
@@ -309,12 +343,21 @@ class AppConfig : MultiDexApplication() {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!, 0)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq))
                 }
+                try
+                {
+                    MiPushClient.clearNotification(this@AppConfig)
+                    JPushInterface.clearAllNotifications(this@AppConfig);
+                }catch (E:Exception)
+                {
+
+                }
+
             }
 
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
                 LogUtil.addLog("当前程序切换到后台")
-//                EventBus.getDefault().post(BackgroudEvent())
+                EventBus.getDefault().post(ForegroundCallBack(false))
                 isBackGroud = true
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))
@@ -379,6 +422,10 @@ class AppConfig : MultiDexApplication() {
     fun emailConfig(): EmailConfig {
         return emailConfig!!
     }
+    fun initEmailConfig()
+    {
+        emailConfig = EmailConfig()
+    }
     fun  deleteEmailData()
     {
         this.mDaoMaster!!.newSession().emailContactsEntityDao.deleteAll()
@@ -386,4 +433,5 @@ class AppConfig : MultiDexApplication() {
         this.mDaoMaster!!.newSession().emailAttachEntityDao.deleteAll()
         this.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
     }
+
 }

@@ -13,10 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.domain.EaseEmojicon
-import com.hyphenate.easeui.ui.EaseBaiduMapActivity
 import com.hyphenate.easeui.widget.EaseChatExtendMenu
 import com.hyphenate.easeui.widget.EaseChatInputMenu
 import com.message.Message
@@ -24,6 +21,7 @@ import com.message.MessageProvider
 import com.message.adapter.MessageListAdapter
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -38,7 +36,6 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.*
 
@@ -134,7 +131,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
            override fun onTyping(s: CharSequence, start: Int, before: Int, count: Int) {
                 KLog.i("send action:TypingBegin cmd msg.")
             }
-            override fun onSendMessage(content: String,point :String ) {
+            override fun onSendMessage(content: String,point :String ,AssocId:String,AssocContent:String,userName:String) {
                 sendTextMessage(content)
             }
             override fun onSendMessage(content: String) {
@@ -271,8 +268,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -293,8 +290,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             }
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
             LogUtil.addLog("sendMsgV3 friendKey:",FriendMiPublicKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
-            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!,"")
 
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {
                 AppConfig.instance.getPNRouterServiceMessageSender().sendChatMsg(BaseData(3,msgData))
@@ -302,8 +299,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                 var baseData = BaseData(3,msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -354,7 +351,6 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                         )
                         .callback(permissionVideo)
                         .start()
-                ITEM_LOCATION -> startActivityForResult(Intent(activity, EaseBaiduMapActivity::class.java), REQUEST_CODE_MAP)
                 ITEM_FILE -> startActivityForResult(Intent(activity, FileChooseActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
                 else -> Toast.makeText(activity, R.string.wait, Toast.LENGTH_SHORT).show()
             }

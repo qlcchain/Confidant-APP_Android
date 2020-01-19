@@ -24,9 +24,9 @@ object QQ: Method {
         editText.text = null
         val eLayout = editText.layout
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            highLightPaint.color = Color.GRAY
+            highLightPaint.color = 0xFFF5F5F5.toInt()
         } else {
-            highLightPaint.color = Color.GRAY
+            highLightPaint.color = 0xFFF5F5F5.toInt()
         }
         highLightPaint.style = Paint.Style.FILL
         textPaint = eLayout.paint
@@ -37,7 +37,7 @@ object QQ: Method {
     }
 
     override fun newSpannable(user: User): Spannable {
-        return SpanFactory.newSpannable("${user.name}", user, ImageSpan(createDrawable(user.getSpannedName())))
+        return SpanFactory.newSpannable("${user.name}", user, ImageSpan(createDrawable(user.getSpannedName(0xFF808080.toInt()))))
     }
 
     @Suppress("DEPRECATION")

@@ -189,11 +189,9 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         @Override
         public void run() {
             while (!stopThread.get()) {
-                KLog.i("Waiting for websocket state change....");
                 waitForConnectionNecessary();
-
-                KLog.i("Making websocket connection....");
                 pipe = AppConfig.instance.getPNRouterServiceMessageReceiver().createMessagePipe();
+                KLog.i("超时调试：MessageRetrievalService run"+pipe);
                 try {
                     Thread.sleep(50000);
                 } catch (InterruptedException e) {

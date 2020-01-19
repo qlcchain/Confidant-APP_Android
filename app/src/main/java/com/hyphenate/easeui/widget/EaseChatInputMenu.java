@@ -272,9 +272,9 @@ public class EaseChatInputMenu extends LinearLayout {
             }
 
             @Override
-            public void onSendBtnClicked(String content,String point) {
+            public void onSendBtnClicked(String content,String point,String AssocId,String AssocContet,String userName) {
                 if (listener != null)
-                    listener.onSendMessage(content,point);
+                    listener.onSendMessage(content,point,AssocId,AssocContet,userName);
             }
 
             @Override
@@ -382,6 +382,14 @@ public class EaseChatInputMenu extends LinearLayout {
      */
     public int insertATText(String text,String data){
         int result = getPrimaryMenu().onAddAtText(text,data);
+        return result;
+    }
+    /**
+     * insert @text
+     * @param text
+     */
+    public int insertReplyText(String text,String data){
+        int result = getPrimaryMenu().onAddReplyText(text,data);
         return result;
     }
     /**
@@ -721,16 +729,16 @@ public class EaseChatInputMenu extends LinearLayout {
          */
         void onTyping(CharSequence s, int start, int before, int count);
 
+        void onSendMessage(String content);
+
         /**
          * when send message button pressed
-         * 
+         *
          * @param content
          *            message content
          */
-        void onSendMessage(String content,String point);
+        void onSendMessage(String content,String point,String AssocId,String AssocContent,String userName);
 
-        void onSendMessage(String content);
-        
         /**
          * when big icon pressed
          * @param emojicon

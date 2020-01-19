@@ -7,12 +7,12 @@ import android.view.Menu
 import android.view.MenuItem
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
+import com.smailnet.eamil.Utils.AESCipher
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus

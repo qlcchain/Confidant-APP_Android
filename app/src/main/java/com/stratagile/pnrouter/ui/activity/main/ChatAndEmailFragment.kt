@@ -65,6 +65,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
     lateinit internal var mPresenter: ChatAndEmailPresenter
     lateinit var commonNavigator : CommonNavigator
     private var conversationListFragment: EaseConversationListFragment? = null
+    private var emailMessageFragment: EmailMessageFragment? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,6 +77,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
+        emailMessageFragment = EmailMessageFragment()
         var titles = ArrayList<String>()
         titles.add(getString(R.string.Message))
         titles.add(getString(R.string.Email))
@@ -86,9 +88,15 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
         viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 if (position == 0) {
+                    val args = Bundle()
+                    args.putString("from", "")
+                    conversationListFragment!!.arguments = args
                     return conversationListFragment!!
                 } else {
-                    return EmailMessageFragment()
+                    val args = Bundle()
+                    args.putString("from", "")
+                    emailMessageFragment!!.arguments = args
+                    return emailMessageFragment!!
                 }
             }
 
@@ -209,6 +217,10 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
 
     override fun setPresenter(presenter: ChatAndEmailContract.ChatAndEmailContractPresenter) {
         mPresenter = presenter as ChatAndEmailPresenter
+    }
+    fun setCurrentItem(position:Int)
+    {
+        viewPager.setCurrentItem(position)
     }
     fun getConversationListFragment():EaseConversationListFragment
     {

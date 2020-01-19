@@ -60,6 +60,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String files_Temp_dir = "";
 	private String FileNameOld;
 	private boolean isCancel = false;
+	private boolean deleteSouce = true;
 
 	/**
 	 *
@@ -158,7 +159,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
                     String aesKey = "";
                     if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                     {
-                        aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+                        aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr,ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
                     }else{
                         aesKey = RxEncodeTool.getAESKey(keyStr);
                     }
@@ -249,6 +250,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			mOutputStream.close();
 		} catch (IOException e) {
+			bytesCopied = -1;
 			DeleteUtils.deleteFile(mFile.getPath());
 			DeleteUtils.deleteFile(outPath +FileNameOld);
 			e.printStackTrace();

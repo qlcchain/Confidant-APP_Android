@@ -4,37 +4,48 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.app.Notification.BADGE_ICON_SMALL
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.Image
+import android.media.ImageReader
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
+import android.os.*
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
+import android.util.DisplayMetrics
 import android.util.Log
-import android.view.KeyEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.wrapper.FriendKey
+import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
+import com.floatball.FloatPermissionManager
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
 import com.huawei.android.hms.agent.HMSAgent
 import com.huawei.android.hms.agent.common.handler.ConnectHandler
+import com.huxq17.floatball.libarary.FloatBallManager
+import com.huxq17.floatball.libarary.floatball.FloatBallCfg
+import com.huxq17.floatball.libarary.menu.FloatMenuCfg
+import com.huxq17.floatball.libarary.menu.MenuItem
+import com.huxq17.floatball.libarary.utils.BackGroudSeletor
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMConversation
 import com.hyphenate.chat.EMMessage
@@ -43,6 +54,7 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
+import com.hyphenate.util.DensityUtil
 import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -54,6 +66,11 @@ import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Callback.GmailAuthCallback
+import com.smailnet.eamil.EmailCount
+import com.smailnet.eamil.EmailReceiveClient
+import com.smailnet.eamil.Utils.AESCipher
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -68,16 +85,19 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
 import com.stratagile.pnrouter.ui.activity.add.addFriendOrGroupActivity
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
-import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
+import com.stratagile.pnrouter.ui.activity.conversation.FileEncryptionFragment
 import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailEditActivity
 import com.stratagile.pnrouter.ui.activity.email.EmailSendActivity
+import com.stratagile.pnrouter.ui.activity.encryption.WexinChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -88,6 +108,7 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
+import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
@@ -101,12 +122,6 @@ import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.mipush.sdk.MiPushClient
-import events.ToxFriendStatusEvent
-import events.ToxSendFileFinishedEvent
-import events.ToxSendInfoEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_menu.*
@@ -120,6 +135,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -128,8 +146,76 @@ import kotlin.collections.ArrayList
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
-class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
-    private lateinit var standaloneCoroutine : Job
+class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener, PNRouterServiceMessageReceiver.BakMailsNumCallback {
+    override fun bakFileBack(jBakFileRsp: JBakFileRsp) {
+
+        when (jBakFileRsp.params.retCode )
+        {
+            0->{
+                EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateAlbumNodeSuccessEncryptionItemEvent())
+                EventBus.getDefault().post(UpdateWxNodeSuccessEncryptionItemEvent())
+                runOnUiThread {
+                    toast(R.string.success)
+                }
+            }
+            1->{
+                runOnUiThread {
+                    toast(R.string.Parameter_error)
+                }
+            }
+            2->{
+                runOnUiThread {
+                    toast(R.string.no_space)
+                }
+            }
+            3->{
+                runOnUiThread {
+                    toast(R.string.There_is_a_file_with_the_same_name)
+                }
+            }
+            4->{
+                runOnUiThread {
+                    toast(R.string.Destination_directory_error)
+                }
+            }
+            else ->{
+                runOnUiThread {
+                    toast(R.string.Backup_failed)
+                }
+            }
+        }
+    }
+    override fun sysMsgPushRsp(jSysMsgPushRsp: JSysMsgPushRsp) {
+
+    }
+
+    override fun BakMailsNumBack(JBakMailsNumRsp: JBakMailsNumRsp) {
+        if (JBakMailsNumRsp.params.retCode == 0) {
+            runOnUiThread {
+                if (nodebackedup != null) {
+                    nodebackedup.setCount(JBakMailsNumRsp.params.num)
+                }
+
+            }
+
+        }
+
+    }
+
+    companion object {
+        var isForeground = false
+        val MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION"
+        val KEY_MESSAGE = "message"
+        val KEY_EXTRAS = "extras"
+        const val REQUEST_ACCOUNT_PICKER = 1000
+        const val REQUEST_AUTHORIZATION = 1001
+        const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        var isGmailToken = false;
+    }
+    var REQUEST_MEDIA_PROJECTION = 1008
+    private lateinit var standaloneCoroutine: Job
     var routerId = ""
     var userSn = ""
     var userId = ""
@@ -145,7 +231,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var isSendRegId = true
     private var handler: Handler? = null
     var newRouterEntity = RouterEntity()
-    private var loginGoMain:Boolean = false
+    private var loginGoMain: Boolean = false
     var loginBack = false
     var isFromScan = false
     var isFromScanAdmim = false
@@ -163,20 +249,45 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var islogining = false
     var isloginOutTime = false
     var scanType = 0 // 0 admin   1 其他
-    var adminUserSn:String?  = null
+    var adminUserSn: String? = null
     var hasFinger = false
-    var name:Long  = 0;
-    var emaiConfigChooseAdapter : EmaiConfigChooseAdapter? = null
+    var name: Long = 0;
+    var emaiConfigChooseAdapter: EmaiConfigChooseAdapter? = null
 
     private var exitTime: Long = 0
     lateinit var viewModel: MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
-    private var chatAndEmailFragment:ChatAndEmailFragment? = null
+    private var chatAndEmailFragment: ChatAndEmailFragment? = null
     private var contactFragment: ContactFragment? = null
     private var isAddEmail = true
+    var this_: Activity? = null;
+    var routerEntityAddMembers: RouterEntity? = null
+
+    private var mFloatballManager: FloatBallManager? = null
+    private var mFloatPermissionManager: FloatPermissionManager? = null
+    private val mActivityLifeCycleListener = ActivityLifeCycleListener()
+    private var resumed: Int = 0
+
+
+    private var mMediaProjection: MediaProjection? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+
+    private var mResultData: Intent? = null
+
+
+    private var mImageReader: ImageReader? = null
+    private var mWindowManager: WindowManager? = null
+    private var mLayoutParams: WindowManager.LayoutParams? = null
+    private var mGestureDetector: GestureDetector? = null
+
+
+    private var mScreenWidth: Int = 0
+    private var mScreenHeight: Int = 0
+    private var mScreenDensity: Int = 0
+    private var typeData = ""
+
     override fun registerBack(registerRsp: JRegisterRsp) {
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
 
             return;
         }
@@ -225,6 +336,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 closeProgressDialog()
                 KLog.i("1111")
             }
+            ConstantValue.isNewUser = true;
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn
@@ -236,7 +348,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newRouterEntity.adminId = registerRsp.params!!.adminId
             newRouterEntity.adminName = registerRsp.params!!.adminName
             newRouterEntity.adminKey = registerRsp.params!!.adminKey
-            var localData: java.util.ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+            var localData: java.util.ArrayList<MyRouter> = LocalRouterUtils.localAssetsList
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -244,32 +356,29 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             LocalRouterUtils.insertLocalAssets(myRouter)
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             var sign = ByteArray(32)
-            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
             System.arraycopy(time, 0, sign, 0, time.size)
             var dst_signed_msg = ByteArray(96)
             var signed_msg_len = IntArray(1)
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
             var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-            val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+            val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
+            var login = LoginReq_V4(registerRsp.params.routeId, registerRsp.params.userSn, registerRsp.params.userId, signBase64, registerRsp.params.dataFileVersion, NickName)
             islogining = true
             ConstantValue.loginReq = login
-            if(ConstantValue.isWebsocketConnected)
-            {
+            if (ConstantValue.isWebsocketConnected) {
 
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
-            }
-            else if(ConstantValue.isToxConnected)
-            {
-                var baseData = BaseData(4,login)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(4, login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                    //var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
                 }
             }
@@ -281,8 +390,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            KLog.i("过滤掉userid错误的请求")
 //            return
 //        }
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
             return;
         }
         runOnUiThread {
@@ -293,8 +401,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
         KLog.i(loginRsp.toString())
-        LogUtil.addLog("loginBack:"+loginRsp.params.retCode,"LoginActivityActivity")
-        if(standaloneCoroutine != null)
+        LogUtil.addLog("loginBack:" + loginRsp.params.retCode, "LoginActivityActivity")
+        if (standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 1) {
@@ -303,43 +411,37 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else if (loginRsp.params.retCode == 2) {
+            } else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
                     toast(R.string.rid_error)
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else if (loginRsp.params.retCode == 3) {
+            } else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
                     toast(R.string.uid_error)
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else if (loginRsp.params.retCode == 4) {
+            } else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
                     toast(R.string.Validation_failed)
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else if (loginRsp.params.retCode == 5) {
+            } else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
                     toast(R.string.Verification_code_error)
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else if (loginRsp.params.retCode == 7) {
+            } else if (loginRsp.params.retCode == 7) {
                 runOnUiThread {
                     toast(R.string.The_account_has_expired)
                     closeProgressDialog()
                     gotoLogin()
                 }
-            }
-            else{
+            } else {
                 runOnUiThread {
                     toast(R.string.other_error)
                     closeProgressDialog()
@@ -358,26 +460,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
-            LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            LogUtil.addLog("loginBack:" + "begin", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userId, "userid")
             //FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
-            LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
-            LogUtil.addLog("loginBack:"+"b","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
-            LogUtil.addLog("loginBack:"+"c","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "a", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userSn, "usersn")
+            LogUtil.addLog("loginBack:" + "b", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerid, "routerid")
+            LogUtil.addLog("loginBack:" + "c", "LoginActivityActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userSnSp, loginRsp.params!!.userSn)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
-            if(loginRsp.params.nickName != null)
+            if (loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
@@ -395,11 +498,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     break
                 }
             }
-            LogUtil.addLog("loginBack:"+"d","LoginActivityActivity")
-            var needUpdate : java.util.ArrayList<MyRouter> = java.util.ArrayList();
+            LogUtil.addLog("loginBack:" + "d", "LoginActivityActivity")
+            var needUpdate: java.util.ArrayList<MyRouter> = java.util.ArrayList();
             routerList.forEach {
                 it.lastCheck = false
-                var myRouter:MyRouter = MyRouter();
+                var myRouter: MyRouter = MyRouter();
                 myRouter.setType(0)
                 myRouter.setRouterEntity(it)
                 needUpdate.add(myRouter);
@@ -410,12 +513,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             newRouterEntity.dataFileVersion = 0
-            newRouterEntity.dataFilePay =  ""
+            newRouterEntity.dataFilePay = ""
             newRouterEntity.adminId = loginRsp.params!!.adminId
             newRouterEntity.adminName = loginRsp.params!!.adminName
             newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
-            ConstantValue.isCurrentRouterAdmin =  loginRsp.params!!.userSn.indexOf("01") == 0
+            ConstantValue.isCurrentRouterAdmin = loginRsp.params!!.userSn.indexOf("01") == 0
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -423,7 +526,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-            LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "e", "LoginActivityActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -433,7 +536,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 closeProgressDialog()
                 KLog.i("333")
             }
-            LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "f", "LoginActivityActivity")
             loginOk = true
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
@@ -445,28 +548,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /*startActivity(Intent(this, MainActivity::class.java))
             loginGoMain  = true*/
             initSwitchData()
-            LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "g", "LoginActivityActivity")
             //finish()
         }
     }
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
 
             return;
         }
         runOnUiThread {
             closeProgressDialog()
         }
-        if(standaloneCoroutine != null)
+        if (standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         KLog.i("222")
         ConstantValue.unSendMessage.remove("recovery")
         ConstantValue.unSendMessageFriendId.remove("recovery")
         ConstantValue.unSendMessageSendCount.remove("recovery")
         when (recoveryRsp.params.retCode) {
-            0 ->{
+            0 -> {
                 ConstantValue.lastNetworkType = "";
                 /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
@@ -505,27 +607,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
                 }*/
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
                 //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-                var login = LoginReq_V4(  recoveryRsp.params.routeId,recoveryRsp.params.userSn, recoveryRsp.params.userId,signBase64, recoveryRsp.params.dataFileVersion,NickName)
+                var login = LoginReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, recoveryRsp.params.userId, signBase64, recoveryRsp.params.dataFileVersion, NickName)
                 islogining = true
                 ConstantValue.loginReq = login
-                if(ConstantValue.isWebsocketConnected)
-                {
+                if (ConstantValue.isWebsocketConnected) {
 
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
-                }
-                else if(ConstantValue.isToxConnected)
-                {
-                    var baseData = BaseData(4,login)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, login)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                 }
@@ -538,31 +637,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     showProgressDialog("waiting...")
                 }
 
-                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                var regeister = RegeisterReq_V4(  recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                if(ConstantValue.isWebsocketConnected)
-                {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
-                }
-                else if(ConstantValue.isToxConnected)
-                {
-                    var baseData = BaseData(4,regeister)
+                var regeister = RegeisterReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64, pulicMiKey, NickName)
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, regeister))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
+                        //var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
                 }
@@ -574,7 +670,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
 
             }
-            3-> {
+            3 -> {
                 ConstantValue.lastNetworkType = "";
                 /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
@@ -615,31 +711,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     showProgressDialog("waiting...")
                 }
 
-                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                var regeister = RegeisterReq_V4(  recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                if(ConstantValue.isWebsocketConnected)
-                {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
-                }
-                else if(ConstantValue.isToxConnected)
-                {
-                    var baseData = BaseData(4,regeister)
+                var regeister = RegeisterReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64, pulicMiKey, NickName)
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, regeister))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
+                        //var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
                 }
@@ -668,12 +761,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
-    private fun startTox(startToxFlag:Boolean)
-    {
+
+    private fun startTox(startToxFlag: Boolean) {
         ConstantValue.curreantNetworkType = "TOX"
         stopTox = false
-        if(!ConstantValue.isToxConnected && startToxFlag)
-        {
+        if (!ConstantValue.isToxConnected && startToxFlag) {
             runOnUiThread {
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -683,67 +775,63 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     } else false
                 })
             }
-            LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+            LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
-            {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+            if (ConstantValue.isAntox) {
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
-        }else{
+        } else {
             runOnUiThread {
                 KLog.i("666")
                 closeProgressDialog()
             }
         }
     }
-    private fun startLogin()
-    {
+
+    private fun startLogin() {
 
         isloginOutTime = false
         isStartLogin = true
-        if(!ConstantValue.lastNetworkType.equals(""))
-        {
+        if (!ConstantValue.lastNetworkType.equals("")) {
             isFromScan = false
             ConstantValue.curreantNetworkType = ConstantValue.lastNetworkType
             ConstantValue.currentRouterIp = ConstantValue.lastRouterIp
             ConstantValue.port = ConstantValue.lastPort
             ConstantValue.filePort = ConstantValue.lastFilePort
             ConstantValue.currentRouterId = ConstantValue.lastRouterId
-            ConstantValue.currentRouterSN =  ConstantValue.lastRouterSN
-            ConstantValue.lastRouterId=""
-            ConstantValue.lastPort=""
-            ConstantValue.lastFilePort=""
-            ConstantValue.lastRouterId=""
-            ConstantValue.lastRouterSN=""
-            ConstantValue.lastNetworkType =""
+            ConstantValue.currentRouterSN = ConstantValue.lastRouterSN
+            ConstantValue.lastRouterId = ""
+            ConstantValue.lastPort = ""
+            ConstantValue.lastFilePort = ""
+            ConstantValue.lastRouterId = ""
+            ConstantValue.lastRouterSN = ""
+            ConstantValue.lastNetworkType = ""
         }
         /* if (loginKey.text.toString().equals("")) {
              toast(getString(R.string.please_type_your_password))
              return
          }*/
-        if( ConstantValue.curreantNetworkType.equals("TOX"))
-        {
+        if (ConstantValue.curreantNetworkType.equals("TOX")) {
 
-            if(ConstantValue.isToxConnected)
-            {
+            if (ConstantValue.isToxConnected) {
                 isToxLoginOverTime = true
                 //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                 ConstantValue.loginReq = login
-                var baseData = BaseData(4,login)
+                var baseData = BaseData(4, login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 KLog.i("没有初始化。。设置loginBackListener")
                 //AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -760,15 +848,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 runOnUiThread {
                     var tips = getString(R.string.login_)
-                    if(ConstantValue.freindStatus == 1)
-                    {
+                    if (ConstantValue.freindStatus == 1) {
                         tips = getString(R.string.login_)
-                    }else{
+                    } else {
                         tips = "Circle connecting..."
                     }
                     showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            if(standaloneCoroutine != null)
+                            if (standaloneCoroutine != null)
                                 standaloneCoroutine.cancel()
                             EventBus.getDefault().post(StopTox())
                             gotoLogin()
@@ -777,12 +864,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     })
                 }
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                    //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
-            }else{
+            } else {
 //                    if (!ConstantValue.isToxConnected) {
 //                        loadLibrary()
 //                    }
@@ -799,29 +886,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         } else false
                     })
                 }
-                LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+                LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
 
-                if(ConstantValue.isAntox)
-                {
-                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)
-                }else{
+                if (ConstantValue.isAntox) {
+                    /* var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)*/
+                } else {
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
                 }
 
             }
 
-        }else{
+        } else {
             isClickLogin = true
-            if(!ConstantValue.isWebsocketConnected)
-            {
+            if (!ConstantValue.isWebsocketConnected) {
                 if (intent.hasExtra("flag")) {
-                    if(ConstantValue.isHasWebsocketInit)
-                    {
+                    if (ConstantValue.isHasWebsocketInit) {
                         KLog.i("已经初始化了，走重连逻辑")
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                    }else{
+                    } else {
                         KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
@@ -833,7 +917,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
+                                if (AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
                                 gotoLogin()
@@ -842,27 +926,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                 } else {
                     KLog.i("走不带flag")
-                    if(ConstantValue.isHasWebsocketInit)
-                    {
+                    if (ConstantValue.isHasWebsocketInit) {
                         KLog.i("已经初始化了，走重连逻辑")
-                        KLog.i("已经初始化了。。走重连逻辑" +this+ "##" +AppConfig.instance.messageReceiver)
+                        KLog.i("已经初始化了。。走重连逻辑" + this + "##" + AppConfig.instance.messageReceiver)
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
-                    }else{
+                    } else {
                         KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
-                        KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.messageReceiver)
+                        KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.messageReceiver)
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
-                    KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.name)
                     //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener +"##" +AppConfig.instance.name)
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener + "##" + AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" + AppConfig.instance.name)
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
+                                if (AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
                                 gotoLogin()
@@ -870,19 +953,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }
-            }else{
+            } else {
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
                     delay(10000)
@@ -900,11 +983,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 KLog.i("没有初始化。。设置loginBackListener")
                 //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
             }
         }
 
     }
+
     override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
         when (jGroupListPullRsp.params.retCode) {
             0 -> {
@@ -935,6 +1019,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgData = GroupSysPushRsp(0, userId!!)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jGroupSysPushRsp.msgid))
@@ -942,8 +1027,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var baseData = BaseData(4, msgData, jGroupSysPushRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -959,10 +1044,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 3, 4 -> {
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
                     val keyMap = SpUtil.getAll(AppConfig.instance)
                     for (key in keyMap.keys) {
 
-                        if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
+                        if (key.contains(ConstantValue.message) && key.contains(userSn!! + "_")) {
                             val tempkey = key.replace(ConstantValue.message, "")
                             val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                             if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null" && toChatUserId.equals(jGroupSysPushRsp.params.gId)) {
@@ -1004,10 +1090,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 }
                                                 controlleMessageUnReadCount(UnReadMessageCount)
                                             }
-                                            if(isAddEmail)
-                                            {
+                                            if (isAddEmail) {
                                                 chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                                            }else{
+                                            } else {
                                                 conversationListFragment?.refresh()
                                             }
 
@@ -1024,7 +1109,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 }
                 242 -> {
-                    if(jGroupSysPushRsp.params.from.equals(userId))//如果是自己
+                    if (jGroupSysPushRsp.params.from.equals(userId))//如果是自己
                     {
                         var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
                         if (groupList.size > 0) {
@@ -1032,7 +1117,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                         }
                         //需要细化处理 ，弹窗告知详情等
-                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     }
                 }
                 243 -> {//有人被移除群
@@ -1069,13 +1154,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                         }
                         //需要细化处理 ，弹窗告知详情等
-                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                         if (ConstantValue.isInit) {
                             runOnUiThread {
-                                if(isAddEmail)
-                                {
+                                if (isAddEmail) {
                                     chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                                }else{
+                                } else {
                                     conversationListFragment?.refresh()
                                 }
 
@@ -1093,14 +1177,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                     }
                     //需要细化处理 ，弹窗告知详情等
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     runOnUiThread {
 
                         toast(R.string.Group_disbanded)
-                        if(isAddEmail)
-                        {
+                        if (isAddEmail) {
                             chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                        }else{
+                        } else {
                             conversationListFragment?.refresh()
                         }
 
@@ -1155,8 +1238,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(2, msgData, jPushLogoutRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -1190,12 +1273,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 ConstantValue.isWebsocketConnected = false
                 onLogOutSuccess()
             }
-        } else  if (jPushLogoutRsp.params.reason == 2) {
+        } else if (jPushLogoutRsp.params.reason == 2) {
             runOnUiThread {
                 toast(R.string.System_Upgrade)
 
             }
-        }else{
+        } else {
             runOnUiThread {
                 toast(R.string.Users_are_deleted)
 
@@ -1250,8 +1333,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(2, msgData, jReadMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -1280,8 +1363,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(2, msgData, jUserInfoPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -1318,8 +1401,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val baseData = BaseData(sendToxFileNotice)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -1363,15 +1446,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgDataPushFileRsp = PushFileRespone(0, jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, jPushFileMsgRsp.params.msgId)
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5,msgDataPushFileRsp, jPushFileMsgRsp.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5, msgDataPushFileRsp, jPushFileMsgRsp.msgid))
             } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(5,msgDataPushFileRsp, jPushFileMsgRsp.msgid)
+                var baseData = BaseData(5, msgDataPushFileRsp, jPushFileMsgRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -1389,7 +1473,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.fileName = jPushFileMsgRsp.params.fileName
             Message.timeStamp = jPushFileMsgRsp.timestamp
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, "")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1399,19 +1483,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             val baseDataJson = gson.toJson(Message)
             if (Message.sender == 0) {
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
             } else {
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
             }
             if (ConstantValue.isInit) {
                 runOnUiThread {
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
-                if(isAddEmail)
-                {
+                if (isAddEmail) {
                     chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                }else{
+                } else {
                     conversationListFragment?.refresh()
                 }
 
@@ -1437,18 +1520,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var baseData = BaseData(msgData, delMsgPushRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
 
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             val keyMap = SpUtil.getAll(AppConfig.instance)
             for (key in keyMap.keys) {
 
-                if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
+                if (key.contains(ConstantValue.message) && key.contains(userSn!! + "_")) {
                     val tempkey = key.replace(ConstantValue.message, "")
                     val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                     if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
@@ -1494,10 +1578,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         }
                                         controlleMessageUnReadCount(UnReadMessageCount)
                                     }
-                                    if(isAddEmail)
-                                    {
+                                    if (isAddEmail) {
                                         chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                                    }else{
+                                    } else {
                                         conversationListFragment?.refresh()
                                     }
 
@@ -1532,6 +1615,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var userEntity = UserEntity()
                 userEntity.nickName = i.name
                 userEntity.userId = i.id
+                userEntity.mails = i.mails
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
@@ -1558,10 +1642,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         if (!ConstantValue.isRefeshed) {
-            if(isAddEmail)
-            {
+            if (isAddEmail) {
                 chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-            }else{
+            } else {
                 conversationListFragment?.refresh()
             }
 
@@ -1686,9 +1769,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            if(pushMsgRsp.params.point == 1 || pushMsgRsp.params.point == 2 )
-            {
-                SpUtil.putString(AppConfig.instance, ConstantValue.messageAT + userId + "_" + pushMsgRsp.params.gId, "1")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
+            if (pushMsgRsp.params.point == 1 || pushMsgRsp.params.point == 2) {
+                SpUtil.putString(AppConfig.instance, ConstantValue.messageAT + userSn + "_" + pushMsgRsp.params.gId, "1")
             }
             if (pushMsgRsp.params.from != userId) {
                 val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
@@ -1726,8 +1809,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         val baseData = BaseData(4, updateAvatarReq)
                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                         if (ConstantValue.isAntox) {
-                            val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         } else {
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
@@ -1760,7 +1843,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             var msgData = GroupMsgPushRsp(0, userId!!, pushMsgRsp.params.gId, "")
 
-            var sendData = BaseData(5,msgData, pushMsgRsp?.msgid)
+            var sendData = BaseData(5, msgData, pushMsgRsp?.msgid)
             if (ConstantValue.encryptionType.equals("1")) {
                 sendData = BaseData(5, msgData, pushMsgRsp?.msgid)
             }
@@ -1775,7 +1858,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             when (pushMsgRsp.params.msgType) {
                 0 -> {
-                    val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey)
+                    val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                     val base64Scoure = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg())
                     var msgSouce: String? = ""
                     try {
@@ -1805,7 +1888,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.timeStamp = pushMsgRsp?.timestamp
                             Message.chatType = EMMessage.ChatType.GroupChat
                             Message.msgId = pushMsgRsp?.params.msgId
-                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, "")
                             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                             var unReadCount = 0
                             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1815,10 +1898,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
                             var baseDataJson = gson.toJson(Message)
-                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, baseDataJson)
                             KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
-                        }catch (e:Exception)
-                        {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
 
@@ -1829,10 +1911,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                                 controlleMessageUnReadCount(UnReadMessageCount)
                             }
-                            if(isAddEmail)
-                            {
+                            if (isAddEmail) {
                                 chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                            }else{
+                            } else {
                                 conversationListFragment?.refresh()
                             }
 
@@ -1856,7 +1937,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Message.fileName = pushMsgRsp.params.fileName
                     Message.timeStamp = pushMsgRsp.timestamp
 
-                    var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                    var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, "")
                     val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                     var unReadCount = 0
                     if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1865,16 +1946,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Message.unReadCount = unReadCount + 1;
 
                     val baseDataJson = gson.toJson(Message)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.gId, baseDataJson)
                     if (ConstantValue.isInit) {
                         runOnUiThread {
                             var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                             controlleMessageUnReadCount(UnReadMessageCount)
                         }
-                        if(isAddEmail)
-                        {
+                        if (isAddEmail) {
                             chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                        }else{
+                        } else {
                             conversationListFragment?.refresh()
                         }
 
@@ -1894,9 +1974,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 defaultMediaPlayer()
             }
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
 
-            var sendData = BaseData(3,msgData, pushMsgRsp?.msgid)
+            var sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
             if (ConstantValue.encryptionType.equals("1")) {
                 sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
             }
@@ -1907,8 +1988,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -1918,7 +1999,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var msgSouce = "";
 
             if (ConstantValue.encryptionType.equals("1")) {
-                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+                var friendEntity = UserEntity()
+                val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+                if (localFriendList.size > 0)
+                    friendEntity = localFriendList[0]
+                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(), ConstantValue.libsodiumprivateMiKey!!, friendEntity.signPublicKey)
             } else {
                 msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
             }
@@ -1949,7 +2034,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.msgId = pushMsgRsp?.params.msgId
 
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
             if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -1959,7 +2044,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
             var baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, baseDataJson)
             KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
             //conversation.insertMessage(message)
             //}
@@ -1968,10 +2053,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
-                if(isAddEmail)
-                {
+                if (isAddEmail) {
                     chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                }else{
+                } else {
                     conversationListFragment?.refresh()
                 }
 
@@ -2014,8 +2098,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(delFriendPushReq)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -2077,8 +2161,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var baseData = sendData
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
@@ -2168,8 +2252,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -2194,14 +2278,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    if(isAddEmail)
-                    {
+                    if (isAddEmail) {
                         var count = chatAndEmailFragment!!.getConversationListFragment()?.removeFriend()
                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                         controlleMessageUnReadCount(UnReadMessageCount)
                         ConstantValue.isRefeshed = true
 
-                    }else{
+                    } else {
                         var count = conversationListFragment?.removeFriend()
                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                         controlleMessageUnReadCount(UnReadMessageCount)
@@ -2216,13 +2299,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    if(isAddEmail)
-                    {
+                    if (isAddEmail) {
                         var count = chatAndEmailFragment!!.getConversationListFragment()?.removeFriend()
                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                         controlleMessageUnReadCount(UnReadMessageCount)
                         ConstantValue.isRefeshed = true
-                    }else{
+                    } else {
                         var count = conversationListFragment?.removeFriend()
                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                         controlleMessageUnReadCount(UnReadMessageCount)
@@ -2259,13 +2341,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         when (connectStatus.status) {
             0 -> {
-                if(standaloneCoroutine != null)
+                if (standaloneCoroutine != null)
                     standaloneCoroutine.cancel()
                 ConstantValue.isHasWebsocketInit = true
-                if(isFromScanAdmim)
-                {
-                    if(!isScanSwitch)
-                    {
+                if (isFromScanAdmim) {
+                    if (!isScanSwitch) {
                         runOnUiThread {
                             closeProgressDialog()
                         }
@@ -2279,12 +2359,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
                     isFromScanAdmim = false
 //                    finish()
-                }
-                else if(isFromScan)
-                {
+                } else if (isFromScan) {
                     runOnUiThread {
-                        if(!isScanSwitch)
-                        {
+                        if (!isScanSwitch) {
                             closeProgressDialog()
                             showProgressDialog("wait...")
                         }
@@ -2300,12 +2377,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
+                    var recovery = RecoveryReq(ConstantValue.currentRouterId, ConstantValue.currentRouterSN, pulicMiKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, recovery))
                     isFromScan = false
-                }else{
-                    if(isClickLogin)
-                    {
+                } else {
+                    if (isClickLogin) {
                         KLog.i("开始用websocket登录路由器")
                         loginBack = false
                         runOnUiThread {
@@ -2326,20 +2402,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                         var sign = ByteArray(32)
-                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                         System.arraycopy(time, 0, sign, 0, time.size)
                         var dst_signed_msg = ByteArray(96)
                         var signed_msg_len = IntArray(1)
-                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        KLog.i("没有初始化。。登录接口设置loginBackListener"+"##" +AppConfig.instance.name +"##"+this.name+"##"+AppConfig.instance.messageReceiver)
+                        KLog.i("没有初始化。。登录接口设置loginBackListener" + "##" + AppConfig.instance.name + "##" + this.name + "##" + AppConfig.instance.messageReceiver)
                         //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                         ConstantValue.loginReq = login
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
                     }
 
                 }
@@ -2356,28 +2432,37 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     closeProgressDialog()
                     toast(R.string.Network_error)
                 }
-                if(isScanSwitch)
-                {
+                if (isScanSwitch) {
                     isScanSwitch = false
                     gotoLogin()
                 }
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
-        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+        LogUtil.addLog("Tox发送消息：" + toxSendInfoEvent.info)
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSortEmailConfig(sortEmailConfig: SortEmailConfig) {
+        initLeftSubMenuName()
+        initLeftMenu(ConstantValue.chooseFragMentMenu, true, true)
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onChooseEmailConfig(chooseEmailConfig: ChooseEmailConfig) {
         initLeftSubMenuName()
-        initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftMenu(ConstantValue.chooseFragMentMenu, false, false)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddEmailConfig(changeEmailConfig: ChangeEmailConfig) {
-         initLeftSubMenuName()
-         initLeftMenu(ConstantValue.chooseFragMentMenu)
+        initLeftMenu(ConstantValue.chooseFragMentMenu, true, true)
+        initLeftSubMenuName()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
 
@@ -2386,40 +2471,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
         }
-        if(toxFriendStatusEvent.status == 1)
-        {
+        if (toxFriendStatusEvent.status == 1) {
 
             ConstantValue.freindStatus = 1
-            if(!threadInit)
-            {
+            if (!threadInit) {
                 Thread(Runnable() {
                     run() {
 
-                        while (true)
-                        {
-                            if(ConstantValue.unSendMessage.size >0)
-                            {
-                                for (key in ConstantValue.unSendMessage.keys)
-                                {
+                        while (true) {
+                            if (ConstantValue.unSendMessage.size > 0) {
+                                for (key in ConstantValue.unSendMessage.keys) {
                                     var sendData = ConstantValue.unSendMessage.get(key)
                                     var friendId = ConstantValue.unSendMessageFriendId.get(key)
-                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
-                                    if(sendCount < 5)
-                                    {
+                                    var sendCount: Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if (sendCount < 5) {
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
-                                        }else{
+                                            //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        } else {
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
-                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
-                                    }else{
+                                        ConstantValue.unSendMessageSendCount.put(key, sendCount++)
+                                    } else {
                                         closeProgressDialog()
                                         break
                                     }
                                 }
 
-                            }else{
+                            } else {
                                 closeProgressDialog()
                                 break
                             }
@@ -2432,10 +2511,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
 
-            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
-        }else{
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:", "LoginActivityActivity")
+        } else {
             ConstantValue.freindStatus = 0;
-            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:", "LoginActivityActivity")
         }
 
     }
@@ -2443,12 +2522,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
-        }catch (e:Exception)
-        {
+            //MessageHelper.clearAllMessage()
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         KLog.i("tox状态MainActivity:" + toxStatusEvent.status)
@@ -2460,7 +2539,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             0 -> {
                 reConnect.visibility = View.GONE
                 KLog.i("P2P连接成功")
-                LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
+                LogUtil.addLog("P2P连接成功:", "LoginActivityActivity")
                 runOnUiThread {
                     KLog.i("444")
                     closeProgressDialog()
@@ -2468,22 +2547,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 ConstantValue.isToxConnected = true
 
-                if(ConstantValue.curreantNetworkType.equals("TOX"))
-                {
+                if (ConstantValue.curreantNetworkType.equals("TOX")) {
                     ConstantValue.isHasWebsocketInit = true
                     AppConfig.instance.getPNRouterServiceMessageReceiver()
                     KLog.i("没有初始化。。设置loginBackListener")
                     //AppConfig.instance.messageReceiver!!.loginBackListener = this
                 }
-                if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
+                if (stopTox || ConstantValue.curreantNetworkType.equals("WIFI"))
                     return
-                if(isFromScan)
-                {
+                if (isFromScan) {
 
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-                    }else{
-                        ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
+                        //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                    } else {
+                        ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
                     }
                     standaloneCoroutine = launch(CommonPool) {
                         delay(60000)
@@ -2498,15 +2575,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     runOnUiThread {
                         var tips = getString(R.string.login_)
-                        if(ConstantValue.freindStatus == 1)
-                        {
+                        if (ConstantValue.freindStatus == 1) {
                             tips = "wait..."
-                        }else{
+                        } else {
                             tips = "circle connecting..."
                         }
                         showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
+                                if (standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
                                 gotoLogin()
@@ -2515,23 +2591,22 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         })
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
-                    var baseData = BaseData(4,recovery)
+                    var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN, pulicMiKey)
+                    var baseData = BaseData(4, recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
-                    ConstantValue.unSendMessage.put("recovery",baseDataJson)
-                    ConstantValue.unSendMessageFriendId.put("recovery",ConstantValue.scanRouterId.substring(0, 64))
-                    ConstantValue.unSendMessageSendCount.put("recovery",0)
+                    ConstantValue.unSendMessage.put("recovery", baseDataJson)
+                    ConstantValue.unSendMessageFriendId.put("recovery", ConstantValue.scanRouterId.substring(0, 64))
+                    ConstantValue.unSendMessageSendCount.put("recovery", 0)
                     //ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                     isFromScan = false
-                }else{
+                } else {
                     if (ConstantValue.isAntox) {
-                        InterfaceScaleUtil.addFriend(routerId,this)
-                    }else{
+                        //InterfaceScaleUtil.addFriend(routerId,this)
+                    } else {
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
-                    if(isClickLogin)
-                    {
+                    if (isClickLogin) {
                         //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                         loginBack = false
 
@@ -2548,15 +2623,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                         runOnUiThread {
                             var tips = getString(R.string.login_)
-                            if(ConstantValue.freindStatus == 1)
-                            {
+                            if (ConstantValue.freindStatus == 1) {
                                 tips = getString(R.string.login_)
-                            }else{
+                            } else {
                                 tips = "Circle connecting..."
                             }
                             showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                    if(standaloneCoroutine != null)
+                                    if (standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
                                     EventBus.getDefault().post(StopTox())
                                     gotoLogin()
@@ -2565,39 +2639,41 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             })
                         }
                         var sign = ByteArray(32)
-                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                         System.arraycopy(time, 0, sign, 0, time.size)
                         var dst_signed_msg = ByteArray(96)
                         var signed_msg_len = IntArray(1)
-                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                         ConstantValue.loginReq = login
-                        var baseData = BaseData(4,login)
+                        var baseData = BaseData(4, login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        ConstantValue.unSendMessage.put("login",baseDataJson)
-                        ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
-                        ConstantValue.unSendMessageSendCount.put("login",0)
+                        ConstantValue.unSendMessage.put("login", baseDataJson)
+                        ConstantValue.unSendMessageFriendId.put("login", routerId.substring(0, 64))
+                        ConstantValue.unSendMessageSendCount.put("login", 0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
 
                 }
             }
             1 -> {
-                LogUtil.addLog("P2P连接中Reconnecting:","LoginActivityActivity")
+                LogUtil.addLog("P2P连接中Reconnecting:", "LoginActivityActivity")
             }
         }
     }
+
     private fun getToken() {
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
-//            ConstantValue.mHuaWeiRegId = "" + it
+            //ConstantValue.mHuaWeiRegId = "" + it
+
         }
     }
 
@@ -2605,10 +2681,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun openSceen(screen: Sceen) {
         var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
-        if(screenshotsSettingFlag.equals("1"))
-        {
+        if (screenshotsSettingFlag.equals("1")) {
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }else{
+        } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
@@ -2631,18 +2706,39 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onResume() {
 //        AppShortCutUtil.clearBadge(this)
+        isForeground = true
         WinqMessageReceiver.count = 0
         ShortcutBadger.removeCount(this)
         exitTime = System.currentTimeMillis() - 2001
-
         super.onResume()
         notificationManager?.cancelAll()
         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
         controlleMessageUnReadCount(UnReadMessageCount)
+        /*val action = intent.action
+        val type = intent.type
 
+        val sharedText = intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        KLog.i("微信," + action+"#####"+type+"#####"+sharedText)
+        if (sharedText != null) {
+            // 根据分享的文字更新UI
+        }
+        if (Intent.ACTION_SEND == action && type != null) {
+            if ("text/plain" == type) {
+
+            } else if (type.startsWith("image/")) {
+
+            }
+        } else if (Intent.ACTION_SEND_MULTIPLE == action && type != null) {
+            if (type.startsWith("image/")) {
+
+            }
+        } else {
+            // 处理其他intents，比如由主屏启动
+        }*/
     }
 
     override fun onPause() {
+        isForeground = false
         ShortcutBadger.removeCount(this)
         super.onPause()
     }
@@ -2660,15 +2756,22 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleMessageUnReadCount(unReadMessageZero: UnReadMessageZero) {
+        unread_count.visibility = View.INVISIBLE
+        unread_count.text = ""
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
 
         var hasUnReadMsgCount = 0
         var hasUnReadMsg: Boolean = false;
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val keyMap = SpUtil.getAll(AppConfig.instance)
         for (key in keyMap.keys) {
 
-            if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
+            if (key.contains(ConstantValue.message) && key.contains(userSn + "_")) {
                 val tempkey = key.replace(ConstantValue.message, "")
                 val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
@@ -2694,6 +2797,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                         var freindStatusData = FriendEntity()
                         freindStatusData.friendLocalStatus = 7
+                        val localFriendStatusListTemp = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().list();
                         val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
                         if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
                         if (freindStatusData.friendLocalStatus != 0) {
@@ -2717,7 +2821,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         if (unread_count != null) {
-            if (hasUnReadMsgCount == 0) {
+            if (hasUnReadMsgCount <= 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
             } else if (hasUnReadMsgCount > 99) {
@@ -2767,8 +2871,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
         when (statusChange.status) {
             0 -> {
-                if(!isScanSwitch)
-                {
+                if (!isScanSwitch) {
                     closeProgressDialog()
                 }
 
@@ -2780,8 +2883,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             2 -> {
                 if (isCanShotNetCoonect) {
                     if (!ConstantValue.loginOut) {
-                        if(!isScanSwitch)
-                        {
+                        if (!isScanSwitch) {
                             closeProgressDialog()
                         }
                         //showProgressDialog(getString(R.string.network_reconnecting))
@@ -2791,8 +2893,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             3 -> {
                 if (isCanShotNetCoonect) {
-                    if(!isScanSwitch)
-                    {
+                    if (!isScanSwitch) {
                         closeProgressDialog()
                     }
                     //showProgressDialog(getString(R.string.network_reconnecting))
@@ -2811,6 +2912,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (handler != null) {
             handler = null
         }
+        stopVirtual()
+
+        tearDownMediaProjection()
+        //注册ActivityLifeCyclelistener以后要记得注销，以防内存泄漏。
+        //application.unregisterActivityLifecycleCallbacks(mActivityLifeCycleListener)
         EventBus.getDefault().unregister(this)
 //        exitToast()
         super.onDestroy()
@@ -2826,30 +2932,35 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     fun setToNews() {
         rl1.setBackgroundResource(R.color.headmainColor)
-        tvTitle.visibility = View.GONE
-        tvTitle.text = getString(R.string.app_name)
+        tvTitle.visibility = View.VISIBLE
+        //tvTitle.text = getString(R.string.app_name)
+        tvTitle.text = "         "
         mainIv1.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.VISIBLE
         rootTitleParent.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         ivNewGroup.visibility = View.VISIBLE
+        searchBtn.visibility = View.VISIBLE
     }
 
     fun setToFile() {
-        rl1.setBackgroundResource(R.color.mainColor)
-        tvTitle.text = getString(R.string.file_)
+        rl1.setBackgroundResource(R.color.headmainColor)
+        tvTitle.text = getString(R.string.Encrypted_Vualt)
+        tvTitle.setTextColor(resources.getColor(R.color.emailtextColor))
         tvTitle.visibility = View.VISIBLE
-        mainIv1.visibility = View.VISIBLE
+        mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
         emailLook.visibility = View.GONE
         rootTitleParent.visibility = View.GONE
-        fileLook.visibility = View.VISIBLE
+        fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
     }
 
     fun setToContact() {
         rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.contacts)
         mainIv1.visibility = View.GONE
@@ -2858,11 +2969,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         rootTitleParent.visibility = View.GONE
         fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
         //contactFragment?.updata()
     }
 
     fun setToMy() {
         rl1.setBackgroundResource(R.color.mainColor)
+        tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.my)
         mainIv1.visibility = View.GONE
@@ -2871,13 +2984,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         emailLook.visibility = View.GONE
         rootTitleParent.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
+        searchBtn.visibility = View.GONE
     }
 
     override fun initView() {
         setContentView(R.layout.activity_main)
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
-        tvTitle.text = getString(R.string.news)
-        tvTitle.visibility = View.GONE
+        /* tvTitle.text = getString(R.string.news)
+         tvTitle.visibility = View.GONE*/
+        tvTitle.visibility = View.VISIBLE
+        tvTitle.text = "         "
 //        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
 //        statusBar.setLayoutParams(llp)
         val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
@@ -2889,11 +3005,283 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
+        //initFlatBall()
+
     }
 
+    fun initFlatBall()
+    {
+        //1 初始化悬浮球配置，定义好悬浮球大小和icon的drawable
+        val ballSize = DensityUtil.dip2px(this, 45f)
+        val ballIcon = BackGroudSeletor.getdrawble("ic_floatball", this)
+        //可以尝试使用以下几种不同的config。
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.LEFT_CENTER,false);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.LEFT_BOTTOM, -100);
+//        FloatBallCfg ballCfg = new FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.RIGHT_TOP, 100);
+        val ballCfg = FloatBallCfg(ballSize, ballIcon, FloatBallCfg.Gravity.RIGHT_CENTER)
+        //设置悬浮球不半隐藏
+        ballCfg.setHideHalfLater(false)
+        //2 需要显示悬浮菜单
+        //2.1 初始化悬浮菜单配置，有菜单item的大小和菜单item的个数
+        val menuSize = DensityUtil.dip2px(this, 180f)
+        val menuItemSize = DensityUtil.dip2px(this, 40f)
+        val menuCfg = FloatMenuCfg(menuSize, menuItemSize)
+        //3 生成floatballManager
+        mFloatballManager = FloatBallManager(applicationContext, ballCfg, menuCfg)
+        addFloatMenuItem()
+        setFloatPermission()
+
+        //5 如果没有添加菜单，可以设置悬浮球点击事件
+        if (mFloatballManager!!.getMenuItemSize() == 0) {
+            mFloatballManager!!.setOnFloatBallClickListener(FloatBallManager.OnFloatBallClickListener { toast("点击了悬浮球") })
+        }
+        //6 如果想做成应用内悬浮球，可以添加以下代码。
+        //application.registerActivityLifecycleCallbacks(mActivityLifeCycleListener)
+        createFloatView()
+        createImageReader()
+        requestCapturePermission()
+    }
+
+    private fun createFloatView() {
+        mGestureDetector = GestureDetector(applicationContext, FloatGestrueTouchListener())
+        mLayoutParams = WindowManager.LayoutParams()
+        mWindowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val metrics = DisplayMetrics()
+        mWindowManager!!.getDefaultDisplay().getMetrics(metrics)
+        mScreenDensity = metrics.densityDpi
+        mScreenWidth = metrics.widthPixels
+        mScreenHeight = metrics.heightPixels
+
+        mLayoutParams!!.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+        mLayoutParams!!.format = PixelFormat.RGBA_8888
+        // 设置Window flag
+        mLayoutParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        mLayoutParams!!.gravity = Gravity.LEFT or Gravity.TOP
+        mLayoutParams!!.x = mScreenWidth
+        mLayoutParams!!.y = 100
+        mLayoutParams!!.width = WindowManager.LayoutParams.WRAP_CONTENT
+        mLayoutParams!!.height = WindowManager.LayoutParams.WRAP_CONTENT
+
+
+        //startScreenShot();
+    }
+
+    private inner class FloatGestrueTouchListener : GestureDetector.OnGestureListener {
+        internal var lastX: Int = 0
+        internal var lastY: Int = 0
+        internal var paramX: Int = 0
+        internal var paramY: Int = 0
+
+        override fun onDown(event: MotionEvent): Boolean {
+            lastX = event.rawX.toInt()
+            lastY = event.rawY.toInt()
+            paramX = mLayoutParams!!.x
+            paramY = mLayoutParams!!.y
+            return true
+        }
+
+        override fun onShowPress(e: MotionEvent) {
+
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            startScreenShot()
+            return true
+        }
+
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            val dx = e2.rawX.toInt() - lastX
+            val dy = e2.rawY.toInt() - lastY
+            mLayoutParams!!.x = paramX + dx
+            mLayoutParams!!.y = paramY + dy
+            // 更新悬浮窗位置
+            // 更新悬浮窗位置
+
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent) {
+
+        }
+
+        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            return false
+        }
+    }
+    private fun createImageReader() {
+
+        mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1)
+
+    }
+
+    fun startScreenShot() {
+        /*val handler1 = Handler()
+        handler1.postDelayed({
+            //start virtual
+            startVirtual()
+        }, 5)
+
+        handler1.postDelayed({
+            //capture the screen
+            startCapture()
+        }, 30)*/
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
+        val handler1 = Handler()
+        handler1.postDelayed({
+            startVirtual()
+            startCapture()
+        }, 5)
+
+    }
+
+    fun startVirtual() {
+        if (mMediaProjection != null) {
+            virtualDisplay()
+        } else {
+            setUpMediaProjection()
+            virtualDisplay()
+        }
+    }
+
+    fun setUpMediaProjection() {
+        if (mResultData == null) {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            startActivity(intent)
+        } else {
+            mMediaProjection = getMediaProjectionManager().getMediaProjection(Activity.RESULT_OK, mResultData)
+        }
+    }
+
+    private fun getMediaProjectionManager(): MediaProjectionManager {
+
+        return getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    }
+
+    private fun virtualDisplay() {
+        if (mMediaProjection != null) {
+            mVirtualDisplay = mMediaProjection!!.createVirtualDisplay("screen-mirror",
+                    mScreenWidth, mScreenHeight, mScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    mImageReader!!.getSurface(), null, null)
+        }
+    }
+
+    private fun startCapture() {
+
+        val image = mImageReader!!.acquireLatestImage()
+
+        if (image == null) {
+            startScreenShot()
+        } else {
+            val mSaveTask = SaveTask()
+            mSaveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, image)
+            //AsyncTaskCompat.executeParallel(mSaveTask, image);
+        }
+    }
+
+
+    inner class SaveTask : AsyncTask<Image, Void, Bitmap>() {
+
+        override fun doInBackground(vararg params: Image): Bitmap? {
+
+            if (params == null || params.size < 1 || params[0] == null) {
+
+                return null
+            }
+
+            val image = params[0]
+
+            val width = image.width
+            val height = image.height
+            val planes = image.planes
+            val buffer = planes[0].buffer
+            //每个像素的间距
+            val pixelStride = planes[0].pixelStride
+            //总的间距
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * width
+            var bitmap: Bitmap? = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
+            bitmap!!.copyPixelsFromBuffer(buffer)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+            image.close()
+            var fileImage: File? = null
+            if (bitmap != null) {
+                try {
+                    fileImage = File(com.stratagile.pnrouter.screencapture.FileUtil.getScreenShotsName(applicationContext))
+                    if (!fileImage.exists()) {
+                        fileImage.createNewFile()
+                    }
+                    val out = FileOutputStream(fileImage)
+                    if (out != null) {
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        out.flush()
+                        out.close()
+                        val media = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                        val contentUri = Uri.fromFile(fileImage)
+                        media.data = contentUri
+                        sendBroadcast(media)
+                    }
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    fileImage = null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    fileImage = null
+                }
+
+            }
+
+            return if (fileImage != null) {
+                bitmap
+            } else null
+        }
+
+        override fun onPostExecute(bitmap: Bitmap?) {
+            super.onPostExecute(bitmap)
+            //预览图片
+            if (bitmap != null) {
+
+                (application as AppConfig).setmScreenCaptureBitmap(bitmap)
+                Log.e("ryze", "获取图片成功")
+                if(mFloatballManager != null)
+                {
+                    mFloatballManager!!.show()
+                }
+                toast(R.string.screenshots_success)
+                //startActivity(PreviewPictureActivity.newIntent(applicationContext))
+            }
+
+        }
+    }
+
+
+    private fun tearDownMediaProjection() {
+        if (mMediaProjection != null) {
+            mMediaProjection!!.stop()
+            mMediaProjection = null
+        }
+    }
+
+    private fun stopVirtual() {
+        if (mVirtualDisplay == null) {
+            return
+        }
+        mVirtualDisplay!!.release()
+        mVirtualDisplay = null
+    }
     override fun initData() {
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
+        }
+        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+        if(!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals(""))
+        {
+            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
         var localEmailContactAcount = ""
@@ -2940,7 +3328,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             })
             getToken()
         }
-        var this_ = this
+        this_ = this
         var isStartWebsocket = false
         handler = object : Handler() {
             override fun handleMessage(msg: android.os.Message) {
@@ -3039,6 +3427,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         FileMangerDownloadUtils.init()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
+            AppConfig.instance.messageReceiver!!.bakMailsNumCallback = this
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -3053,12 +3442,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             run() {
                 while (isSendRegId) {
                     Thread.sleep(10 * 1000)
+                    ConstantValue.mJiGuangRegId = JPushInterface.getRegistrationID(applicationContext)
+                    var aa = ConstantValue.mHuaWeiRegId
                     var map: HashMap<String, String> = HashMap()
                     var os = VersionUtil.getDeviceBrand()
                     map.put("os", os.toString())
-                    map.put("appversion", "1.0.1")
+                    map.put("appversion", BuildConfig.VERSION_NAME)
                     if (os == 3) {
-                        map.put("regid", ConstantValue.mRegId)
+                        map.put("regid", ConstantValue.mJiGuangRegId)
                         map.put("token", ConstantValue.mHuaWeiRegId)
                     } else {
                         map.put("regid", ConstantValue.mRegId)
@@ -3070,6 +3461,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
                     map.put("usersn", lastLoginUserSn)
                     KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
+                    KLog.i("华为推送注册RegId= " + ConstantValue.mHuaWeiRegId)
+                    KLog.i("极光推送注册RegId= " + ConstantValue.mJiGuangRegId)
                     LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
                     KLog.i(map)
                     OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
@@ -3095,68 +3488,168 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         MessageProvider.getInstance().messageListenter = this
         EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
-        tvTitle.setOnClickListener {
+        /*tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
+        }*/
+        tvTitle.setOnLongClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
+            true
         }
+
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            if (toAddUserId!!.contains(selfUserId!!)) {
-                runOnUiThread {
-                    toast(R.string.The_same_user)
-                }
-                return@Observer
-            }
-            if (!"".equals(toAddUserId)) {
-                var toAddUserIdTemp = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
-                var intent = Intent(this, SendAddFriendActivity::class.java)
-                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-                for (i in useEntityList) {
-                    if (i.userId.equals(toAddUserIdTemp)) {
-                        var nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
-                        i.nickName = nickName
-                        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
-                        var freindStatusData = FriendEntity()
-                        freindStatusData.friendLocalStatus = 7
-                        val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
-                        if (localFriendStatusList.size > 0)
-                            freindStatusData = localFriendStatusList[0]
 
-                        if (freindStatusData.friendLocalStatus == 0) {
-                            intent.putExtra("user", i)
-                            startActivity(intent)
-                        } else {
-                            intent = Intent(this, SendAddFriendActivity::class.java)
-                            intent.putExtra("user", i)
-                            startActivity(intent)
-                        }
-                        return@Observer
+            if(typeData.equals("type_0"))
+            {
+                if (toAddUserId!!.contains(selfUserId!!)) {
+                    runOnUiThread {
+                        toast(R.string.The_same_user)
                     }
+                    return@Observer
                 }
-                intent = Intent(this, SendAddFriendActivity::class.java)
-                var userEntity = UserEntity()
-                //userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
-                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
-                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") + 1, toAddUserId.length)
-                userEntity.timestamp = Calendar.getInstance().timeInMillis
-                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                userEntity.routerUserId = selfUserId
-                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                if (!"".equals(toAddUserId))
+                {
+                    var userEntity = UserEntity()
+                    var intent = Intent(this, SendAddFriendActivity::class.java)
+                    var toAddUserIdTemp = ""
+                    toAddUserIdTemp = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
+                    var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                    for (i in useEntityList) {
+                        if (i.userId.equals(toAddUserIdTemp)) {
+                            var nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                            i.nickName = nickName
+                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                            var freindStatusData = FriendEntity()
+                            freindStatusData.friendLocalStatus = 7
+                            val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                            if (localFriendStatusList.size > 0)
+                                freindStatusData = localFriendStatusList[0]
+
+                            if (freindStatusData.friendLocalStatus == 0) {
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            } else {
+                                intent = Intent(this, SendAddFriendActivity::class.java)
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            }
+                            return@Observer
+                        }
+                    }
+                    intent = Intent(this, SendAddFriendActivity::class.java)
+
+                    //userEntity.friendStatus = 7
+                    userEntity.userId = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
+                    userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                    userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") + 1, toAddUserId.length)
+
+                    userEntity.timestamp = Calendar.getInstance().timeInMillis
+                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                    userEntity.routerUserId = selfUserId
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
 
 
-                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var newFriendStatus = FriendEntity()
-                newFriendStatus.userId = userId;
-                newFriendStatus.friendId = toAddUserId
-                newFriendStatus.friendLocalStatus = 7
-                newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
-                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
-                intent.putExtra("user", userEntity)
-                startActivity(intent)
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var newFriendStatus = FriendEntity()
+                    newFriendStatus.userId = userId;
+                    newFriendStatus.friendId = toAddUserIdTemp
+                    newFriendStatus.friendLocalStatus = 7
+                    newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                    intent.putExtra("user", userEntity)
+                    intent.putExtra("typeData", typeData!!)
+                    startActivity(intent)
+                }
+            }else{
+                //type_5
+                if (toAddUserId!!.contains(selfUserId!!)) {
+                    runOnUiThread {
+                        toast(R.string.The_same_user)
+                    }
+                    return@Observer
+                }
+                if (!"".equals(toAddUserId))
+                {
+                    var userEntity = UserEntity()
+                    var intent = Intent(this, SendAddFriendActivity::class.java)
+                    var toAddUserKey = ""
+                    var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                    toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
+                    var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+
+                    var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                    var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                    var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
+                    var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                    for (i in useEntityList) {
+                        if (i.userId.equals(toAddUserIdTemp)) {
+                            i.nickName = nickName
+                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                            var freindStatusData = FriendEntity()
+                            freindStatusData.friendLocalStatus = 7
+                            val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                            if (localFriendStatusList.size > 0)
+                                freindStatusData = localFriendStatusList[0]
+
+                            if (freindStatusData.friendLocalStatus == 0) {
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            } else {
+                                intent = Intent(this, SendAddFriendActivity::class.java)
+                                intent.putExtra("user", i)
+                                intent.putExtra("typeData", typeData!!)
+                                startActivity(intent)
+                            }
+                            return@Observer
+                        }
+                    }
+                    intent = Intent(this, SendAddFriendActivity::class.java)
+
+                    //userEntity.friendStatus = 7
+                    userEntity.userId = toAddUserIdTemp
+                    userEntity.nickName = nickName
+                    userEntity.signPublicKey = toAddUserKey
+                    userEntity.routeId = FriendDevId
+                    userEntity.timestamp = Calendar.getInstance().timeInMillis
+                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                    userEntity.routerUserId = selfUserId
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+
+
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var newFriendStatus = FriendEntity()
+                    newFriendStatus.userId = userId;
+                    newFriendStatus.friendId = toAddUserIdTemp
+                    newFriendStatus.friendLocalStatus = 7
+                    newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+                    intent.putExtra("user", userEntity)
+                    intent.putExtra("typeData", typeData!!)
+                    startActivity(intent)
+                    /* var userType5 = UserEntity();
+                     userType5.nickName = nickName
+                     userType5.routeId = FriendDevId!!
+                     userType5.miPublicKey = toAddUserKey!!
+                     intent = Intent(this, SendAddFriendActivity::class.java)
+                     intent.putExtra("user", userType5)
+                     intent.putExtra("typeData", typeData!!)
+                     startActivity(intent)*/
+                }
             }
+
         })
+        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
+        {
+            doWaitAddFreind(ConstantValue.waitAddFreind)
+            ConstantValue.waitAddFreind = "";
+        }
         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
         if (messageEntityList != null) {
             KLog.i("开始添加本地数据到重发列表" + messageEntityList.size)
@@ -3207,9 +3700,74 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            mPresenter.getScanPermission()
         }
         ivNewGroup.setOnClickListener {
-            startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+            //startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+            var menuArray = arrayListOf<String>()
+            var iconArray = arrayListOf<String>()
+            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            routerList.forEach {
+                if (it.lastCheck) {
+                    routerEntityAddMembers = it
+                    if(ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntityAddMembers!!.userSn))
+                    {
+                        //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                        //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                        if(AppConfig.instance.emailConfig().account != null)
+                        {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                        }else{
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                        }
+
+                    }else{
+                        //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                        //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                        if(AppConfig.instance.emailConfig().account != null)
+                        {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                        }else{
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                        }
+
+                    }
+                    return@forEach
+                }
+            }
+            PopWindowUtil.showPopAddMenuWindow(this@MainActivity, ivNewGroup,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    var data = obj as FileOpreateType
+                    when (data.name) {
+                        "New Email" -> {
+                            onClickSendEmail()
+                        }
+                        "New Chat" -> {
+                            onClickCreateGroup()
+                        }
+                        "Add Contacts" -> {
+                            mPresenter.getScanPermission()
+                        }
+                        "Invite Friends" -> {
+                            onClickInviteFriendEmail()
+                        }
+                        "Add Members" -> {
+                            onClickAddMembers()
+                        }
+                    }
+                }
+
+            })
             /* var list = arrayListOf<GroupEntity>()
              startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)*/
+        }
+        searchBtn.setOnClickListener {
+            startActivityForResult(Intent(this, SearchActivity::class.java), add_activity)
         }
         fileLook.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
@@ -3232,8 +3790,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         editBtn.setOnClickListener {
             startActivity(Intent(this, EmailEditActivity::class.java))
         }
+        if(!AppConfig.instance.sharedText.equals(""))
+        {
+            val intent = Intent(AppConfig.instance, WexinChatActivity::class.java)
+            startActivity(intent)
+
+        }
         mDrawer.setDrawerListener(object : DrawerLayout.DrawerListener {
-           override fun onDrawerStateChanged(arg0: Int) {
+            override fun onDrawerStateChanged(arg0: Int) {
 
                 //Log.i("zhangshuli", "statechange")
             }
@@ -3245,12 +3809,36 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
-
+                if(AppConfig.instance.emailConfig().account != null)
+                {
+                    var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                    var bakMailsNum = BakMailsNum(accountBase64)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+                }
                 //Log.i("zhangshuli", "open")
             }
 
             override fun onDrawerClosed(arg0: View) {
-
+                var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                if(emailConfigEntityChoose.size > 0)
+                {
+                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                    AppConfig.instance.emailConfig()
+                            .setSmtpHost(emailConfigEntity.smtpHost)
+                            .setSmtpPort(emailConfigEntity.smtpPort)
+                            .setPopHost(emailConfigEntity.popHost)
+                            .setPopPort(emailConfigEntity.popPort)
+                            .setImapHost(emailConfigEntity.imapHost)
+                            .setImapPort(emailConfigEntity.imapPort)
+                            .setAccount(emailConfigEntity.account)
+                            .setPassword(emailConfigEntity.password)
+                            .setName(emailConfigEntity.name)
+                            .setEmailType(emailConfigEntity.emailType)
+                            .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                            .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
+                    ConstantValue.currentEmailConfigEntity = emailConfigEntity;
+                    EventBus.getDefault().post(SortEmailConfig())
+                }
                 EventBus.getDefault().post(OnDrawerOpened())
                 //Log.i("zhangshuli", "colse")
             }
@@ -3264,10 +3852,39 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+
+            Inbox.setTextColor(resources.getColor(R.color.white))
+            Inbox.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox_selected)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
         }
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
             rootTitle.text = getString(R.string.Inbox)
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3279,11 +3896,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }
 
+            Inbox.setTextColor(resources.getColor(R.color.white))
+            Inbox.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox_selected)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
+
             EventBus.getDefault().post(ChangEmailMenu("Inbox",ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
         nodebackedup.setOnClickListener {
             rootTitle.text = getString(R.string.Node_back_up)
             ConstantValue.chooseEmailMenu = 1;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3294,11 +3940,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.white))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups_selected)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Nodebackedup",ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
             rootTitle.text = getString(R.string.Starred)
             ConstantValue.chooseEmailMenu = 2;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -3309,11 +3984,41 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.white))
+            starred.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected2)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
+
             EventBus.getDefault().post(ChangEmailMenu("Starred",ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
             rootTitle.text = getString(R.string.Drafts)
             ConstantValue.chooseEmailMenu = 3;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3324,11 +4029,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.white))
+            drafts.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts_selected)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Drafts",ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
             rootTitle.text = getString(R.string.Sent)
             ConstantValue.chooseEmailMenu = 4;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3339,11 +4073,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.white))
+            sent.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent_selected)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Sent",ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
             rootTitle.text = getString(R.string.Spam)
             ConstantValue.chooseEmailMenu = 5;
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3354,11 +4117,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.white))
+            spam.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash_selected)
+
+            trash.setTextColor(resources.getColor(R.color.colorAccent))
+            trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted)
             EventBus.getDefault().post(ChangEmailMenu("Spam",ConstantValue.currentEmailConfigEntity!!.garbageMenu))
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
             rootTitle.text = getString(R.string.Trash)
+            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3369,6 +4161,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }
+
+            Inbox.setTextColor(resources.getColor(R.color.colorAccent))
+            Inbox.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            Inbox.setImageResource(R.mipmap.tabbar_inbox)//tabbar_inbox
+
+            nodebackedup.setTextColor(resources.getColor(R.color.colorAccent))
+            nodebackedup.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            nodebackedup.setImageResource(R.mipmap.tabbar_backups)
+
+            starred.setTextColor(resources.getColor(R.color.colorAccent))
+            starred.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            starred.setImageResource(R.mipmap.tabbar_attach_selected)
+
+            drafts.setTextColor(resources.getColor(R.color.colorAccent))
+            drafts.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            drafts.setImageResource(R.mipmap.tabbar_drafts)
+
+            sent.setTextColor(resources.getColor(R.color.colorAccent))
+            sent.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            sent.setImageResource(R.mipmap.tabbar_sent)
+
+            spam.setTextColor(resources.getColor(R.color.colorAccent))
+            spam.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
+            spam.setImageResource(R.mipmap.tabbar_trash)
+
+            trash.setTextColor(resources.getColor(R.color.white))
+            trash.setCountTextColor(resources.getColor(R.color.white))//colorAccent
+            trash.setImageResource(R.mipmap.tabbar_deleted_selected)
             EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
@@ -3450,7 +4270,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var pullFriend = PullFriendReq_V4(selfUserId!!)
             var sendData = BaseData(pullFriend)
             if (ConstantValue.encryptionType.equals("1")) {
-                sendData = BaseData(4, pullFriend)
+                sendData = BaseData(6, pullFriend)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -3458,8 +4278,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -3491,6 +4311,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Thread.sleep(1000);
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
                         var sendData = BaseData(3,msgData, pushMsgRsp?.msgid)
                         if (ConstantValue.encryptionType.equals("1")) {
@@ -3502,8 +4323,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             var baseData = sendData
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
@@ -3511,7 +4332,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         var msgSouce = ""
                         if (ConstantValue.encryptionType.equals("1")) {
-                            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+                            var friendEntity = UserEntity()
+                            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
+                            if (localFriendList.size > 0)
+                                friendEntity = localFriendList[0]
+                            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
                         } else {
                             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
                         }
@@ -3533,7 +4358,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.setTo(pushMsgRsp.getParams().getToId())
                                 Message.chatType = EMMessage.ChatType.Chat
 
-                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
+                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, "")
                                 val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                                 var unReadCount = 0
                                 if (MessageLocal != null && MessageLocal.unReadCount != null) {
@@ -3543,7 +4368,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                 var baseDataJson = gson.toJson(Message)
                                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + pushMsgRsp.params.fromId, baseDataJson)
                                 KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
                                 //conversation.insertMessage(message)
                             }
@@ -3581,9 +4406,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             return conversationListFragment!!
                         }
                     }
-                    1 -> return FileListFragment()
+                    1 -> {
+                        /*if(BuildConfig.DEBUG)
+                        {
+                            return FileEncryptionFragment()
+                        }else{
+                            return FileListFragment()
+                        }*/
+                        return FileEncryptionFragment()
+                    }
                     2 -> return contactFragment!!
-                    else -> return MyFragment()
+                    else -> {
+                        return MyFragment()
+                        /*if(BuildConfig.DEBUG)
+                        {
+                            return FileListFragment()
+                        }else{
+                            return MyFragment()
+                        }*/
+
+                    }
                 }
             }
 
@@ -3650,8 +4492,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val baseData = BaseData(4, updateAvatarReq)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -3669,14 +4511,70 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         initEvent()
     }
-    fun initLeftMenu(fragmentMenu:String)
+    fun doWaitAddFreind(waitAddFreind:String)
     {
-       
+
+        KLog.i("doWaitAddFreind")
+        var userId = waitAddFreind!!.substring(0, waitAddFreind!!.indexOf(","))
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
+        var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+        if (waitAddFreind!!.contains(selfUserId!!)) {
+            return
+        }
+        KLog.i("doWaitAddFreind2")
+        var emailId= ""
+        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId,emailId)
+        var sendData = BaseData(6,AddFriendsAutoReq);
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
+    fun onClickSendEmail()
+    {
+        var intent = Intent(this, EmailSendActivity::class.java)
+        intent.putExtra("flag",0)
+        intent.putExtra("menu","")
+        startActivity(intent)
+    }
+    fun onClickInviteFriendEmail()
+    {
+        var intent = Intent(this, EmailSendActivity::class.java)
+        intent.putExtra("flag",100)
+        intent.putExtra("menu","")
+        startActivity(intent)
+    }
+    fun onClickCreateGroup()
+    {
+        var list = arrayListOf<GroupEntity>()
+        startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+    }
+    fun onClickAddMembers()
+    {
+        var intent = Intent(this, RouterCreateUserActivity::class.java)
+        intent.putExtra("routerUserEntity", routerEntityAddMembers!!)
+        startActivity(intent)
+    }
+    fun initLeftMenu(fragmentMenu:String,sort:Boolean,refresh:Boolean)
+    {
+
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
         if(emailConfigEntityChoose.size > 0)
         {
             editBtn.visibility = View.VISIBLE
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+            {
+                AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
+            }
             AppConfig.instance.emailConfig()
                     .setSmtpHost(emailConfigEntity.smtpHost)
                     .setSmtpPort(emailConfigEntity.smtpPort)
@@ -3688,11 +4586,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setPassword(emailConfigEntity.password)
                     .setName(emailConfigEntity.name)
                     .setEmailType(emailConfigEntity.emailType)
+                    .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                    .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
             Inbox.setCount(emailConfigEntity.unReadCount)
-            spam.setCount(emailConfigEntity.garbageCount)
+            spam.setCount(emailConfigEntity.garbageUnReadCount)
+            if(AppConfig.instance.emailConfig().account != null)
+            {
+                var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
+                var bakMailsNum = BakMailsNum(accountBase64)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+            }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
         }else{
             editBtn.visibility = View.GONE
+            AppConfig.instance.initEmailConfig()
         }
         if(fragmentMenu == "Circle")
         {
@@ -3708,55 +4615,104 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x110).toInt())
             }else if(emailConfigEntityList.size == 2){
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x220).toInt())
+            }else if(emailConfigEntityList.size == 3){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x330).toInt())
+            }else if(emailConfigEntityList.size == 4){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x440).toInt())
+            }else if(emailConfigEntityList.size == 5){
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x550).toInt())
             }else{
-                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x270).toInt())
+                recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x600).toInt())
             }
-            emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
-            emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-                /*val floatMenu = FloatMenu(this)
-                floatMenu.items("菜单1", "菜单2", "菜单3")
-                floatMenu.show((activity!! as BaseActivity).point,0,0)*/
-                true
-            }
-            recyclerViewleft.adapter = emaiConfigChooseAdapter
-            emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-                /* var intent = Intent(activity!!, ConversationActivity::class.java)
-                 intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-                 startActivity(intent)*/
-                var accountData = emaiConfigChooseAdapter!!.getItem(position)
-                var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
-                var hasVerify = false
-                if(emailConfigEntityList.size > 0)
+            if(refresh)
+            {
+                var emailConfigEntityListNew = mutableListOf<EmailConfigEntity>()
+                if(sort)
                 {
-                    var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-                    for (j in localemailConfigEntityList) {
-                        j.choose = false
-                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                    var emailConfigChoose:EmailConfigEntity? = null
+                    for(emailConfig in emailConfigEntityList)
+                    {
+                        if(!emailConfig.choose)
+                        {
+                            emailConfigEntityListNew.add(emailConfig)
+                        }else{
+                            emailConfigChoose = emailConfig
+                        }
                     }
-                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                    emailConfigEntity.choose = true
-                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                    AppConfig.instance.emailConfig()
-                            .setSmtpHost(emailConfigEntity.smtpHost)
-                            .setSmtpPort(emailConfigEntity.smtpPort)
-                            .setPopHost(emailConfigEntity.popHost)
-                            .setPopPort(emailConfigEntity.popPort)
-                            .setImapHost(emailConfigEntity.imapHost)
-                            .setImapPort(emailConfigEntity.imapPort)
-                            .setAccount(emailConfigEntity.account)
-                            .setPassword(emailConfigEntity.password)
-                            .setName(emailConfigEntity.name)
-                            .setEmailType(emailConfigEntity.emailType)
+                    if(emailConfigChoose != null)
+                    {
+                        emailConfigEntityListNew.add(0,emailConfigChoose!!)
+                    }
+                    emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityListNew)
+                }else{
+                    emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
                 }
-                EventBus.getDefault().post(ChooseEmailConfig())
-                /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-                    mDrawer.closeDrawer(GravityCompat.START)
-                }*/
+                emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+                    /*val floatMenu = FloatMenu(this)
+                    floatMenu.items("菜单1", "菜单2", "菜单3")
+                    floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+                    true
+                }
+                recyclerViewleft.adapter = emaiConfigChooseAdapter
+                emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+                    /* var intent = Intent(activity!!, ConversationActivity::class.java)
+                     intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+                     startActivity(intent)*/
+                    var dataList  = emaiConfigChooseAdapter!!.data
+                    for (item in dataList)
+                    {
+                        item.choose = false
+                    }
+                    var accountData = emaiConfigChooseAdapter!!.getItem(position)
+                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
+                    var hasVerify = false
+                    if(emailConfigEntityList.size > 0)
+                    {
+                        var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+                        for (j in localemailConfigEntityList) {
+                            j.choose = false
+                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                        }
+                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+                        {
+                            AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
+                            isGmailToken = false;
+                        }
+                        emailConfigEntity.choose = true
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                        AppConfig.instance.emailConfig()
+                                .setSmtpHost(emailConfigEntity.smtpHost)
+                                .setSmtpPort(emailConfigEntity.smtpPort)
+                                .setPopHost(emailConfigEntity.popHost)
+                                .setPopPort(emailConfigEntity.popPort)
+                                .setImapHost(emailConfigEntity.imapHost)
+                                .setImapPort(emailConfigEntity.imapPort)
+                                .setAccount(emailConfigEntity.account)
+                                .setPassword(emailConfigEntity.password)
+                                .setName(emailConfigEntity.name)
+                                .setEmailType(emailConfigEntity.emailType)
+                                .setImapEncrypted(emailConfigEntity.imapEncrypted)
+                                .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
+                    }
+                    accountData.choose = true
+                    emaiConfigChooseAdapter!!.notifyDataSetChanged()
+                    EventBus.getDefault().post(ChooseEmailConfig())
+                    /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                        mDrawer.closeDrawer(GravityCompat.START)
+                    }*/
+                    if(sort)
+                    {
+                        recyclerViewleft!!.scrollToPosition(0)
+                    }
+                }
             }
+
         }
 
     }
-    fun initSwitchData() {
+    fun initSwitchData()
+    {
         var this_ = this
         var isStartWebsocket = false
         SpUtil.putBoolean(this, ConstantValue.isUnLock, true)
@@ -3815,7 +4771,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
         if (ConstantValue.encryptionType.equals("1")) {
-            sendData = BaseData(4, pullFriend)
+            sendData = BaseData(6, pullFriend)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -3823,8 +4779,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -3843,8 +4799,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             val baseData = BaseData(4, updateAvatarReq)
             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
             if (ConstantValue.isAntox) {
-                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -3864,6 +4820,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             ConstantValue.isRefeshed = true
         }
+        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
+        {
+            doWaitAddFreind(ConstantValue.waitAddFreind)
+            ConstantValue.waitAddFreind = "";
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun addEmailEvent(AddEmailEvent: AddEmailEvent) {
+        chatAndEmailFragment!!.setCurrentItem(1)
+        if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.openDrawer(GravityCompat.START)
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun fromChat(fromChat: FromChat) {
@@ -3874,12 +4842,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changFragmentMenu(changFragmentMenu: ChangFragmentMenu) {
 
+
         var menu = changFragmentMenu.menu
         ConstantValue.chooseFragMentMenu = menu
         rootTitle.text = menu;
         mainTitle.text = menu;
         if(menu== "Circle")
         {
+            if(unread_count.text == "")
+            {
+                unread_count.visibility = View.INVISIBLE
+            }else{
+                unread_count.visibility = View.VISIBLE
+            }
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             routerList.forEach {
                 if (it.lastCheck) {
@@ -3890,15 +4865,53 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.visibility = View.VISIBLE
             emailMenu.visibility = View.GONE
             newAccount.visibility = View.GONE
-            newCricle.visibility = View.VISIBLE
+            newCricle.visibility = View.GONE
         }else{
-
+            unread_count.visibility = View.INVISIBLE
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
             initLeftSubMenuName()
         }
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0) {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
+            {
+                if(menu== "Email" &&  !isGmailToken)
+                {
+                    isGmailToken = false;
+                    var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"");
+                    Islands.circularProgress(this)
+                            .setCancelable(false)
+                            .setMessage(getString(R.string.waiting))
+                            .run { progressDialog ->
+                                val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                                emailReceiveClient
+                                        .gmaiApiToken(this, object : GmailAuthCallback {
+                                            override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
+                                                progressDialog.dismiss()
+                                            }
+                                            override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
+                                                progressDialog.dismiss()
+                                                this_!!.startActivityForResult(
+                                                        userRecoverableException!!.getIntent(),
+                                                        REQUEST_AUTHORIZATION);
+                                            }
 
-        initLeftMenu(menu)
+                                            override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                                progressDialog.dismiss()
+                                            }
+
+                                            override fun gainFailure(errorMsg: String) {
+                                                progressDialog.dismiss()
+                                            }
+                                        },gmailService,"me")
+                            }
+                }
+            }
+        }
+
+        initLeftMenu(menu,true,true)
     }
     fun initLeftSubMenuName()
     {
@@ -3907,6 +4920,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.visibility = View.VISIBLE
             rootName.text = AppConfig.instance.emailConfig().account
             emailMenu.visibility = View.VISIBLE
+            editBtn.visibility = View.VISIBLE
+            if( ConstantValue.chooseFragMentMenu == "Circle")
+            {
+                emailMenu.visibility = View.GONE
+                editBtn.visibility = View.GONE
+            }
+            if(AppConfig.instance.emailConfig().emailType == "255" || AppConfig.instance.emailConfig().emailType == "6")
+            {
+                drafts.visibility = View.GONE
+                sent.visibility = View.GONE
+                spam.visibility = View.GONE
+                trash.visibility = View.GONE
+            }else{
+                drafts.visibility = View.VISIBLE
+                sent.visibility = View.VISIBLE
+                spam.visibility = View.VISIBLE
+                trash.visibility = View.VISIBLE
+            }
             when(ConstantValue.chooseEmailMenu)
             {
                 0->
@@ -3946,7 +4977,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             rootName.text  = ""
             rootName.visibility = View.GONE
             emailMenu.visibility = View.GONE
-            rootTitle.text = getString(R.string.Email)
+            rootTitle.text = getString(R.string.AddEmail)
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3973,6 +5004,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /*val action = intent.action
+        val type = intent.type
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+        KLog.i("微信," + action+"#####"+type+"#####"+sharedText)*/
         isScanSwitch = false
         if (savedInstanceState != null) {
             KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
@@ -4212,6 +5247,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if(type.equals("type_0"))
                 {
                     viewModel.toAddUserId.value = result.substring(7, result.length)
+                    typeData = "type_0"
+                }else if(type.equals("type_5"))
+                {
+                    soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                    var dataStr = String(soureData);
+                    viewModel.toAddUserId.value = dataStr
+                    typeData = "type_5"
                 }
                 else if(type.equals("type_1"))
                 {
@@ -4292,12 +5334,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                                         try {
                                                                             if (json != null) {
                                                                                 httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                                 {
                                                                                     ConstantValue.curreantNetworkType = "WIFI"
-                                                                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                                    ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                                     ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                                     if(ConstantValue.isHasWebsocketInit)
@@ -4354,12 +5396,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                             try {
                                                                 if (json != null) {
                                                                     var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                    if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
                                                                     {
                                                                         ConstantValue.curreantNetworkType = "WIFI"
-                                                                        ConstantValue.currentRouterIp = httpData.serverHost
-                                                                        ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                        ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                        ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                        ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
                                                                         ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                                         ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                                         if(ConstantValue.isHasWebsocketInit)
@@ -4476,7 +5518,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             toast(R.string.code_error)
                         }
                     }
-                }else if (type!!.contains("type_3")) {
+                }else if (type!!.contains("type_3"))
+                {
                     var left = result.substring(7,result.length)
                     var signprivatek = left.substring(0,left.indexOf(","))
                     left = left.substring(signprivatek.length+1,left.length)
@@ -4568,6 +5611,196 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
 
+                }else if(type.equals("type_4"))
+                {
+                    var beginIndex = result.lastIndexOf(",")
+                    ConstantValue.waitAddFreind = result.substring(7,beginIndex);
+                    var data = result.substring(beginIndex+1,result.length);
+                    var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                    scanType = 1
+                    val keyId:ByteArray = ByteArray(6) //密钥ID
+                    val RouterId:ByteArray = ByteArray(76) //路由器id
+                    val UserSn:ByteArray = ByteArray(32)  //用户SN
+                    System.arraycopy(soureData, 0, keyId, 0, 6)
+                    System.arraycopy(soureData, 6, RouterId, 0, 76)
+                    System.arraycopy(soureData, 82, UserSn, 0, 32)
+                    var keyIdStr = String(keyId)
+                    var RouterIdStr = String(RouterId)
+                    var UserSnStr = String(UserSn)
+
+                    ConstantValue.scanRouterId = RouterIdStr
+                    ConstantValue.scanRouterSN = UserSnStr
+                    if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
+                    {
+                        if(ConstantValue.currentRouterId.equals(RouterIdStr))
+                        {
+                            if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
+                            {
+                                doWaitAddFreind(ConstantValue.waitAddFreind)
+                                ConstantValue.waitAddFreind = "";
+                            }
+                            toast(R.string.The_same_circle_without_switching)
+                            return
+                        }
+                        runOnUiThread {
+                            SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
+                                    .setConfirmClickListener {
+                                        var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                                        var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                        } else if (ConstantValue.isToxConnected) {
+                                            val baseData = BaseData(2,msgData)
+                                            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }
+                                        ConstantValue.loginReq = null
+                                        showProgressDialog("wait...")
+                                        isScanSwitch = true
+                                        if(AppConfig.instance.messageReceiver != null)
+                                            AppConfig.instance.messageReceiver!!.close()
+                                        ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
+
+                                        ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
+                                        ConstantValue.lastPort=  ConstantValue.port
+                                        ConstantValue.lastFilePort= ConstantValue.filePort
+                                        ConstantValue.lastRouterId =   ConstantValue.currentRouterId
+                                        ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+
+                                        isFromScan = true
+                                        ConstantValue.currentRouterIp = ""
+                                        if(WiFiUtil.isWifiConnect())
+                                        {
+                                            var count =0;
+                                            KLog.i("测试计时器" + count)
+                                            Thread(Runnable() {
+                                                run() {
+                                                    Thread.sleep(1500)
+                                                    while (true)
+                                                    {
+                                                        if(count >=3)
+                                                        {
+                                                            if(!ConstantValue.currentRouterIp.equals(""))
+                                                            {
+                                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                break;
+                                                            }else{
+
+                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                                                    override fun onFailure( e :Exception) {
+                                                                        startToxAndRecovery()
+                                                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                    }
+                                                                    override fun  onResponse(json:String ) {
+
+                                                                        val gson = GsonUtil.getIntGson()
+                                                                        var httpData: HttpData? = null
+                                                                        try {
+                                                                            if (json != null) {
+                                                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
+                                                                                {
+                                                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                                                    ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                                    if(ConstantValue.isHasWebsocketInit)
+                                                                                    {
+                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                                    }else{
+                                                                                        ConstantValue.isHasWebsocketInit = true
+                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                                    }
+                                                                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                                    //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                                                                }else{
+                                                                                    startToxAndRecovery()
+                                                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                                }
+
+                                                                            }
+                                                                        } catch (e: Exception) {
+                                                                            startToxAndRecovery()
+                                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                        }
+                                                                    }
+                                                                })
+                                                                break;
+                                                            }
+
+                                                        }
+                                                        count ++;
+                                                        MobileSocketClient.getInstance().init(handler,this)
+                                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                        MobileSocketClient.getInstance().destroy()
+                                                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                        MobileSocketClient.getInstance().receive()
+                                                        KLog.i("测试计时器" + count)
+                                                        Thread.sleep(1000)
+                                                    }
+
+                                                }
+                                            }).start()
+                                        }else{
+                                            showProgressDialog("wait...")
+                                            Thread(Runnable() {
+                                                run() {
+                                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                                        override fun onFailure( e :Exception) {
+                                                            startToxAndRecovery()
+                                                        }
+
+                                                        override fun  onResponse(json:String ) {
+
+                                                            val gson = GsonUtil.getIntGson()
+                                                            var httpData: HttpData? = null
+                                                            try {
+                                                                if (json != null) {
+                                                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                    if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
+                                                                    {
+                                                                        ConstantValue.curreantNetworkType = "WIFI"
+                                                                        ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                                        ConstantValue.port = ":"+httpData!!.serverPort.toString()
+                                                                        ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                        ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                        ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                        if(ConstantValue.isHasWebsocketInit)
+                                                                        {
+                                                                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                        }else{
+                                                                            ConstantValue.isHasWebsocketInit = true
+                                                                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                        }
+                                                                        KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                        //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                    }else{
+                                                                        startToxAndRecovery()
+                                                                    }
+
+                                                                }
+                                                            } catch (e: Exception) {
+                                                                startToxAndRecovery()
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            }).start()
+                                        }
+                                    }
+                                    .show()
+                        }
+
+                    }else{
+                        runOnUiThread {
+                            toast(R.string.code_error)
+                        }
+
+                    }
                 }else{
                     runOnUiThread {
                         closeProgressDialog()
@@ -4619,8 +5852,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 {
                     "0" ->
                     {
-                        var list = arrayListOf<GroupEntity>()
-                        startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+                        onClickCreateGroup()
                     }
                     "1" ->
                     {
@@ -4634,16 +5866,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                     "3" ->
                     {
-                        var intent = Intent(this, EmailSendActivity::class.java)
-                        intent.putExtra("flag",0)
-                        intent.putExtra("menu","")
-                        startActivity(intent)
+                        onClickSendEmail()
+                    }
+                    "4" ->
+                    {
+                        onClickInviteFriendEmail()
                     }
                 }
 
             }
+        }else if (requestCode == REQUEST_AUTHORIZATION) {
+            if(resultCode == Activity.RESULT_OK)//授权成功
+            {
+                toast(R.string.Authorizedsuccess)
+            }else{//授权失败
+                toast(R.string.Authorizedfail)
+            }
+        }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
+            mResultData = data;
+            /* FloatWindowsService.setResultData(data)
+             startService(Intent(applicationContext, FloatWindowsService::class.java))*/
         }
-
 
     }
     private fun startToxAndRecovery() {
@@ -4665,11 +5908,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
             {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
+                //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
         } else {
-            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            ////var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
                 closeProgressDialog()
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
@@ -4683,7 +5926,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("没有初始化。。设置loginBackListener")
             //AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
-                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
             }else{
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
@@ -4692,8 +5935,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }
@@ -4904,5 +6147,141 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
         })
+    }
+
+    inner class ActivityLifeCycleListener : Application.ActivityLifecycleCallbacks {
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {}
+
+        override fun onActivityStarted(activity: Activity) {}
+
+        override fun onActivityResumed(activity: Activity) {
+            ++resumed
+            setFloatballVisible(true)
+        }
+
+        override fun onActivityPaused(activity: Activity) {
+            --resumed
+            if (!isApplicationInForeground()) {
+                //setFloatballVisible(false);
+            }
+        }
+
+        override fun onActivityStopped(activity: Activity) {}
+
+        override fun onActivityDestroyed(activity: Activity) {}
+
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+    }
+
+    private fun setFloatPermission() {
+        // 设置悬浮球权限，用于申请悬浮球权限的，这里用的是别人写好的库，可以自己选择
+        //如果不设置permission，则不会弹出悬浮球
+        mFloatPermissionManager = FloatPermissionManager()
+        mFloatballManager!!.setPermission(object : FloatBallManager.IFloatBallPermission {
+            override fun onRequestFloatBallPermission(): Boolean {
+                requestFloatBallPermission(this@MainActivity)
+                return true
+            }
+
+            override fun hasFloatBallPermission(context: Context): Boolean {
+                return mFloatPermissionManager!!.checkPermission(context)
+            }
+
+            override fun requestFloatBallPermission(activity: Activity) {
+                mFloatPermissionManager!!.applyPermission(activity)
+            }
+
+        })
+    }
+    private fun addFloatMenuItem() {
+        val personItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_desktop", this)) {
+            override fun action() {
+                goToDesktop(AppConfig.instance)
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        val walletItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_screenshot", this)) {
+            override fun action() {
+
+                startScreenShot()
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        val settingItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_return", this)) {
+            override fun action() {
+                goToApp(AppConfig.instance)
+                mFloatballManager!!.closeMenu()
+            }
+        }
+        mFloatballManager!!.addMenuItem(personItem)
+                .addMenuItem(settingItem)
+                .addMenuItem(walletItem)
+                .buildMenu()
+    }
+
+    fun requestCapturePermission() {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            //5.0 之后才允许使用屏幕截图
+
+            return
+        }
+
+        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(
+                mediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_MEDIA_PROJECTION)
+    }
+    private fun setFloatballVisible(visible: Boolean) {
+        if(mFloatballManager != null)
+        {
+            if (visible) {
+                mFloatballManager!!.show()
+            } else {
+                mFloatballManager!!.hide()
+            }
+        }
+
+    }
+
+    fun isApplicationInForeground(): Boolean {
+        return resumed > 0
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.show()
+        }
+        //mFloatballManager!!.onFloatBallClick()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        if(mFloatballManager != null)
+        {
+            mFloatballManager!!.hide()
+        }
+    }
+
+    /**
+     * 跳转到桌面
+     */
+    fun goToDesktop(context: Context) {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        context.startActivity(intent)
+    }
+    /**
+     * 跳转到桌面
+     */
+    fun goToApp(context: Context) {
+        val intent = Intent("android.intent.action.MAIN")
+        intent.component = ComponentName(applicationContext.packageName, MainActivity::class.java.name)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        applicationContext.startActivity(intent)
     }
 }

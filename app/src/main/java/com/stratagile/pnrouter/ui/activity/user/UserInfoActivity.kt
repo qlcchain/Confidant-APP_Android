@@ -2,15 +2,11 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.utils.PathUtils
-import com.message.Message
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
@@ -35,11 +31,9 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import events.ToxSendInfoEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
+import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
 import kotlinx.android.synthetic.main.activity_user_info.*
-import kotlinx.android.synthetic.main.toolbar_layout.view.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -95,8 +89,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
          }else if (ConstantValue.isToxConnected) {
              var baseData = BaseData(delFriendCmdRsp)
              var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+             //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+             //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
          }*/
 
         runOnUiThread {
@@ -310,6 +304,11 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             setNoteName.setRightTitleText("")
             setNoteName.setTitleText(getString(R.string.Add_Nickname))
         }
+        /*if (userInfo!!.routerAlias == null || "" == userInfo!!.routerAlias){
+            nickName.text = nickNameSouce +" - " +String(RxEncodeTool.base64Decode(userInfo!!.routeName));
+        }else{
+            nickName.text = nickNameSouce +" - " +userInfo!!.routerAlias
+        }*/
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
         var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
@@ -355,8 +354,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                             var baseData = BaseData(2,msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
@@ -463,8 +462,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             val baseData = BaseData(4, updateAvatarReq)
             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
             if (ConstantValue.isAntox) {
-                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -528,8 +527,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -570,8 +569,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }

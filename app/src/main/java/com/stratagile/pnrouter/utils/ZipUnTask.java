@@ -34,11 +34,13 @@ public class ZipUnTask extends AsyncTask<Void, Integer, Long> {
 	private boolean mReplaceAll;
 	private Handler handler;
 	private Long unZipSize;
-	public ZipUnTask(String in, String out, Context context, boolean replaceAll,Handler message){
+	private boolean deleteSouceFlag;
+	public ZipUnTask(String in, String out, Context context, boolean replaceAll,Handler message,boolean deleteSouce){
 		super();
 		zipPath = in;
 		mInput = new File(in);
 		mOutput = new File(out);
+		deleteSouceFlag = deleteSouce;
 		if(!mOutput.exists()){
 			if(!mOutput.mkdirs()){
 				Log.e(TAG, "Failed to make directories:"+mOutput.getAbsolutePath());
@@ -169,7 +171,10 @@ public class ZipUnTask extends AsyncTask<Void, Integer, Long> {
 				e.printStackTrace();
 			}
 		}
-		DeleteUtils.deleteFile(zipPath);
+		if(deleteSouceFlag)
+		{
+			DeleteUtils.deleteFile(zipPath);
+		}
 		unZipSize = extractedSize;
 		return extractedSize;
 	}

@@ -161,6 +161,7 @@
 
     </RelativeLayout>
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/sendRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -179,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/To"
                     android:textSize="16sp"/>
-                <EditText
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/toAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -188,6 +189,8 @@
                     android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:paddingRight="@dimen/x10"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <com.hyphenate.easeui.widget.ATEmailEditText
@@ -230,7 +233,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/Cc"
                     android:textSize="16sp"/>
-                <EditText
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/ccAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -239,6 +242,7 @@
                     android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <TextView
@@ -262,7 +266,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/Bcc"
                     android:textSize="16sp"/>
-                <EditText
+                <MultiAutoCompleteTextView
                     android:visibility="visible"
                     android:id="@+id/bccAdressEdit"
                     android:layout_marginLeft="@dimen/x20"
@@ -271,6 +275,7 @@
                     android:inputType="textMultiLine"
                     android:minHeight="@dimen/x45"
                     android:layout_weight="0.5"
+                    android:completionThreshold="1"
                     android:background="@null"
                     />
                 <TextView
@@ -307,6 +312,7 @@
                     android:background="@null"/>
                 <TextView
                     android:id="@+id/addSubject"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
@@ -321,6 +327,43 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
+            <LinearLayout
+                android:id="@+id/addKeyImgParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/addKeyImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingTop="@dimen/x20"
+                    android:paddingBottom="@dimen/x20"
+                    android:src="@mipmap/tabbar_email1_unselected"/>
+                <View
+                    android:layout_width="@dimen/x1"
+                    android:layout_toRightOf="@id/avatar_container"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/color_f2f2f2"/>
+                <ImageView
+                    android:id="@+id/addSubjectImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingTop="@dimen/x20"
+                    android:paddingBottom="@dimen/x20"
+                    android:src="@mipmap/tabbar_attach1_unselected"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/avatar_container"
+                android:layout_height="@dimen/x1"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dp"
+                android:background="@color/color_f2f2f2"/>
+
             <com.stratagile.pnrouter.ui.activity.email.view.RichEditor
                 android:layout_marginTop="@dimen/x40"
                 android:layout_marginLeft="@dimen/x30"
@@ -338,6 +381,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="@color/color_f2f2f2"/>
             <LinearLayout
+                android:id="@+id/webViewParent"
                 android:layout_marginTop="@dimen/x60"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -372,6 +416,92 @@
                     android:progressDrawable="@drawable/webview_progress_bg"
                     android:visibility="gone" />
             </LinearLayout>
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardView2"
+                android:visibility="gone"
+                android:layout_width="@dimen/x400"
+                android:layout_marginTop="@dimen/x25"
+                android:layout_marginLeft="@dimen/x50"
+                app:cardCornerRadius="@dimen/x25"
+                app:cardElevation="@dimen/x5"
+                android:layout_marginRight="@dimen/x50"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_width="wrap_content"
+                        android:textSize="15sp"
+                        android:text="Circle Login QR Code"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/color_2c2c2c"
+                        android:layout_height="wrap_content" />
+                    <View
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_width="match_parent"
+                        android:background="@color/color_ebebeb"
+                        android:layout_height="@dimen/x1" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_marginBottom="@dimen/x10"
+                        android:layout_height="wrap_content">
+
+
+                        <com.stratagile.pnrouter.view.ImageButtonWithText
+                            android:layout_width="@dimen/x55"
+
+                            android:layout_marginTop="@dimen/x8"
+                            android:layout_marginLeft="@dimen/x40"
+                            app:imageButtonTextSize="20"
+                            android:layout_height="@dimen/x55"
+                            android:id="@+id/ivAvatar2" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvRouterName"
+                                android:layout_width="wrap_content"
+                                android:textSize="13sp"
+                                android:text="@string/ok"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/color_2c2c2c"
+                                android:layout_marginLeft="@dimen/x120"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/adminName"
+                                android:layout_width="wrap_content"
+                                android:textSize="12sp"
+                                android:text="@string/ok"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/color_2c2c2c"
+                                android:layout_marginLeft="@dimen/x120"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                    </RelativeLayout>
+                    <!--<View
+                        android:layout_width="match_parent"
+                        android:background="@color/color_ebebeb"
+                        android:layout_height="@dimen/x1" />-->
+                    <ImageView
+                        android:id="@+id/ivQrCode2"
+                        android:layout_width="@dimen/x300"
+                        android:layout_marginTop="@dimen/x20"
+                        android:layout_marginBottom="@dimen/x35"
+                        android:layout_height="@dimen/x300" />
+                    <!-- <View
+                         android:layout_width="match_parent"
+                         android:background="@color/color_ebebeb"
+                         android:layout_height="@dimen/x1" />-->
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
             <LinearLayout
                 android:id="@+id/attachList"
                 android:layout_width="match_parent"
@@ -419,7 +549,7 @@
             android:background="#f2f1f6"
             app:indicatorColor="#fff"
             app:indicatorEnable="true"
-            app:orientation="horizontal" />
+             />
     </LinearLayout>
 
     <RelativeLayout

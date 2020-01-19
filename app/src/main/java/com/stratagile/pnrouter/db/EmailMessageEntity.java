@@ -23,6 +23,7 @@ public class EmailMessageEntity implements Parcelable{
     private String cc;//抄送
     private String bcc;//密送
     private String date;
+    private Long timeStamp;//用于排序
     private boolean isSeen;
     private boolean isStar;
     private String priority;
@@ -35,11 +36,49 @@ public class EmailMessageEntity implements Parcelable{
     private String originalText;//如果有，说明是解密出来的，否则直接用content
     private String aesKey;
     private long messageTotalCount;
-
+    private String emailAttachPath;
+    private String userId;
+    private Long sortId;//用于排序
     
     public EmailMessageEntity() {
 
     }
+
+
+    @Generated(hash = 119569384)
+    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject, String from, String to,
+            String cc, String bcc, String date, Long timeStamp, boolean isSeen, boolean isStar, String priority,
+            boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,
+            String contentText, String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
+            String userId, Long sortId) {
+        this.id = id;
+        this.account = account;
+        this.msgId = msgId;
+        this.menu = menu;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.date = date;
+        this.timeStamp = timeStamp;
+        this.isSeen = isSeen;
+        this.isStar = isStar;
+        this.priority = priority;
+        this.isReplySign = isReplySign;
+        this.size = size;
+        this.isContainerAttachment = isContainerAttachment;
+        this.attachmentCount = attachmentCount;
+        this.content = content;
+        this.contentText = contentText;
+        this.originalText = originalText;
+        this.aesKey = aesKey;
+        this.messageTotalCount = messageTotalCount;
+        this.emailAttachPath = emailAttachPath;
+        this.userId = userId;
+        this.sortId = sortId;
+    }
+
 
     protected EmailMessageEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -56,6 +95,11 @@ public class EmailMessageEntity implements Parcelable{
         cc = in.readString();
         bcc = in.readString();
         date = in.readString();
+        if (in.readByte() == 0) {
+            timeStamp = null;
+        } else {
+            timeStamp = in.readLong();
+        }
         isSeen = in.readByte() != 0;
         isStar = in.readByte() != 0;
         priority = in.readString();
@@ -68,39 +112,14 @@ public class EmailMessageEntity implements Parcelable{
         originalText = in.readString();
         aesKey = in.readString();
         messageTotalCount = in.readLong();
+        emailAttachPath = in.readString();
+        userId = in.readString();
+        if (in.readByte() == 0) {
+            sortId = null;
+        } else {
+            sortId = in.readLong();
+        }
     }
-
-    @Generated(hash = 2112183960)
-    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
-            String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar,
-            String priority, boolean isReplySign, long size, boolean isContainerAttachment,
-            int attachmentCount, String content, String contentText, String originalText, String aesKey,
-            long messageTotalCount) {
-        this.id = id;
-        this.account = account;
-        this.msgId = msgId;
-        this.menu = menu;
-        this.subject = subject;
-        this.from = from;
-        this.to = to;
-        this.cc = cc;
-        this.bcc = bcc;
-        this.date = date;
-        this.isSeen = isSeen;
-        this.isStar = isStar;
-        this.priority = priority;
-        this.isReplySign = isReplySign;
-        this.size = size;
-        this.isContainerAttachment = isContainerAttachment;
-        this.attachmentCount = attachmentCount;
-        this.content = content;
-        this.contentText = contentText;
-        this.originalText = originalText;
-        this.aesKey = aesKey;
-        this.messageTotalCount = messageTotalCount;
-    }
-
-  
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
         @Override
@@ -192,6 +211,14 @@ public class EmailMessageEntity implements Parcelable{
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public Long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public boolean isSeen() {
@@ -290,6 +317,46 @@ public class EmailMessageEntity implements Parcelable{
         this.messageTotalCount = messageTotalCount;
     }
 
+    public String getEmailAttachPath() {
+        return emailAttachPath;
+    }
+
+    public void setEmailAttachPath(String emailAttachPath) {
+        this.emailAttachPath = emailAttachPath;
+    }
+
+    public boolean getIsSeen() {
+        return this.isSeen;
+    }
+
+    public boolean getIsStar() {
+        return this.isStar;
+    }
+
+    public boolean getIsReplySign() {
+        return this.isReplySign;
+    }
+
+    public boolean getIsContainerAttachment() {
+        return this.isContainerAttachment;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Long getSortId() {
+        return sortId;
+    }
+
+    public void setSortId(Long sortId) {
+        this.sortId = sortId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -312,6 +379,12 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeString(cc);
         dest.writeString(bcc);
         dest.writeString(date);
+        if (timeStamp == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(timeStamp);
+        }
         dest.writeByte((byte) (isSeen ? 1 : 0));
         dest.writeByte((byte) (isStar ? 1 : 0));
         dest.writeString(priority);
@@ -324,21 +397,13 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeString(originalText);
         dest.writeString(aesKey);
         dest.writeLong(messageTotalCount);
-    }
-
-    public boolean getIsSeen() {
-        return this.isSeen;
-    }
-
-    public boolean getIsStar() {
-        return this.isStar;
-    }
-
-    public boolean getIsReplySign() {
-        return this.isReplySign;
-    }
-
-    public boolean getIsContainerAttachment() {
-        return this.isContainerAttachment;
+        dest.writeString(emailAttachPath);
+        dest.writeString(userId);
+        if (sortId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(sortId);
+        }
     }
 }

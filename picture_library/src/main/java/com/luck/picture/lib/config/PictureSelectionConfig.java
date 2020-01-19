@@ -65,6 +65,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean previewEggs;
     public boolean synOrAsy;
     public boolean isDragFrame;
+    public boolean returnQick = false;
 
     public List<LocalMedia> selectionMedias;
 
@@ -116,6 +117,7 @@ public final class PictureSelectionConfig implements Parcelable {
         sizeMultiplier = 0.5f;
         selectionMedias = new ArrayList<>();
         onPictureLongClick = null;
+        returnQick = false;
     }
 
     public static PictureSelectionConfig getInstance() {
@@ -183,6 +185,8 @@ public final class PictureSelectionConfig implements Parcelable {
         dest.writeByte(this.synOrAsy ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isDragFrame ? (byte) 1 : (byte) 0);
         dest.writeTypedList(this.selectionMedias);
+        dest.writeByte(this.returnQick ? (byte) 1 : (byte) 0);
+
     }
 
     public PictureSelectionConfig() {
@@ -233,6 +237,7 @@ public final class PictureSelectionConfig implements Parcelable {
         this.synOrAsy = in.readByte() != 0;
         this.isDragFrame = in.readByte() != 0;
         this.selectionMedias = in.createTypedArrayList(LocalMedia.CREATOR);
+        this.returnQick = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<PictureSelectionConfig> CREATOR = new Parcelable.Creator<PictureSelectionConfig>() {

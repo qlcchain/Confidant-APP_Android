@@ -81,7 +81,37 @@
             android:layout_marginRight="@dimen/x19"
             android:background="@drawable/input_background"
             android:gravity="bottom" >
-
+            <TextView
+                android:id="@+id/et_sendmessagehide"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textCursorDrawable="@drawable/bg_edittext"
+                android:background="@null"
+                android:maxLines="1"
+                android:text="哈国家科技奖考虑考虑可口可乐了了屠龙记快乐"
+                android:paddingTop="@dimen/x1"
+                android:paddingBottom="@dimen/x1"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:textColor="@color/FF999999"
+                android:minHeight="@dimen/x50"
+                android:paddingLeft="@dimen/x19"
+                android:paddingRight="@dimen/x19"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:imeOptions="actionSend"/>
+            <View
+                android:id="@+id/tv_chatcontentDash"
+                android:visibility="gone"
+                android:layout_marginLeft="@dimen/x19"
+                android:layout_marginRight="@dimen/x19"
+                android:layout_below="@+id/et_sendmessagehide"
+                android:layout_width="match_parent"
+                android:background="@drawable/dash_line"
+                android:layerType="software"
+                android:layout_height="2dp" />
             <com.hyphenate.easeui.widget.ATEditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
@@ -90,6 +120,7 @@
                 android:background="@null"
                 android:maxLines="4"
                 android:text=""
+                android:layout_below="@+id/et_sendmessagehide"
                 android:paddingTop="@dimen/x4"
                 android:paddingBottom="@dimen/x4"
                 android:gravity="center_vertical"

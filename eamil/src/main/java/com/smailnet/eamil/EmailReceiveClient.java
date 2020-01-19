@@ -60,7 +60,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false);
+                            getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"","");
                         }
                     });
                 } catch (final MessagingException e) {
@@ -94,7 +94,7 @@ public class EmailReceiveClient {
             public void run() {
                 try {
                     List<EmailMessage> messageList = Operator.Core(emailConfig).popReceiveMail();
-                    getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false);
+                    getReceiveCallback.gainSuccess(messageList, messageList.size(),0,false,"","");
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());
@@ -123,10 +123,12 @@ public class EmailReceiveClient {
                     final long minUIIDNew = (long)messageMap.get("minUIID");
                     final long maxUUIDNew = (long)messageMap.get("maxUUID");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,maxUUIDNew,noMoreData);
+                            getReceiveCallback.gainSuccess(messageList, totalCount,maxUUIDNew,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -165,10 +167,12 @@ public class EmailReceiveClient {
                     final int totalCount = (int)messageMap.get("totalCount");
                     final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData);
+                            getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -209,10 +213,12 @@ public class EmailReceiveClient {
                     final long minUIIDNew = (long)messageMap.get("minUIID");
                     final long maxUUIDNew = (long)messageMap.get("maxUUID");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                    final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData);
+                            getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
                         }
                     });
                 } catch (final MessagingException e) {
@@ -272,6 +278,42 @@ public class EmailReceiveClient {
         }).start();
     }
     /**
+     * 使用gmail api 接收邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void gmaiApiAsynCount(final Activity activity, final GetCountCallback getReceiveCallback,final ArrayList<String> menuList){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<EmailCount> messageList = Operator.Core(emailConfig).gmailReceiveMailCountAndMenu(menuList);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
      * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
@@ -281,6 +323,42 @@ public class EmailReceiveClient {
             public void run() {
                 try {
                     final List<MailAttachment> messageList = Operator.Core(emailConfig).imapDownloadMailAttch(menu,uid,path,aesKey);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    /**
+     * 使用imap协议接收邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void imapDownloadEmailCid(final Activity activity, final GetAttachCallback getReceiveCallback, final String menu, final String uid,final String path,final String aesKey){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<MailAttachment> messageList = Operator.Core(emailConfig).imapDownloadMailCid(menu,uid,path,aesKey);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -359,7 +437,9 @@ public class EmailReceiveClient {
                     final int totalCount = (int)messageMap.get("totalCount");
                     final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
                     final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
-                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData);
+                    final String errorMsg = (String)messageMap.get("errorMsg");
+                    final String menuFlag = (String)messageMap.get("menu");
+                    getReceiveCallback.gainSuccess(messageList, totalCount,totalUnreadCount,noMoreData,errorMsg,menuFlag);
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());

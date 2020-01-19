@@ -9,8 +9,8 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import com.alibaba.fastjson.JSONObject
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
@@ -267,7 +267,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             //Log.i("websocketConnection", message)
         }
         if (webSocketClient == null || !connected) {
-            Log.i("websocket", "No connection!")
+            Log.i("websocket", "No connection!"+webSocketClient +"__"+connected)
             LogUtil.addLog("发送未成功...")
             return false
         }
@@ -341,6 +341,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             LogUtil.addLog("连接成功：${webSocketClient!!.request().url()}")
             attempts = 0
             connected = true
+            KLog.i("超时调试：webSocketConnection6"+this)
             reconnectCount = 0
             isReconnectting = false
             if (listener != null) listener!!.onConnected()

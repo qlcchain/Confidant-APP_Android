@@ -61,6 +61,7 @@
     <string name="file_hasnot_changed">file hasn\'t changed</string>
 
     <string name="fail">fail</string>
+    <string name="Failedmail">Failed to get mail</string>
     <string name="Alreadyagoodfriend">Already a good friend</string>
 
     <string name="refuse">Decline</string>
@@ -103,6 +104,7 @@
     <string name="network_unavailable">The network connection is not available, please check the network</string>
     <string name="copy">Copy</string>
     <string name="forward">Forward</string>
+    <string name="reply">Reply</string>
     <string name="button_logout">Logout</string>
     <string name="button_uploadlog">Upload the log</string>
     <string name="ok">OK</string>
@@ -408,13 +410,13 @@
     <string name="stop">Stop</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
-    <string name="wait_for_verification">Wait for verification</string>
+    <string name="wait_for_verification">Pending</string>
     <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
-    <string name="guest_viewpager_1">Complete ownership of a communication network</string>
-    <string name="guest_viewpager_2">Complete ownership of the data</string>
-    <string name="guest_viewpager_3">Unique ID and complete ownership of the account</string>
+    <string name="guest_viewpager_1">Full ownership of a communication network</string>
+    <string name="guest_viewpager_2">Full ownership of the data</string>
+    <string name="guest_viewpager_3">Unique ID and full ownership of the account</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
@@ -618,11 +620,11 @@
     <string name="no_choice">no choice</string>
     <string name="Too_long_name">The file name is too long.</string>
     <string name="select_a_file">Select a File</string>
-    <string name="Create_a_Group">Create a Group</string>
+    <string name="Create_a_Group">New Chat</string>
     <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
     <string name="New_Email">New Email</string>
     <string name="Communication">Communication via Email adress</string>
-    <string name="Scan_to_add_contacts">Scan</string>
+    <string name="Scan_to_add_contacts">Scan QR Code</string>
     <string name="Scan_to_add_contacts_code">Add contacts, join a circle or activate a Station</string>
     <string name="Share_My_Contact_Card">Share My Contact Card</string>
     <string name="Scan_my_Contact_Card_QR_Code">Scan my Contact Card QR Code</string>
@@ -686,6 +688,7 @@
 
     <string name="Message">Message</string>
     <string name="Email">Email</string>
+    <string name="AddEmail">Add Email</string>
     <string name="MyDocuments">My Documents</string>
     <string name="Nodename">Node name</string>
     <string name="unsupportedmessagebody">Unsupported message body</string>
@@ -695,6 +698,7 @@
 
     <string name="Account">&#160;&#160;Account</string>
     <string name="password2">&#160;&#160;Password</string>
+    <string name="ConfirmPassword">&#160;&#160; Confirm Password</string>
 
     <string name="NewAccount">New Account</string>
 
@@ -717,11 +721,12 @@
     <string name="Attach">Attach</string>
     <string name="Attachmentdownloading">Attachment downloading...</string>
     <string name="Attachment_download_failed">Attachment download failed</string>
+    <string name="picture_download_failed">picture download failed</string>
     <string name="New_Account">New Account</string>
     <string name="Add_a_New_Circle">Add a New Circle</string>
     <string name="Mark_Unread">Mark Unread</string>
-    <string name="Star">Star</string>
-    <string name="Node_back_up">Node back up</string>
+    <string name="Star">Starred</string>
+    <string name="Node_back_up">Sync to Node</string>
     <string name="Move_to">Move to</string>
     <string name="Delete">Delete</string>
     <string name="Reply">Reply</string>
@@ -735,15 +740,17 @@
     <string name="The_mail_has_been_sent">The mail has_been sent</string>
     <string name="Mail_Delivery_Failed">Mail Delivery Failed</string>
     <string name="Over_configure">Over-configure</string>
-    <string name="QQMAILBOX">QQMAILBOX</string>
-    <string name="QQ">QQ</string>
-    <string name="wangyi">163</string>
-    <string name="Google">Google</string>
-    <string name="Send_Email">Send Email</string>
+    <string name="QQMAILBOX">QQMailbox</string>
+    <string name="QQ">QQMail</string>
+    <string name="wangyi">163Mail</string>
+    <string name="Google">Gmail</string>
+    <string name="outlook">Outlook, Hotmail, Live</string>
+    <string name="Exchange">Exchange</string>
+    <string name="Send_Email">Compose</string>
     <string name="The_subject_cant_be_empty">The subject can\'t be empty</string>
     <string name="Save_it_in_the_draft_box">Save it in the draft box?</string>
     <string name="Send_attachments">Send attachments?</string>
-    <string name="sendfromconfidant">This is an encrypted email, use MyConfidant to decrypt this email.</string>
+    <string name="sendfromconfidant">Sent from MyConfidant, the app for encrypted email.</string>
     <string name="No_mail">No mail</string>
     <string name="Sending">Sending</string>
     <string name="Saving">Saving</string>
@@ -758,5 +765,177 @@
     <string name="AccountTips">Account</string>
     <string name="EmailSettings">Email Settings</string>
     <string name="Confirm_to_delete_the_accout">Confirm to delete the accout?</string>
+    <string name="searchMessage">Search Message</string>
+    <string name="searchEmail">Search Email</string>
+    <string name="Developing">Developing</string>
+    <string name="Waiting_for_attachments">Waiting for attachments</string>
+    <string name="Compression_failure">Compression failure</string>
+    <string name="It_already_exists">It already exists.</string>
+    <string name="The_mailbox_has_been_configured">The mailbox has been configured</string>
+    <string name="Download_failure">Download failure</string>
+    <string name="Failure_of_decompression">Failure of decompression</string>
 
+    <string name="delete_email">Delete message</string>
+    <string name="Setup_Guides">Setup Guides</string>
+    <string name="qqCompany_Guides">Step A: Check that IMAP is turned on\n
+1. On your computer, open QQ Mailbox.\n
+2. In the top right, click Settings.\n
+3. In the “Start Service” section, select Enable\n
+IMAP/SMTP.\n
+4. Click Save Changes.\n
+Then enter your Email address and password to log in.</string>
+    <string name="qq_Guides">Step A: Check that IMAP is turned on\n
+1. On your computer, open QQ Mail.\n
+2. In the top right, click Settings.\n
+3. Find POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV.\n
+4. Enable IMAP/SMTP.\n
+\n
+Step B: Get authorization to log in the third-party Email client\n
+1. Generate authorization code.\n
+2. Check the SMS message sent by QQ Mail.\n
+3. Fill in the authorization code.\n
+\n
+Then enter your Email address and password to log in.</string>
+    <string name="wangyi_Guides">Step A: Check that IMAP is turned on \n
+1. On your computer, open 163 Mail.\n
+2. In the top right, click Settings.\n
+3. Click Settings.\n
+4. Click POP3/SMTP/IMAP tab.\n
+5. In the POP3/SMTP/IMAP setting section, select Enable IMAP/SMTP.\n
+6. Click Save Changes.\n
+\n
+Step B: Get authorization to log in the third-party Email client\n
+1. Pass security verification. \n
+2. Set up authorization code. \n
+3. Click Confirm. \n
+\n
+Then enter your Email address and password to log in.</string>
+    <string name="gmail_Guides">Step A: Check that IMAP is turned on \n
+1. On your computer, open Gmail. \n
+2. In the top right, click Settings. \n
+3. Click Settings. \n
+4. Click the Forwarding and POP/IMAP tab. \n
+5. In the "IMAP access" section, select Enable IMAP. \n
+6. Click Save Changes. \n
+\n
+Step B: Allow less secure apps  \n
+1. In the top right, click Account.  \n
+2. Click Security in the left bar.  \n
+3. Turn on Less secure app access.  \n
+4. Open the alert email sent by Google.  \n
+5. Confirm the turn on activity.  \n
+\n
+Then enter your Email address and password to log in.</string>
+    <string name="hotlook_Guides">Step A: Check that IMAP is turned on \n
+1. On your computer, open Outlook、Hotmail、live. \n
+2. In the top right, click Settings. \n
+3. In the “Start Service” section, select Enable IMAP/SMTP. \n
+4. Click Save Changes. \n
+Then enter your Email address and password to log in.</string>
+    <string name="icloud_Guides">Step A: Check that IMAP is turned on \n
+1. On your computer, open Outlook、Hotmail、live. \n
+2. In the top right, click Settings. \n
+3. In the “Start Service” section, select Enable IMAP/SMTP. \n
+4. Click Save Changes. \n
+Then enter your Email address and password to log in.</string>
+    <string name="otheremail">Other (IMAP)</string>
+    <string name="iCloud">iCloud</string>
+    <string name="Incoming_Mail_Server">Incoming Mail Server</string>
+    <string name="Host_Name">Host Name</string>
+    <string name="User_Name">User Name</string>
+    <string name="Port">Port</string>
+    <string name="Type_of_Encrypted_Connections">Type of Encrypted Connections</string>
+    <string name="Outgoing_Mail_Server">Outgoing Mail Server</string>
+    <string name="IMAP_Email_Settings">IMAP Email Settings</string>
+    <string name="Encrypted">Encrypted</string>
+    <string name="Some_are_empty"> Some are empty.</string>
+    <string name="Update_Password">Update Password</string>
+    <string name="Update_Config">Update Config</string>
+    <string name="server_setting">Server setting</string>
+    <string name="Stay">Stay in touch with the ones who matter</string>
+    <string name="Exchangeentry">Please select Exchange entry</string>
+    <string name="Incorrect_account_or_password">Incorrect account or password</string>
+    <string name="Authorizedsuccess">Authorized success</string>
+    <string name="Authorizedfail">Authorized fail</string>
+    <string name="gmail_com_email_only">gmail.com email only</string>
+    <string name="setKey">Set</string>
+    <string name="Remove">Remove</string>
+    <string name="SetPassword">Set Password</string>
+    <string name="Encrypt_for_non_Confidant_users">Encrypt for non-Confidant users</string>
+    <string name="PassworkHint">&#160;&#160;Passwork Hint (optional)</string>
+    <string name="Encrypted_Email">Encrypted Email</string>
+    <string name="Encrypted_client">Encrypted Email client and beyond - your comprehensive privacy protection tool</string>
+    <string name="You_have_received_a_secure_message_from">You have received a secure message from</string>
+    <string name="imusering">I’m using Confidant to send and receive secure emails.Click the link below to decrypt and view my message.</string>
+    <string name="View_Encrypted_Message">View Encrypted Message</string>
+    <string name="Decrypt_Email">Decrypt Email</string>
+    <string name="Decrypt">Decrypt</string>
+    <string name="Decryption_failed">Decryption failed</string>
+    <string name="passwordTips">The password is set by the sender to encrypt this email.</string>
+    <string name="The_body_cannot_be_empty">The body cannot be empty</string>
+    <string name="PasswordHint">Passwork Hint: </string>
+    <string name="waitamoment">Generation failure</string>
+    <string name="Invite_Friends_to_Confidant">Invite Friends to Confidant</string>
+    <string name="Add_Members">Add Members</string>
+    <string name="Add_Contacts">Add Contacts</string>
+    <string name="Invite_Friends">Invite Friends</string>
+    <string name="Invitation">Invitation</string>
+    <string name="screenshots_success">screenshots success</string>
+    <string name="You_got_an_email_from_your_friend">You got an email from your friend </string>
+    <string name="album_encryption">Encrypted Album</string>
+    <string name="album_encryption_des">Protect your privacy</string>
+    <string name="album_encryption_go">View</string>
+    <string name="weixin_encryption">Encrypted Wechat Records</string>
+    <string name="weixin_encryption_des">Protect your chat records</string>
+    <string name="maillist_encryption">Encrypted Contacts</string>
+    <string name="maillist_local">Local</string>
+    <string name="node_local">Node</string>
+    <string name="msg_encryption">SMS</string>
+    <string name="msg_local">Local</string>
+    <string name="nomsg_local">Filter</string>
+    <string name="nodemsg_local">Node</string>
+    <string name="new_encryption">New Folder</string>
+    <string name="create_folder">Create Folder</string>
+    <string name="default_folder">Default Folder</string>
+    <string name="default_wechatfoldername">Default Wechat Folder</string>
+    <string name="Default_album">Default album</string>
+    <string name="Are_you_sure_you_want_to_delete_the_folder">Do you want to delete the folder?</string>
+    <string name="This_name_folder_already_exists">This name folder already exists</string>
+    <string name="Album_encryption">Encrypted Album</string>
+    <string name="Wechat_Folder">Wechat Folder</string>
+    <string name="file_already_exists">file already exists</string>
+    <string name="Encryption_succeeded">Encryption succeeded</string>
+    <string name="Are_you_sure_you_want_to_delete_the_file">Do you want to delete the file?</string>
+    <string name="Please_delete_in_the_system_album_to_protect_privacy">Please delete in the system album to protect privacy.</string>
+    <string name="Are_you_colse">Are you sure you want to close it?</string>
+    <string name="screen_security">Are you sure you want to turn off the screen security?</string>
+    <string name="Select_Folder">Select Folder</string>
+    <string name="Create_Folder">Create Folder</string>
+    <string name="Select">Select</string>
+    <string name="Backup_failed">Backup failed</string>
+    <string name="Parameter_error">Parameter error</string>
+    <string name="no_space">no space</string>
+    <string name="There_is_a_file_with_the_same_name">There is a file with the same name</string>
+    <string name="Destination_directory_error">Destination directory error</string>
+    <string name="Delete_original_file">Do you want to delete the original file?</string>
+    <string name="not_support">Sorry, your system does not support screenshots!</string>
+    <string name="Encrypted_Vualt">Encrypted Vault</string>
+    <string name="Please_select_a_folder">Please select a folder</string>
+    <string name="Wechat_Records">Wechat Records</string>
+    <string name="Please_click_again">Please click again</string>
+    <string name="File_corruption">File corruption</string>
+    <string name="recovery">Recover to Local</string>
+    <string name="Album_Contacts">Encrypted Contacts</string>
+    <string name="Incremental_updating">Upload (update the Node contacts)</string>
+    <string name="Coverage_update">Upload (replace the Node contacts)</string>
+    <string name="Recover_merge">Recover (merge to local contacts)</string>
+    <string name="Recover_replace">Recover (replace all local contacts)</string>
+    <string name="Recover_merge_tisp">Are you sure you want to merge Node contacts to local contacts?</string>
+    <string name="Recover_replace_tisp">The local contacts will be replaced by the Node contacts. Are you sure you want to continue?</string>
+    <string name="There_is_no_contacts">There is no contacts has been backuped to Local. You may create new contacts and then sync to Node.</string>
+    <string name="There_is_no_Node">The contacts haven\'t been backuped to Node. You may sync to Node firstly.</string>
+    <string name="No_need_to_update">No need to update</string>
+
+    <string name="new_message_add_tips">新增多条来往短信</string>
+    <string name="sy_message_tips">马上同步</string>
 </resources>

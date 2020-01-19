@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.stratagile.pnrouter.data.web.Preconditions.checkNotNull;
+import static com.stratagile.pnrouter.data.web.PreconditionsLocal.checkNotNull;
 
 public abstract class Optional<T> implements Serializable {
     /**

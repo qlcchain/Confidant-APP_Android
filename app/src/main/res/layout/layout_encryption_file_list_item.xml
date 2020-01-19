@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/x21"
+    android:layout_marginTop="@dimen/x3"
+    android:paddingRight="@dimen/x31"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x146">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/itemTypeIcon"
+                android:layout_width="@dimen/x54"
+                android:layout_height="@dimen/x65"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_marginRight="@dimen/x10"
+                android:src="@mipmap/jpg"
+                />
+
+            <ImageView
+                android:id="@+id/nodeTips"
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_marginRight="@dimen/x5"
+                android:src="@mipmap/saved_nodes"
+                android:layout_gravity="right|bottom"
+                />
+            <ImageView
+                android:id="@+id/chatting_status_btn"
+                android:visibility="gone"
+                android:clickable="false"
+                android:layout_width="@dimen/x40"
+                android:layout_height="@dimen/x40"
+                android:layout_gravity="center"
+                android:background="@drawable/ease_video_play_btn_small_nor" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/itemInfo"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/x20"
+            android:layout_marginBottom="@dimen/x2"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvFileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:text="Google project development.jpg"
+                android:textColor="@color/emailtextColor"
+                android:textSize="@dimen/commemTextSize"/>
+
+            <TextView
+                android:id="@+id/tvFileSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/contentColor"
+                android:text="244k" />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/opMenu"
+            android:layout_width="@dimen/x61"
+            android:layout_height="@dimen/x61"
+            android:src="@mipmap/statusbar_hedo"
+            android:layout_gravity="right|center_vertical"
+            />
+    </LinearLayout>
+</LinearLayout>

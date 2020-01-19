@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
         <include
             android:id="@+id/include"
-            layout="@layout/ease_search_bar"
+            layout="@layout/ease_searchfile_bar"
             android:layout_width="0px"
             android:layout_weight="1"
             android:layout_height="wrap_content" />

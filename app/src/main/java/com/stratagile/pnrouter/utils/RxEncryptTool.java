@@ -690,7 +690,7 @@ public class RxEncryptTool {
      * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
      */
     public static String generateAESKey() {
-        if(BuildConfig.DEBUG)
+        if(false)
         {
             return "welcometoqlc01010000000000000000";
         }else{

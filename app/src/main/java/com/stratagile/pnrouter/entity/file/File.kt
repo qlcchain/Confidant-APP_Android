@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.entity.file
 
-import scala.collection.generic.BitOperations
-
 class FileOpreateType(var icon :String, var name : String) {
 
 }

@@ -1,7 +1,15 @@
 package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
+import android.net.http.SslError
+import android.os.Build
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import android.view.View
+import android.webkit.*
 import android.widget.Toast
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
@@ -10,6 +18,7 @@ import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailExamine
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.islands.Islands
+import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -52,6 +61,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
     var account =""
     var password =""
     var settings = 0;
+    var isShow = false
 
     override fun saveEmailConf(jSaveEmailConfRsp: JSaveEmailConfRsp) {
         if(jSaveEmailConfRsp.params.retCode == 0)
@@ -59,15 +69,39 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             runOnUiThread {
                 sycDataCountIMAP()
             }
-        }else{
+        }else if(jSaveEmailConfRsp.params.retCode == 1)
+        {
+            AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
             runOnUiThread {
-                sycDataCountIMAP()
-                //toast(R.string.Over_configure)
+                closeProgressDialog()
+                //sycDataCountIMAP()
+                toast(R.string.Over_configure)
             }
+        }else{
+            if(BuildConfig.DEBUG)
+            {
+
+                //AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
+                runOnUiThread {
+                    sycDataCountIMAP()
+                    closeProgressDialog()
+                    //sycDataCountIMAP()
+                    toast(R.string.The_mailbox_has_been_configured)
+                }
+            }else{
+                AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.The_mailbox_has_been_configured)
+
+                }
+            }
+
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
     }
 
@@ -75,20 +109,80 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
         setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
+        isShow = false
         AppConfig.instance.messageReceiver!!.saveEmailConfCallback = this
         emailType = intent.getStringExtra("emailType")
         emailTypeOld = intent.getStringExtra("emailType")
-        accountOld = AppConfig.instance.emailConfig().account
-        passwordOld = AppConfig.instance.emailConfig().password
+        if(AppConfig.instance.emailConfig().account != null)
+        {
+            accountOld = AppConfig.instance.emailConfig().account
+            if(AppConfig.instance.emailConfig().password != null)
+            {
+                passwordOld = AppConfig.instance.emailConfig().password
+            }else{
+                passwordOld = ""
+            }
+
+        }
        if(intent.hasExtra("settings"))
        {
            settings = intent.getIntExtra("settings",0)
        }
+        password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        showandhide.setImageResource(R.mipmap.tabbar_shut)
         if(settings == 1)
         {
+            account_editText.setText(accountOld)
             account_editText.isEnabled = false
         }else{
+            account_editText.setText("")
             account_editText.isEnabled = true
+        }
+        var url = "file:///android_asset/guidance_notes_qqmailbox.html"
+        when(emailType)
+        {
+            "1"->
+            {
+                url = "file:///android_asset/guidance_notes_qqmailbox.html"
+                emailHelper.setText(getString(R.string.qqCompany_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qqmailbox_n))
+            }
+            "2"->
+            {
+                url = "file:///android_asset/guidance_notes_qqmail.html"
+                emailHelper.setText(getString(R.string.qq_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_qq_n))
+            }
+            "3"->
+            {
+                url = "file:///android_asset/guidance_notes_163.html"
+                emailHelper.setText(getString(R.string.wangyi_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_163_n))
+            }
+            "4"->
+            {
+                url = "file:///android_asset/guidance_notes_gmail.html"
+                emailHelper.setText(getString(R.string.gmail_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_google_n))
+            }
+            "5"->
+            {
+                url = "file:///android_asset/guidance_notes_hotmail.html"
+                emailHelper.setText(getString(R.string.hotlook_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_outlook_n))
+            }
+            "6"->
+            {
+                url = "file:///android_asset/guidance_notes_icloud.html"
+                emailHelper.setText(getString(R.string.icloud_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_icloud_n))
+            }
+            "7"->
+            {
+                url = "file:///android_asset/guidance_notes_hotmail.html"
+                emailHelper.setText(getString(R.string.hotlook_Guides))
+                emailLogo.setImageDrawable(resources.getDrawable(R.mipmap.email_icon_exchange_n))
+            }
         }
         if(BuildConfig.DEBUG)
         {
@@ -106,17 +200,42 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 }
                 "3"->
                 {
-                     account_editText.setText("bitcoin108@163.com")
-                     password_editText.setText("lang108")
+                    account_editText.setText("bitcoin108@163.com")
+                    password_editText.setText("lang108")
                 }
                 "4"->
                 {
-                    /* account_editText.setText("kuangzihui1989@gmail.com")
-                     password_editText.setText("applela19890712")*/
+                    account_editText.setText("bitcoin108@163.com")
+                    password_editText.setText("lang108")
+                }
+                "5"->
+                {
+                    account_editText.setText("zhanglang108@hotmail.com")
+                    password_editText.setText("langlang_108")
+                }
+                "6"->
+                {
+                }
+                "7"->
+                {
+
                 }
             }
         }
         title.text = getString(R.string.NewAccount)
+        showandhide.setOnClickListener {
+
+            isShow = !isShow
+            if (isShow) {
+                //如果选中，显示密码
+                password_editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_open)
+            } else {
+                //否则隐藏密码
+                password_editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                showandhide.setImageResource(R.mipmap.tabbar_shut)
+            }
+        }
         login.setOnClickListener {
             //配置发件服务器
             account = account_editText.getText().toString().trim()
@@ -133,13 +252,30 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 toast(R.string.NeedPassword)
                 return@setOnClickListener
             }
+            if(emailType == "5" && account.contains("onmicrosoft."))
+            {
+                toast(R.string.Exchangeentry)
+                return@setOnClickListener
+            }
+            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+            var EmailMessage = false
+            if(emailConfigEntityList.size > 0)
+            {
+                toast(R.string.It_already_exists)
+                return@setOnClickListener
+            }
             showProgressDialog()
-            Islands
-                    .circularProgress(this)
+            Islands.circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)
                     .run { progressDialog -> login(progressDialog) }
         }
+
+
+
+        webView.setBackgroundColor(0); // 设置背景色
+        webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
+        webView.loadUrl(url)
     }
 
     override fun setupActivityComponent() {
@@ -181,6 +317,12 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 //showProgressDialog(getString(R.string.waiting))
                 if(settings == 1)
                 {
+                    var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                    if(emailConfigEntityList.size > 0) {
+                        var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                        emailConfigEntity.password = AppConfig.instance.emailConfig().password
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                    }
                     toast(R.string.success)
                     finish()
                 }else{
@@ -202,11 +344,28 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     //toast(R.string.Over_configure)
                 }
                 AppConfig.instance.emailConfig().setAccount(accountOld).setPassword(passwordOld).setEmailType(emailTypeOld)
-                Islands.ordinaryDialog(this@EmailLoginActivity)
-                        .setText(null, getString(R.string.fail)+errorMsg)
-                        .setButton( getString(R.string.close), null, null)
-                        .click()
-                        .show()
+                try {
+                    //javax.mail.AuthenticationFailedException
+                    if(errorMsg.contains("AuthenticationFailedException"))
+                    {
+                        Islands.ordinaryDialog(this@EmailLoginActivity)
+                                .setText(null, getString(R.string.Incorrect_account_or_password))
+                                .setButton( getString(R.string.close), null, null)
+                                .click()
+                                .show()
+                    }else{
+                        Islands.ordinaryDialog(this@EmailLoginActivity)
+                                .setText(null, getString(R.string.fail)+":"+errorMsg)
+                                .setButton( getString(R.string.close), null, null)
+                                .click()
+                                .show()
+                    }
+
+                }catch (e:Exception)
+                {
+
+                }
+
             }
         })
 
@@ -232,6 +391,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false
@@ -252,6 +413,8 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
             emailConfigEntity.popPort =  AppConfig.instance.emailConfig().popPort
             emailConfigEntity.imapHost =  AppConfig.instance.emailConfig().imapHost
             emailConfigEntity.imapPort =  AppConfig.instance.emailConfig().imapPort
+            emailConfigEntity.imapEncrypted =  AppConfig.instance.emailConfig().imapEncrypted
+            emailConfigEntity.smtpEncrypted =  AppConfig.instance.emailConfig().smtpEncrypted
             emailConfigEntity.inboxMenuRefresh = false
             emailConfigEntity.nodeMenuRefresh = false
             emailConfigEntity.starMenuRefresh = false
@@ -301,10 +464,43 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                     emailConfigEntity.inboxMenu = "INBOX"
                     emailConfigEntity.nodeMenu = "node"
                     emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "[Gmail]/草稿"
+                    emailConfigEntity.sendMenu = "[Gmail]/已发邮件"
+                    emailConfigEntity.garbageMenu = "[Gmail]/垃圾邮件"
+                    emailConfigEntity.deleteMenu = "[Gmail]/已删除邮件"
+                }
+                "5"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
                     emailConfigEntity.drafMenu = "Drafts"
-                    emailConfigEntity.sendMenu = "Sent Messages"
+                    emailConfigEntity.sendMenu = "Sent"
                     emailConfigEntity.garbageMenu = "Junk"
-                    emailConfigEntity.deleteMenu = "Deleted Messages"
+                    emailConfigEntity.deleteMenu = "Deleted"
+                }
+                "6"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = ""
+                    emailConfigEntity.sendMenu = ""
+                    emailConfigEntity.garbageMenu = ""
+                    emailConfigEntity.deleteMenu = ""
+                }
+                "7"->
+                {
+                    //arrayOf("INBOX","节点","星标邮件","Drafts","Sent Messages","Junk","Deleted Messages");
+                    emailConfigEntity.inboxMenu = "INBOX"
+                    emailConfigEntity.nodeMenu = "node"
+                    emailConfigEntity.starMenu = "star"
+                    emailConfigEntity.drafMenu = "草稿"
+                    emailConfigEntity.sendMenu = "已发送邮件"
+                    emailConfigEntity.garbageMenu = "垃圾邮件"
+                    emailConfigEntity.deleteMenu = "已删除邮件"
                 }
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;

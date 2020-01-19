@@ -3,25 +3,21 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
-import android.provider.Settings
-import android.support.v7.app.AlertDialog
-import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import com.hyphenate.easeui.utils.PathUtils
 import com.jaeger.library.StatusBarUtil
-import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.LocalFileMenu
+import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -30,12 +26,10 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.view.CommonDialog
-import kotlinx.android.synthetic.main.activity_register.*
-import javax.inject.Inject
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
-import java.util.*
+import java.io.File
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -128,10 +122,71 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
+        AppConfig.instance.isOpenSplashActivity = true
+        ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
+        var aa = Base58.encode("Default Wechat Folder".toByteArray())
+        var bb = ""
         /*if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
         }*/
+        //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
+        /* var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+         if(emailConfigEntityChoose.size > 0) {
+             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+             var susan = SpUtil.getBoolean(this,"susan2",false)
+             if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
+             //if(emailConfigEntity.account != null)
+             {
+                 SpUtil.putBoolean(this, "susan2", true)
+                 var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("INBOX")).list()
+                 for (item in localEmailMessage)
+                 {
+                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+                 }
+                 var localEmailMessage2 = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("Drafts")).list()
+                 for (item in localEmailMessage2)
+                 {
+                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
+                 }
+                 var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+                 if(emailConfigEntityChoose.size > 0) {
+                     var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+                     emailConfigEntity.totalCount = 0;
+                     emailConfigEntity.inboxMinMessageId = 0;
+                     emailConfigEntity.inboxMaxMessageId = 0;
+
+                     emailConfigEntity.drafTotalCount = 0;
+                     emailConfigEntity.drafMaxMessageId = 0
+                     emailConfigEntity.drafMinMessageId = 0
+                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                 }
+
+
+             }
+         }*/
+        /* var googleApiAvailability = GoogleApiAvailability.getInstance();
+         var resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+         if(resultCode != ConnectionResult.SUCCESS) {
+             if(googleApiAvailability.isUserResolvableError(resultCode)) {
+                 googleApiAvailability.getErrorDialog(this, resultCode, 2404).show();
+             }
+             ConstantValue.googleserviceFlag = false;
+         }*/
+        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+        for(item in localMessageList)
+        {
+            if(item.timeStamp == null  || item.timeStamp == 0L)
+            {
+                item.setTimeStamp( DateUtil.getDateTimeStame(item.date))
+                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+            }
+            if(item.sortId == null  || item.sortId == 0L)
+            {
+                item.sortId = item.msgId.toLong();
+                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+            }
+        }
         if(!BuildConfig.DEBUG)
         {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -270,8 +325,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var hh = dst_private_Temkey_My.toString()
         ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
-
-
 
         mPresenter.observeJump()
     }

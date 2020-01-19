@@ -91,7 +91,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
 		//super.onPreExecute();
-		try {
+		/*try {
 			if(mDialog!=null){
 				mDialog.setTitle("打包中……");
 				mDialog.setMessage("");
@@ -111,7 +111,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 		}catch (Exception e)
 		{
 
-		}
+		}*/
 
 	}
 	@Override
@@ -127,51 +127,6 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 		else
 			mDialog.setProgress(Integer.parseInt((values[0].intValue() / PER) +""));
 	}
-	private long doZip(){
-		long extractedSize = 0L;
-		Enumeration<ZipEntry> entries;
-		ZipFile zip = null;
-		try {
-			zip = new ZipFile(zipPath);
-			long uncompressedSize = getOriginalSize(zip);
-			publishProgress(0, (int) uncompressedSize);
-
-			entries = (Enumeration<ZipEntry>) zip.entries();
-			while(entries.hasMoreElements()){
-				ZipEntry entry = entries.nextElement();
-				if(entry.isDirectory()){
-					continue;
-				}
-				File destination = new File(zipFilePath, entry.getName());
-				if(!destination.getParentFile().exists()){
-					Log.e(TAG, "make="+destination.getParentFile().getAbsolutePath());
-					destination.getParentFile().mkdirs();
-				}
-				if(destination.exists()&&mContext!=null&&!mReplaceAll){
-
-				}
-				ProgressReportingOutputStream outStream = new ProgressReportingOutputStream(destination);
-				extractedSize+=copy(zip.getInputStream(entry),outStream);
-				outStream.close();
-			}
-		} catch (ZipException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			try {
-				if(null != zip)
-					zip.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		unZipSize = extractedSize;
-		return extractedSize;
-	}
 	/**
 	 * @Title: compress
 	 * @Description: TODO
@@ -181,7 +136,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 	 * @throws IOException
 	 * @return int   压缩成功的文件个数
 	 */
-	public static long compress(List<String> filePaths, String zipFilePath, Boolean keepDirStructure){
+	public long compress(List<String> filePaths, String zipFilePath, Boolean keepDirStructure){
 		long fileCount = 0;//记录压缩了几个文件？
 		byte[] buf = new byte[1024];
 		File zipFile = new File(zipFilePath);
@@ -222,6 +177,7 @@ public class ZipCompressTask extends AsyncTask<Void, Integer, Long> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		unZipSize = fileCount;
 		return fileCount;
 	}
 	private long getOriginalSize(ZipFile file){

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.smailnet.eamil.Utils.AESCipher;
 import com.stratagile.pnrouter.constant.ConstantValue;
 
 import java.io.BufferedInputStream;
@@ -186,7 +187,7 @@ public class FileUpLoaderTask extends AsyncTask<Void, Integer, Long> {
 			String aesKey = "";
 			if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
 			{
-				aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+				aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr,ConstantValue.INSTANCE.getLibsodiumpublicMiKey(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey());
 			}else{
 				aesKey =  RxEncodeTool.getAESKey(keyStr);
 

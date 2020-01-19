@@ -2,11 +2,8 @@ package com.stratagile.pnrouter.ui.activity.router
 
 import android.content.Intent
 import android.os.Bundle
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -20,10 +17,8 @@ import com.stratagile.pnrouter.ui.activity.router.module.DiskInformationModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.DiskInformationPresenter
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_disk_information.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -106,8 +101,8 @@ class DiskInformationActivity : BaseActivity(), DiskInformationContract.View , P
             var baseData = BaseData(3, msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }

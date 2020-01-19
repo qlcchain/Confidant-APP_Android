@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.adapter.user;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,6 +79,48 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 {
                     nickNameSouce = new String(RxEncodeTool.base64Decode(remarks));
                 }
+
+                if(lv0.getUserEntity().getMails() != null && !"".equals(lv0.getUserEntity().getMails()))
+                {
+                    String mails = lv0.getUserEntity().getMails();
+                    if(mails != null)
+                    {
+                        String[] mailsList = mails.split(",");
+                        if(mailsList.length > 0)
+                        {
+                            String one = mailsList[0];
+                            String name = new String(RxEncodeTool.base64Decode(one));
+                            helper.setText(R.id.email,name);
+                            helper.setGone(R.id.email, true);
+                        }
+                    }
+
+                }else{
+                    helper.setGone(R.id.email, false);
+                    List<UserItem> UserItemList =  lv0.getSubItems();
+                    if(UserItemList != null)
+                    {
+                        for (int j = 0; j < UserItemList.size(); j++) {
+                            UserItem userItem = UserItemList.get(j);
+                            String mails = userItem.getUserEntity().getMails();
+                            if(mails != null)
+                            {
+                                String[] mailsList = mails.split(",");
+                                if(mailsList.length > 0)
+                                {
+                                    String one = mailsList[0];
+                                    String name = new String(RxEncodeTool.base64Decode(one));
+                                    helper.setText(R.id.email,name);
+                                    helper.setGone(R.id.email, true);
+                                }
+                            }
+
+
+                        }
+                    }
+
+
+                }
                 if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
                     helper.setVisible(R.id.ivArrow, true);
                     if (lv0.isExpanded()) {
@@ -88,6 +131,32 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     helper.setText(R.id.tvNickName, nickNameSouce + "(" + lv0.getSubItems().size() + ")");
                 } else {
                     helper.setVisible(R.id.ivArrow, false);
+                    if(lv0.getUserEntity().getValidationInfo() != "removeGroup")
+                    {
+                        if (lv0.getUserEntity().getRouterAlias() == null || "".equals(lv0.getUserEntity().getRouterAlias())) {
+                            if(lv0.getUserEntity().getRouteName() != null)
+                            {
+                                String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv0.getUserEntity().getRouteName()));
+                                if(nickNameSouce1 != null && nickNameSouce1 != "")
+                                {
+                                    helper.setText(R.id.tvRouterName, " - "+nickNameSouce1);
+                                }else{
+                                    helper.setText(R.id.tvRouterName, "");
+                                }
+
+                            }
+
+                        } else {
+                            String nickNameSouce1 = lv0.getUserEntity().getRouterAlias();
+                            if(nickNameSouce1 != null && nickNameSouce1 != "")
+                            {
+                                helper.setText(R.id.tvRouterName, " - "+nickNameSouce1);
+                            }else{
+                                helper.setText(R.id.tvRouterName, "");
+                            }
+
+                        }
+                    }
                     helper.setText(R.id.tvNickName, nickNameSouce);
                 }
                 //helper.setText(R.id.ivAvatar, nickNameSouce);

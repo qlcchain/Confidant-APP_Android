@@ -114,4 +114,11 @@ public class MenuItemView extends LinearLayout {
         }
 
     }
+    public void setTextColor(int color) {
+        mTvText.setTextColor(color);
+    }
+    public void setCountTextColor(int color) {
+        mTvCount.setTextColor(color);
+    }
+
 }

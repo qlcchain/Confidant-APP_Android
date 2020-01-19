@@ -106,9 +106,9 @@ public class EaseMessageAdapter extends BaseAdapter {
 			{
 				EMMessage temp = messages[i];
 				long time = temp.getMsgTime();
-				String aaa = ((EMTextMessageBody) temp.getBody()).getMessage();
+				String PushService = ((EMTextMessageBody) temp.getBody()).getMessage();
 
-				System.out.println("消息打印:"+aaa+"_"+time);
+				System.out.println("消息打印:"+PushService+"_"+time);
 			}*/
             notifyDataSetChanged();
         }

@@ -99,11 +99,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:textStyle="bold"
                 android:text="ddddd"
                 android:visibility="invisible"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/x70">
 
+                <ImageView
+                    android:id="@+id/searchBtn"
+                    android:layout_width="@dimen/x60"
+                    android:padding="@dimen/x10"
+                    android:layout_height="@dimen/x60"
+                    android:src="@mipmap/statusbar_search_n"
+                    android:visibility="visible" />
+            </RelativeLayout>
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -126,10 +141,10 @@
                     android:layout_height="@dimen/x60"
                     android:src="@mipmap/icon_add_friend"
                     android:visibility="visible" />
-
                 <ImageView
                     android:id="@+id/ivNewGroup"
                     android:layout_width="@dimen/x60"
+                    android:layout_marginLeft="@dimen/x15"
                     android:padding="@dimen/x10"
                     android:layout_height="@dimen/x60"
                     android:src="@mipmap/statusbar_plus"
@@ -176,52 +191,56 @@
 
                 <com.lzy.widget.AlphaView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:padding="6dp"
-                    app:av_tabIconNormal="@mipmap/bbtn_chat_n"
-                    app:av_tabIconSelected="@mipmap/btn_chat_h"
-                    app:av_tabText="@string/news"
+                    android:layout_marginTop="@dimen/x15"
+                    app:av_tabIconNormal="@mipmap/navibar_chats_unselected"
+                    app:av_tabIconSelected="@mipmap/navibar_chats_selected"
+                    app:av_tabText=""
                     app:av_tabTextSize="10sp"
                     app:av_textColorNormal="#999999"
                     app:av_textColorSelected="@color/main_color" />
 
                 <com.lzy.widget.AlphaView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:padding="6dp"
-                    app:av_tabIconNormal="@mipmap/btn_file_n"
-                    app:av_tabIconSelected="@mipmap/btn_file_h"
-                    app:av_tabText="@string/file_"
+                    android:layout_marginTop="@dimen/x15"
+                    app:av_tabIconNormal="@mipmap/navibar_encryption_unselected"
+                    app:av_tabIconSelected="@mipmap/navibar_encryption_selected"
+                    app:av_tabText=""
                     app:av_tabTextSize="10sp"
                     app:av_textColorNormal="#999999"
                     app:av_textColorSelected="@color/main_color" />
 
                 <com.lzy.widget.AlphaView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:padding="6dp"
-                    app:av_tabIconNormal="@mipmap/btn_contact_n"
-                    app:av_tabIconSelected="@mipmap/btn_contact_h"
-                    app:av_tabText="@string/contacts"
+                    android:layout_marginTop="@dimen/x15"
+                    app:av_tabIconNormal="@mipmap/navibar_contacts_unselected"
+                    app:av_tabIconSelected="@mipmap/navibar_contacts_selected"
+                    app:av_tabText=""
                     app:av_tabTextSize="10sp"
                     app:av_textColorNormal="#999999"
                     app:av_textColorSelected="@color/main_color" />
 
                 <com.lzy.widget.AlphaView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:padding="6dp"
-                    app:av_tabIconNormal="@mipmap/btn_me_n"
-                    app:av_tabIconSelected="@mipmap/btn_me_h"
-                    app:av_tabText="@string/my"
+                    android:layout_marginTop="@dimen/x15"
+                    app:av_tabIconNormal="@mipmap/navibar_me_unselected"
+                    app:av_tabIconSelected="@mipmap/navibar_me_selected"
+                    app:av_tabText=""
                     app:av_tabTextSize="10sp"
                     app:av_textColorNormal="#999999"
                     app:av_textColorSelected="@color/main_color" />

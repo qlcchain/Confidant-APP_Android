@@ -5,22 +5,21 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.widget.LinearLayout
 import butterknife.ButterKnife
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
-import com.hyphenate.chat.*
+import com.hyphenate.chat.EMMessage
 import com.message.Message
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.PullFileList
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.FileForwardReq
+import com.stratagile.pnrouter.entity.JFileForwardRsp
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactAndGroupFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendSendFileComponent
@@ -30,7 +29,6 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.selectFriendSe
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -159,6 +157,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
      */
     fun showSendDialog() {
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
         val strBase58 = Base58.encode(fileName!!.toByteArray())
         var contactSelectedList: ArrayList<UserEntity> = fragment!!.getAllSelectedFriend()
         var groupSelectedList  = fragment!!.getAllSelectedGroup()
@@ -166,7 +165,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             toast(R.string.noSelected)
             return
         }
-        var fileSouceKey = LibsodiumUtil.DecryptShareKey(fileKey!!)
+        var fileSouceKey = LibsodiumUtil.DecryptShareKey(fileKey!!,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
         for (i in contactSelectedList) {
             var FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(fileSouceKey+"0000000000000000", i.miPublicKey))
             if(fileInfo == null || fileInfo.equals(""))
@@ -180,8 +179,8 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                 var baseData = BaseData(4,fileForwardReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -197,11 +196,11 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             Message.unReadCount = 0
             Message.chatType = EMMessage.ChatType.Chat
             val baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.userId, baseDataJson)
         }
         for (i in groupSelectedList) {
-            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
-            var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
+            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
+            var FileKeyBase64 = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(fileSouceKey.toByteArray(), aesKey!!.toByteArray(charset("UTF-8"))));
             KLog.i("文件转发 发送："+FileKeyBase64)
             if(fileInfo == null || fileInfo.equals(""))
             {
@@ -214,8 +213,8 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                 var baseData = BaseData(4,fileForwardReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
@@ -231,7 +230,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             Message.unReadCount = 0
             Message.chatType = EMMessage.ChatType.GroupChat
             val baseDataJson = gson.toJson(Message)
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + i.gId, baseDataJson)
         }
         finish()
     }

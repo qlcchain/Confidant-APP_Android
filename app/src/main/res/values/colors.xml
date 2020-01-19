@@ -63,5 +63,13 @@
     <color name="button_enabled">#333333</color>
     <color name="colorBackgroundDark">#f2f2f2</color>
     <color name="sent_contacts">#FF6646F7</color>
+    <color name="FF1E1E24">#FF1E1E24</color>
+    <color name="FF9496A1">#FF9496A1</color>
+    <color name="a1A757380">#1A757380</color>
+    <color name="FF999999">#FF999999</color>
+    <color name="FFCCCCCC">#FFCCCCCC</color>
+    <color name="material_red_a700">#d50000</color>
+    <color name="grey">#dcdcdc</color>
+
 
 </resources>

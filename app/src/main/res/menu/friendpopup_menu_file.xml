@@ -3,4 +3,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         app:menu_title="@string/forward" app:icon = "@mipmap/forward"/>
+    <item
+        app:menu_title="@string/reply" app:icon = "@mipmap/sheet_react"/>
 </menu>

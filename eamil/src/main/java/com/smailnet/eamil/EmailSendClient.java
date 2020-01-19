@@ -47,7 +47,10 @@ public class EmailSendClient {
     private Address[] cc;
     private Address[] bcc;
     private String[] attach;
+    private String[] cidPath;
+    private String[] cid;
     private EmailConfig emailConfig;
+    private String uuid;
 
     public EmailSendClient(EmailConfig emailConfig){
         this.emailConfig = emailConfig;
@@ -111,6 +114,43 @@ public class EmailSendClient {
         }
         return this;
     }
+    /**
+     * 设置附件路径
+     * @param cidPath
+     * @return
+     */
+    public EmailSendClient setCidPath(String cidPath){
+        if(cidPath != null)
+        {
+            this.cidPath = cidPath.split(",");
+        }else{
+            this.cidPath = new String[]{};
+        }
+        return this;
+    }
+    /**
+     * 设置附件路径
+     * @param cid
+     * @return
+     */
+    public EmailSendClient setCid(String cid){
+        if(cid != null)
+        {
+            this.cid = cid.split(",");
+        }else{
+            this.cid = new String[]{};
+        }
+        return this;
+    }
+    /**
+     * 设置附件路径
+     * @param uuid
+     * @return
+     */
+    public EmailSendClient setUUID(String uuid){
+        this.uuid = uuid;
+        return this;
+    }
 
     /**
      * 设置密送人的邮箱地址
@@ -158,17 +198,21 @@ public class EmailSendClient {
      * @param getSendCallback
      * @return
      */
-    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu){
+    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback, final String toMenu,final String draftsMenu,final String draftsUUID){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu,"send");
+                        if(draftsMenu != null && !draftsMenu.equals(""))
+                        {
+                            Operator.Core(emailConfig).imapDeleteDrsftsMail(draftsUUID,draftsMenu);
+                        }
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -209,7 +253,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Message message = Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .saveDrafts();
                     try {
                         Operator.Core(emailConfig).imapSaveMail(message,toMenu,flag);
@@ -252,7 +296,7 @@ public class EmailSendClient {
             public void run() {
                 try {
                     Operator.Core(emailConfig)
-                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content,attach,cidPath,uuid,cid)
                             .sendMail();
                     getSendCallback.sendSuccess();
                 } catch (final MessagingException e) {

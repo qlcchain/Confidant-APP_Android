@@ -25,7 +25,14 @@ public class PathUtils {
     private File videoPath = null;
     private File filePath;
     private File tempPath = null;
-
+    private File emailPath = null;
+    private File encryptionPath = null;
+    private File encryptionAlbumPath = null;
+    private File encryptionAlbumNodePath = null;
+    private File encryptionWeChatPath = null;
+    private File encryptionWeChatNodePath = null;
+    private File encryptionContantsLocalPath = null;
+    private File encryptionContantsNodePath = null;
     private PathUtils() {
     }
 
@@ -53,6 +60,11 @@ public class PathUtils {
         if(!this.tempPath.exists()) {
             this.tempPath.mkdirs();
         }
+        this.emailPath = generateEmailPath(var1, var2, var3);
+        if(!this.emailPath.exists()) {
+            this.emailPath.mkdirs();
+        }
+
         this.historyPath = generateHistoryPath(var1, var2, var3);
         if(!this.historyPath.exists()) {
             this.historyPath.mkdirs();
@@ -67,7 +79,38 @@ public class PathUtils {
         if(!this.filePath.exists()) {
             this.filePath.mkdirs();
         }
+        this.encryptionPath=  generateEncryptionPath(var1, var2, var3);
+        if(!this.encryptionPath.exists()) {
+            this.encryptionPath.mkdirs();
+        }
+        this.encryptionAlbumPath =  generateEncryptionLocalPath(var1, var2, var3);
+        if(!this.encryptionAlbumPath.exists()) {
+            this.encryptionAlbumPath.mkdirs();
+        }
+        this.encryptionWeChatPath=  generateEncryptionLocalWeChatPath(var1, var2, var3);
+        if(!this.encryptionWeChatPath.exists()) {
+            this.encryptionWeChatPath.mkdirs();
+        }
 
+        this.encryptionAlbumNodePath =  generateEncryptionLocalNodePath(var1, var2, var3);
+        if(!this.encryptionAlbumNodePath.exists()) {
+            this.encryptionAlbumNodePath.mkdirs();
+        }
+
+        this.encryptionWeChatNodePath=  generateEncryptionWeChatNodePath(var1, var2, var3);
+        if(!this.encryptionWeChatNodePath.exists()) {
+            this.encryptionWeChatNodePath.mkdirs();
+        }
+
+        this.encryptionContantsLocalPath =  generateEncryptionLocalContantsPath(var1, var2, var3);
+        if(!this.encryptionContantsLocalPath.exists()) {
+            this.encryptionContantsLocalPath.mkdirs();
+        }
+
+        this.encryptionContantsNodePath=  generateEncryptionNodeContantsPath(var1, var2, var3);
+        if(!this.encryptionContantsNodePath.exists()) {
+            this.encryptionContantsNodePath.mkdirs();
+        }
     }
 
     public File getImagePath() {
@@ -92,6 +135,18 @@ public class PathUtils {
         return this.historyPath;
     }
 
+    public File getEncryptionPath(){return  this.encryptionPath;}
+    public File getEncryptionAlbumPath(){return  this.encryptionAlbumPath;}
+    public File getEncryptionWeChatPath(){return  this.encryptionWeChatPath;}
+    public File getEncryptionAlbumNodePath(){return  this.encryptionAlbumNodePath;}
+    public File getEncryptionWeChatNodePath(){return  this.encryptionWeChatNodePath;}
+
+    public File getEncryptionContantsLocalPath() {
+        return encryptionContantsLocalPath;
+    }
+    public File getEncryptionContantsNodePath() {
+        return encryptionContantsNodePath;
+    }
     private static File getStorageDir(Context var0) {
         if(storageDir == null) {
             File var1 = Environment.getExternalStorageDirectory();
@@ -125,6 +180,43 @@ public class PathUtils {
 
         return new File(var3);
     }
+    private static File generateEmailPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/email/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/email/";
+        }
+
+        return new File(var3);
+    }
+    public static String generateEmailMessagePath(String name) {
+        String var3 = null;
+        var3 = pathPrefix + "/email/"+name+"/";
+        File newFile = new File(var3);
+        if(!newFile.exists()) {
+            newFile.mkdirs();
+        }
+        return var3;
+    }
+    public static String generateWechatMessagePath(String name) {
+        String var3 = null;
+        var3 = pathPrefix + "/wechat/"+name+"/";
+        File newFile = new File(var3);
+        if(!newFile.exists()) {
+            newFile.mkdirs();
+        }
+        return var3;
+    }
+    public static String generateWechatNodeMessagePath(String name) {
+        String var3 = null;
+        var3 = pathPrefix + "/wechatnode/"+name+"/";
+        File newFile = new File(var3);
+        if(!newFile.exists()) {
+            newFile.mkdirs();
+        }
+        return var3;
+    }
     private static File generateVoicePath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {
@@ -146,7 +238,78 @@ public class PathUtils {
 
         return new File(var3);
     }
+    private static File generateEncryptionPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/";
+        }
 
+        return new File(var3);
+    }
+    private static File generateEncryptionLocalPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/local/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/local/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionLocalNodePath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/localnode/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localnode/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionLocalWeChatPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/localwechat/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localwechat/";
+        }
+
+        return new File(var3);
+    }
+    private static File generateEncryptionWeChatNodePath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/wechatnode/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/wechatnode/";
+        }
+
+        return new File(var3);
+    }
+
+    private static File generateEncryptionLocalContantsPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/localcontants/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/localcontants/";
+        }
+
+        return new File(var3);
+    }
+
+    private static File generateEncryptionNodeContantsPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/encryption/nodecontants/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/encryption/nodecontants/";
+        }
+
+        return new File(var3);
+    }
     private static File generateVideoPath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {

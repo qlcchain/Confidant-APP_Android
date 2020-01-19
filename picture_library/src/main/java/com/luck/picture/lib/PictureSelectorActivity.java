@@ -860,6 +860,10 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 picture_tv_img_num.setText(String.valueOf(selectImages.size()));
                 picture_tv_ok.setText(getString(R.string.picture_completed));
                 anim = false;
+                if(pictureSelectionConfig.returnQick)
+                {
+                    id_ll_ok.performClick();
+                }
             }
         } else {
             id_ll_ok.setEnabled(false);

@@ -17,7 +17,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.baidu.mapapi.BMapManager.getContext;
 //import rx.Observable;
 //import rx.functions.Func1;
 
@@ -33,7 +32,7 @@ public class FileInfosRepository implements FileInfosDataSource {
     private BaseSchedulerProvider mSchedulerProvider;
 
     public FileInfosRepository() {
-//        mSchedulerProvider = Preconditions.checkNotNull(schedulerProvider, "schedulerProvider == null");
+//        mSchedulerProvider = PreconditionsLocal.checkNotNull(schedulerProvider, "schedulerProvider == null");
     }
 
 //    .map(new Func1<FileInfo, File>() {

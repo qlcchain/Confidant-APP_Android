@@ -47,6 +47,7 @@ public class JGroupMsgPullRsp extends BaseEntity{
         private String UserId;
         private String GId;
         private int MsgNum;
+        private int SrcMsgId;
         private List<Message> Payload;
 
         public String getAction() {
@@ -87,6 +88,14 @@ public class JGroupMsgPullRsp extends BaseEntity{
 
         public void setMsgNum(int MsgNum) {
             this.MsgNum = MsgNum;
+        }
+
+        public int getSrcMsgId() {
+            return SrcMsgId;
+        }
+
+        public void setSrcMsgId(int srcMsgId) {
+            SrcMsgId = srcMsgId;
         }
 
         public List<Message> getPayload() {

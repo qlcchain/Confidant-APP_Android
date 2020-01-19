@@ -59,7 +59,7 @@ class LogActivity : BaseActivity(), LogContract.View, LogUtil.OnLogListener {
                         view.isAllCaps = false
                     }
                     return@LayoutInflaterFactory view
-                } catch (e: InflateException) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 } catch (e: Throwable) {
                     e.printStackTrace()

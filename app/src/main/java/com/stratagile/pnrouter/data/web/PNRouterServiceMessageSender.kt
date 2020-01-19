@@ -2,13 +2,12 @@ package com.stratagile.pnrouter.data.web
 
 import android.graphics.BitmapFactory
 import android.util.Log
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
+import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -17,7 +16,6 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -31,7 +29,7 @@ import javax.inject.Inject
 import kotlin.concurrent.thread
 
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
-    private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
+    private var pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
     lateinit var msgHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<BaseData>>
     lateinit var fileHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<SendFileInfo>>
@@ -59,8 +57,6 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var sendFileMsgTimeMap:ConcurrentHashMap<String, String>;
     var fileLock = Object()
     init {
-
-
         sendMsgLocalMap = ConcurrentHashMap<String, Boolean>()
         sendFilePathMap = ConcurrentHashMap<String, String>()
         deleteFileMap = ConcurrentHashMap<String, Boolean>()
@@ -85,10 +81,14 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         fileHashMap = ConcurrentHashMap<String,ConcurrentLinkedQueue<SendFileInfo>>()
         toSendMessage = ConcurrentLinkedQueue()
         //toSendChatMessage = LinkedList()
+        KLog.i("超时调试：PNRouterServiceMessageSender init"+pipe)
         this.pipe = AtomicReference(pipe)
         initThread()
     }
-
+    fun setPipe(pipeFrom: Optional<SignalServiceMessagePipe>)
+    {
+        pipe = AtomicReference(pipeFrom)
+    }
     fun addDataFromSql(userId:String, BaseDataStr:String)
     {
         var gson = GsonUtil.getIntGson()
@@ -195,6 +195,33 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         {
             sendChatMessage(true,false)
         }
+    }
+    fun sendEmailFileMsg(message: SendFileInfo){
+
+        Log.i("sendEmailFileMsg", "添加")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        if(fileHashMap.get(userId) == null)
+        {
+            fileHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
+        }else{
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
+        }
+        toSendChatFileMessage.offer(message)
+
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
+        if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }
+        if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
+        {
+            if(!ConstantValue.currentRouterId.equals(""))
+            {
+                sendChatFileMessage(true,false)
+            }
+
+        }
+
     }
     fun sendFileMsg(message: SendFileInfo){
 
@@ -374,6 +401,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         {
                             sendFileMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.porperty!!)
                         }
+                        "5" ->
+                        {
+                            sendEmailFileMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.porperty!!)
+                        }
                     }
                 }else{
                     if(ConstantValue.logining)
@@ -424,6 +455,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
        
                                                     sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.porperty!!)
                                                 }
+
+
                                             }
                                         }
                                     //}
@@ -488,6 +521,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 var message = toSendMessage.poll()
                 KLog.i("send " + message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
+                KLog.i("超时调试：4" + pipe)
+                KLog.i("超时调试：4___" + AppConfig.instance.messageSender!!.pipe)
+                KLog.i("发送信息2："+pipe.get())
+                KLog.i("发送信息3："+pipe.get().get())
+                KLog.i("超时调试：webSocketConnection 5"+pipe.get().get().webSocketConnection())
                 var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送结果：${reslut}")
 
@@ -611,9 +649,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             {
                                 fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
                             }else{
-                                fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                fileBufferMi = AESToolsCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                             }*/
-                            fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
+                            fileBufferMi = AESToolsCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
                             KLog.i("密文件大小 发送:" + fileBufferMi.size+"_aesKey:"+fileKey)
                             val miend = System.currentTimeMillis() / 1000
                             KLog.i("jiamiTime:" + (miend - miBegin) / 1000)
@@ -715,8 +753,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val SegSeq = ByteArray(4)
         val CRC = ByteArray(2)
         val Code = ByteArray(2)
-        val FromId = ByteArray(76)
-        val ToId = ByteArray(76)
+        var FromId = ByteArray(76)
+        var ToId = ByteArray(76)
+        val serverTime = ByteArray(4)
         System.arraycopy(retMsg, 0, Action, 0, 4)
         System.arraycopy(retMsg, 4, FileId, 0, 4)
         System.arraycopy(retMsg, 8, LogId, 0, 4)
@@ -725,6 +764,20 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         System.arraycopy(retMsg, 18, Code, 0, 2)
         System.arraycopy(retMsg, 20, FromId, 0, 76)
         System.arraycopy(retMsg, 97, ToId, 0, 76)
+        if(FromId[44].toInt()== 0 && FromId[45].toInt()== 0)
+        {
+            FromId = ByteArray(44)
+            ToId = ByteArray(44)
+            System.arraycopy(retMsg, 20, FromId, 0, 44)
+            System.arraycopy(retMsg, 97, ToId, 0, 44)
+        }
+        try {
+            System.arraycopy(retMsg, 176, serverTime, 0, 4)
+        }catch (e:Exception)
+        {
+           e.printStackTrace();
+        }
+
         val ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action))
         val FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId))
         val LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId))
@@ -733,6 +786,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code)).toInt()
         val FromIdResult = String(FromId)
         val ToIdResult = String(ToId)
+        val serverTimeResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(serverTime))
         KLog.i("CodeResult:$CodeResult" +"FileIdResult:$FileIdResult")
 
         //val msgId = sendMsgIdMap.get(FileIdResult.toString() + "")
@@ -865,7 +919,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         if (porperty!= null && porperty.equals("1")) {//群特殊处理
                             EventBus.getDefault().post(FileGroupTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1,FileIdResult))
                         }else{
-                            EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1))
+                            EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1,serverTimeResult))
                         }
                         if (porperty!= null && porperty.equals("1")) {
                             val file = File(filePath)
@@ -903,8 +957,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         val baseData = BaseData(4, GroupSendFileDoneReq)
                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                         if (ConstantValue.isAntox) {
-                                            val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                           // val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                         } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
@@ -1024,6 +1078,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 "png", "jpg", "jpeg","webp" -> action = 1
                 "amr" -> action = 2
                 "mp4" -> action = 4
+                "zip" -> action = 7
                 else -> action = 5
             }
             val sendFileData = SendFileData()
@@ -1124,7 +1179,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1226,7 +1281,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     var fileKey = RxEncryptTool.generateAESKey()
                     if(porperty != null && porperty.equals("1"))
                     {
-                        fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                        fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                     }
                     val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                     val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1337,7 +1392,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1451,7 +1506,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         var fileKey = RxEncryptTool.generateAESKey()
                         if(porperty != null && porperty.equals("1"))
                         {
-                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
@@ -1513,6 +1568,114 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)*/
+
+                } else {
+                    //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+
+            }
+        }).start()
+    }
+    fun sendEmailFileMessage(userId: String, friendId: String, filePath: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String,porperty:String) {
+        val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
+        if(EMMessageData != null && !EMMessageData!!.from.equals(""))
+        {
+            KLog.i("检测到文件发送中:"+filePath)
+            return;
+        }
+        Thread(Runnable {
+            try {
+                val file = File(filePath)
+                val isHas = file.exists()
+                if (isHas) {
+                    if (file.length() > 1024 * 1024 * 100) {
+                        EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 2))
+                    }
+                    val fileName = filePath.substring(filePath.lastIndexOf("/") + 1)
+
+                    val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
+                    val message = EMMessage.createFileSendMessage(filePath, friendId)
+
+                    message.from = userId
+                    message.to = friendId
+                    message.isDelivered = true
+                    message.isAcked = false
+                    message.isUnread = true
+
+                    if (ConstantValue.curreantNetworkType == "WIFI") {
+
+                        message.msgId = msgId
+                        ConstantValue.sendFileMsgMap[msgId] = message
+                        sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                        sendMsgLocalMap[msgId] = false
+                        sendFilePathMap[msgId] = files_dir
+                        deleteFileMap[msgId] = false
+                        sendFileFriendKeyMap[msgId] = friendSignPublicKey
+
+                        var fileKey = RxEncryptTool.generateAESKey()
+                        val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+                        val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
+                        var SrcKey = ByteArray(256)
+                        var DstKey = ByteArray(256)
+                        try {
+
+                            if (ConstantValue.encryptionType == "1") {
+                                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
+                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!))
+                            } else {
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.toByteArray(), my))
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.toByteArray(), friend))
+                            }
+                            //sendFileKeyByteMap[msgId] = fileKey.substring(0, 16)
+                            sendFileKeyByteMap[msgId] = fileKey.substring(0, 16)
+                            sendFileMyKeyByteMap[msgId] = SrcKey
+                            sendFileFriendKeyByteMap[msgId] = DstKey
+                            sendFilePorpertyMap.put(msgId, porperty)
+                        } catch (e: Exception) {
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(msgId)) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
+                                    }
+                                }
+                            }
+                            var  toSendMessage = toSendChatFileMessage
+                            if(toSendMessage != null)
+                            {
+                                for (item in toSendMessage)
+                                {
+                                    if(item.msgId.equals(msgId))
+                                    {
+                                        toSendMessage.remove(item)
+                                        break
+                                    }
+                                }
+                            }
+                            EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 0))
+                            return@Runnable
+                        }
+
+                        val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                        EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
+                    }
+                    //FileUtil.copySdcardFile(filePath, files_dir)
+                    /* val gson = Gson()
+                     val Message = Message()
+                     Message.msgType = 5
+                     Message.fileName = fileName
+                     Message.msg = ""
+                     Message.from = userId
+                     Message.to = friendId
+
+                     Message.timeStamp = System.currentTimeMillis() / 1000
+                     Message.unReadCount = 0
+                     val baseDataJson = gson.toJson(Message)
+                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)*/
 
                 } else {
                     //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show()

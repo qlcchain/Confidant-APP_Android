@@ -7,8 +7,6 @@ import android.support.v4.view.LayoutInflaterFactory
 import android.view.*
 import android.widget.CheckBox
 import android.widget.TextView
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
@@ -33,9 +31,8 @@ import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
+import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
+import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_file_task_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -65,7 +62,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -78,7 +75,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -91,7 +88,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "video/mp4" -> {
-                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"")
+                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"",fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -104,7 +101,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         else -> {
-                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"")
+                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"",fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -137,6 +134,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     var clickTimeMap = ConcurrentHashMap<String, Long>()
 
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
+    var fromPorperty:Int? = null;
+    var aesKey:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -313,6 +312,15 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         AppConfig.instance.messageReceiver?.fileTaskBack = this
         var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+        fromPorperty = -1;
+        if(intent.hasExtra("fromPorperty"))
+        {
+            fromPorperty = intent.getIntExtra("fromPorperty",-1)
+        }
+        if(intent.hasExtra("aesKey"))
+        {
+            aesKey = intent.getStringExtra("aesKey")
+        }
         if (listData != null && listData.size > 0) {
             for (i in listData) {
                 var file = File(i.path)
@@ -347,8 +355,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         var baseData = BaseData(2, msgData)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         } else {
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
@@ -614,7 +622,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
+                                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {
@@ -641,7 +649,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
+                                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {
@@ -667,7 +675,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 Thread(Runnable() {
                                     run() {
 
-                                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
+                                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId,fromPorperty,aesKey)
                                         if(result  == 1)
                                         {
                                             runOnUiThread {
@@ -750,8 +758,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
                             fileGoingTaskLisytAdapter.notifyItemChanged(position)
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }

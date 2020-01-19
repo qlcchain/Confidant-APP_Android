@@ -39,19 +39,47 @@
             android:layout_toRightOf="@id/iv_userhead"
             android:background="@drawable/ease_chatfrom_bg"
              >
-
-            <TextView
-                android:id="@+id/tv_chatcontent"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/x10"
-                android:paddingRight="@dimen/x10"
-                android:layout_centerInParent="true"
-                android:gravity="center|left"
-                android:lineSpacingExtra="2dp"
-                android:minHeight="32dp"
-                android:textColor="@color/color_2c2c2c"
-                android:textSize="16sp" />
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_chatAssoccontent"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="28dp"
+                    android:text=""
+                    android:textColor="@color/FF999999"
+                    android:textSize="14sp" />
+                <View
+                    android:id="@+id/tv_chatcontentDash"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/dash_line"
+                    android:layerType="software"
+                    android:layout_height="2dp" />
+                <TextView
+                    android:id="@+id/tv_chatcontent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:autoLink="email|phone|web"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="32dp"
+                    android:text=""
+                    android:textColor="@color/color_2c2c2c"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
         </android.support.constraint.ConstraintLayout>
         <!-- android:autoLink="web"-->
         <TextView

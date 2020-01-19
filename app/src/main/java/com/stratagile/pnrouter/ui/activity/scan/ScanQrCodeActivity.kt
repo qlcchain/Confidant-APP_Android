@@ -40,6 +40,7 @@ import com.stratagile.pnrouter.utils.RxPhotoTool
 import com.stratagile.pnrouter.utils.RxPhotoTool.CROP_IMAGE
 import com.stratagile.pnrouter.utils.RxPhotoTool.GET_IMAGE_FROM_PHONE
 import com.stratagile.pnrouter.utils.SystemUtil
+import com.stratagile.pnrouter.utils.VersionUtil
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import java.io.*
 import java.util.regex.Pattern
@@ -60,7 +61,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
 
     @Inject
     internal lateinit var mPresenter: ScanQrCodePresenter
-
+    internal val REQUEST_CODE_LOCAL = 5005
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -212,6 +213,24 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
 //                KLog.i(list)
 //                mZXingView.decodeQRCode(list!!.get(0).path)
             }
+        }
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_LOCAL) {
+            val list = data!!.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+            if (list != null && list.size > 0) {
+                 var path = list.get(0).path
+                var originalUri = Uri.fromFile(File(path))
+                val resolver = contentResolver
+                val photo = MediaStore.Images.Media.getBitmap(resolver, originalUri)
+                mZXingView.decodeQRCode(getFileFromUri(originalUri, this)?.absolutePath)
+                if (localImgMode == 0) {
+
+                } else {
+
+//                var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+//                KLog.i(list)
+//                mZXingView.decodeQRCode(list!!.get(0).path)
+                }
+             }
         }
         if (resultCode == Activity.RESULT_OK && requestCode == CROP_IMAGE) {
             val resolver = contentResolver
@@ -381,50 +400,53 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
             if (galleryPackName != "") {
                 intent.setPackage(galleryPackName)
             }
+            var os = VersionUtil.getDeviceBrand()
             //这里要传一个整形的常量RESULT_LOAD_IMAGE到startActivityForResult()方法。
-            try {
-                startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
-            } catch (e: ActivityNotFoundException) {
-                intent = Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
-            } finally {
+            if(os !==3)
+            {
+                try {
+                    startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
+                } catch (e: ActivityNotFoundException) {
+                    intent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    startActivityForResult(intent, GET_IMAGE_FROM_PHONE)
+                } finally {
 
+                }
+            }else{
+                PictureSelector.create(this)
+                        .openGallery(PictureMimeType.ofImage())
+                        .maxSelectNum(1)
+                        .minSelectNum(1)
+                        .imageSpanCount(3)
+                        .selectionMode(PictureConfig.SINGLE)
+                        .previewImage(false)
+                        .enablePreviewAudio(false)
+                        .isCamera(false)
+                        .imageFormat(PictureMimeType.PNG)
+                        .isZoomAnim(false)
+                        .sizeMultiplier(0.5f)
+                        .setOutputCameraPath("/CustomPath")
+                        .enableCrop(false)
+                        .compress(false)
+                        .glideOverride(160, 160)
+                        .hideBottomControls(true)
+                        .isGif(false)
+                        .openClickSound(false)
+                        .minimumCompressSize(100)
+                        .synOrAsy(true)
+                        .rotateEnabled(true)
+                        .scaleEnabled(true)
+                        .videoMaxSecond(60 * 60 * 3)
+                        .videoMinSecond(1)
+                        .isDragFrame(false)
+                        .isReturnQuick(true)
+                        .forResult(REQUEST_CODE_LOCAL)
+                //RxPhotoTool.openLocalImage(this)
             }
-//            if (localImgMode == 0) {
-//
-//            } else {
-//                PictureSelector.create(this)
-//                        .openGallery(PictureMimeType.ofImage())
-//                        .maxSelectNum(100)
-//                        .minSelectNum(1)
-//                        .imageSpanCount(3)
-//                        .selectionMode(PictureConfig.SINGLE)
-//                        .previewImage(false)
-//                        .previewVideo(false)
-//                        .enablePreviewAudio(false)
-//                        .isCamera(true)
-//                        .imageFormat(PictureMimeType.PNG)
-//                        .isZoomAnim(true)
-//                        .sizeMultiplier(0.5f)
-//                        .setOutputCameraPath("/CustomPath")
-//                        .enableCrop(false)
-//                        .compress(false)
-//                        .glideOverride(160, 160)
-//                        .hideBottomControls(false)
-//                        .isGif(false)
-//                        .openClickSound(false)
-//                        .minimumCompressSize(100)
-//                        .synOrAsy(true)
-//                        .rotateEnabled(true)
-//                        .scaleEnabled(true)
-//                        .videoMaxSecond(60 * 60 * 3)
-//                        .videoMinSecond(1)
-//                        .isDragFrame(false)
-//                        .forResult(GET_IMAGE_FROM_PHONE)
-//            }
-//            RxPhotoTool.openLocalImage(this)
+
+
         } else if (viewId == R.id.rl_title) {
             KLog.i("切换识别模式。。。" + localImgMode)
             if (localImgMode == 0) {

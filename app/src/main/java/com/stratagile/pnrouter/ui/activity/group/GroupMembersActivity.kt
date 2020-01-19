@@ -282,7 +282,7 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        var aesKey = LibsodiumUtil.DecryptShareKey(groupEntity!!.userKey)+"0000000000000000"
+        var aesKey = LibsodiumUtil.DecryptShareKey(groupEntity!!.userKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)+"0000000000000000"
         if (resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 var contactSelectedList: ArrayList<UserEntity> = data.getParcelableArrayListExtra("person")

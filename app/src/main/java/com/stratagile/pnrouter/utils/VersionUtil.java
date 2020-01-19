@@ -65,7 +65,7 @@ public class VersionUtil {
                 type = 5;
                 break;
             case "vivo":
-                type = 5;
+                type = 6;
                 break;
             case "meizhu":
                 type = 7;

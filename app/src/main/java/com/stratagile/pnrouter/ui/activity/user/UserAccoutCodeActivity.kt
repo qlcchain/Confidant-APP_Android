@@ -6,8 +6,8 @@ import android.os.Environment
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.hyphenate.easeui.utils.PathUtils
-import com.hyphenate.util.ImageUtils.getRoundedCornerBitmap
 import com.pawegio.kandroid.longToast
+import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 

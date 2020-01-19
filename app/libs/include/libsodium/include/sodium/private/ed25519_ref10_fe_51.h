@@ -102,7 +102,7 @@ fe25519_neg(fe25519 h, const fe25519 f)
  Replace (f,g) with (g,g) if b == 1;
  replace (f,g) with (f,g) if b == 0.
  *
- Preconditions: b in {0,1}.
+ PreconditionsLocal: b in {0,1}.
  */
 
 static void
@@ -139,7 +139,7 @@ fe25519_cmov(fe25519 f, const fe25519 g, unsigned int b)
 Replace (f,g) with (g,f) if b == 1;
 replace (f,g) with (f,g) if b == 0.
 
-Preconditions: b in {0,1}.
+PreconditionsLocal: b in {0,1}.
 */
 
 static void

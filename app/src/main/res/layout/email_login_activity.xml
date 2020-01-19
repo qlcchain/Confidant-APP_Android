@@ -8,15 +8,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/headmainColor">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/Email"
-    android:textColor="@color/emailtextColor"
-    android:layout_marginTop="@dimen/x40"
-    android:layout_marginLeft="@dimen/x40"
-    android:textSize="16sp"
-    />
+
+    <ImageView
+        android:id="@+id/emailLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x50"
+        android:src="@mipmap/email_icon_qqmailbox_n" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Email"
+        android:textColor="@color/emailtextColor"
+        android:layout_marginTop="@dimen/x40"
+        android:layout_marginLeft="@dimen/x40"
+        android:textSize="16sp"
+        />
     <include layout="@layout/emailname_bar" />
     <TextView
         android:layout_width="wrap_content"
@@ -113,12 +120,74 @@
         android:layout_height="@dimen/x98"
         android:layout_marginEnd="@dimen/x30"
         android:layout_marginStart="@dimen/x30"
-        android:layout_marginTop="@dimen/x80"
+        android:layout_marginTop="@dimen/x50"
         android:background="@drawable/btn_purcle"
         android:gravity="center"
         android:text="@string/Login"
         android:textColor="@color/white"
         android:textSize="@dimen/commemTextSize"
-   />
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/x60">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/dotted_line"
+            />
+        <TextView
+            android:id="@+id/setTup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Setup_Guides"
+            android:layout_marginTop="@dimen/x35"
+            android:layout_marginLeft="@dimen/x40"
+            android:drawablePadding="@dimen/x15"
+            android:textColor="@color/FF1E1E24"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:drawableLeft="@mipmap/tabbar_note"/>
+        <WebView
+            android:layout_marginTop="@dimen/x20"
+            android:id="@+id/webView"
+            android:background="@color/headmainColor"
+            android:layout_below="@+id/setTup"
+            android:layout_marginLeft="@dimen/x28"
+            android:layout_marginRight="@dimen/x25"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </WebView>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x4"
+            android:layout_gravity="top"
+            android:progressDrawable="@drawable/webview_progress_bg"
+            android:visibility="gone" />
+
+
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/emailHelper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/setTup"
+            android:layout_marginLeft="@dimen/x40"
+            android:gravity="left"
+            android:layout_marginTop="@dimen/x15"
+            android:layout_gravity="left"
+            android:textColor="@color/FF9496A1"
+            android:textSize="16sp"
+            android:text="@string/qqCompany_Guides"/>
+    </RelativeLayout>
+
+
+
 </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
+
+

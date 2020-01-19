@@ -21,7 +21,7 @@ class TransformStrMessageUrlFail(var toId : String)
 class TransformReceiverFileMessage(var toId : String, var message : ByteArray)
 
 //status 0 失败要移除 ，1成功 更新显示  2 文件大于100M 发送失败要移除
-class FileTransformStatus(var msgid : String,var LogIdIdResult:String,var friendId:String, var status : Int = 0 )
+class FileTransformStatus(var msgid : String,var LogIdIdResult:String,var friendId:String, var status : Int = 0 ,var serverTime:Int= 0)
 //status 0 失败要移除 ，1成功 更新显示  2 文件大于100M 发送失败要移除
 class FileGroupTransformStatus(var msgid : String,var LogIdIdResult:String,var friendId:String, var status : Int = 0,var FileId:Int )
 

@@ -85,7 +85,25 @@ public class EaseChatMessageList extends RelativeLayout{
         itemStyle = builder.build();
         ta.recycle();
     }
-    
+    /**
+     * refresh
+     */
+    public void scrollLast(int flag){
+        KLog.i("刷新scrollLast"+flag);
+        if (listView != null) {
+            /*if (listView.isStackFromBottom()) {
+                listView.setStackFromBottom(false);
+            }
+            listView.setStackFromBottom(true);*/
+            if(flag == 1)
+            {
+                listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+            }else{
+                listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            }
+
+        }
+    }
     
     /**
      * refresh

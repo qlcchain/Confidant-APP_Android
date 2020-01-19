@@ -49,11 +49,8 @@
             android:layout_height="wrap_content">
 
         </android.support.v7.widget.RecyclerView>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x15"
-            android:background="@color/color_f5f5f5"/>
         <TextView
+            android:visibility="gone"
             android:id="@+id/bt_cancal"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x100"

@@ -2,7 +2,6 @@ package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.content.Context
 import android.content.Intent
-import android.hardware.input.InputManager
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -14,12 +13,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.inflateLayout
-import com.pawegio.kandroid.inputManager
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -44,14 +40,12 @@ import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_file_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
@@ -263,8 +257,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
@@ -374,8 +368,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
-                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                             } else {
                                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
@@ -404,8 +398,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                         var baseData = sendData
                                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                         if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                         } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
@@ -472,8 +466,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             var baseData = BaseData(msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
-                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
@@ -648,8 +642,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }

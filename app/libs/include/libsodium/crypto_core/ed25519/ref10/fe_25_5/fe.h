@@ -72,7 +72,7 @@ fe25519_frombytes(fe25519 h, const unsigned char *s)
 }
 
 /*
- Preconditions:
+ PreconditionsLocal:
  |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
 
  Write p=2^255-19; q=floor(h/p).
