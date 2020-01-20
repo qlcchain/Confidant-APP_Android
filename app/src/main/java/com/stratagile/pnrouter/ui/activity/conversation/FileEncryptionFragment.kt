@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,26 +17,19 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileEncryption
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
-import com.google.common.reflect.Reflection.getPackageName
-import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.runOnUiThread
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BakAddrUserNumReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
-import com.stratagile.pnrouter.entity.JBakFileRsp
-import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.WeiXinEncryptionActivity
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.ImportVCFUtil
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.fragment_file_encryption.*
 import org.greenrobot.eventbus.EventBus
@@ -102,6 +94,18 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
         var sendData = BaseData(6, filesListPullReq);
         showProgressDialog();
+        if(AppConfig.instance.isOpenSplashActivity)
+        {
+            if(BuildConfig.DEBUG)
+            {
+                var baseData = sendData;
+                var baseDataJonn = baseData.baseDataToJson().replace("\\","")
+            }
+
+        }else
+        {
+
+        }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
@@ -141,8 +145,8 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         }
         messagesParent.setOnClickListener {
 
-            //1222556667777
-            var localIntent = Intent();
+            //PermissionUtils.toPermissionSetting(this@FileEncryptionFragment.context);
+           var localIntent = Intent();
             localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= 9) {
                 localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
