@@ -327,129 +327,135 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         }
         if (listData != null && listData.size > 0) {
             for (i in listData) {
-                var file = File(i.path)
-                if (file.exists()) {
-                    localMedia = i
-                    var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
-                    val fileNameBase58 = Base58.encode(fileName.toByteArray())
-                    var fileSize = file.length()
-                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var fileType = 1
-                    when (localMedia!!.pictureType) {
-                        "image/jpeg" -> {
-                            fileType = 1
-                        }
-                        "image/png" -> {
-                            fileType = 1
-                        }
-                        "video/mp4" -> {
-                            fileType = 4
-                        }
-                        else -> {
-                            fileType = 6
-                        }
-                    }
-                    if(!noVerification)
-                    {
-                        runOnUiThread {
-                            showProgressDialog(getString(R.string.waiting))
-                        }
-                        var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
-                        if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
-                        } else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(2, msgData)
-                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            if (ConstantValue.isAntox) {
-                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            } else {
-                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                            }
-                        }
-                    }else{
-                        var file = File(localMedia!!.path)
+                Thread(Runnable() {
+                    run() {
+                        var file = File(i.path)
                         if (file.exists()) {
-
+                            localMedia = i
+                            var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
+                            val fileNameBase58 = Base58.encode(fileName.toByteArray())
+                            var fileSize = file.length()
+                            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            var fileType = 1
                             when (localMedia!!.pictureType) {
                                 "image/jpeg" -> {
-                                    var msgId = localMedia!!.msgId
-                                    if(msgId == null)
-                                    {
-                                        msgId = ""
-                                    }
-                                    var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
-                                    if(result  == 1)
-                                    {
-                                        runOnUiThread {
-                                            toast(getString(R.string.Start_uploading))
-                                        }
-                                    }else{
-                                        runOnUiThread {
-                                            toast(getString(R.string.Already_on_the_list))
-                                        }
-                                    }
+                                    fileType = 1
                                 }
                                 "image/png" -> {
-                                    var msgId = localMedia!!.msgId
-                                    if(msgId == null)
-                                    {
-                                        msgId = ""
-                                    }
-                                    var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
-                                    if(result  == 1)
-                                    {
-                                        runOnUiThread {
-                                            toast(getString(R.string.Start_uploading))
-                                        }
-                                    }else{
-                                        runOnUiThread {
-                                            toast(getString(R.string.Already_on_the_list))
-                                        }
-                                    }
+                                    fileType = 1
                                 }
                                 "video/mp4" -> {
-                                    var msgId = localMedia!!.msgId
-                                    if(msgId == null)
-                                    {
-                                        msgId = ""
-                                    }
-                                    var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,msgId,fromPorperty,aesKey)
-                                    if(result  == 1)
-                                    {
-                                        runOnUiThread {
-                                            toast(getString(R.string.Start_uploading))
-                                        }
-                                    }else{
-                                        runOnUiThread {
-                                            toast(getString(R.string.Already_on_the_list))
-                                        }
-                                    }
+                                    fileType = 4
                                 }
                                 else -> {
-                                    var msgId = localMedia!!.msgId
-                                    if(msgId == null)
-                                    {
-                                        msgId = ""
+                                    fileType = 6
+                                }
+                            }
+                            if(!noVerification)
+                            {
+                                runOnUiThread {
+                                    showProgressDialog(getString(R.string.waiting))
+                                }
+                                var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
+                                if (ConstantValue.isWebsocketConnected) {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
+                                } else if (ConstantValue.isToxConnected) {
+                                    var baseData = BaseData(2, msgData)
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    if (ConstantValue.isAntox) {
+                                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    } else {
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
-                                    var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,msgId,fromPorperty,aesKey)
-                                    if(result  == 1)
-                                    {
-                                        runOnUiThread {
-                                            toast(getString(R.string.Start_uploading))
+                                }
+                            }else{
+                                var file = File(localMedia!!.path)
+                                if (file.exists()) {
+
+                                    when (localMedia!!.pictureType) {
+                                        "image/jpeg" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
                                         }
-                                    }else{
-                                        runOnUiThread {
-                                            toast(getString(R.string.Already_on_the_list))
+                                        "image/png" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                        "video/mp4" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                        else -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
                                         }
                                     }
+
                                 }
                             }
 
                         }
                     }
+                    Thread.sleep(1000);
+                }).start()
 
-                }
 
             }
 
