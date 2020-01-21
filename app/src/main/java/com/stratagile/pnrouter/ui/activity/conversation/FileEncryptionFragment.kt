@@ -84,6 +84,8 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
         {
+            var leftData = LocalFileUtils.coverlocalFilesList
+            LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
             getNodeData()
         }
