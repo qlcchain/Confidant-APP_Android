@@ -82,11 +82,21 @@ object LocalFileUtils {
 
                 }
                 var localNeedAssetArrayList: ArrayList<MyFile> = ArrayList()
+                var completeCount = 0;
                 for (myFile in localAssetArrayList)
                 {
                     if(myFile.type == 0 && myFile.userSn.equals(ConstantValue.currentRouterSN))
                     {
+                        if(myFile.upLoadFile.isComplete)
+                        {
+                            if(completeCount >=20)
+                            {
+                                continue;
+                            }
+                            completeCount++;
+                        }
                         localNeedAssetArrayList.add(myFile)
+
                     }
                 }
                 return localNeedAssetArrayList
