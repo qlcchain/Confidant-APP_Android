@@ -326,9 +326,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             noVerification = intent.getBooleanExtra("noVerification",false)
         }
         if (listData != null && listData.size > 0) {
-            for (i in listData) {
-                Thread(Runnable() {
-                    run() {
+            Thread(Runnable() {
+                run() {
+                    for (i in listData) {
                         var file = File(i.path)
                         if (file.exists()) {
                             localMedia = i
@@ -452,12 +452,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
 
                         }
+                        Thread.sleep(1000)
                     }
-                    Thread.sleep(1000);
-                }).start()
+                }
+            }).start()
 
 
-            }
+
 
         }
 
