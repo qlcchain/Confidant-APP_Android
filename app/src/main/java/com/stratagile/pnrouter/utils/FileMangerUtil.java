@@ -1570,7 +1570,7 @@ public class FileMangerUtil {
      */
     public static int sendContantsFile(String emailPath,int msgId,boolean isCompress,Integer porperty,String aesKey) {
         fromPorperty = porperty;
-        fromPorpertyMap.put(msgId,fromPorperty);
+        fromPorpertyMap.put(msgId+"",fromPorperty);
         new Thread(new Runnable(){
             public void run(){
 
