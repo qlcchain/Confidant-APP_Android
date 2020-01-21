@@ -58,8 +58,8 @@
                     android:orientation="horizontal">
                     <TextView
                         android:id="@+id/backMenu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/x50"
+                        android:layout_height="@dimen/x50"
                         android:textColor="@color/mainColor"
                         android:layout_marginRight="@dimen/x20"
                         android:drawableLeft="@mipmap/statusbar_download_node"
@@ -67,8 +67,8 @@
                         android:text=""/>
                     <TextView
                         android:id="@+id/deleteMenu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/x50"
+                        android:layout_height="@dimen/x50"
                         android:textColor="@color/mainColor"
                         android:layout_marginRight="@dimen/x20"
                         android:drawableLeft="@mipmap/statusbar_delete"

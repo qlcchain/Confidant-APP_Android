@@ -1864,4 +1864,45 @@ public class FileUtil {
         }
         return smsBuilder.toString();
     }
+    /**
+     *
+     * @param obj  将要保存的对象
+     * @param filePath  对象转储文件的位置
+     */
+    public static void saveObj2File(Object obj,String filePath) {
+
+        try {
+            FileOutputStream fos=new FileOutputStream(filePath);
+            ObjectOutputStream objectOutputStream=new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(obj);
+            objectOutputStream.close();
+            fos.close();
+        }catch (Exception e)
+        {
+
+        }
+
+    }
+
+    /**
+     *
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    public static  Object readFile2Obj(String filePath){
+        Object obj = null;
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            obj =  ois.readObject();
+            fis.close();
+
+        }catch (Exception e)
+        {
+
+        }
+        return  obj;
+    }
+
 }

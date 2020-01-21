@@ -122,7 +122,12 @@ class LogActivity : BaseActivity(), LogContract.View, LogUtil.OnLogListener {
             val myClipboard: ClipboardManager
             myClipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val myClip: ClipData
-            myClip = ClipData.newPlainText("text", logAdapter?.getItem(position)!!)
+            var totoalStr = ""
+            for(item in LogUtil.logList)
+            {
+                totoalStr +=item +"\r\n"
+            }
+            myClip = ClipData.newPlainText("text", totoalStr)
             myClipboard.setPrimaryClip(myClip)
             toast("copy success")
         }

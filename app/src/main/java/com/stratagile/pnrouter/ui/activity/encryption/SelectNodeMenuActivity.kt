@@ -111,6 +111,7 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
         if(jFilePathsPulRsp.params.retCode == 0)
         {
             var picMenuList = mutableListOf<LocalFileMenu>()
+            var flag = 0;
             for (item in jFilePathsPulRsp.params.payload)
             {
 
@@ -127,12 +128,23 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
                 localFileMenu.isChoose = false;
                 localFileMenu.lastModify = item!!.lastModify.toLong();
                 var chooseId = SpUtil.getInt(this,"chooseId",-1);
-                if(item!!.id == chooseId)
+                if(chooseId != -1)
                 {
-                    localFileMenu.isChoose = true;
-                    currentData = localFileMenu;
+                    if(item!!.id == chooseId)
+                    {
+                        localFileMenu.isChoose = true;
+                        currentData = localFileMenu;
+                    }
+                }else{
+                    if(flag == 0)
+                    {
+                        localFileMenu.isChoose = true;
+                        currentData = localFileMenu;
+                    }
                 }
+
                 picMenuList.add(localFileMenu)
+                flag++;
                 try {
                     var defaultfolderFile = File(defaultfolder)
                     if(!defaultfolderFile.exists())
@@ -302,6 +314,11 @@ class SelectNodeMenuActivity : BaseActivity(), SelectNodeMenuContract.View , PNR
         }
         selectbtn.setOnClickListener()
         {
+            if(currentData == null)
+            {
+                toast(R.string.Please_select_a_folder)
+                return@setOnClickListener
+            }
             SpUtil.putInt(this,"chooseId",currentData!!.nodeId)
             val intent = Intent()
             intent.putExtra("folderInfo", currentData)

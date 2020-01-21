@@ -36,11 +36,14 @@ import com.pawegio.kandroid.toast
 import com.qmuiteam.qmui.util.QMUIDisplayHelper
 import com.qmuiteam.qmui.widget.popup.QMUIPopup
 import com.smailnet.eamil.Callback.GetAttachCallback
+import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.Callback.MarkCallback
+import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.MailAttachment
 import com.smailnet.eamil.Utils.AESCipher
 import com.smailnet.eamil.Utils.AESToolsCipher
+import com.smailnet.islands.Islands
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -59,6 +62,7 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoCompon
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
+import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.*
@@ -147,12 +151,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     var clickDecryptBtn = false
     var isShow = false
     private var mNormalPopup: QMUIPopup? = null
+    var longFlag = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         this_ = this
         hasPassWord = false
         clickDecryptBtn = false
+        longFlag = 0;
         super.onCreate(savedInstanceState)
     }
     override fun BakupEmailBack(jBakupEmailRsp: JBakupEmailRsp) {
@@ -182,6 +188,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
 
     override fun initData() {
+        longFlag = 0;
         if(!clickDecryptBtn)
         {
             AppConfig.instance.messageReceiver!!.bakupEmailCallback = this
@@ -190,6 +197,61 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             EventBus.getDefault().register(this)
             initPicPlug()
             emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
+        }
+        avatar_info.setOnLongClickListener {
+            if(emailMeaasgeData != null && emailMeaasgeData!!.msgId != null && !emailMeaasgeData!!.msgId.equals(""))
+            {
+                showProgressDialog(getString(R.string.waiting))
+                LogUtil.logList.clear();
+                Islands.circularProgress(this)
+                        .setCancelable(false)
+                        .setMessage("同步中...")
+                        .run { progressDialog ->
+                            val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                            emailReceiveClient
+                                    .imapReceiveMoreAsynByUUID(this, object : GetReceiveCallback {
+                                        override fun gainSuccess(messageList: List<EmailMessage>, minUUID: Long, maxUUID: Long, noMoreData:Boolean, errorMs:String, menuFlag:String) {
+                                            if(noMoreData)
+                                            {
+                                                runOnUiThread {
+                                                    closeProgressDialog()
+                                                    //toast(R.string.No_mail)
+                                                    //refreshLayout.finishLoadMoreWithNoMoreData()//将不会再次触发加载更多事件
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    closeProgressDialog()
+                                                }
+                                            }
+                                            for (item in messageList)
+                                            {
+
+
+                                            }
+                                            if(messageList.size > 0)
+                                            {
+                                                runOnUiThread {
+                                                    startActivity(Intent(this@EmailInfoActivity, LogActivity::class.java))
+                                                }
+
+                                            }
+                                            runOnUiThread {
+
+                                                progressDialog.dismiss()
+                                            }
+                                        }
+                                        override fun gainFailure(errorMsg: String) {
+                                            progressDialog.dismiss()
+                                            runOnUiThread {
+                                                toast(R.string.Failedmail)
+                                                closeProgressDialog()
+                                            }
+                                        }
+                                    },menu,emailMeaasgeData!!.msgId.toLong(),1,emailMeaasgeData!!.msgId.toLong())
+                        }
+            }
+
+            true
         }
         isScaleInit = false
         webViewScroll = false
@@ -229,7 +291,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             {
                 inputPassWordParent.visibility = View.VISIBLE
                 toast(R.string.Decryption_failed)
-               return
+                return
             }
         }
         if(emailMeaasgeData!!.content.contains("newconfidantpass") && !hasPassWord)
@@ -1076,10 +1138,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }else{
                 passwordTipsBubble.visibility = View.VISIBLE
             }
-           /* initNormalPopupIfNeed();
-            mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
-            mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)
-            mNormalPopup!!.show(it)*/
+            /* initNormalPopupIfNeed();
+             mNormalPopup!!.setAnimStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+             mNormalPopup!!.setPreferredDirection(QMUIPopup.DIRECTION_TOP)
+             mNormalPopup!!.show(it)*/
         }
         passwordTipsBubble.setOnClickListener {
             passwordTipsBubble.visibility = View.GONE
@@ -1336,7 +1398,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             if(userPassWord == "")
             {
                 toast(R.string.Password_cannot_be_empty)
-               return@setOnClickListener
+                return@setOnClickListener
             }
             hasPassWord = true
             clickDecryptBtn = true;
@@ -2003,7 +2065,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             //goMain();
         }
     }
-        internal var handlerDownLoad: Handler = object : Handler() {
+    internal var handlerDownLoad: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {

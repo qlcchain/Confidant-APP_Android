@@ -30,6 +30,7 @@ import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
 import com.stratagile.pnrouter.BuildConfig;
+import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.UIUtils;
 import com.sun.mail.imap.IMAPFolder;
@@ -962,6 +963,7 @@ class EmailCore {
                 try {
                     //getMailTextContent(message, contentTemp);
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -1153,6 +1155,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -1343,6 +1346,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -1512,6 +1516,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -1729,6 +1734,7 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -1971,6 +1977,12 @@ class EmailCore {
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
+                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    if(pageSize == 1)
+                    {
+                        String toFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() +"/emailData.email";
+                        FileUtil.saveObj2File(message,toFilePath);
+                    }
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);
                     } else
@@ -2690,22 +2702,32 @@ class EmailCore {
     }
     public static void getMailTextContent2(Part part, StringBuffer content, boolean plainFlag) throws MessagingException, IOException {
         //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
+        //LogUtil.addLogEmail("Email_getMailTextContent:"+contentType.toLowerCase(),"EmailCore");
         boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
+        LogUtil.addLogEmail("Email_isContainTextAttach:"+isContainTextAttach +"##plainFlag:"+plainFlag,"EmailCore");
         if (part.isMimeType("text/plain") && !isContainTextAttach && plainFlag) {
-            content.append(MimeUtility.decodeText(part.getContent().toString()));
+            LogUtil.addLogEmail("Email_text/plain:"+part.getContent().toString(),"EmailCore");
+            String decodeTxt = MimeUtility.decodeText(part.getContent().toString());
+            content.append(decodeTxt);
+            LogUtil.addLogEmail("Email_text/plain_decode:"+decodeTxt,"EmailCore");
         } else if(part.isMimeType("text/html") && !isContainTextAttach && !plainFlag){
+            LogUtil.addLogEmail("Email_text/html:"+part.getContent().toString(),"EmailCore");
             content.append(part.getContent().toString());
             plainFlag = false;
         } else if (part.isMimeType("message/rfc822")) {
+            LogUtil.addLogEmail("Email_message/rfc822:"+content.toString(),"EmailCore");
             getMailTextContent2((Part)part.getContent(),content,plainFlag);
         } else if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();
             int partCount = multipart.getCount();
+            LogUtil.addLogEmail("Email_multipart/*:"+content.toString()+"##partCount:"+partCount,"EmailCore");
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
+                LogUtil.addLogEmail("Email_multipart/*_for:"+content.toString()+"##partCount:"+partCount,"EmailCore");
                 getMailTextContent2(bodyPart,content,plainFlag);
             }
         }
+        LogUtil.addLogEmail("Email_over:"+content.toString(),"EmailCore");
     }
     public static String getHtmlText(String htmlStr)
     {
