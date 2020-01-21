@@ -655,114 +655,109 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
 
                         var file = File(list.get(i).path);
                         if (file.exists()) {
-
-                            chooseFileData = LocalFileItem();
-                            localMediaUpdate = LocalMedia()
-                            localMediaUpdate!!.path = list.get(i).path
-                            val MsgType = list.get(i).path.substring(list.get(i).path.lastIndexOf(".") + 1).toLowerCase()
-                            localMediaUpdate!!.pictureType = "file"
-                            when (MsgType) {
-                                "png", "jpg", "jpeg", "webp" -> {
-                                    localMediaUpdate!!.pictureType = "image/jpeg"
-                                    // 配置压缩的参数
-                                    var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
-                                    widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
-                                    chooseFileData!!.fileType = 1
-                                    chooseFileData!!.fileInfo = widthAndHeight
-                                }
-                                "mp4" -> {
-
-                                    localMediaUpdate!!.pictureType = "video/mp4"
-                                    chooseFileData!!.fileType = 4
-                                }
-                            }
-                            // 配置压缩的参数
-                            var fileLocalPath = chooseFolderData!!.path ;
                             var base58NameR = list.get(i).path.substring(list.get(i).path.lastIndexOf("/")+1,list.get(i).path.length)
-                            if(  localMediaUpdate!!.pictureType == "image/jpeg")
+                            var fileTempPathCopy  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "copy"
+                            var fileTempPathFileCopy = File(fileTempPathCopy)
+                            if(!fileTempPathFileCopy.exists()) {
+                                fileTempPathFileCopy.mkdirs();
+                            }
+                            fileTempPathCopy += "/tmep"+base58NameR;
+                            var codeCopy = FileUtil.copyAppFileToSdcard(list.get(i).path,fileTempPathCopy)
+                            if(codeCopy == 1)
                             {
-                                val options = BitmapFactory.Options()
-                                options.inJustDecodeBounds = false;
-                                options.inSampleSize = 16
-                                val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
-                                val thumbPath = fileLocalPath +"/th"+base58NameR
-                                FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
-                            }else if(  localMediaUpdate!!.pictureType == "video/mp4")
-                            {
-                                val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
-                                val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
-                                FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+                                chooseFileData = LocalFileItem();
+                                localMediaUpdate = LocalMedia()
+                                localMediaUpdate!!.path = fileTempPathCopy
+                                val MsgType = list.get(i).path.substring(list.get(i).path.lastIndexOf(".") + 1).toLowerCase()
+                                localMediaUpdate!!.pictureType = "file"
+                                when (MsgType) {
+                                    "png", "jpg", "jpeg", "webp" -> {
+                                        localMediaUpdate!!.pictureType = "image/jpeg"
+                                        // 配置压缩的参数
+                                        var  bitmap = BitmapFactory.decodeFile(list.get(i).path);
+                                        widthAndHeight = "" + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                                        chooseFileData!!.fileType = 1
+                                        chooseFileData!!.fileInfo = widthAndHeight
+                                    }
+                                    "mp4" -> {
 
-                                val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
-                                val options = BitmapFactory.Options()
-                                options.inJustDecodeBounds = false;
-                                options.inSampleSize = 16
-                                val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
-                                FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
-                                DeleteUtils.deleteFile(thumbPath)
-                            }
-                            var listTemp = arrayListOf<LocalMedia>()
-                            listTemp.add(localMediaUpdate!!)
-                            var startIntent = Intent(this, FileTaskListActivity::class.java)
-                            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, listTemp)
-                            startIntent.putExtra("fromPorperty",3)
-                            var aesKey = RxEncryptTool.generateAESKey()
-                            var SrcKey = ByteArray(256)
-                            SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                            chooseFileData!!.srcKey = String(SrcKey);
-                            chooseFileData!!.fileSize = file.length()
-                            chooseFileData!!.filePath = list.get(i).path
-                            var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "upload"
-                            var fileTempPathFile = File(fileTempPath)
-                            if(!fileTempPathFile.exists()) {
-                                fileTempPathFile.mkdirs();
-                            }
-                            fileTempPath += "/tmep"+base58NameR;
-                            var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey.substring(0, 16))
-                            if(code == 1)
-                            {
-                                val fileMD511 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
-                                val fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
-                                chooseFileData!!.fileMD5 = fileMD5;
-                                DeleteUtils.deleteFile(fileTempPath)
-                            }
-                            chooseFileData!!.fileName = base58NameR;
-                            startIntent.putExtra("aesKey",aesKey)
-                            startActivity(startIntent)
+                                        localMediaUpdate!!.pictureType = "video/mp4"
+                                        chooseFileData!!.fileType = 4
+                                    }
+                                }
+                                // 配置压缩的参数
+                                var fileLocalPath = chooseFolderData!!.path ;
 
+                                if(  localMediaUpdate!!.pictureType == "image/jpeg")
+                                {
+                                    val options = BitmapFactory.Options()
+                                    options.inJustDecodeBounds = false;
+                                    options.inSampleSize = 16
+                                    val bmNew = BitmapFactory.decodeFile(list.get(i).path, options) // 解码文件
+                                    val thumbPath = fileLocalPath +"/th"+base58NameR
+                                    FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath,50)
+                                }else if(  localMediaUpdate!!.pictureType == "video/mp4")
+                                {
+                                    val thumbPath = fileLocalPath +"/thbig"+base58NameR.replace("mp4","jpg")
+                                    val bitmap = EaseImageUtils.getVideoPhoto(list.get(i).path)
+                                    FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath,100)
+
+                                    val thumbPath2 =fileLocalPath +"/th"+base58NameR.replace("mp4","jpg")
+                                    val options = BitmapFactory.Options()
+                                    options.inJustDecodeBounds = false;
+                                    options.inSampleSize = 16
+                                    val bmNew = BitmapFactory.decodeFile(thumbPath, options) // 解码文件
+                                    FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
+                                    DeleteUtils.deleteFile(thumbPath)
+                                }
+                                var listTemp = arrayListOf<LocalMedia>()
+                                listTemp.add(localMediaUpdate!!)
+                                var startIntent = Intent(this, FileTaskListActivity::class.java)
+                                startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, listTemp)
+                                startIntent.putExtra("fromPorperty",3)
+                                var aesKey = RxEncryptTool.generateAESKey()
+                                var SrcKey = ByteArray(256)
+                                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                chooseFileData!!.srcKey = String(SrcKey);
+                                chooseFileData!!.fileSize = file.length()
+                                chooseFileData!!.filePath = fileTempPathCopy
+                                var fileTempPath  = PathUtils.getInstance().getEncryptionAlbumNodePath().toString() +"/"+ "upload"
+                                var fileTempPathFile = File(fileTempPath)
+                                if(!fileTempPathFile.exists()) {
+                                    fileTempPathFile.mkdirs();
+                                }
+                                fileTempPath += "/tmep"+base58NameR;
+                                var code = FileUtil.copySdcardToxFileAndEncrypt(chooseFileData!!.filePath,fileTempPath,aesKey.substring(0, 16))
+                                if(code == 1)
+                                {
+                                    val fileMD511 = FileUtil.getFileMD5(File(chooseFileData!!.filePath))
+                                    val fileMD5 = FileUtil.getFileMD5(File(fileTempPath))
+                                    chooseFileData!!.fileMD5 = fileMD5;
+                                    DeleteUtils.deleteFile(fileTempPath)
+                                }
+                                chooseFileData!!.fileName = base58NameR;
+                                when (MsgType) {
+                                    "png", "jpg", "jpeg", "webp" ->
+                                    {
+                                        AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+                                    }
+                                    "amr" ->  {
+
+                                    }
+                                    "mp4" ->
+                                    {
+                                        AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
+                                    }
+                                    else -> {
+
+                                    }
+                                }
+                                startIntent.putExtra("aesKey",aesKey)
+                                startActivity(startIntent)
+
+                            }
                         }
                     }
-                    /* SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
-                             .setContentText(getString(R.string.Delete_original_file))
-                             .setConfirmClickListener {
-                                 for (i in 0 until len) {
-                                     var file = File(list.get(i).path);
-                                     var isHas = file.exists();
-                                     if (isHas) {
-                                         var filePath = list.get(i).path
-                                         val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
-                                         val MsgType = imgeSouceName.substring(imgeSouceName.lastIndexOf(".") + 1)
-                                         when (MsgType) {
-                                             "png", "jpg", "jpeg", "webp" ->
-                                             {
-                                                 AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
-                                             }
-                                             "amr" ->  {
-
-                                             }
-                                             "mp4" ->
-                                             {
-                                                 AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
-                                             }
-                                             else -> {
-
-                                             }
-                                         }
-                                     }
-                                 }
-
-                             }
-                             .show()*/
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }
