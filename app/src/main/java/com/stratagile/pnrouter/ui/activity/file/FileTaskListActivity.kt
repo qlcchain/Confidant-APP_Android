@@ -74,7 +74,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 }
                             }
                         }
-                        "image/jpeg" -> {
+                        "image/png" -> {
                             var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
@@ -136,7 +136,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
     var fromPorperty:Int? = null;
     var aesKey:String? = null
-
+    var noVerification:Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
             if (name.equals("com.android.internal.view.menu.IconMenuItemView", ignoreCase = true) || name.equals("com.android.internal.view.menu.ActionMenuItemView", ignoreCase = true) || name.equals("android.support.v7.view.menu.ActionMenuItemView", ignoreCase = true)) {
@@ -321,6 +321,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             aesKey = intent.getStringExtra("aesKey")
         }
+        if(intent.hasExtra("noVerification"))
+        {
+            noVerification = intent.getBooleanExtra("noVerification",false)
+        }
         if (listData != null && listData.size > 0) {
             for (i in listData) {
                 var file = File(i.path)
@@ -345,22 +349,106 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             fileType = 6
                         }
                     }
-                    runOnUiThread {
-                        showProgressDialog(getString(R.string.waiting))
-                    }
-                    var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
-                    if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
-                    } else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(2, msgData)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        } else {
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    if(!noVerification)
+                    {
+                        runOnUiThread {
+                            showProgressDialog(getString(R.string.waiting))
+                        }
+                        var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
+                        } else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(2, msgData)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            } else {
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+                        }
+                    }else{
+                        var file = File(localMedia!!.path)
+                        if (file.exists()) {
+
+                            when (localMedia!!.pictureType) {
+                                "image/jpeg" -> {
+                                    var msgId = localMedia!!.msgId
+                                    if(msgId == null)
+                                    {
+                                        msgId = ""
+                                    }
+                                    var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                    if(result  == 1)
+                                    {
+                                        runOnUiThread {
+                                            toast(getString(R.string.Start_uploading))
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            toast(getString(R.string.Already_on_the_list))
+                                        }
+                                    }
+                                }
+                                "image/png" -> {
+                                    var msgId = localMedia!!.msgId
+                                    if(msgId == null)
+                                    {
+                                        msgId = ""
+                                    }
+                                    var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                    if(result  == 1)
+                                    {
+                                        runOnUiThread {
+                                            toast(getString(R.string.Start_uploading))
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            toast(getString(R.string.Already_on_the_list))
+                                        }
+                                    }
+                                }
+                                "video/mp4" -> {
+                                    var msgId = localMedia!!.msgId
+                                    if(msgId == null)
+                                    {
+                                        msgId = ""
+                                    }
+                                    var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                    if(result  == 1)
+                                    {
+                                        runOnUiThread {
+                                            toast(getString(R.string.Start_uploading))
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            toast(getString(R.string.Already_on_the_list))
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    var msgId = localMedia!!.msgId
+                                    if(msgId == null)
+                                    {
+                                        msgId = ""
+                                    }
+                                    var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                    if(result  == 1)
+                                    {
+                                        runOnUiThread {
+                                            toast(getString(R.string.Start_uploading))
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            toast(getString(R.string.Already_on_the_list))
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                     }
+
                 }
 
             }

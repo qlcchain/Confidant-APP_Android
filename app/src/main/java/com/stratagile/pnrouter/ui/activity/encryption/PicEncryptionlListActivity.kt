@@ -20,6 +20,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -578,21 +579,23 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 picItemEncryptionAdapter!!.notifyItemChanged(0)
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                                 EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
+                                if(!BuildConfig.DEBUG)
+                                {
+                                    when (MsgType) {
+                                        "png", "jpg", "jpeg", "webp" ->
+                                        {
+                                            AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+                                        }
+                                        "amr" ->  {
 
-                                when (MsgType) {
-                                    "png", "jpg", "jpeg", "webp" ->
-                                    {
-                                        AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
-                                    }
-                                    "amr" ->  {
+                                        }
+                                        "mp4" ->
+                                        {
+                                            AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
+                                        }
+                                        else -> {
 
-                                    }
-                                    "mp4" ->
-                                    {
-                                        AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
-                                    }
-                                    else -> {
-
+                                        }
                                     }
                                 }
 
