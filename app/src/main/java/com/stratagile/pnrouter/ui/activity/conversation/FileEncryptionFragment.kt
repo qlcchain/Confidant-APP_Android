@@ -85,6 +85,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         if(isVisibleToUser)
         {
             var leftData = LocalFileUtils.coverlocalFilesList
+            FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
             getNodeData()

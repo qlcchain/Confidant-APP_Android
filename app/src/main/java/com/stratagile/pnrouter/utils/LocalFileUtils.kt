@@ -287,9 +287,34 @@ object LocalFileUtils {
             val localAssetArrayList: ArrayList<MyFile>
             try {
                 //开始读取sd卡的文件数据
-                localAssetArrayList = ArrayList()
-                localAssetArrayList.add(myRouter)
-                FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
+                var routerStr = FileUtil.readRoutersData(userId)
+                if (routerStr != "") {
+                    localAssetArrayList = gson.fromJson<ArrayList<MyFile>>(routerStr, object : TypeToken<ArrayList<MyFile>>() {
+
+                    }.type)
+                    var isHad = false
+                    for (myRouterItem in localAssetArrayList) {
+
+                        if (myRouter!!.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
+                        {
+                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().msgId.equals(myRouterItem.getUpLoadFile().msgId)) {
+                                isHad = true
+                                break
+                            }
+                        }
+                    }
+                    if (isHad) {
+                        LocalFileUtils.updateLocalAssets(myRouter)
+                    } else {
+                        localAssetArrayList.add(myRouter)
+                        FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
+                    }
+
+                } else {
+                    localAssetArrayList = ArrayList()
+                    localAssetArrayList.add(myRouter)
+                    FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
+                }
             } catch (e: Exception) {
                 System.out.println("出错啦_insertLocalAssets")
                 //e.printStackTrace()
