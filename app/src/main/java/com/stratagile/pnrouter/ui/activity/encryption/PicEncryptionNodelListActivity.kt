@@ -701,10 +701,10 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                                 FileUtil.saveBitmpToFileNoThread(bmNew, thumbPath2,50)
                                 DeleteUtils.deleteFile(thumbPath)
                             }
-                            var list = arrayListOf<LocalMedia>()
-                            list.add(localMediaUpdate!!)
+                            var listTemp = arrayListOf<LocalMedia>()
+                            listTemp.add(localMediaUpdate!!)
                             var startIntent = Intent(this, FileTaskListActivity::class.java)
-                            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+                            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, listTemp)
                             startIntent.putExtra("fromPorperty",3)
                             var aesKey = RxEncryptTool.generateAESKey()
                             var SrcKey = ByteArray(256)
