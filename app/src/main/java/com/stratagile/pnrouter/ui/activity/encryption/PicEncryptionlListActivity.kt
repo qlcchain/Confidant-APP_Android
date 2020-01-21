@@ -160,13 +160,13 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
                             var data = obj as FileOpreateType
-                            when (data.name) {
-                                "Node back up" -> {
+                            when (data.icon) {
+                                "statusbar_download_node" -> {
                                     val intent = Intent(AppConfig.instance, SelectNodeMenuActivity::class.java)
                                     intent.putExtra("fromType",1)
                                     startActivityForResult(intent,REQUEST_CODE_MENU)
                                 }
-                                "Rename" -> {
+                                "sheet_rename" -> {
                                     var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.lastIndexOf("."));
                                     var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.lastIndexOf("."),chooseFileData!!.fileName.length);
                                     PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
@@ -209,7 +209,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                         }
                                     })
                                 }
-                                "Delete" -> {
+                                "statusbar_delete" -> {
                                     SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                             .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                             .setConfirmClickListener {
@@ -579,14 +579,28 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 toast(imgeSouceName+" "+getString( R.string.Encryption_succeeded))
                                 EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
 
+                                when (MsgType) {
+                                    "png", "jpg", "jpeg", "webp" ->
+                                    {
+                                        AlbumNotifyHelper.deleteImagesInAlbumDB(AppConfig.instance, list.get(i).path)
+                                    }
+                                    "amr" ->  {
 
+                                    }
+                                    "mp4" ->
+                                    {
+                                        AlbumNotifyHelper.deleteVideoInAlbumDB(AppConfig.instance, list.get(i).path)
+                                    }
+                                    else -> {
 
+                                    }
+                                }
 
                             }
                         }
 
                     }
-                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                   /* SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                             .setContentText(getString(R.string.Delete_original_file))
                             .setConfirmClickListener {
                                 for (i in 0 until len) {
@@ -616,7 +630,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                                 }
 
                             }
-                            .show()
+                            .show()*/
                 } else {
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }

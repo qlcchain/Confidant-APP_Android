@@ -227,8 +227,8 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                 override fun onSelect(position: Int, obj: Any) {
                                     KLog.i("" + position)
                                     var data = obj as FileOpreateType
-                                    when (data.name) {
-                                        "Rename" -> {
+                                    when (data.icon) {
+                                        "sheet_rename" -> {
                                             var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.lastIndexOf("."));
                                             var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.lastIndexOf("."),chooseFileData!!.fileName.length);
                                             PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
@@ -279,7 +279,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                                 }
                                             })
                                         }
-                                        "Delete" -> {
+                                        "statusbar_delete" -> {
                                             SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                                     .setConfirmClickListener {
