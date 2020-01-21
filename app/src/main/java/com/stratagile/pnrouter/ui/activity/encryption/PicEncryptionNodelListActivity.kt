@@ -571,7 +571,7 @@ class PicEncryptionNodelListActivity : BaseActivity(), PicEncryptionNodelListCon
                 fileUploadItem.setfName(fileNameBase58);
                 fileUploadItem.setfKey(chooseFileDataHashMap!!.get(fileId)!!.srcKey);
                 fileUploadItem.setfInfo(chooseFileDataHashMap!!.get(fileId)!!.fileInfo);
-                fileUploadItem.pathId = 0
+                fileUploadItem.pathId = pathId.toInt()
                 val folderNameBase58 = Base58.encode(chooseFileDataHashMap!!.get(fileId)!!.fileName.toByteArray())
                 fileUploadItem.pathName =folderNameBase58;
                 AppConfig.instance.mDaoMaster!!.newSession().fileUploadItemDao.insert(fileUploadItem)
