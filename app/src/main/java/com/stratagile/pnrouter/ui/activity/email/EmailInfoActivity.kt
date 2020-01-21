@@ -7,6 +7,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
@@ -201,6 +202,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         avatar_info.setOnLongClickListener {
             if(emailMeaasgeData != null && emailMeaasgeData!!.msgId != null && !emailMeaasgeData!!.msgId.equals(""))
             {
+
                 showProgressDialog(getString(R.string.waiting))
                 LogUtil.logList.clear();
                 Islands.circularProgress(this)

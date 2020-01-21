@@ -1980,8 +1980,9 @@ class EmailCore {
                     LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
                     if(pageSize == 1)
                     {
-                        String toFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() +"/emailData.email";
-                        FileUtil.saveObj2File(message,toFilePath);
+                        /*String toFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() +"/emailData.email";
+                        Message data = (Message)FileUtil.readFile2Obj(toFilePath);
+                        FileUtil.saveObj2File(message,toFilePath);*/
                     }
                     if (contentType.toLowerCase().startsWith("text/plain")) {
                         getMailTextContent2(message, contentTemp,true);

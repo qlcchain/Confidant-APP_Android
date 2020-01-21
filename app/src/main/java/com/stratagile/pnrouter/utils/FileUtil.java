@@ -1879,7 +1879,7 @@ public class FileUtil {
             fos.close();
         }catch (Exception e)
         {
-
+          e.printStackTrace();
         }
 
     }
@@ -1900,7 +1900,7 @@ public class FileUtil {
 
         }catch (Exception e)
         {
-
+            e.printStackTrace();
         }
         return  obj;
     }
