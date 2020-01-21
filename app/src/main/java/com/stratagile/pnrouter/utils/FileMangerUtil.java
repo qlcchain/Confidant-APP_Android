@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
@@ -161,10 +162,12 @@ public class FileMangerUtil {
     private static long  faBegin;
     private static long faEnd;
     private static Integer fromPorperty;
+    private static ConcurrentHashMap<String, Integer> fromPorpertyMap = new ConcurrentHashMap<>();
 
     public static void  init()
     {
         fromPorperty = null;
+        fromPorpertyMap= new ConcurrentHashMap<>();
         sendMsgLocalMap = new ConcurrentHashMap<>();
         sendFilePathMap = new ConcurrentHashMap<>();
         sendToxFileDataMap = new ConcurrentHashMap<>();
@@ -441,6 +444,7 @@ public class FileMangerUtil {
                     sendFileMyKeyByteMap.remove(msgId);
                     sendFileFriendKeyByteMap.remove(msgId);
                     sendFilePathMap.remove(msgId);
+                    fromPorpertyMap.remove(msgId);
                     fromPorperty = null;
                     System.gc();
                     faEnd = System.currentTimeMillis();
@@ -628,11 +632,13 @@ public class FileMangerUtil {
             }else{
                 Arrays.fill(porperty,(byte) 0);
             }
-            if(fromPorperty != null && fromPorperty != -1)
+            Integer fromPorpertyTemp = fromPorpertyMap.get(msgId);
+            if(fromPorpertyTemp != null && fromPorpertyTemp != -1)
             {
-                Arrays.fill(porperty,(byte) fromPorperty.byteValue());
+                Arrays.fill(porperty,(byte) fromPorpertyTemp.byteValue());
 
             }
+            Log.i("porperty:",porperty[0]+"");
             sendFileData.setPorperty(porperty);
             byte[] ver = new byte[1];
             Arrays.fill(ver,(byte) 1);
@@ -1036,6 +1042,7 @@ public class FileMangerUtil {
             return 0;
         }
         fromPorperty = porperty;
+        fromPorpertyMap.put(msgId,fromPorperty);
         new Thread(new Runnable(){
             public void run(){
 
@@ -1563,6 +1570,7 @@ public class FileMangerUtil {
      */
     public static int sendContantsFile(String emailPath,int msgId,boolean isCompress,Integer porperty,String aesKey) {
         fromPorperty = porperty;
+        fromPorpertyMap.put(msgId,fromPorperty);
         new Thread(new Runnable(){
             public void run(){
 
@@ -1728,6 +1736,7 @@ public class FileMangerUtil {
             return 0;
         }
         fromPorperty = porperty;
+        fromPorpertyMap.put(msgId,fromPorperty);
         new Thread(new Runnable(){
             public void run() {
 
@@ -1932,6 +1941,7 @@ public class FileMangerUtil {
             return 0;
         }
         fromPorperty = porperty;
+        fromPorpertyMap.put(msgId,fromPorperty);
         new Thread(new Runnable(){
             public void run(){
 
