@@ -2499,7 +2499,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             }else{
                 content = i.content
             }
-            if (i.from.toLowerCase().contains(key) || content.toLowerCase().contains(key)) {
+            if (i.from.toLowerCase().contains(key) || content.toLowerCase().contains(key)|| i.subject.toLowerCase().contains(key)) {
                 contactListTemp.add(i)
             }
         }
