@@ -273,7 +273,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
                                                     eamilMessage.userId = originMap.get("userId")
                                                     eamilMessage.date = item.date
                                                     eamilMessage.setTimeStamp(DateUtil.getDateTimeStame(item.date))
-                                                    eamilMessage.sortId = DateUtil.getDateTimeStame(item.date);
+                                                    eamilMessage.sortId = item.id.toLong();
                                                     localEmailMessageNew.add(flag, eamilMessage)
                                                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(eamilMessage)
                                                     if (eamilMessage.from.indexOf("<") >= 0) {

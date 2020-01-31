@@ -940,11 +940,30 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View , PNRoute
             minUUID = 0L;
             maxUUID = 0L;
         }
+        var account23 = AppConfig.instance.emailConfig().account
+        var emailMessageEntityList = mutableListOf<EmailMessageEntity>()
+        if(account23 != null)
+        {
+            Log.e("initDataEmail", account23)
+            emailMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(account23),EmailMessageEntityDao.Properties.Menu.eq(menu)).orderDesc(EmailMessageEntityDao.Properties.SortId).list()
+            Log.e("initDataEmail", emailMessageEntityList.size.toString())
+            if(emailMessageEntityList.size >0)
+            {
+
+                var localEmailMessageEntity:EmailMessageEntity = emailMessageEntityList.get(0)
+                if(localEmailMessageEntity!= null)
+                {
+                    maxUUID = localEmailMessageEntity.sortId;
+                    Log.e("initDataEmail", maxUUID.toString())
+                     LogUtil.addLogEmail("maxUUID:" + maxUUID + "  &&&  minUUID:" + minUUID, "EmailMessageFragment")
+                }
+            }
+        }
         // var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
 
         if(true)
         {
-            LogUtil.logList.clear()
+            //LogUtil.logList.clear()
             //LogUtil.addLogEmail("1_minUUID:"+minUUID+"  &&&  maxUUID"+maxUUID,"EmailMessageFragment");
             var beginIndex = localSize
             /*  AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.deleteAll()
