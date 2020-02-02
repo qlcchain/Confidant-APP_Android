@@ -50,8 +50,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
                 .requestCode(101)
                 .permission(
                         Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS,
-                        Manifest.permission.READ_SMS
+                        Manifest.permission.WRITE_CONTACTS
+                       /* Manifest.permission.READ_SMS*/
                 )
                 .rationale({ requestCode, rationale ->
                     AndPermission

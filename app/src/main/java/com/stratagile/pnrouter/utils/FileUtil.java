@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okio.ByteString;
@@ -1739,7 +1740,14 @@ public class FileUtil {
      * @return 手里通讯录中联系人的个数
      */
     public static int getContactCount(Context context){
-        Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
+        try{
+            return getPhoneContacts(context);
+        }catch(Exception e){
+            return 0;
+        }finally{
+
+        }
+       /* Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
         try{
             c.moveToFirst();
             return c.getInt(0);
@@ -1747,9 +1755,38 @@ public class FileUtil {
             return 0;
         }finally{
             c.close();
-        }
+        }*/
     }
-
+    //获取系统联系人，获取1000个联系人0.2秒，最快速
+    public static int getPhoneContacts(Context context) {
+        //联系人集合
+        int count = 0;
+        List<ContactsContract.Contacts> data = new ArrayList<>();
+        ContentResolver resolver = context.getContentResolver();
+        //搜索字段
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.Contacts.DISPLAY_NAME};
+        // 获取手机联系人
+        Cursor contactsCursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection, null, null, null);
+        if (contactsCursor != null) {
+            //key: contactId,value: 该contactId在联系人集合data的index
+            Map<Integer, Integer> contactIdMap = new HashMap<>();
+            while (contactsCursor.moveToNext()) {
+                //获取联系人的ID
+                //获取联系人的ID
+                int contactId = contactsCursor.getInt(0);
+                if (!contactIdMap.containsKey(contactId)) {
+                    count ++;
+                    contactIdMap.put(contactId, count);
+                }
+            }
+            contactsCursor.close();
+        }
+        return count;
+    }
     //得到未读短信的数量  通过查询数据库得到
     public static int getAllSmsCount(Context context) {
         int result = 0;
@@ -1879,7 +1916,7 @@ public class FileUtil {
             fos.close();
         }catch (Exception e)
         {
-          e.printStackTrace();
+            e.printStackTrace();
         }
 
     }
