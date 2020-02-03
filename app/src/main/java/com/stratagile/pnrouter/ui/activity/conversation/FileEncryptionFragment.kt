@@ -44,18 +44,21 @@ import org.greenrobot.eventbus.ThreadMode
  */
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
+    override fun getSMSPermissionSuccess() {
+        var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+        runOnUiThread {
+            localMessags.text = msgCount.toString();
+        }
+        var aa = FileUtil.getAllSms(this@FileEncryptionFragment.context)
+        var bb = aa;
+    }
+
     override fun getScanPermissionSuccess() {
         //var count = FileUtil.getContantsCount(this@FileEncryptionFragment.context)
         var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
         runOnUiThread {
             localContacts.text = count.toString();
         }
-       /* var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
-        runOnUiThread {
-            localMessags.text = msgCount.toString();
-        }
-        var aa = FileUtil.getAllSms(this@FileEncryptionFragment.context)
-        var bb = aa;*/
     }
 
     override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {
@@ -88,6 +91,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
+            mPresenter.getSMSPermission()
             getNodeData()
         }
     }

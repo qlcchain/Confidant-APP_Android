@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.os.Bundle
+import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -28,7 +29,7 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
     }
 
     override fun initView() {
-//        setContentView(R.layout.activity_sMSEncryption)
+        setContentView(R.layout.picencry_sms_list)
     }
     override fun initData() {
 

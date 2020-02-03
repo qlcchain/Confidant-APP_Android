@@ -45,14 +45,31 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
             mCompositeDisposable.dispose()
         }
     }
-
+    override fun getSMSPermission() {
+        AndPermission.with(mView as Fragment)
+                .requestCode(101)
+                .permission(
+                        Manifest.permission.READ_SMS
+                )
+                .rationale({ requestCode, rationale ->
+                    AndPermission
+                            .rationaleDialog(mView as Activity, rationale)
+                            .setTitle(AppConfig.instance.getResources().getString(R.string.Permission_Requeset))
+                            .setMessage(AppConfig.instance.getResources().getString(R.string.We_Need_Some_Permission_to_continue))
+                            .setPositiveButton(AppConfig.instance.getResources().getString(R.string.continue_))
+                            .setNegativeButton(AppConfig.instance.getResources().getString(R.string.close), DialogInterface.OnClickListener { dialog, which ->  AppConfig.instance.toast(R.string.permission_denied) })
+                            .show()
+                }
+                )
+                .callback(permissionSMS)
+                .start()
+    }
     override fun getScanPermission() {
         AndPermission.with(mView as Fragment)
                 .requestCode(101)
                 .permission(
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.WRITE_CONTACTS
-                        /*Manifest.permission.READ_SMS*/
                 )
                 .rationale({ requestCode, rationale ->
                     AndPermission
@@ -74,6 +91,22 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
             // 权限申请成功回调。
             if (requestCode == 101) {
                 mView.getScanPermissionSuccess()
+            }
+        }
+
+        override fun onFailed(requestCode: Int, deniedPermissions: List<String>) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败")
+                AppConfig.instance.toast(R.string.permission_denied)
+            }
+        }
+    }
+    private var permissionSMS = object : PermissionListener {
+        override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                mView.getSMSPermissionSuccess()
             }
         }
 

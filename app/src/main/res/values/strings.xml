@@ -938,4 +938,7 @@ Then enter your Email address and password to log in.</string>
 
     <string name="new_message_add_tips">新增多条来往短信</string>
     <string name="sy_message_tips">马上同步</string>
+    <string name="Known_contacts">已知联系人</string>
+    <string name="Not_in_address_book">不在通讯录</string>
+    <string name="Upload_immediately">立即上传</string>
 </resources>

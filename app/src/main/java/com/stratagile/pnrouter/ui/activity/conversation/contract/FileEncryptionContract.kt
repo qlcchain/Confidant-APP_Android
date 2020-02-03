@@ -21,9 +21,11 @@ interface FileEncryptionContract {
         fun closeProgressDialog()
 
         abstract fun getScanPermissionSuccess()
+        abstract fun getSMSPermissionSuccess()
     }
 
     interface FileEncryptionContractPresenter : BasePresenter {
         abstract fun getScanPermission()
+        abstract fun getSMSPermission()
     }
 }
