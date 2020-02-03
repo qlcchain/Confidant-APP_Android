@@ -50,12 +50,12 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         runOnUiThread {
             localContacts.text = count.toString();
         }
-        var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+       /* var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
         runOnUiThread {
             localMessags.text = msgCount.toString();
         }
         var aa = FileUtil.getAllSms(this@FileEncryptionFragment.context)
-        var bb = aa;
+        var bb = aa;*/
     }
 
     override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {

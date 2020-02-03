@@ -316,7 +316,7 @@
         android:layout_marginRight="@dimen/x30"
         android:layout_marginTop="@dimen/x15"
         android:background="@color/white"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_height="wrap_content">
         <com.stratagile.pnrouter.view.DrawableMyTextView
             android:layout_width="match_parent"

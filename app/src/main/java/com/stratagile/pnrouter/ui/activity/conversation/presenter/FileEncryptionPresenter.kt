@@ -6,6 +6,7 @@ import android.support.annotation.NonNull
 import android.support.v4.app.Fragment
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
@@ -51,7 +52,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
                 .permission(
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.WRITE_CONTACTS
-                       /* Manifest.permission.READ_SMS*/
+                        /*Manifest.permission.READ_SMS*/
                 )
                 .rationale({ requestCode, rationale ->
                     AndPermission
@@ -65,6 +66,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
                 )
                 .callback(permission)
                 .start()
+
     }
 
     private var permission = object : PermissionListener {
