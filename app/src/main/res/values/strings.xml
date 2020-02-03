@@ -941,4 +941,9 @@ Then enter your Email address and password to log in.</string>
     <string name="Known_contacts">已知联系人</string>
     <string name="Not_in_address_book">不在通讯录</string>
     <string name="Upload_immediately">立即上传</string>
+    <string name="Upload_choose">可选上传</string>
+    <string name="Check_immediately">立即检查</string>
+    <string name="Upload_check_time_not_checked">上传检查时间：未检查过</string>
+    <string name="Check_synchronization_regularly">定期检查同步</string>
+    <string name="SMS">SMS</string>
 </resources>

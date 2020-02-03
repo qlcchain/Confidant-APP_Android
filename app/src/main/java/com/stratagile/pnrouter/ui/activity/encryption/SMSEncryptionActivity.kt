@@ -9,6 +9,8 @@ import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerSMSEncrypt
 import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.SMSEncryptionPresenter
+import com.stratagile.pnrouter.utils.FileUtil
+import kotlinx.android.synthetic.main.picencry_sms_list.*
 
 import javax.inject.Inject;
 
@@ -20,6 +22,12 @@ import javax.inject.Inject;
  */
 
 class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
+    override fun getScanPermissionSuccess() {
+        var count = FileUtil.getContactCount(this@SMSEncryptionActivity)
+        runOnUiThread {
+            localContacts.text = count.toString();
+        }
+    }
 
     @Inject
     internal lateinit var mPresenter: SMSEncryptionPresenter
@@ -32,7 +40,7 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
         setContentView(R.layout.picencry_sms_list)
     }
     override fun initData() {
-
+        title.text = getString(R.string.SMS)
     }
 
     override fun setupActivityComponent() {

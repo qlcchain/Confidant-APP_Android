@@ -126,7 +126,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         var aa = Base58.encode("Default Wechat Folder".toByteArray())
         var bb = ""
-        for (index in 1..5){
+       /* for (index in 1..5){
             var dst_public_SignKey = ByteArray(32)
             var dst_private_Signkey = ByteArray(64)
             var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
@@ -137,7 +137,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
             KLog.i("aa："+strSignPrivateString)
             KLog.i("bb："+strSignPrivate)
-        }
+        }*/
         /*if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")

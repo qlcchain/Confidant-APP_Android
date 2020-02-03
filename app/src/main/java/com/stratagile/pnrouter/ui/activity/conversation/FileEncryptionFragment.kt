@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
+import com.stratagile.pnrouter.ui.activity.encryption.SMSEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.WeiXinEncryptionActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -152,8 +153,13 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         }
         messagesParent.setOnClickListener {
 
+            var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
+            startActivity(intent);
+        }
+        filterMessags.setOnClickListener {
+
             //PermissionUtils.toPermissionSetting(this@FileEncryptionFragment.context);
-           var localIntent = Intent();
+            var localIntent = Intent();
             localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= 9) {
                 localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
