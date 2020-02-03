@@ -470,8 +470,10 @@ class WeXinEncryptionListActivity : BaseActivity(), WeXinEncryptionListContract.
                     var code = FileUtil.copySdcardToxFileAndDecrypt(chooseFileData!!.filePath,fileTempPath,aesKey)
                     if(code == 1)
                     {
+                        var uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
                         localMediaUpdate = LocalMedia()
                         localMediaUpdate!!.path = fileTempPath
+                        localMediaUpdate!!.msgId = uuid;
                         val MsgType = fileTempPath.substring(fileTempPath.lastIndexOf(".") + 1).toLowerCase()
                         localMediaUpdate!!.pictureType = "file"
                         when (MsgType) {
