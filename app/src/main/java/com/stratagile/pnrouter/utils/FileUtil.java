@@ -1829,7 +1829,7 @@ public class FileUtil {
     public static String getAllSms(Context context) {
         StringBuilder smsBuilder = new StringBuilder();
         try {
-            Uri uri = Uri.parse("content://sms/sent");
+            Uri uri = Uri.parse("content://sms");
             String[] projection = new String[] { "_id", "address", "person",
                     "body", "date", "type", };
             Cursor cur = context.getContentResolver().query(uri, projection, null,
@@ -1839,6 +1839,7 @@ public class FileUtil {
             // "read = ?", new String[]{"0"}, "date desc");
 
             if (cur.moveToFirst()) {
+                int index_id = cur.getColumnIndex("_id");
                 int index_Address = cur.getColumnIndex("address");
                 int index_Person = cur.getColumnIndex("person");
                 int index_Body = cur.getColumnIndex("body");

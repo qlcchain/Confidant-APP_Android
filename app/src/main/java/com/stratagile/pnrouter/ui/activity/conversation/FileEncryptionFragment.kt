@@ -92,7 +92,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
-            //mPresenter.getSMSPermission()
+            mPresenter.getSMSPermission()
             getNodeData()
         }
     }
