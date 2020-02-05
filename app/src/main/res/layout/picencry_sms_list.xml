@@ -26,6 +26,7 @@
         android:gravity="center"
         android:layout_marginTop="@dimen/x20">
         <LinearLayout
+            android:id="@+id/localRoot"
             android:layout_marginTop="@dimen/x40"
             android:layout_width="wrap_content"
             android:layout_weight="1"
@@ -57,6 +58,7 @@
             android:layout_weight="0.01"
             />
         <LinearLayout
+            android:id="@+id/nodeRoot"
             android:layout_width="wrap_content"
             android:layout_marginTop="@dimen/x40"
             android:layout_weight="1"

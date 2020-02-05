@@ -34,7 +34,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode getSelfDefinedVersion("code")
-        versionName "1.2.5"
+        versionName "1.2.6"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -153,7 +153,7 @@ android {
     }
 }
 greendao {
-    schemaVersion 98//数据库版本号
+    schemaVersion 99//数据库版本号
     daoPackage 'com.stratagile.pnrouter.db'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
     //targetGenDirTest：设置生成单元测试目录

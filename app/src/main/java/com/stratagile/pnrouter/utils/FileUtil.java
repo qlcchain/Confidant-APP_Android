@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.RecentFileDao;
+import com.stratagile.pnrouter.db.SMSEntity;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 
 import okio.ByteString;
+import rx.internal.schedulers.NewThreadWorker;
 
 
 /**
@@ -1826,8 +1828,8 @@ public class FileUtil {
         return result;
     }
     //得到未读短信的数量  通过查询数据库得到
-    public static String getAllSms(Context context) {
-        StringBuilder smsBuilder = new StringBuilder();
+    public static List<SMSEntity> getAllSms(Context context) {
+        List<SMSEntity> smsMessageEntityList = new ArrayList<SMSEntity>();
         try {
             Uri uri = Uri.parse("content://sms");
             String[] projection = new String[] { "_id", "address", "person",
@@ -1837,7 +1839,6 @@ public class FileUtil {
             // 获取短信中最新的未读短信
             // Cursor cur = getContentResolver().query(uri, projection,
             // "read = ?", new String[]{"0"}, "date desc");
-
             if (cur.moveToFirst()) {
                 int index_id = cur.getColumnIndex("_id");
                 int index_Address = cur.getColumnIndex("address");
@@ -1848,12 +1849,10 @@ public class FileUtil {
                 int index_Subject = cur.getColumnIndex("subject");
                 int index_Body = cur.getColumnIndex("body");
                 int index_Service_Center = cur.getColumnIndex("service_center");
-
-
                 do {
-                    int getColumnCount = cur.getColumnCount();
+                    /*int getColumnCount = cur.getColumnCount();
                     int getCount = cur.getCount();
-                    String[] getColumnCountNames = cur.getColumnNames();
+                    String[] getColumnCountNames = cur.getColumnNames();*/
                     int intID = cur.getInt(index_id);
                     String strAddress = cur.getString(index_Address);
                     int intPerson = cur.getInt(index_Person);
@@ -1863,11 +1862,10 @@ public class FileUtil {
                     String strSubject = cur.getString(index_Subject);
                     String strbody = cur.getString(index_Body);
                     String strService_Center = cur.getString(index_Service_Center);
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    /*SimpleDateFormat dateFormat = new SimpleDateFormat(
                             "yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);
-                    String strDate = dateFormat.format(d);
-
+                    String strDate = dateFormat.format(d);*/
                     String strType = "";
                     if (intType == 1) {
                         strType = "接收";
@@ -1886,14 +1884,20 @@ public class FileUtil {
                     } else {
                         strType = "null";
                     }
-
-                    smsBuilder.append("[ ");
-                    smsBuilder.append(strAddress + ", ");
-                    smsBuilder.append(intPerson + ", ");
-                    smsBuilder.append(strbody + ", ");
-                    smsBuilder.append(strDate + ", ");
-                    smsBuilder.append(strType);
-                    smsBuilder.append(" ]\n\n");
+                    SMSEntity SMSEntityTemp = new SMSEntity();
+                    SMSEntityTemp.setSmsId(intID);
+                    SMSEntityTemp.setAddress(strAddress);
+                    SMSEntityTemp.setPerson(intPerson);
+                    SMSEntityTemp.setDate(longDate);
+                    SMSEntityTemp.setRead(intRead);
+                    SMSEntityTemp.setType(intType);
+                    SMSEntityTemp.setSubject(strSubject);
+                    SMSEntityTemp.setBody(strbody);
+                    SMSEntityTemp.setService_center(strService_Center);
+                    SMSEntityTemp.setLastCheck(false);
+                    SMSEntityTemp.setUpload(false);
+                    SMSEntityTemp.setMultChecked(false);
+                    smsMessageEntityList.add(SMSEntityTemp);
                 } while (cur.moveToNext());
 
                 if (!cur.isClosed()) {
@@ -1901,13 +1905,12 @@ public class FileUtil {
                     cur = null;
                 }
             } else {
-                smsBuilder.append("no result!");
+
             }
-            smsBuilder.append("getSmsInPhone has executed!");
         } catch (SQLiteException ex) {
             Log.d("SQLiteException", ex.getMessage());
         }
-        return smsBuilder.toString();
+        return smsMessageEntityList;
     }
     /**
      *

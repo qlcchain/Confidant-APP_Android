@@ -1,10 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
+import android.content.Intent
 import android.os.Bundle
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.db.SMSEntityDao
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerSMSEncryptionComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionModule
@@ -27,6 +29,15 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
         runOnUiThread {
             localContacts.text = count.toString();
         }
+        var smsDataList = FileUtil.getAllSms(this@SMSEncryptionActivity)
+        for(item in smsDataList)
+        {
+            var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.SmsId.eq(item.smsId)).list()
+            if(list != null && list.size > 0)
+            {
+                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.insert(item)
+            }
+        }
     }
 
     @Inject
@@ -41,6 +52,13 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
     }
     override fun initData() {
         title.text = getString(R.string.SMS)
+        localRoot.setOnClickListener {
+            startActivity(Intent(this, SMSEncryptionListActivity::class.java))
+        }
+        nodeRoot.setOnClickListener {
+            startActivity(Intent(this, SMSEncryptionNodelListActivity::class.java))
+        }
+        mPresenter.getScanPermission()
     }
 
     override fun setupActivityComponent() {

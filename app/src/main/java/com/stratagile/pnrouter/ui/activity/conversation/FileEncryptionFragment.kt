@@ -50,8 +50,6 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         runOnUiThread {
             localMessags.text = msgCount.toString();
         }
-        var aa = FileUtil.getAllSms(this@FileEncryptionFragment.context)
-        var bb = aa;
     }
 
     override fun getScanPermissionSuccess() {
