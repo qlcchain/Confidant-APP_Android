@@ -1831,7 +1831,7 @@ public class FileUtil {
         try {
             Uri uri = Uri.parse("content://sms");
             String[] projection = new String[] { "_id", "address", "person",
-                    "body", "date", "type", };
+                    "date", "read", "type", "subject", "body", "service_center", };
             Cursor cur = context.getContentResolver().query(uri, projection, null,
                     null, "date desc"); // 获取手机内部短信
             // 获取短信中最新的未读短信
@@ -1842,20 +1842,27 @@ public class FileUtil {
                 int index_id = cur.getColumnIndex("_id");
                 int index_Address = cur.getColumnIndex("address");
                 int index_Person = cur.getColumnIndex("person");
-                int index_Body = cur.getColumnIndex("body");
                 int index_Date = cur.getColumnIndex("date");
+                int index_Read = cur.getColumnIndex("read");
                 int index_Type = cur.getColumnIndex("type");
+                int index_Subject = cur.getColumnIndex("subject");
+                int index_Body = cur.getColumnIndex("body");
+                int index_Service_Center = cur.getColumnIndex("service_center");
+
 
                 do {
                     int getColumnCount = cur.getColumnCount();
                     int getCount = cur.getCount();
                     String[] getColumnCountNames = cur.getColumnNames();
+                    int intID = cur.getInt(index_id);
                     String strAddress = cur.getString(index_Address);
                     int intPerson = cur.getInt(index_Person);
-                    String strbody = cur.getString(index_Body);
                     long longDate = cur.getLong(index_Date);
+                    int intRead = cur.getInt(index_Read);
                     int intType = cur.getInt(index_Type);
-
+                    String strSubject = cur.getString(index_Subject);
+                    String strbody = cur.getString(index_Body);
+                    String strService_Center = cur.getString(index_Service_Center);
                     SimpleDateFormat dateFormat = new SimpleDateFormat(
                             "yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);

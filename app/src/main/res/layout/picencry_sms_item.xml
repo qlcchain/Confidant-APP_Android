@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/avatar_container"
+        android:layout_gravity="center_vertical"
+        android:layout_width="@dimen/x15"
+        android:visibility="visible"
+        android:layout_marginLeft="@dimen/x5"
+        android:layout_centerVertical="true"
+        android:layout_height="@dimen/x15"
+        >
+        <TextView
+            android:visibility="visible"
+            android:id="@+id/unseen"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:minWidth="@dimen/x30"
+            android:paddingLeft="@dimen/x5"
+            android:paddingRight="@dimen/x5"
+            android:layout_height="@dimen/x30"
+            android:text=""
+            android:layout_marginRight="0px"
+            android:layout_marginTop="0px"
+            android:background="@drawable/new_email_flag_bg"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="9sp" />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/list_itease_layout"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x10"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxEms="8"
+            android:text="中国银行"
+            android:textColor="@color/emailtextColor"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/subject"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x20"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_centerVertical="true"
+            android:maxEms="8"
+            android:text="novaaaaaaaa"
+            android:textColor="@color/emailtextColor"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/nodePic"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/title"
+            android:ellipsize="end"
+            android:maxEms="8"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:textColor="@color/color_2B2B2B"
+            android:textSize="5sp"
+            android:drawableLeft="@mipmap/statusbar_download_node"
+            android:text=""
+            android:layout_alignBottom="@+id/title"
+            android:layout_alignTop="@+id/title"
+            android:layout_marginTop="@dimen/x3"
+            android:layout_marginLeft="@dimen/x10"
+            />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x61"
+            android:layout_alignTop="@+id/title"
+            android:layout_alignBottom="@+id/title"
+            android:layout_alignParentRight="true"
+            android:text="19:30"
+            android:textColor="@color/timetextColor"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/attach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x21"
+            android:layout_alignTop="@+id/title"
+            android:layout_alignBottom="@+id/title"
+            android:layout_alignParentRight="true"
+            android:text=""
+            android:drawableRight="@mipmap/arrow_enter"
+            android:drawablePadding="@dimen/x5"
+            android:textColor="@color/timetextColor"
+            android:textSize="14sp" />
+        <ImageView
+            android:id="@+id/msg_state"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="7dp"
+            android:src="@drawable/ease_msg_state_fail_resend"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/mentioned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/msg_state"
+            android:paddingBottom="7dp"
+            android:paddingLeft="7dp"
+            android:paddingTop="7dp"
+            android:text="@string/were_mentioned"
+            android:textColor="#e84e40"
+            android:textSize="14sp"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/draft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/mentioned"
+            android:text=""
+            android:layout_marginLeft="@dimen/x10"
+            android:singleLine="true"
+            android:textColor="@color/material_red_a700"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/draft"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_below="@+id/title"
+            android:maxLines="3"
+            android:text="每日优鲜每日优鲜每日优鲜每每日日优日优优鲜每每日每日优鲜每日优鲜每日优鲜每每日优鲜每每日优鲜每每日优鲜每"
+            android:ellipsize="end"
+            android:layout_marginTop="@dimen/x4"
+            android:textColor="@color/contentColor"
+            android:textSize="14sp" />
+
+        <View
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_toRightOf="@id/draft"
+            android:layout_height="@dimen/x1"
+            android:layout_below="@+id/body"
+            android:layout_marginTop="@dimen/x10"
+            android:background="@color/color_f2f2f2"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_gravity="center_vertical"
+        android:layout_width="@dimen/x35"
+        android:layout_height="@dimen/x35"
+        android:visibility="visible"
+        android:layout_marginRight="@dimen/x5"
+        android:layout_centerVertical="true"
+
+        >
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:clickable="false"
+            android:layout_width="@dimen/x50"
+            android:layout_height="@dimen/x50"
+            android:layout_marginLeft="@dimen/x1"
+            android:checked="true"
+            android:button="@drawable/checkbox_style"
+          />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
     override fun getScanPermissionSuccess() {
-        var count = FileUtil.getContactCount(this@SMSEncryptionActivity)
+        var count = FileUtil.getAllSmsCount(this@SMSEncryptionActivity)
         runOnUiThread {
             localContacts.text = count.toString();
         }

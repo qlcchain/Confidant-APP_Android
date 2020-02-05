@@ -355,15 +355,19 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".ui.activity.email.EmailLoginActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".ui.activity.encryption.ContactsEncryptionActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionNodelListActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
