@@ -24,17 +24,18 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property SmsId = new Property(1, Integer.class, "smsId", false, "SMS_ID");
-        public final static Property Address = new Property(2, String.class, "address", false, "ADDRESS");
-        public final static Property Person = new Property(3, Integer.class, "person", false, "PERSON");
-        public final static Property Date = new Property(4, Long.class, "date", false, "DATE");
-        public final static Property Read = new Property(5, Integer.class, "read", false, "READ");
-        public final static Property Type = new Property(6, Integer.class, "type", false, "TYPE");
-        public final static Property Subject = new Property(7, String.class, "subject", false, "SUBJECT");
-        public final static Property Body = new Property(8, String.class, "body", false, "BODY");
-        public final static Property Service_center = new Property(9, String.class, "service_center", false, "SERVICE_CENTER");
-        public final static Property LastCheck = new Property(10, boolean.class, "lastCheck", false, "LAST_CHECK");
-        public final static Property IsUpload = new Property(11, boolean.class, "isUpload", false, "IS_UPLOAD");
-        public final static Property IsMultChecked = new Property(12, boolean.class, "isMultChecked", false, "IS_MULT_CHECKED");
+        public final static Property UUID = new Property(2, String.class, "UUID", false, "UUID");
+        public final static Property Address = new Property(3, String.class, "address", false, "ADDRESS");
+        public final static Property Person = new Property(4, Integer.class, "person", false, "PERSON");
+        public final static Property Date = new Property(5, Long.class, "date", false, "DATE");
+        public final static Property Read = new Property(6, Integer.class, "read", false, "READ");
+        public final static Property Type = new Property(7, Integer.class, "type", false, "TYPE");
+        public final static Property Subject = new Property(8, String.class, "subject", false, "SUBJECT");
+        public final static Property Body = new Property(9, String.class, "body", false, "BODY");
+        public final static Property Service_center = new Property(10, String.class, "service_center", false, "SERVICE_CENTER");
+        public final static Property LastCheck = new Property(11, boolean.class, "lastCheck", false, "LAST_CHECK");
+        public final static Property IsUpload = new Property(12, boolean.class, "isUpload", false, "IS_UPLOAD");
+        public final static Property IsMultChecked = new Property(13, boolean.class, "isMultChecked", false, "IS_MULT_CHECKED");
     }
 
 
@@ -52,17 +53,18 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"SMSENTITY\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"SMS_ID\" INTEGER," + // 1: smsId
-                "\"ADDRESS\" TEXT," + // 2: address
-                "\"PERSON\" INTEGER," + // 3: person
-                "\"DATE\" INTEGER," + // 4: date
-                "\"READ\" INTEGER," + // 5: read
-                "\"TYPE\" INTEGER," + // 6: type
-                "\"SUBJECT\" TEXT," + // 7: subject
-                "\"BODY\" TEXT," + // 8: body
-                "\"SERVICE_CENTER\" TEXT," + // 9: service_center
-                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 10: lastCheck
-                "\"IS_UPLOAD\" INTEGER NOT NULL ," + // 11: isUpload
-                "\"IS_MULT_CHECKED\" INTEGER NOT NULL );"); // 12: isMultChecked
+                "\"UUID\" TEXT," + // 2: UUID
+                "\"ADDRESS\" TEXT," + // 3: address
+                "\"PERSON\" INTEGER," + // 4: person
+                "\"DATE\" INTEGER," + // 5: date
+                "\"READ\" INTEGER," + // 6: read
+                "\"TYPE\" INTEGER," + // 7: type
+                "\"SUBJECT\" TEXT," + // 8: subject
+                "\"BODY\" TEXT," + // 9: body
+                "\"SERVICE_CENTER\" TEXT," + // 10: service_center
+                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 11: lastCheck
+                "\"IS_UPLOAD\" INTEGER NOT NULL ," + // 12: isUpload
+                "\"IS_MULT_CHECKED\" INTEGER NOT NULL );"); // 13: isMultChecked
     }
 
     /** Drops the underlying database table. */
@@ -85,48 +87,53 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
             stmt.bindLong(2, smsId);
         }
  
+        String UUID = entity.getUUID();
+        if (UUID != null) {
+            stmt.bindString(3, UUID);
+        }
+ 
         String address = entity.getAddress();
         if (address != null) {
-            stmt.bindString(3, address);
+            stmt.bindString(4, address);
         }
  
         Integer person = entity.getPerson();
         if (person != null) {
-            stmt.bindLong(4, person);
+            stmt.bindLong(5, person);
         }
  
         Long date = entity.getDate();
         if (date != null) {
-            stmt.bindLong(5, date);
+            stmt.bindLong(6, date);
         }
  
         Integer read = entity.getRead();
         if (read != null) {
-            stmt.bindLong(6, read);
+            stmt.bindLong(7, read);
         }
  
         Integer type = entity.getType();
         if (type != null) {
-            stmt.bindLong(7, type);
+            stmt.bindLong(8, type);
         }
  
         String subject = entity.getSubject();
         if (subject != null) {
-            stmt.bindString(8, subject);
+            stmt.bindString(9, subject);
         }
  
         String body = entity.getBody();
         if (body != null) {
-            stmt.bindString(9, body);
+            stmt.bindString(10, body);
         }
  
         String service_center = entity.getService_center();
         if (service_center != null) {
-            stmt.bindString(10, service_center);
+            stmt.bindString(11, service_center);
         }
-        stmt.bindLong(11, entity.getLastCheck() ? 1L: 0L);
-        stmt.bindLong(12, entity.getIsUpload() ? 1L: 0L);
-        stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
+        stmt.bindLong(12, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(13, entity.getIsUpload() ? 1L: 0L);
+        stmt.bindLong(14, entity.getIsMultChecked() ? 1L: 0L);
     }
 
     @Override
@@ -143,48 +150,53 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
             stmt.bindLong(2, smsId);
         }
  
+        String UUID = entity.getUUID();
+        if (UUID != null) {
+            stmt.bindString(3, UUID);
+        }
+ 
         String address = entity.getAddress();
         if (address != null) {
-            stmt.bindString(3, address);
+            stmt.bindString(4, address);
         }
  
         Integer person = entity.getPerson();
         if (person != null) {
-            stmt.bindLong(4, person);
+            stmt.bindLong(5, person);
         }
  
         Long date = entity.getDate();
         if (date != null) {
-            stmt.bindLong(5, date);
+            stmt.bindLong(6, date);
         }
  
         Integer read = entity.getRead();
         if (read != null) {
-            stmt.bindLong(6, read);
+            stmt.bindLong(7, read);
         }
  
         Integer type = entity.getType();
         if (type != null) {
-            stmt.bindLong(7, type);
+            stmt.bindLong(8, type);
         }
  
         String subject = entity.getSubject();
         if (subject != null) {
-            stmt.bindString(8, subject);
+            stmt.bindString(9, subject);
         }
  
         String body = entity.getBody();
         if (body != null) {
-            stmt.bindString(9, body);
+            stmt.bindString(10, body);
         }
  
         String service_center = entity.getService_center();
         if (service_center != null) {
-            stmt.bindString(10, service_center);
+            stmt.bindString(11, service_center);
         }
-        stmt.bindLong(11, entity.getLastCheck() ? 1L: 0L);
-        stmt.bindLong(12, entity.getIsUpload() ? 1L: 0L);
-        stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
+        stmt.bindLong(12, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(13, entity.getIsUpload() ? 1L: 0L);
+        stmt.bindLong(14, entity.getIsMultChecked() ? 1L: 0L);
     }
 
     @Override
@@ -197,17 +209,18 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
         SMSEntity entity = new SMSEntity( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1), // smsId
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // address
-            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // person
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // date
-            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // read
-            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // type
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // subject
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // body
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // service_center
-            cursor.getShort(offset + 10) != 0, // lastCheck
-            cursor.getShort(offset + 11) != 0, // isUpload
-            cursor.getShort(offset + 12) != 0 // isMultChecked
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // UUID
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // address
+            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // person
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // date
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // read
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // type
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // subject
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // body
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // service_center
+            cursor.getShort(offset + 11) != 0, // lastCheck
+            cursor.getShort(offset + 12) != 0, // isUpload
+            cursor.getShort(offset + 13) != 0 // isMultChecked
         );
         return entity;
     }
@@ -216,17 +229,18 @@ public class SMSEntityDao extends AbstractDao<SMSEntity, Long> {
     public void readEntity(Cursor cursor, SMSEntity entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setSmsId(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1));
-        entity.setAddress(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setPerson(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
-        entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setRead(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
-        entity.setType(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
-        entity.setSubject(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setBody(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setService_center(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setLastCheck(cursor.getShort(offset + 10) != 0);
-        entity.setIsUpload(cursor.getShort(offset + 11) != 0);
-        entity.setIsMultChecked(cursor.getShort(offset + 12) != 0);
+        entity.setUUID(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setAddress(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setPerson(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
+        entity.setDate(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setRead(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setType(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setSubject(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setBody(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setService_center(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setLastCheck(cursor.getShort(offset + 11) != 0);
+        entity.setIsUpload(cursor.getShort(offset + 12) != 0);
+        entity.setIsMultChecked(cursor.getShort(offset + 13) != 0);
      }
     
     @Override

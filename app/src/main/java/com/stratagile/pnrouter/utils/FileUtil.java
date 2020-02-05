@@ -1880,12 +1880,13 @@ public class FileUtil {
                     } else if (intType == 6) {
                         strType = "待发送列表";
                     } else if (intType == 0) {
-                        strType = "所以短信";
+                        strType = "所有短信";
                     } else {
                         strType = "null";
                     }
                     SMSEntity SMSEntityTemp = new SMSEntity();
                     SMSEntityTemp.setSmsId(intID);
+                    SMSEntityTemp.setUUID(strAddress+longDate);
                     SMSEntityTemp.setAddress(strAddress);
                     SMSEntityTemp.setPerson(intPerson);
                     SMSEntityTemp.setDate(longDate);

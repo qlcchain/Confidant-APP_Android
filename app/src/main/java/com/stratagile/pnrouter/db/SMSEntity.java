@@ -13,6 +13,8 @@ public class SMSEntity implements Parcelable{
     private Long id;
 
     private Integer smsId;
+
+    private String UUID;
     // 电话
     private String address;
     // 联系人位置
@@ -48,6 +50,7 @@ public class SMSEntity implements Parcelable{
         } else {
             smsId = in.readInt();
         }
+        UUID = in.readString();
         address = in.readString();
         if (in.readByte() == 0) {
             person = null;
@@ -77,13 +80,14 @@ public class SMSEntity implements Parcelable{
         isMultChecked = in.readByte() != 0;
     }
 
-    @Generated(hash = 1441031214)
-    public SMSEntity(Long id, Integer smsId, String address, Integer person,
-            Long date, Integer read, Integer type, String subject, String body,
-            String service_center, boolean lastCheck, boolean isUpload,
+    @Generated(hash = 1470688597)
+    public SMSEntity(Long id, Integer smsId, String UUID, String address,
+            Integer person, Long date, Integer read, Integer type, String subject,
+            String body, String service_center, boolean lastCheck, boolean isUpload,
             boolean isMultChecked) {
         this.id = id;
         this.smsId = smsId;
+        this.UUID = UUID;
         this.address = address;
         this.person = person;
         this.date = date;
@@ -123,6 +127,14 @@ public class SMSEntity implements Parcelable{
 
     public void setSmsId(Integer smsId) {
         this.smsId = smsId;
+    }
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
     }
 
     public String getAddress() {
@@ -232,6 +244,7 @@ public class SMSEntity implements Parcelable{
             dest.writeByte((byte) 1);
             dest.writeInt(smsId);
         }
+        dest.writeString(UUID);
         dest.writeString(address);
         if (person == null) {
             dest.writeByte((byte) 0);
