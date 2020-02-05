@@ -33,7 +33,7 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View {
         for(item in smsDataList)
         {
             var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.SmsId.eq(item.smsId)).list()
-            if(list != null && list.size > 0)
+            if(list == null || list!!.size == 0)
             {
                 AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.insert(item)
             }
