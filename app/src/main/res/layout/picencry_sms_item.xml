@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/smsRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:background="@color/white">
     <RelativeLayout
         android:id="@+id/avatar_container"
@@ -70,7 +72,7 @@
 
         <TextView
             android:id="@+id/nodePic"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/title"
@@ -92,7 +94,7 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x61"
+            android:layout_marginRight="@dimen/x21"
             android:layout_alignTop="@+id/title"
             android:layout_alignBottom="@+id/title"
             android:layout_alignParentRight="true"
@@ -101,6 +103,7 @@
             android:textSize="12sp" />
         <TextView
             android:id="@+id/attach"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/x21"
@@ -179,8 +182,11 @@
 
         >
         <CheckBox
+            android:visibility="visible"
             android:id="@+id/checkBox"
-            android:clickable="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x1"

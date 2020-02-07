@@ -19,6 +19,8 @@ public class SMSEntity implements Parcelable{
     private String address;
     // 联系人位置
     private Integer person;
+    // 联系人名字
+    private String personName;
     // 时间
     private Long date;
     // 是否阅读
@@ -57,6 +59,7 @@ public class SMSEntity implements Parcelable{
         } else {
             person = in.readInt();
         }
+        personName = in.readString();
         if (in.readByte() == 0) {
             date = null;
         } else {
@@ -80,16 +83,17 @@ public class SMSEntity implements Parcelable{
         isMultChecked = in.readByte() != 0;
     }
 
-    @Generated(hash = 1470688597)
+    @Generated(hash = 1310137541)
     public SMSEntity(Long id, Integer smsId, String UUID, String address,
-            Integer person, Long date, Integer read, Integer type, String subject,
-            String body, String service_center, boolean lastCheck, boolean isUpload,
-            boolean isMultChecked) {
+            Integer person, String personName, Long date, Integer read,
+            Integer type, String subject, String body, String service_center,
+            boolean lastCheck, boolean isUpload, boolean isMultChecked) {
         this.id = id;
         this.smsId = smsId;
         this.UUID = UUID;
         this.address = address;
         this.person = person;
+        this.personName = personName;
         this.date = date;
         this.read = read;
         this.type = type;
@@ -151,6 +155,14 @@ public class SMSEntity implements Parcelable{
 
     public void setPerson(Integer person) {
         this.person = person;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     public Long getDate() {
@@ -252,6 +264,7 @@ public class SMSEntity implements Parcelable{
             dest.writeByte((byte) 1);
             dest.writeInt(person);
         }
+        dest.writeString(personName);
         if (date == null) {
             dest.writeByte((byte) 0);
         } else {

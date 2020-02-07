@@ -632,6 +632,10 @@ val credentialsProvider: CredentialsProvider, private
                     bakAddrUserNumCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
                     bakAddrUserNumOutCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
                 }
+                "BakContent" -> {
+                    val JBakContentRsp = gson.fromJson(text, JBakContentRsp::class.java)
+                    bakContentCallback?.BakContentBack(JBakContentRsp)
+                }
             }
         }
 
@@ -737,6 +741,7 @@ val credentialsProvider: CredentialsProvider, private
 
     var bakAddrUserNumOutCallback:BakAddrUserNumOutCallback? = null;
 
+    var bakContentCallback:BakContentCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1152,6 +1157,9 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakAddrUserNumOutCallback {
         fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
+    }
+    interface BakContentCallback {
+        fun BakContentBack(JBakContentRsp: JBakContentRsp)
     }
 }
 

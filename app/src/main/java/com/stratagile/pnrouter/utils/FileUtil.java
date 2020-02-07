@@ -1884,11 +1884,13 @@ public class FileUtil {
                     } else {
                         strType = "null";
                     }
+                    String personName = getPeopleNameFromPerson(strAddress,context);
                     SMSEntity SMSEntityTemp = new SMSEntity();
                     SMSEntityTemp.setSmsId(intID);
                     SMSEntityTemp.setUUID(strAddress+longDate);
                     SMSEntityTemp.setAddress(strAddress);
                     SMSEntityTemp.setPerson(intPerson);
+                    SMSEntityTemp.setPersonName(personName);
                     SMSEntityTemp.setDate(longDate);
                     SMSEntityTemp.setRead(intRead);
                     SMSEntityTemp.setType(intType);
@@ -1912,6 +1914,30 @@ public class FileUtil {
             Log.d("SQLiteException", ex.getMessage());
         }
         return smsMessageEntityList;
+    }
+    public static String getPeopleNameFromPerson(String address,Context context) {
+        if (address == null || address.equals("")) {
+            return "";
+        }
+
+        String strPerson = "";
+        try {
+            String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+            Uri uri_Person = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, address);  // address 手机号过滤
+            Cursor cursor = context.getContentResolver().query(uri_Person, projection, null, null, null);
+
+            if (cursor.moveToFirst()) {
+                int index_PeopleName = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                String strPeopleName = cursor.getString(index_PeopleName);
+                strPerson = strPeopleName;
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return strPerson;
+        }
     }
     /**
      *
