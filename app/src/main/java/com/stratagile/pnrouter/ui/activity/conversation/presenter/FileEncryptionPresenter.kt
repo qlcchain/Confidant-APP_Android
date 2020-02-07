@@ -47,7 +47,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
     }
     override fun getSMSPermission() {
         AndPermission.with(mView as Fragment)
-                .requestCode(101)
+                .requestCode(102)
                 .permission(
                         Manifest.permission.READ_SMS
                 )
@@ -105,14 +105,14 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
     private var permissionSMS = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
             // 权限申请成功回调。
-            if (requestCode == 101) {
+            if (requestCode == 102) {
                 mView.getSMSPermissionSuccess()
             }
         }
 
         override fun onFailed(requestCode: Int, deniedPermissions: List<String>) {
             // 权限申请失败回调。
-            if (requestCode == 101) {
+            if (requestCode == 102) {
                 KLog.i("权限申请失败")
                 AppConfig.instance.toast(R.string.permission_denied)
             }

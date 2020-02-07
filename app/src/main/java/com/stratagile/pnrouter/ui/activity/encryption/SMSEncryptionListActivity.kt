@@ -50,7 +50,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
     var initSize = 30;
     var pageSize = 10;
     var sentSMSLocalDataList = arrayListOf<SMSEntity>()
-
+    var sentSMSChooseDataList = arrayListOf<SMSEntity>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -78,6 +78,13 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
             emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
             smsAdapter!!.notifyItemChanged(position)
             showMenuUI()
+            sentSMSChooseDataList = arrayListOf<SMSEntity>()
+            smsAdapter!!.data.forEachIndexed { index, it ->
+                if(it.lastCheck)
+                {
+                    sentSMSChooseDataList.add(it)
+                }
+            }
         }
         if(refreshLayout != null)
         {
@@ -187,13 +194,18 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))
 
 
-            for(item in sentSMSLocalDataList)
+            if(BuildConfig.DEBUG)
             {
-                item.setUpload(true);
-                item.lastCheck = false;
-                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+                for(item in sentSMSLocalDataList)
+                {
+                    item.setUpload(true);
+                    item.lastCheck = false;
+                    AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+                }
+                sentSMSChooseDataList = arrayListOf<SMSEntity>()
+                smsAdapter!!.notifyDataSetChanged()
             }
-            smsAdapter!!.notifyDataSetChanged()
+
         }
         initQuerData()
     }
@@ -224,10 +236,11 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
     fun fiter(key: String, emailMessageList: ArrayList<SMSEntity>) {
         var contactListTemp: ArrayList<SMSEntity> = arrayListOf<SMSEntity>()
         for (i in emailMessageList) {
-            smsAdapter!!.data.forEachIndexed { index, it ->
-                if(it.uuid == i.uuid)
+            for(item in sentSMSChooseDataList)
+            {
+                if(item.uuid == i.uuid)
                 {
-                    i.lastCheck = it.lastCheck;
+                    i.lastCheck = item.lastCheck;
                 }
             }
             if(i.address == null )

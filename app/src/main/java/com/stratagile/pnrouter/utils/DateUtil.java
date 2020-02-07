@@ -43,6 +43,10 @@ public class DateUtil {
             }else if(var3) {//不在同一年
                 var1 = "dd/MM/yyyy";
             }
+            if(var1 == null || var0 == null)
+            {
+                return "";
+            }
             return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
         }catch (Exception e)
         {
