@@ -839,7 +839,7 @@ data class BakContentReq(var Type : String,var UserId : String, var Num :Int,var
  * 104.	用户查询自己账户下备份的短信
  * (1)	请求（APP-->Router）
  */
-data class PullBakContentReq(var UserId : String,var Type : String, var Tel :Int, var Num :Int,var StartId : String,var Action : String = "PullBakContent")
+data class PullBakContentReq(var UserId : String,var Type : Int, var Tel :String, var Num :Int,var StartId : Int,var Action : String = "PullBakContent")
 /**
  * 105.	用户删除节点上备份的短信
  * (1)	请求（APP-->Router）

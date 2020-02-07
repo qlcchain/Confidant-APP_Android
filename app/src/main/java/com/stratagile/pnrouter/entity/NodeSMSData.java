@@ -3,33 +3,35 @@ package com.stratagile.pnrouter.entity;
 import java.io.Serializable;
 
 
-public class SendSMSData implements Serializable {
+public class NodeSMSData implements Serializable {
 
-
+    // 节点ID
     private Integer Index;
-
-    private Integer Id;
     // 电话
     private String Tel;
+    //短信数量
     private Integer Num;
-    // 联系人
-    private String User;
-    // 联系人位置
-    private Integer Uid;
+
+    private Integer Id;
     // 时间
     private Long Time;
+
     // 是否阅读
     private Integer Read;
     // 消息类型
     private Integer Send;
+    // 联系人
+    private String User;
     // 主题
     private String Title;
+
     // 内容
     private String Cont;
     // 加密
     private String Key;
+    // 联系人位置
+    private Integer Uid;
 
-    private boolean lastCheck; //最后一次选中
 
     public Integer getIndex() {
         return Index;
@@ -37,14 +39,6 @@ public class SendSMSData implements Serializable {
 
     public void setIndex(Integer index) {
         Index = index;
-    }
-
-    public Integer getId() {
-        return Id;
-    }
-
-    public void setId(Integer id) {
-        Id = id;
     }
 
     public String getTel() {
@@ -63,20 +57,12 @@ public class SendSMSData implements Serializable {
         Num = num;
     }
 
-    public String getUser() {
-        return User;
+    public Integer getId() {
+        return Id;
     }
 
-    public void setUser(String user) {
-        User = user;
-    }
-
-    public Integer getUid() {
-        return Uid;
-    }
-
-    public void setUid(Integer uid) {
-        Uid = uid;
+    public void setId(Integer id) {
+        Id = id;
     }
 
     public Long getTime() {
@@ -103,6 +89,14 @@ public class SendSMSData implements Serializable {
         Send = send;
     }
 
+    public String getUser() {
+        return User;
+    }
+
+    public void setUser(String user) {
+        User = user;
+    }
+
     public String getTitle() {
         return Title;
     }
@@ -127,11 +121,11 @@ public class SendSMSData implements Serializable {
         Key = key;
     }
 
-    public boolean isLastCheck() {
-        return lastCheck;
+    public Integer getUid() {
+        return Uid;
     }
 
-    public void setLastCheck(boolean lastCheck) {
-        this.lastCheck = lastCheck;
+    public void setUid(Integer uid) {
+        Uid = uid;
     }
 }

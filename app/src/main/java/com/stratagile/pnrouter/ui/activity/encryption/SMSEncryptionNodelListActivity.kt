@@ -1,13 +1,27 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESToolsCipher
+import com.stratagile.pnrouter.BuildConfig
+import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerSMSEncryptionNodelListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionNodelListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionNodelListModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.SMSEncryptionNodelListPresenter
+import com.stratagile.pnrouter.ui.adapter.conversation.SMSNodeAdapter
+import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_node_sms_list.*
+import kotlinx.android.synthetic.main.email_search_bar.*
 
 import javax.inject.Inject;
 
@@ -18,33 +32,118 @@ import javax.inject.Inject;
  * @date 2020/02/05 14:49:08
  */
 
-class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListContract.View {
+class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListContract.View, PNRouterServiceMessageReceiver.PullBakContentCallback {
+    override fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp) {
+
+    }
+
+    override fun delBakContentBack(jDelBakContentRsp: JDelBakContentRsp) {
+
+    }
 
     @Inject
     internal lateinit var mPresenter: SMSEncryptionNodelListPresenter
+    var SMSNodeAdapter : SMSNodeAdapter? = null
+    var nodeStartId = 0;
+    var lastPayload : JPullMailListRsp.ParamsBean.PayloadBean? = null
+    var sentSMSLocalDataList = arrayListOf<SendSMSData>()
+    var sentSMSChooseDataList = arrayListOf<SendSMSData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
-//        setContentView(R.layout.activity_sMSEncryptionNodelList)
+        setContentView(R.layout.activity_node_sms_list)
     }
     override fun initData() {
+        title.text = getString(R.string.nodemsg_local)
+        getNodeData(20,0)
+        if(refreshLayout != null)
+        {
+            refreshLayout.isEnabled = true
+        }
+
+        refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
+        refreshLayout.setOnRefreshListener { refreshLayout ->
+            refreshLayout.finishRefresh()
+            refreshLayout.finishRefreshWithNoMoreData()
+        }
+        refreshLayout.finishRefreshWithNoMoreData()
+        refreshLayout.setOnLoadMoreListener { refreshLayout ->
+            getNodeData(20,nodeStartId)
+        }
+        actionButton.setOnClickListener {
+            var deletIndex = "";
+            var count = 0;
+            SMSNodeAdapter!!.data.forEachIndexed { index, it ->
+                if(it.isLastCheck)
+                {
+                    deletIndex += it.index.toString()+","
+                    count ++;
+                }
+            }
+            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var bakContentReq = DelBakContentReq("1",selfUserId!!,count,deletIndex)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))
+
+        }
+        //initQuerData()
+    }
+    fun initQuerData() {
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+    }
+    fun fiter(key: String, emailMessageList: ArrayList<SendSMSData>) {
 
     }
+    fun showMenuUI()
+    {
+        var isNeedShow = false;
+        SMSNodeAdapter!!.data.forEachIndexed { index, it ->
+            if(it.isLastCheck)
+            {
+                isNeedShow = true;
+            }
+        }
 
+        if(isNeedShow)
+        {
+            actionButton.visibility = View.VISIBLE
+
+        }else{
+            actionButton.visibility = View.GONE
+        }
+
+    }
+    fun getNodeData(count:Int,startId:Int)
+    {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var pullBakContent = PullBakContentReq(selfUserId!! ,1,"", count,startId)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullBakContent))
+    }
     override fun setupActivityComponent() {
-       DaggerSMSEncryptionNodelListComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .sMSEncryptionNodelListModule(SMSEncryptionNodelListModule(this))
-               .build()
-               .inject(this)
+        DaggerSMSEncryptionNodelListComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .sMSEncryptionNodelListModule(SMSEncryptionNodelListModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: SMSEncryptionNodelListContract.SMSEncryptionNodelListContractPresenter) {
-            mPresenter = presenter as SMSEncryptionNodelListPresenter
-        }
+        mPresenter = presenter as SMSEncryptionNodelListPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

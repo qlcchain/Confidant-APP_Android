@@ -636,13 +636,13 @@ val credentialsProvider: CredentialsProvider, private
                     val JBakContentRsp = gson.fromJson(text, JBakContentRsp::class.java)
                     bakContentCallback?.BakContentBack(JBakContentRsp)
                 }
-                "BakContent" -> {
+                "PullBakContent" -> {
                     val JPullBakContentRsp = gson.fromJson(text, JPullBakContentRsp::class.java)
                     pullBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
                 }
-                "BakContent" -> {
+                "DelBakContent" -> {
                     val JDelBakContentRsp = gson.fromJson(text, JDelBakContentRsp::class.java)
-                    delBakContentCallback?.delBakContentBack(JDelBakContentRsp)
+                    pullBakContentCallback?.delBakContentBack(JDelBakContentRsp)
                 }
             }
         }
@@ -753,7 +753,6 @@ val credentialsProvider: CredentialsProvider, private
 
     var pullBakContentCallback:PullBakContentCallback? = null;
 
-    var delBakContentCallback:DelBakContentCallback? = null;
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -1175,8 +1174,6 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface PullBakContentCallback {
         fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp)
-    }
-    interface DelBakContentCallback {
         fun delBakContentBack(jDelBakContentRsp: JDelBakContentRsp)
     }
 }

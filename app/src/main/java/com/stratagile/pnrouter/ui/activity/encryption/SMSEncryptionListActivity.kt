@@ -148,12 +148,17 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
                     var sendSMSData = SendSMSData();
                     sendSMSData.id = it.smsId;
-                    sendSMSData.tel = it.address
+                    if(it.address == null)
+                    {
+                        sendSMSData.tel = ""
+                    }else{
+                        sendSMSData.tel = String(RxEncodeTool.base64Encode(it.address.toByteArray()))
+                    }
                     if(it.personName == null)
                     {
                         sendSMSData.user = ""
                     }else{
-                        sendSMSData.user = it.personName
+                        sendSMSData.user = String(RxEncodeTool.base64Encode(it.personName.toByteArray()))
                     }
                     if(it.person == null)
                     {
