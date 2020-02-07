@@ -835,3 +835,13 @@ data class BakAddrUserNumReq(var User : String, var FileId :Int,var Action : Str
  * (1)	请求（APP-->Router）
  */
 data class BakContentReq(var Type : String,var UserId : String, var Num :Int,var Payload : String,var Action : String = "BakContent")
+/**
+ * 104.	用户查询自己账户下备份的短信
+ * (1)	请求（APP-->Router）
+ */
+data class PullBakContentReq(var UserId : String,var Type : String, var Tel :Int, var Num :Int,var StartId : String,var Action : String = "PullBakContent")
+/**
+ * 105.	用户删除节点上备份的短信
+ * (1)	请求（APP-->Router）
+ */
+data class DelBakContentReq(var Type : String,var UserId : String, var Num :Int,var Index : String,var Action : String = "DelBakContent")
