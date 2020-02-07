@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESToolsCipher
@@ -23,6 +25,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.presenter.SMSEncryptionLis
 import com.stratagile.pnrouter.ui.adapter.conversation.SMSAdapter
 import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_sms_list.*
+import kotlinx.android.synthetic.main.email_search_bar.*
 import javax.inject.Inject
 
 /**
@@ -191,6 +194,68 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                 AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
             }
             smsAdapter!!.notifyDataSetChanged()
+        }
+        initQuerData()
+    }
+    fun initQuerData() {
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().orderDesc(SMSEntityDao.Properties.Date).list()
+                if (localMessageList== null || localMessageList.size > 0)
+                {
+                    var localMessageListData = arrayListOf<SMSEntity>()
+                    for (item in localMessageList)
+                    {
+                        localMessageListData.add(item);
+                    }
+                    fiter(s.toString(), localMessageListData)
+                }
+
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+    }
+    fun fiter(key: String, emailMessageList: ArrayList<SMSEntity>) {
+        var contactListTemp: ArrayList<SMSEntity> = arrayListOf<SMSEntity>()
+        for (i in emailMessageList) {
+            smsAdapter!!.data.forEachIndexed { index, it ->
+                if(it.uuid == i.uuid)
+                {
+                    i.lastCheck = it.lastCheck;
+                }
+            }
+            if(i.address == null )
+            {
+                i.address = ""
+            }
+            if(i.subject == null )
+            {
+                i.subject = ""
+            }
+            if(i.personName == null )
+            {
+                i.personName = ""
+            }
+            if(i.body == null )
+            {
+                i.body = ""
+            }
+            if (i.address.toLowerCase().contains(key) || i.personName.toLowerCase().contains(key)|| i.subject.toLowerCase().contains(key)|| i.body.toLowerCase().contains(key)) {
+
+                contactListTemp.add(i)
+            }
+        }
+        if(key != "")
+        {
+            smsAdapter!!.setNewData(contactListTemp);
+        }else{
+            smsAdapter!!.setNewData(emailMessageList);
         }
     }
     fun showMenuUI()

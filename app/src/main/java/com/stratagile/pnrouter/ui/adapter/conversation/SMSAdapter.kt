@@ -38,7 +38,7 @@ class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity
         {
             helper.setVisible(R.id.nodePic,true)
         }else{
-            helper.setVisible(R.id.nodePic,true)
+            helper.setVisible(R.id.nodePic,false)
         }
     }
 
