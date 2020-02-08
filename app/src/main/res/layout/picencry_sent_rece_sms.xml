@@ -6,19 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/timestamp"
-        style="@style/chat_text_date_style"
-        android:text=""
-        android:layout_marginTop="@dimen/x24"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x16"
         android:layout_height="wrap_content">
-
         <CheckBox
             android:id="@+id/checkBoxLeft"
             android:layout_width="wrap_content"
@@ -76,6 +67,12 @@
                     android:layerType="software"
                     android:layout_height="2dp" />
                 <TextView
+                    android:id="@+id/timestampLeft"
+                    style="@style/chat_text_date_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2019.12.15" />
+                <TextView
                     android:id="@+id/tv_chatcontentLeft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -100,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/chat_nick_margin_left"
             android:textSize="@dimen/chat_nick_text_size"
-            android:layout_toRightOf="@id/iv_userhead"
+            android:layout_toRightOf="@id/iv_userheadRight"
             android:visibility="gone" />
         <CheckBox
             android:id="@+id/checkBoxRight"
@@ -115,7 +112,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false" />
         <com.stratagile.pnrouter.view.ImageButtonWithText
-            android:id="@+id/iv_userhead"
+            android:id="@+id/iv_userheadRight"
             android:layout_width="@dimen/x77"
             android:layout_height="@dimen/x77"
             android:layout_marginRight="@dimen/x5"
@@ -124,13 +121,13 @@
             android:layout_alignParentTop="true" />
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/bubble"
+            android:id="@+id/bubbleRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="46dp"
             android:maxWidth="@dimen/x512"
             android:layout_marginRight="@dimen/x12"
-            android:layout_toLeftOf="@id/iv_userhead"
+            android:layout_toLeftOf="@id/iv_userheadRight"
             android:background="@drawable/ease_chatto_bg"
             >
             <LinearLayout
@@ -159,7 +156,13 @@
                     android:layerType="software"
                     android:layout_height="2dp" />
                 <TextView
-                    android:id="@+id/tv_chatcontent"
+                    android:id="@+id/timestampRight"
+                    style="@style/chat_text_date_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2019.12.15" />
+                <TextView
+                    android:id="@+id/tv_chatcontentRight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="2dp"
@@ -175,7 +178,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:src="@drawable/send"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:layout_gravity="right"
                     app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
@@ -187,7 +190,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/bubble"
+            android:layout_toLeftOf="@id/bubbleRight"
             android:clickable="true"
             android:src="@drawable/ease_msg_state_failed_resend"
             android:visibility="gone" />
@@ -198,7 +201,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/bubble"
+            android:layout_toLeftOf="@id/bubbleRight"
             android:text="@string/text_ack_msg"
             android:textSize="12sp"
             android:visibility="invisible" />
@@ -209,7 +212,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/bubble"
+            android:layout_toLeftOf="@id/bubbleRight"
             android:text="@string/text_delivered_msg"
             android:textSize="12sp"
             android:visibility="invisible" />
@@ -220,7 +223,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/bubble"
+            android:layout_toLeftOf="@id/bubbleRight"
             android:visibility="gone" />
     </RelativeLayout>
 

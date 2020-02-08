@@ -73,7 +73,7 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
         recyclerView.adapter = SMSNodeAdapter
         recyclerView.scrollToPosition(0)
         SMSNodeAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var smsMeaasgeData =  SMSNodeAdapter!!.getItem(position)
+            var smsMeaasgeData =  SMSNodeAdapter!!.getItem(position) as SendSMSData
             var intent =  Intent(this, SMSEncryptionNodelSecondActivity::class.java)
             intent.putExtra("smsMeaasgeData",smsMeaasgeData)
             startActivity(intent);

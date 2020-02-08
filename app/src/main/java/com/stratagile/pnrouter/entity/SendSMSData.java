@@ -1,9 +1,12 @@
 package com.stratagile.pnrouter.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 
-public class SendSMSData implements Serializable {
+public class SendSMSData implements Parcelable {
 
 
     private Integer Index;
@@ -30,6 +33,122 @@ public class SendSMSData implements Serializable {
     private String Key;
 
     private boolean lastCheck; //最后一次选中
+
+    public SendSMSData() {
+    }
+
+    protected SendSMSData(Parcel in) {
+        if (in.readByte() == 0) {
+            Index = null;
+        } else {
+            Index = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            Id = null;
+        } else {
+            Id = in.readInt();
+        }
+        Tel = in.readString();
+        if (in.readByte() == 0) {
+            Num = null;
+        } else {
+            Num = in.readInt();
+        }
+        User = in.readString();
+        if (in.readByte() == 0) {
+            Uid = null;
+        } else {
+            Uid = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            Time = null;
+        } else {
+            Time = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            Read = null;
+        } else {
+            Read = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            Send = null;
+        } else {
+            Send = in.readInt();
+        }
+        Title = in.readString();
+        Cont = in.readString();
+        Key = in.readString();
+        lastCheck = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (Index == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Index);
+        }
+        if (Id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Id);
+        }
+        dest.writeString(Tel);
+        if (Num == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Num);
+        }
+        dest.writeString(User);
+        if (Uid == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Uid);
+        }
+        if (Time == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(Time);
+        }
+        if (Read == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Read);
+        }
+        if (Send == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Send);
+        }
+        dest.writeString(Title);
+        dest.writeString(Cont);
+        dest.writeString(Key);
+        dest.writeByte((byte) (lastCheck ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<SendSMSData> CREATOR = new Creator<SendSMSData>() {
+        @Override
+        public SendSMSData createFromParcel(Parcel in) {
+            return new SendSMSData(in);
+        }
+
+        @Override
+        public SendSMSData[] newArray(int size) {
+            return new SendSMSData[size];
+        }
+    };
 
     public Integer getIndex() {
         return Index;
