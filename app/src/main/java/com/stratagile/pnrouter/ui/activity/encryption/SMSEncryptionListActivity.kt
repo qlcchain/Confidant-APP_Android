@@ -60,6 +60,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
     }
     override fun initData() {
         title.text = getString(R.string.msg_local)
+        AppConfig.instance.messageReceiver?.bakContentCallback = this
         var smsMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().orderDesc(SMSEntityDao.Properties.Date).list()
         var emailMessageEntityList50 = mutableListOf<SMSEntity>()
         if(smsMessageEntityList.size >initSize)
@@ -310,5 +311,9 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    override fun onDestroy() {
 
+        AppConfig.instance.messageReceiver?.bakContentCallback = null
+        super.onDestroy()
+    }
 }

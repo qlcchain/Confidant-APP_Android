@@ -59,7 +59,7 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
     }
     override fun initData() {
         title.text = getString(R.string.nodemsg_local)
-
+        AppConfig.instance.messageReceiver?.pullBakContentCallback = this
         var emailMessageEntityList50 = mutableListOf<SendSMSData>()
         var SendSMSDataTemp = SendSMSData()
         SendSMSDataTemp.num =10;
@@ -171,5 +171,9 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    override fun onDestroy() {
 
+        AppConfig.instance.messageReceiver?.pullBakContentCallback = null
+        super.onDestroy()
+    }
 }
