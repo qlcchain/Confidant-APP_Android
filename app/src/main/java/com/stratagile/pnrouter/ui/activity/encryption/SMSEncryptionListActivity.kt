@@ -286,24 +286,6 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         if(isNeedShow)
         {
             actionButton.visibility = View.VISIBLE
-            /*var menuArray = arrayListOf<String>()
-            var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.Node_back_up))
-            iconArray = arrayListOf<String>("statusbar_download_node")
-            PopWindowUtil.showPopMenuWindow(this@SMSEncryptionListActivity, searchParent,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
-                override fun onSelect(position: Int, obj: Any) {
-                    KLog.i("" + position)
-                    var data = obj as FileOpreateType
-                    when (data.icon) {
-                        "statusbar_download_node" -> {
-
-                        }
-
-
-                    }
-                }
-
-            })*/
         }else{
             actionButton.visibility = View.GONE
         }

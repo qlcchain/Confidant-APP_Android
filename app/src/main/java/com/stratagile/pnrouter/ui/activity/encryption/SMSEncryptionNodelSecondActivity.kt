@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.encryption
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -34,6 +35,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     @Inject
     internal lateinit var mPresenter: SMSEncryptionNodelSecondPresenter
     var SMSNodeSecondAdapter : SMSNodeSecondAdapter? = null
+    var sentSMSChooseDataList = arrayListOf<SendSMSData>()
     var sendSMSData: SendSMSData? = null
     var nodeStartId = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,13 +66,31 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         SendSMSDataTemp.key =""
         emailMessageEntityList50.add(SendSMSDataTemp)
         emailMessageEntityList50.add(SendSMSDataTemp)
+        SendSMSDataTemp = SendSMSData()
+        SendSMSDataTemp.num =10;
+        SendSMSDataTemp.time = 1581137791386L
+        SendSMSDataTemp.cont = "SmartRefreshLayout是一个“聪明”或者“智能”的下拉刷新布局。由于它的“智能”，它不只是支持所有的View，还支持多层嵌套的视图结构。它继承自ViewGroup 而不是FrameLayout或LinearLayout，提高了性能。 它也吸取了现在流行的各种刷新布局的优点\n" + "————————————————\n" + "版权声明：本文为CSDN博主「K_Hello」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。\n" + "原文链接：https://blog.csdn.net/K_Hello/article/details/90512714"
+        SendSMSDataTemp.user = "聪明"
+        SendSMSDataTemp.send = 1;
+        SendSMSDataTemp.tel = "19000000000"
+        SendSMSDataTemp.key =""
         SendSMSDataTemp.send = 2;
         emailMessageEntityList50.add(SendSMSDataTemp)
         SMSNodeSecondAdapter = SMSNodeSecondAdapter(emailMessageEntityList50)
         recyclerView.adapter = SMSNodeSecondAdapter
         recyclerView.scrollToPosition(0)
         SMSNodeSecondAdapter!!.setOnItemClickListener { adapter, view, position ->
-
+            var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
+            emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
+            SMSNodeSecondAdapter!!.notifyItemChanged(position)
+            showMenuUI()
+            sentSMSChooseDataList = arrayListOf<SendSMSData>()
+            SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
+                if(it.isLastCheck)
+                {
+                    sentSMSChooseDataList.add(it)
+                }
+            }
         }
 
         getNodeData(20,0)
@@ -103,6 +123,24 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))
 
         }
+    }
+    fun showMenuUI()
+    {
+        var isNeedShow = false;
+        SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
+            if(it.isLastCheck)
+            {
+                isNeedShow = true;
+            }
+        }
+
+        if(isNeedShow)
+        {
+            actionButton.visibility = View.VISIBLE
+        }else{
+            actionButton.visibility = View.GONE
+        }
+
     }
     fun getNodeData(count:Int,startId:Int)
     {
