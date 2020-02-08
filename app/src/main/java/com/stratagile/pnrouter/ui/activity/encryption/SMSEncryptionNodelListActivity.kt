@@ -91,6 +91,7 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
         refreshLayout.setEnableRefresh(false);//是否启用上拉加载功能
         refreshLayout.setOnLoadMoreListener { refreshLayout ->
             getNodeData(20,nodeStartId)
+            refreshLayout.finishLoadMore()
         }
         actionButton.setOnClickListener {
             var deletIndex = "";
