@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/llParent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/timestamp"
+        style="@style/chat_text_date_style"
+        android:text=""
+        android:layout_marginTop="@dimen/x24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x16"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/checkBoxLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x5"
+            android:button="@drawable/checkbox_style"
+            android:checked="false"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/iv_userheadLeft"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_toRightOf="@id/checkBoxLeft"
+            android:layout_marginLeft="@dimen/x5"
+            app:imageButtonTextSize="16"
+            android:layout_alignParentTop="true"
+            />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/bubbleLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="@dimen/x512"
+            android:layout_below="@+id/tv_userid"
+            android:layout_marginLeft="@dimen/x12"
+            android:layout_toRightOf="@id/iv_userheadLeft"
+            android:background="@drawable/ease_chatfrom_bg"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_chatAssoccontentLeft"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="28dp"
+                    android:text=""
+                    android:textColor="@color/FF999999"
+                    android:textSize="14sp" />
+                <View
+                    android:id="@+id/tv_chatcontentDashLeft"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/dash_line"
+                    android:layerType="software"
+                    android:layout_height="2dp" />
+                <TextView
+                    android:id="@+id/tv_chatcontentLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:autoLink="email|phone|web"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="32dp"
+                    android:text=""
+                    android:textColor="@color/color_2c2c2c"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
+        <!-- android:autoLink="web"-->
+        <TextView
+            android:id="@+id/tv_userid"
+            style="@style/chat_text_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/chat_nick_margin_left"
+            android:textSize="@dimen/chat_nick_text_size"
+            android:layout_toRightOf="@id/iv_userhead"
+            android:visibility="gone" />
+        <CheckBox
+            android:id="@+id/checkBoxRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/x5"
+            android:button="@drawable/checkbox_style"
+            android:checked="false"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/iv_userhead"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginRight="@dimen/x5"
+            app:imageButtonTextSize="16"
+            android:layout_toLeftOf="@id/checkBoxRight"
+            android:layout_alignParentTop="true" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="46dp"
+            android:maxWidth="@dimen/x512"
+            android:layout_marginRight="@dimen/x12"
+            android:layout_toLeftOf="@id/iv_userhead"
+            android:background="@drawable/ease_chatto_bg"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_chatAssoccontent"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="28dp"
+                    android:text=""
+                    android:textColor="@color/FF999999"
+                    android:textSize="14sp" />
+                <View
+                    android:id="@+id/tv_chatcontentDash"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/dash_line"
+                    android:layerType="software"
+                    android:layout_height="2dp" />
+                <TextView
+                    android:id="@+id/tv_chatcontent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="2dp"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:text=""
+                    android:autoLink="email|phone|web"
+                    android:textColor="@color/color_2c2c2c"
+                    android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/msg_sendstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:src="@drawable/send"
+                    android:visibility="visible"
+                    android:layout_gravity="right"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/msg_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/bubble"
+            android:clickable="true"
+            android:src="@drawable/ease_msg_state_failed_resend"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_ack"
+            style="@style/chat_text_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/bubble"
+            android:text="@string/text_ack_msg"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tv_delivered"
+            style="@style/chat_text_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/bubble"
+            android:text="@string/text_delivered_msg"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <ProgressBar
+
+            android:id="@+id/progress_bar"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/bubble"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/marginView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/x16"
+        android:layout_height="@dimen/x16"/>
+
+</LinearLayout>

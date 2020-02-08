@@ -92,10 +92,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         }
 
         refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
-        refreshLayout.setOnRefreshListener { refreshLayout ->
-            refreshLayout.finishRefresh()
-            refreshLayout.finishRefreshWithNoMoreData()
-        }
+        refreshLayout.setEnableRefresh(false);//是否启用上拉加载功能
         refreshLayout.finishRefreshWithNoMoreData()
         refreshLayout.setOnLoadMoreListener { refreshLayout ->
             var emailMessageEntityNextList = mutableListOf<SMSEntity>()

@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -58,18 +59,36 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
     }
     override fun initData() {
         title.text = getString(R.string.nodemsg_local)
+
+        var emailMessageEntityList50 = mutableListOf<SendSMSData>()
+        var SendSMSDataTemp = SendSMSData()
+        SendSMSDataTemp.num =10;
+        SendSMSDataTemp.time = 1581137791386L
+        SendSMSDataTemp.cont = "2月2日消息，据苹果应用商店显示，ofo小黄车于5天前推送了4.0版本，版本描述称ofo小黄车实现了“免押金无桩用车、通过购物返利省钱、无需排队，押金提现和邀请好友，天天赚钱”等四大特色。"
+        SendSMSDataTemp.user = "小溪"
+        SendSMSDataTemp.tel = "19000000000"
+        SendSMSDataTemp.key =""
+        emailMessageEntityList50.add(SendSMSDataTemp)
+        SMSNodeAdapter = SMSNodeAdapter(emailMessageEntityList50)
+        recyclerView.adapter = SMSNodeAdapter
+        recyclerView.scrollToPosition(0)
+        SMSNodeAdapter!!.setOnItemClickListener { adapter, view, position ->
+            var smsMeaasgeData =  SMSNodeAdapter!!.getItem(position)
+            var intent =  Intent(this, SMSEncryptionNodelSecondActivity::class.java)
+            intent.putExtra("smsMeaasgeData",smsMeaasgeData)
+            startActivity(intent);
+        }
+
         getNodeData(20,0)
+
+
         if(refreshLayout != null)
         {
             refreshLayout.isEnabled = true
         }
 
         refreshLayout.setEnableAutoLoadMore(false)//开启自动加载功能（非必须）
-        refreshLayout.setOnRefreshListener { refreshLayout ->
-            refreshLayout.finishRefresh()
-            refreshLayout.finishRefreshWithNoMoreData()
-        }
-        refreshLayout.finishRefreshWithNoMoreData()
+        refreshLayout.setEnableRefresh(false);//是否启用上拉加载功能
         refreshLayout.setOnLoadMoreListener { refreshLayout ->
             getNodeData(20,nodeStartId)
         }

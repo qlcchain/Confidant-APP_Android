@@ -40,7 +40,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-   <!-- <uses-permission android:name="android.permission.READ_SMS" />-->
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="com.huawei.perission.sec.MDM" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -368,6 +368,10 @@
         </activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionNodelListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionNodelSecondActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity

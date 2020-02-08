@@ -72,7 +72,7 @@
 
         <TextView
             android:id="@+id/nodePic"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/title"
@@ -81,9 +81,8 @@
             android:singleLine="true"
             android:gravity="center_vertical"
             android:textColor="@color/color_2B2B2B"
-            android:textSize="5sp"
-            android:drawableLeft="@mipmap/statusbar_download_node"
-            android:text=""
+            android:textSize="14sp"
+            android:text="(20条)"
             android:layout_alignBottom="@+id/title"
             android:layout_alignTop="@+id/title"
             android:layout_marginTop="@dimen/x3"
