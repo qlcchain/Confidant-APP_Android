@@ -75,6 +75,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         var emailMessageEntityList50 = mutableListOf<SendSMSData>()
         var SendSMSDataTemp = SendSMSData()
         SendSMSDataTemp.num =10;
+        SendSMSDataTemp.index =1;
         SendSMSDataTemp.time = 1581137791386L
         SendSMSDataTemp.cont = "SmartRefreshLayout是一个“聪明”或者“智能”的下拉刷新布局。由于它的“智能”，它不只是支持所有的View，还支持多层嵌套的视图结构。它继承自ViewGroup 而不是FrameLayout或LinearLayout，提高了性能。 它也吸取了现在流行的各种刷新布局的优点\n" + "————————————————\n" + "版权声明：本文为CSDN博主「K_Hello」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。\n" + "原文链接：https://blog.csdn.net/K_Hello/article/details/90512714"
         SendSMSDataTemp.user = "聪明"
@@ -84,6 +85,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         emailMessageEntityList50.add(SendSMSDataTemp)
         SendSMSDataTemp = SendSMSData()
         SendSMSDataTemp.num =10;
+        SendSMSDataTemp.index =2;
         SendSMSDataTemp.time = 1581137791386L
         SendSMSDataTemp.cont = "SmartRefreshLayout是一个“聪明”或者“智能”的下拉刷新布局。由于它的“智能”，它不只是支持所有的View，还支持多层嵌套的视图结构。它继承自ViewGroup 而不是FrameLayout或LinearLayout，提高了性能。 它也吸取了现在流行的各种刷新布局的优点\n" + "————————————————\n" + "版权声明：本文为CSDN博主「K_Hello」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。\n" + "原文链接：https://blog.csdn.net/K_Hello/article/details/90512714"
         SendSMSDataTemp.user = "聪明"
@@ -94,6 +96,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         emailMessageEntityList50.add(SendSMSDataTemp)
         SendSMSDataTemp = SendSMSData()
         SendSMSDataTemp.num =10;
+        SendSMSDataTemp.index =3;
         SendSMSDataTemp.time = 1581137791386L
         SendSMSDataTemp.cont = "SmartRefreshLayout是一个“聪明”或者“智能”的下拉刷新布局。由于它的“智能”，它不只是支持所有的View，还支持多层嵌套的视图结构。它继承自ViewGroup 而不是FrameLayout或LinearLayout，提高了性能。 它也吸取了现在流行的各种刷新布局的优点\n" + "————————————————\n" + "版权声明：本文为CSDN博主「K_Hello」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。\n" + "原文链接：https://blog.csdn.net/K_Hello/article/details/90512714"
         SendSMSDataTemp.user = "聪明"

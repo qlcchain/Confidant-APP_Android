@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BakAddrUserNumReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
+import com.stratagile.pnrouter.entity.JPullBakContentRsp
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
@@ -45,6 +46,10 @@ import org.greenrobot.eventbus.ThreadMode
  */
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
+    override fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp) {
+
+    }
+
     override fun getSMSPermissionSuccess() {
         var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
         runOnUiThread {

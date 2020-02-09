@@ -1168,6 +1168,7 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakAddrUserNumOutCallback {
         fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
+        fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp)
     }
     interface BakContentCallback {
         fun BakContentBack(jBakContentRsp: JBakContentRsp)
