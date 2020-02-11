@@ -640,6 +640,11 @@ val credentialsProvider: CredentialsProvider, private
                     val JPullBakContentRsp = gson.fromJson(text, JPullBakContentRsp::class.java)
                     pullBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
                 }
+                "GetBakContentStat" -> {
+                    val jGetBakContentStatRsp = gson.fromJson(text, JGetBakContentStatRsp::class.java)
+                    getBakContentStatCallback?.getBakContentStatCallback(jGetBakContentStatRsp)
+                    bakAddrUserNumOutCallback?.getBakContentStatCallback(jGetBakContentStatRsp)
+                }
                 "DelBakContent" -> {
                     val JDelBakContentRsp = gson.fromJson(text, JDelBakContentRsp::class.java)
                     pullBakContentCallback?.delBakContentBack(JDelBakContentRsp)
@@ -751,6 +756,7 @@ val credentialsProvider: CredentialsProvider, private
 
     var bakContentCallback:BakContentCallback? = null;
 
+    var getBakContentStatCallback:GetBakContentStatCallback? = null
     var pullBakContentCallback:PullBakContentCallback? = null;
 
     /**
@@ -1168,10 +1174,13 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakAddrUserNumOutCallback {
         fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
-        fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp)
+        fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp)
     }
     interface BakContentCallback {
         fun BakContentBack(jBakContentRsp: JBakContentRsp)
+    }
+    interface GetBakContentStatCallback {
+        fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp)
     }
     interface PullBakContentCallback {
         fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp)

@@ -14,10 +14,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.SMSEntity
 import com.stratagile.pnrouter.db.SMSEntityDao
-import com.stratagile.pnrouter.entity.BakContentReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JBakContentRsp
-import com.stratagile.pnrouter.entity.SendSMSData
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerSMSEncryptionListComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionListContract
 import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionListModule
@@ -56,6 +53,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
             sentSMSChooseDataList = arrayListOf<SMSEntity>()
             runOnUiThread {
                 smsAdapter!!.notifyDataSetChanged()
+                actionButton.visibility = View.GONE
                 toast(R.string.success)
             }
 

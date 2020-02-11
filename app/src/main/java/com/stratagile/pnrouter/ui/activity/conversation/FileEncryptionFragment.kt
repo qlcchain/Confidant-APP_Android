@@ -22,10 +22,7 @@ import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.entity.BakAddrUserNumReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JBakAddrUserNumRsp
-import com.stratagile.pnrouter.entity.JPullBakContentRsp
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.ui.activity.encryption.ContactsEncryptionActivity
 import com.stratagile.pnrouter.ui.activity.encryption.PicEncryptionActivity
@@ -46,11 +43,20 @@ import org.greenrobot.eventbus.ThreadMode
  */
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
-    override fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp) {
+    override fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jGetBakContentStatRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                nodeContacts.text = jGetBakContentStatRsp.params.num.toString();
+            }
+        }else{
 
+        }
     }
-
-    override fun getSMSPermissionSuccess() {
+   override fun getSMSPermissionSuccess() {
         var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
         runOnUiThread {
             localMessags.text = msgCount.toString();
@@ -66,9 +72,9 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
     }
 
     override fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp) {
-        runOnUiThread {
+       /* runOnUiThread {
             closeProgressDialog()
-        }
+        }*/
         if(jBakAddrUserNumRsp.params.retCode == 0)
         {
             runOnUiThread {
@@ -107,7 +113,11 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var filesListPullReq = BakAddrUserNumReq( selfUserId!!, 0)
         var sendData = BaseData(6, filesListPullReq);
-        showProgressDialog();
+
+        var GetBakContentStatReq = GetBakContentStatReq( 1,selfUserId!!)
+        var sendData2 = BaseData(6, GetBakContentStatReq);
+
+        //showProgressDialog();
         if(AppConfig.instance.isOpenSplashActivity)
         {
             if(BuildConfig.DEBUG)
@@ -122,6 +132,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData2)
         }else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -130,6 +141,15 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+
+            var baseData2 = sendData2
+            var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson2, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }

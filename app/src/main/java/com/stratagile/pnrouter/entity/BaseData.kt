@@ -840,8 +840,14 @@ data class BakContentReq(var Type : String, var UserId : String, var Num :Int, v
  * (1)	请求（APP-->Router）
  */
 data class PullBakContentReq(var UserId : String,var Type : Int, var Tel :String, var Num :Int,var StartId : Int,var Action : String = "PullBakContent")
+
 /**
- * 105.	用户删除节点上备份的短信
+ * 105.	用户查询自己账户备份内容统计信息
+ * (1)	请求（APP-->Router）
+ */
+data class GetBakContentStatReq(var Type : Int,var UserId : String,var Action : String = "GetBakContentStat")
+/**
+ * 106.	用户删除节点上备份的短信
  * (1)	请求（APP-->Router）
  */
 data class DelBakContentReq(var Type : String,var UserId : String, var Num :Int,var Index : String,var Action : String = "DelBakContent")

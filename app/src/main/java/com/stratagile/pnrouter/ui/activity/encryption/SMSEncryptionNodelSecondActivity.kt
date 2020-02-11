@@ -143,6 +143,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
                     count ++;
                 }
             }
+            deletIndex = deletIndex.substring(0,deletIndex.length -1)
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var bakContentReq = DelBakContentReq("1",selfUserId!!,count,deletIndex)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))

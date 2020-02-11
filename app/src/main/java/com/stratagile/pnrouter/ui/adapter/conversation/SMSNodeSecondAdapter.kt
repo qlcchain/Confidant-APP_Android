@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.entity.SendSMSData
 import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.view.ImageButtonWithText
 import java.util.*
 
 class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapter<SendSMSData, BaseViewHolder>(R.layout.picencry_sent_rece_sms, arrayList) {
@@ -32,6 +33,14 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
             helper.setVisible(R.id.checkBoxRight,true)
             helper.setVisible(R.id.iv_userheadRight,true)
             helper.setVisible(R.id.bubbleRight,true)
+
+            var userSouce = String(RxEncodeTool.base64Decode(item!!.user))
+            if(userSouce =="")
+            {
+                userSouce = String(RxEncodeTool.base64Decode(item!!.tel))
+            }
+            var iv_userheadLeft = helper.getView<ImageButtonWithText>(R.id.iv_userheadLeft)
+            iv_userheadLeft.setText(userSouce)
             var body = helper.getView<TextView>(R.id.tv_chatcontentRight)
             if(item.key !="")
             {
@@ -53,6 +62,14 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
             helper.setVisible(R.id.checkBoxRight,false)
             helper.setVisible(R.id.iv_userheadRight,false)
             helper.setVisible(R.id.bubbleRight,false)
+
+            var userSouce = String(RxEncodeTool.base64Decode(item!!.user))
+            if(userSouce =="")
+            {
+                userSouce = String(RxEncodeTool.base64Decode(item!!.tel))
+            }
+            var iv_userheadRight = helper.getView<ImageButtonWithText>(R.id.iv_userheadRight)
+            iv_userheadRight.setText(userSouce)
             var body = helper.getView<TextView>(R.id.tv_chatcontentLeft)
             if(item.key !="")
             {
