@@ -110,7 +110,7 @@
                     android:textColor="@color/color_2c2c2c"
                     android:layout_marginLeft="@dimen/x30"
                     android:textSize="16sp"
-                    android:text="@string/Known_contacts"
+                    android:text="11"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -135,7 +135,7 @@
                 android:padding="@dimen/x10"
                 android:textSize="12sp"
                 android:background="@drawable/btn_maincolor6"
-                android:text="@string/Upload_immediately"
+                android:text="11"
                 />
         </LinearLayout>
         <LinearLayout
@@ -158,7 +158,7 @@
                     android:textColor="@color/color_2c2c2c"
                     android:layout_marginLeft="@dimen/x30"
                     android:textSize="16sp"
-                    android:text="@string/Not_in_address_book"
+                    android:text="11"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -183,7 +183,7 @@
                 android:padding="@dimen/x10"
                 android:textSize="12sp"
                 android:background="@drawable/btn_maincolor6"
-                android:text="@string/Upload_choose"
+                android:text="111"
                 />
         </LinearLayout>
     </LinearLayout>
@@ -209,7 +209,7 @@
                 android:textColor="@color/color_2c2c2c"
                 android:textSize="16sp"
                 android:layout_gravity="center"
-                android:text="@string/Upload_check_time_not_checked"
+                android:text="11"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -219,7 +219,7 @@
                 android:layout_marginBottom="@dimen/x20"
                 android:textSize="12sp"
                 android:layout_gravity="center"
-                android:text="@string/Check_synchronization_regularly"
+                android:text="11"
                 />
         </LinearLayout>
         <TextView
@@ -230,7 +230,7 @@
             android:textSize="16sp"
             android:textColor="@color/white"
             android:background="@drawable/btn_maincolor2"
-            android:text="@string/Check_immediately"
+            android:text="11"
             android:layout_height="@dimen/x85" />
     </LinearLayout>
 </LinearLayout>

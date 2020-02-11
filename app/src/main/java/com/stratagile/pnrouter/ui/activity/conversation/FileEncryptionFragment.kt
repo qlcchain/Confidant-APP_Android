@@ -50,7 +50,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         if(jGetBakContentStatRsp.params.retCode == 0)
         {
             runOnUiThread {
-                nodeContacts.text = jGetBakContentStatRsp.params.num.toString();
+                nodeMessags.text = jGetBakContentStatRsp.params.num.toString();
             }
         }else{
 

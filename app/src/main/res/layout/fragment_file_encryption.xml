@@ -420,7 +420,7 @@
                 android:textColor="#7ED321"
                 android:textSize="12sp"
                 android:layout_weight="1"
-                android:text="@string/new_message_add_tips"/>
+                android:text=""/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -428,7 +428,7 @@
                 android:textSize="14sp"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="@string/sy_message_tips"/>
+                android:text=""/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

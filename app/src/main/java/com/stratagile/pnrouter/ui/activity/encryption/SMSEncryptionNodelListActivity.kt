@@ -73,8 +73,10 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
     var lastPayload : SendSMSData? = null
     var sentSMSLocalDataList = arrayListOf<SendSMSData>()
     var sentSMSChooseDataList = arrayListOf<SendSMSData>()
+    var needRefresh = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needRefresh = false;
         super.onCreate(savedInstanceState)
     }
 
@@ -93,8 +95,8 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
             var intent =  Intent(this, SMSEncryptionNodelSecondActivity::class.java)
             intent.putExtra("smsMeaasgeData",smsMeaasgeData)
             startActivity(intent);
+            needRefresh = true
         }
-
         getNodeData(20,0)
 
 
@@ -130,6 +132,18 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
 
         }
         //initQuerData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(needRefresh)
+        {
+            needRefresh = false;
+            var emailMessageEntityList50 = mutableListOf<SendSMSData>()
+            SMSNodeAdapter!!.addData(emailMessageEntityList50)
+            SMSNodeAdapter!!.notifyDataSetChanged()
+            getNodeData(20,0)
+        }
     }
     fun initQuerData() {
         query.addTextChangedListener(object : TextWatcher {

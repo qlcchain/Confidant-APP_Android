@@ -59,6 +59,29 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
 
     override fun delBakContentBack(jDelBakContentRsp: JDelBakContentRsp) {
 
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jDelBakContentRsp.params.retCode == 0)
+        {
+
+
+            runOnUiThread {
+                for(position in delSMSLocalDataList)
+                {
+                    SMSNodeSecondAdapter!!.remove(position)
+                    SMSNodeSecondAdapter!!.notifyItemChanged(position)
+                }
+                actionButton.visibility = View.GONE
+                toast(R.string.success)
+                delSMSLocalDataList = arrayListOf<Int>()
+            }
+
+        }else{
+            runOnUiThread {
+                toast(R.string.fail)
+            }
+        }
     }
 
     @Inject
@@ -68,6 +91,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     var sendSMSData: SendSMSData? = null
     var nodeStartId = 0;
     var lastPayload : SendSMSData? = null
+    var delSMSLocalDataList = arrayListOf<Int>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -136,13 +160,16 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         actionButton.setOnClickListener {
             var deletIndex = "";
             var count = 0;
+            delSMSLocalDataList = arrayListOf<Int>()
             SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
                 if(it.isLastCheck)
                 {
                     deletIndex += it.index.toString()+","
                     count ++;
+                    delSMSLocalDataList.add(index)
                 }
             }
+            showProgressDialog(getString(R.string.waiting))
             deletIndex = deletIndex.substring(0,deletIndex.length -1)
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var bakContentReq = DelBakContentReq("1",selfUserId!!,count,deletIndex)

@@ -66,8 +66,9 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View , PNRou
 
     @Inject
     internal lateinit var mPresenter: SMSEncryptionPresenter
-
+    var needRefresh = false;
     override fun onCreate(savedInstanceState: Bundle?) {
+        needRefresh = false;
         super.onCreate(savedInstanceState)
     }
 
@@ -79,9 +80,11 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View , PNRou
         AppConfig.instance.messageReceiver?.getBakContentStatCallback = this
         localRoot.setOnClickListener {
             startActivity(Intent(this, SMSEncryptionListActivity::class.java))
+            needRefresh = true
         }
         nodeRoot.setOnClickListener {
             startActivity(Intent(this, SMSEncryptionNodelListActivity::class.java))
+            needRefresh = true
         }
         mPresenter.getScanPermission()
         getNodeData()
@@ -102,6 +105,14 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View , PNRou
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson2, ConstantValue.currentRouterId.substring(0, 64))
             }
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        if(needRefresh)
+        {
+            needRefresh = false;
+            getNodeData()
         }
     }
     override fun setupActivityComponent() {
