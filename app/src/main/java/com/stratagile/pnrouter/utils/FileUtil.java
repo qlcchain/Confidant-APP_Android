@@ -1884,23 +1884,27 @@ public class FileUtil {
                     } else {
                         strType = "null";
                     }
-                    String personName = getPeopleNameFromPerson(strAddress,context);
-                    SMSEntity SMSEntityTemp = new SMSEntity();
-                    SMSEntityTemp.setSmsId(intID);
-                    SMSEntityTemp.setUUID(strAddress+longDate);
-                    SMSEntityTemp.setAddress(strAddress);
-                    SMSEntityTemp.setPerson(intPerson);
-                    SMSEntityTemp.setPersonName(personName);
-                    SMSEntityTemp.setDate(longDate);
-                    SMSEntityTemp.setRead(intRead);
-                    SMSEntityTemp.setType(intType);
-                    SMSEntityTemp.setSubject(strSubject);
-                    SMSEntityTemp.setBody(strbody);
-                    SMSEntityTemp.setService_center(strService_Center);
-                    SMSEntityTemp.setLastCheck(false);
-                    SMSEntityTemp.setUpload(false);
-                    SMSEntityTemp.setMultChecked(false);
-                    smsMessageEntityList.add(SMSEntityTemp);
+                    if(intType == 1 || intType == 4)
+                    {
+                        String personName = getPeopleNameFromPerson(strAddress,context);
+                        SMSEntity SMSEntityTemp = new SMSEntity();
+                        SMSEntityTemp.setSmsId(intID);
+                        SMSEntityTemp.setUUID(strAddress+longDate);
+                        SMSEntityTemp.setAddress(strAddress);
+                        SMSEntityTemp.setPerson(intPerson);
+                        SMSEntityTemp.setPersonName(personName);
+                        SMSEntityTemp.setDate(longDate);
+                        SMSEntityTemp.setRead(intRead);
+                        SMSEntityTemp.setType(intType);
+                        SMSEntityTemp.setSubject(strSubject);
+                        SMSEntityTemp.setBody(strbody);
+                        SMSEntityTemp.setService_center(strService_Center);
+                        SMSEntityTemp.setLastCheck(false);
+                        SMSEntityTemp.setUpload(false);
+                        SMSEntityTemp.setMultChecked(false);
+                        smsMessageEntityList.add(SMSEntityTemp);
+                    }
+
                 } while (cur.moveToNext());
 
                 if (!cur.isClosed()) {

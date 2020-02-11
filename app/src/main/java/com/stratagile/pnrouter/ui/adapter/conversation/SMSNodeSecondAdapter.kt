@@ -31,7 +31,7 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
             helper.setVisible(R.id.bubbleLeft,false)
 
             helper.setVisible(R.id.checkBoxRight,true)
-            helper.setVisible(R.id.iv_userheadRight,true)
+            //helper.setVisible(R.id.iv_userheadRight,true)
             helper.setVisible(R.id.bubbleRight,true)
 
             var userSouce = String(RxEncodeTool.base64Decode(item!!.user))
@@ -56,7 +56,7 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
             checkBox.isChecked = item.isLastCheck
         }else{
             helper.setVisible(R.id.checkBoxLeft,true)
-            helper.setVisible(R.id.iv_userheadLeft,true)
+           // helper.setVisible(R.id.iv_userheadLeft,true)
             helper.setVisible(R.id.bubbleLeft,true)
 
             helper.setVisible(R.id.checkBoxRight,false)

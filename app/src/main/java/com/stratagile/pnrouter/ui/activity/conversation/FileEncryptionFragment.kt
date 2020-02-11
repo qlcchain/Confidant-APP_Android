@@ -101,10 +101,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
-            if(BuildConfig.DEBUG)
-            {
-                mPresenter.getSMSPermission()
-            }
+            mPresenter.getSMSPermission()
             getNodeData()
         }
     }
@@ -182,12 +179,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
             startActivity(intent);
         }
-        if(BuildConfig.DEBUG)
-        {
-            messagesParent.visibility = View.VISIBLE
-        }else{
-            messagesParent.visibility = View.GONE
-        }
+        messagesParent.visibility = View.VISIBLE
         filterMessags.setOnClickListener {
 
             //PermissionUtils.toPermissionSetting(this@FileEncryptionFragment.context);

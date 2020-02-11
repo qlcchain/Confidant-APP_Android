@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.adapter.conversation
 
+import android.view.View
 import android.widget.CheckBox
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -17,10 +19,22 @@ class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity
     }
 
     override fun convert(helper: BaseViewHolder, item: SMSEntity) {
-       /* helper.addOnClickListener(R.id.smsRoot)
-        helper.addOnClickListener(R.id.title)
-        helper.addOnClickListener(R.id.body)
-        helper.addOnClickListener(R.id.time)*/
+        /* helper.addOnClickListener(R.id.smsRoot)
+         helper.addOnClickListener(R.id.title)
+         helper.addOnClickListener(R.id.body)
+         helper.addOnClickListener(R.id.time)*/
+        var avatar_container = helper.getView<RelativeLayout>(R.id.avatar_container)
+        if(item.type == 1)
+        {
+            if(item.read == 0)
+            {
+                avatar_container.visibility = View.VISIBLE
+            }else{
+                avatar_container.visibility = View.GONE
+            }
+        }else{
+            avatar_container.visibility = View.GONE
+        }
         var title = helper.getView<TextView>(R.id.title)
         if(item.personName!=null && item.personName!= "")
         {
