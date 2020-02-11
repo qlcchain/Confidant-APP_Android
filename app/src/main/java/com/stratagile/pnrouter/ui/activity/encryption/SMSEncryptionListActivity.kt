@@ -37,11 +37,34 @@ import javax.inject.Inject
 
 class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View, PNRouterServiceMessageReceiver.BakContentCallback {
     override fun BakContentBack(JBakContentRsp: JBakContentRsp) {
-         for(item in sentSMSLocalDataList)
-         {
-             item.setUpload(true);
-             AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
-         }
+        runOnUiThread {
+           closeProgressDialog()
+        }
+        if(JBakContentRsp.params.retCode ==0)
+        {
+            for(item in sentSMSLocalDataList)
+            {
+                item.setUpload(true);
+                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+            }
+            for(item in sentSMSLocalDataList)
+            {
+                item.setUpload(true);
+                item.lastCheck = false;
+                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+            }
+            sentSMSChooseDataList = arrayListOf<SMSEntity>()
+            runOnUiThread {
+                smsAdapter!!.notifyDataSetChanged()
+                toast(R.string.success)
+            }
+
+        }else{
+            runOnUiThread {
+                toast(R.string.fail)
+            }
+        }
+
     }
 
     @Inject
@@ -144,6 +167,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     sentSMSLocalDataList.add(it)
                     var fileAESKey = RxEncryptTool.generateAESKey()
                     var pulicSignKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileAESKey, ConstantValue.libsodiumpublicMiKey!!)))
+                    var aesKey = LibsodiumUtil.DecryptShareKey(pulicSignKey,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                     var sendSMSData = SendSMSData();
                     sendSMSData.id = it.smsId;
                     if(it.address == null)
@@ -191,23 +215,11 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     sendSMSDataList.add(sendSMSData)
                 }
             }
+            showProgressDialog(getString(R.string.waiting ))
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var sendSMSDataJson = sendSMSDataList.baseDataToJson()
-            var bakContentReq = BakContentReq("1",selfUserId!!,count,sendSMSDataJson)
+            //var sendSMSDataJson = sendSMSDataList.baseDataToJson()
+            var bakContentReq = BakContentReq("1",selfUserId!!,count,sendSMSDataList)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))
-
-
-            if(BuildConfig.DEBUG)
-            {
-                for(item in sentSMSLocalDataList)
-                {
-                    item.setUpload(true);
-                    item.lastCheck = false;
-                    AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
-                }
-                sentSMSChooseDataList = arrayListOf<SMSEntity>()
-                smsAdapter!!.notifyDataSetChanged()
-            }
 
         }
         initQuerData()

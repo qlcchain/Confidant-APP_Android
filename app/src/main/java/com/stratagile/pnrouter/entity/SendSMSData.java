@@ -8,7 +8,19 @@ import java.io.Serializable;
 
 public class SendSMSData implements Parcelable {
 
-
+    /**
+     * Index : 1
+     * Tel : MTgwNzUxODYyNTE=
+     * Num : 1
+     * Uid : 0
+     * Time : 1580806685247
+     * Read : 0
+     * Send : 0
+     * User :
+     * Title :
+     * Cont : ePF7KkJR1/HDK97iZqFQiA==
+     * Key : ePF7KkJR1/HDK97iZqFQiA==
+     */
     private Integer Index;
 
     private Integer Id;

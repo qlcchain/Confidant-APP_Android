@@ -34,9 +34,15 @@ class SMSNodeAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapter<Sen
         var body = helper.getView<TextView>(R.id.body)
         if(item.key !="")
         {
-            var aesKey = LibsodiumUtil.DecryptShareKey(item.key,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
-            var souceContData = AESCipher.aesDecryptString(item.cont, aesKey)
-            body.setText(souceContData)
+            try {
+                var aesKey = LibsodiumUtil.DecryptShareKey(item.key,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                var souceContData = AESCipher.aesDecryptString(item.cont, aesKey)
+                body.setText(souceContData)
+            }catch (e:Exception)
+            {
+
+            }
+
         }else{
             body.setText(item.cont)
         }

@@ -834,7 +834,7 @@ data class BakAddrUserNumReq(var User : String, var FileId :Int,var Action : Str
  * 103.	用户备份短信到节点上
  * (1)	请求（APP-->Router）
  */
-data class BakContentReq(var Type : String,var UserId : String, var Num :Int,var Payload : String,var Action : String = "BakContent")
+data class BakContentReq(var Type : String, var UserId : String, var Num :Int, var Payload :List<SendSMSData>,var Action : String = "BakContent")
 /**
  * 104.	用户查询自己账户下备份的短信
  * (1)	请求（APP-->Router）
