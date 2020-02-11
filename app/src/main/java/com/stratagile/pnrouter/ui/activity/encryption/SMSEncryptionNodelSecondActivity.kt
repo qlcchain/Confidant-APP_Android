@@ -29,7 +29,7 @@ import javax.inject.Inject;
  * @date 2020/02/07 23:33:10
  */
 
-class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecondContract.View, PNRouterServiceMessageReceiver.pullSecondBakContentCallback  {
+class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecondContract.View, PNRouterServiceMessageReceiver.PullBakContentCallback  {
     override fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp) {
         runOnUiThread {
             refreshLayout.finishLoadMore()
