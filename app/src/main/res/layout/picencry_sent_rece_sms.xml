@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/x18"
+            android:layout_marginTop="@dimen/x8"
             android:layout_marginLeft="@dimen/x5"
             android:button="@drawable/checkbox_style"
             android:checked="false"
@@ -24,6 +24,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false" />
         <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:visibility="gone"
             android:id="@+id/iv_userheadLeft"
             android:layout_width="@dimen/x77"
             android:layout_height="@dimen/x77"
@@ -106,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/x18"
+            android:layout_marginTop="@dimen/x8"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/x5"
             android:button="@drawable/checkbox_style"
@@ -115,6 +116,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false" />
         <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:visibility="gone"
             android:id="@+id/iv_userheadRight"
             android:layout_width="@dimen/x77"
             android:layout_height="@dimen/x77"

@@ -220,5 +220,9 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    override fun onDestroy() {
 
+        AppConfig.instance.messageReceiver?.pullSecondBakContentCallback = null
+        super.onDestroy()
+    }
 }

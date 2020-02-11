@@ -649,6 +649,7 @@ val credentialsProvider: CredentialsProvider, private
                 "DelBakContent" -> {
                     val JDelBakContentRsp = gson.fromJson(text, JDelBakContentRsp::class.java)
                     pullBakContentCallback?.delBakContentBack(JDelBakContentRsp)
+                    pullSecondBakContentCallback?.delBakContentBack(JDelBakContentRsp)
                 }
             }
         }

@@ -140,7 +140,7 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
         {
             needRefresh = false;
             var emailMessageEntityList50 = mutableListOf<SendSMSData>()
-            SMSNodeAdapter!!.addData(emailMessageEntityList50)
+            SMSNodeAdapter!!.setNewData(emailMessageEntityList50)
             SMSNodeAdapter!!.notifyDataSetChanged()
             getNodeData(20,0)
         }
