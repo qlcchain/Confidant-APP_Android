@@ -29,7 +29,7 @@ import javax.inject.Inject;
  * @date 2020/02/07 23:33:10
  */
 
-class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecondContract.View, PNRouterServiceMessageReceiver.PullBakContentCallback  {
+class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecondContract.View, PNRouterServiceMessageReceiver.pullSecondBakContentCallback  {
     override fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp) {
         runOnUiThread {
             refreshLayout.finishLoadMore()
@@ -100,7 +100,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         setContentView(R.layout.activity_node_sms_list)
     }
     override fun initData() {
-        AppConfig.instance.messageReceiver?.pullBakContentCallback = this
+        AppConfig.instance.messageReceiver?.pullSecondBakContentCallback = this
         sendSMSData = intent.getParcelableExtra("smsMeaasgeData")
         if(sendSMSData!!.user != "")
         {

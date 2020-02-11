@@ -639,6 +639,7 @@ val credentialsProvider: CredentialsProvider, private
                 "PullBakContent" -> {
                     val JPullBakContentRsp = gson.fromJson(text, JPullBakContentRsp::class.java)
                     pullBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
+                    pullSecondBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
                 }
                 "GetBakContentStat" -> {
                     val jGetBakContentStatRsp = gson.fromJson(text, JGetBakContentStatRsp::class.java)
@@ -758,6 +759,7 @@ val credentialsProvider: CredentialsProvider, private
 
     var getBakContentStatCallback:GetBakContentStatCallback? = null
     var pullBakContentCallback:PullBakContentCallback? = null;
+    var pullSecondBakContentCallback:PullBakContentCallback? = null;
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
