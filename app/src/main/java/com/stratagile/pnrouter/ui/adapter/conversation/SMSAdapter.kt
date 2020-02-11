@@ -30,10 +30,10 @@ class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity
             {
                 avatar_container.visibility = View.VISIBLE
             }else{
-                avatar_container.visibility = View.GONE
+                avatar_container.visibility = View.INVISIBLE
             }
         }else{
-            avatar_container.visibility = View.GONE
+            avatar_container.visibility = View.INVISIBLE
         }
         var title = helper.getView<TextView>(R.id.title)
         if(item.personName!=null && item.personName!= "")
