@@ -35,24 +35,24 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
         var bubbleRight = helper.getView<ConstraintLayout>(R.id.bubbleRight)
         val params = bubbleRight.getLayoutParams() as RelativeLayout.LayoutParams
 
-        if(item.isMultChecked)
-        {
-            checkBoxLeft.visibility = View.VISIBLE
-            params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-            checkBoxRight.visibility = View.VISIBLE
-        }else{
-            checkBoxLeft.visibility = View.GONE
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-            checkBoxRight.visibility = View.GONE
-        }
         bubbleRight.setLayoutParams(params)
         if(item.send == 2)
         {
-            helper.setVisible(R.id.checkBoxLeft,false)
+            if(item.isMultChecked)
+            {
+                checkBoxLeft.visibility = View.GONE
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                checkBoxRight.visibility = View.VISIBLE
+            }else{
+                checkBoxLeft.visibility = View.GONE
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                checkBoxRight.visibility = View.GONE
+            }
+            //helper.setVisible(R.id.checkBoxLeft,false)
             helper.setVisible(R.id.iv_userheadLeft,false)
             helper.setVisible(R.id.bubbleLeft,false)
 
-            helper.setVisible(R.id.checkBoxRight,true)
+            //helper.setVisible(R.id.checkBoxRight,true)
             //helper.setVisible(R.id.iv_userheadRight,true)
             helper.setVisible(R.id.bubbleRight,true)
 
@@ -77,11 +77,21 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
             var checkBox = helper.getView<CheckBox>(R.id.checkBoxRight)
             checkBox.isChecked = item.isLastCheck
         }else{
-            helper.setVisible(R.id.checkBoxLeft,true)
+            if(item.isMultChecked)
+            {
+                checkBoxLeft.visibility = View.VISIBLE
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                checkBoxRight.visibility = View.GONE
+            }else{
+                checkBoxLeft.visibility = View.GONE
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                checkBoxRight.visibility = View.GONE
+            }
+            //helper.setVisible(R.id.checkBoxLeft,true)
            // helper.setVisible(R.id.iv_userheadLeft,true)
             helper.setVisible(R.id.bubbleLeft,true)
 
-            helper.setVisible(R.id.checkBoxRight,false)
+            //helper.setVisible(R.id.checkBoxRight,false)
             helper.setVisible(R.id.iv_userheadRight,false)
             helper.setVisible(R.id.bubbleRight,false)
 
