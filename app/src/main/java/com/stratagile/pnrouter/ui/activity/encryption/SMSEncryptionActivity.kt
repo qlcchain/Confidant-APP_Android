@@ -53,15 +53,20 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View , PNRou
         runOnUiThread {
             localContacts.text = count.toString();
         }
-        var smsDataList = FileUtil.getAllSms(this@SMSEncryptionActivity)
-        for(item in smsDataList)
-        {
-            var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.UUID.eq(item.uuid)).list()
-            if(list == null || list!!.size == 0)
-            {
-                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.insert(item)
+        Thread(Runnable() {
+            run() {
+                var smsDataList = FileUtil.getAllSms(this@SMSEncryptionActivity)
+                for(item in smsDataList)
+                {
+                    var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.UUID.eq(item.uuid)).list()
+                    if(list == null || list!!.size == 0)
+                    {
+                        AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.insert(item)
+                    }
+                }
             }
-        }
+        }).start()
+
     }
 
     @Inject

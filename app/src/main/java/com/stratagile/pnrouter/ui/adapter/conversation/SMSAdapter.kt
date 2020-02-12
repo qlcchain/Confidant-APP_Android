@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.db.SMSEntity
 import com.stratagile.pnrouter.utils.DateUtil
+import com.stratagile.pnrouter.utils.FileUtil
 import java.util.*
 
 class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity, BaseViewHolder>(R.layout.picencry_sms_item, arrayList) {
@@ -36,6 +37,7 @@ class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity
             avatar_container.visibility = View.INVISIBLE
         }
         var title = helper.getView<TextView>(R.id.title)
+        item.personName = FileUtil.getPeopleNameFromPerson(item.address,AppConfig.instance)
         if(item.personName!=null && item.personName!= "")
         {
             title.setText(item.personName)

@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.adapter.conversation
 
+import android.support.constraint.ConstraintLayout
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -30,14 +31,21 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
 
         var checkBoxLeft = helper.getView<CheckBox>(R.id.checkBoxLeft)
         var checkBoxRight = helper.getView<CheckBox>(R.id.checkBoxRight)
+
+        var bubbleRight = helper.getView<ConstraintLayout>(R.id.bubbleRight)
+        val params = bubbleRight.getLayoutParams() as RelativeLayout.LayoutParams
+
         if(item.isMultChecked)
         {
             checkBoxLeft.visibility = View.VISIBLE
-            checkBoxRight.setButtonDrawable(R.drawable.checkbox_purple_style)
+            params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+            checkBoxRight.visibility = View.VISIBLE
         }else{
             checkBoxLeft.visibility = View.GONE
-            checkBoxRight.setButtonDrawable(null)
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+            checkBoxRight.visibility = View.GONE
         }
+        bubbleRight.setLayoutParams(params)
         if(item.send == 2)
         {
             helper.setVisible(R.id.checkBoxLeft,false)
