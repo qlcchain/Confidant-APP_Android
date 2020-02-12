@@ -93,6 +93,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     var lastPayload : SendSMSData? = null
     var delSMSLocalDataList = arrayListOf<Int>()
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -107,18 +108,18 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             var userSouce = String(RxEncodeTool.base64Decode(sendSMSData!!.user))
             if(userSouce !="")
             {
-                title.setText(userSouce)
+                tvTitle.setText(userSouce)
             }else{
-                title.setText(R.string.SMS)
+                tvTitle.setText(R.string.SMS)
             }
 
         }else{
             var userSouce = String(RxEncodeTool.base64Decode(sendSMSData!!.tel))
             if(userSouce !="")
             {
-                title.setText(userSouce)
+                tvTitle.setText(userSouce)
             }else{
-                title.setText(R.string.SMS)
+                tvTitle.setText(R.string.SMS)
             }
         }
         var emailMessageEntityList50 = mutableListOf<SendSMSData>()
@@ -175,6 +176,28 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             var bakContentReq = DelBakContentReq("1",selfUserId!!,count,deletIndex)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakContentReq))
 
+        }
+
+        editBtn.setOnClickListener {
+            editBtn.visibility = View.GONE
+            cancelBtn.visibility = View.VISIBLE
+            SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
+                it.isMultChecked = true
+            }
+            SMSNodeSecondAdapter!!.notifyDataSetChanged()
+        }
+        backBtn.setOnClickListener {
+            finish()
+        }
+        cancelBtn.setOnClickListener {
+            editBtn.visibility = View.VISIBLE
+            cancelBtn.visibility = View.GONE
+            actionButton.visibility = View.GONE
+            SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
+                it.isLastCheck = false
+                it.isMultChecked = false
+            }
+            SMSNodeSecondAdapter!!.notifyDataSetChanged()
         }
     }
     fun showMenuUI()

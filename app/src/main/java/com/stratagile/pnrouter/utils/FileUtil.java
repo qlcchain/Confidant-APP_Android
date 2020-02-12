@@ -1886,7 +1886,7 @@ public class FileUtil {
                     }
                     if(intType == 1 || intType == 4)
                     {
-                        String personName = getPeopleNameFromPerson(strAddress,context);
+                        String personName = "";
                         SMSEntity SMSEntityTemp = new SMSEntity();
                         SMSEntityTemp.setSmsId(intID);
                         SMSEntityTemp.setUUID(strAddress+longDate);

@@ -126,17 +126,24 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         var aa = Base58.encode("Default Wechat Folder".toByteArray())
         var bb = ""
-       /* for (index in 1..5){
+        /*for (index in 1..5){
             var dst_public_SignKey = ByteArray(32)
             var dst_private_Signkey = ByteArray(64)
             var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
 
-            val strSignPrivateString:String  =  String(dst_private_Signkey)
             val strSignPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Signkey)
             val strSignPublic =  RxEncodeTool.base64Encode2String(dst_public_SignKey)
 
-            KLog.i("aa："+strSignPrivateString)
-            KLog.i("bb："+strSignPrivate)
+            var dst_public_MiKey = ByteArray(32)
+            var dst_private_Mikey = ByteArray(32)
+            var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+            var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+
+            val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+            val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+
+            KLog.i("aa："+strMiPrivate)
+            KLog.i("bb："+strMiPublic)
         }*/
         /*if(BuildConfig.DEBUG)
         {

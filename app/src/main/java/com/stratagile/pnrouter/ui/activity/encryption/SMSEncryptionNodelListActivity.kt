@@ -21,7 +21,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionNodelL
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.SMSEncryptionNodelListPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.SMSNodeAdapter
 import com.stratagile.pnrouter.utils.*
-import kotlinx.android.synthetic.main.activity_node_sms_list.*
+import kotlinx.android.synthetic.main.activity_first_node_sms_list.*
 import kotlinx.android.synthetic.main.email_search_bar.*
 
 import javax.inject.Inject;
@@ -76,12 +76,11 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
     var needRefresh = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        needRefresh = false;
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
-        setContentView(R.layout.activity_node_sms_list)
+        setContentView(R.layout.activity_first_node_sms_list)
     }
     override fun initData() {
         title.text = getString(R.string.nodemsg_local)

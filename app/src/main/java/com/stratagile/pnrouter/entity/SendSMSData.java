@@ -46,8 +46,12 @@ public class SendSMSData implements Parcelable {
 
     private boolean lastCheck; //最后一次选中
 
+    //多选模式中是否选中
+    private boolean isMultChecked;//是否开启编辑
+
     public SendSMSData() {
     }
+
 
     protected SendSMSData(Parcel in) {
         if (in.readByte() == 0) {
@@ -91,63 +95,7 @@ public class SendSMSData implements Parcelable {
         Cont = in.readString();
         Key = in.readString();
         lastCheck = in.readByte() != 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (Index == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Index);
-        }
-        if (Id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Id);
-        }
-        dest.writeString(Tel);
-        if (Num == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Num);
-        }
-        dest.writeString(User);
-        if (Uid == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Uid);
-        }
-        if (Time == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(Time);
-        }
-        if (Read == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Read);
-        }
-        if (Send == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(Send);
-        }
-        dest.writeString(Title);
-        dest.writeString(Cont);
-        dest.writeString(Key);
-        dest.writeByte((byte) (lastCheck ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        isMultChecked = in.readByte() != 0;
     }
 
     public static final Creator<SendSMSData> CREATOR = new Creator<SendSMSData>() {
@@ -264,5 +212,71 @@ public class SendSMSData implements Parcelable {
 
     public void setLastCheck(boolean lastCheck) {
         this.lastCheck = lastCheck;
+    }
+
+    public boolean isMultChecked() {
+        return isMultChecked;
+    }
+
+    public void setMultChecked(boolean multChecked) {
+        isMultChecked = multChecked;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (Index == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Index);
+        }
+        if (Id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Id);
+        }
+        dest.writeString(Tel);
+        if (Num == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Num);
+        }
+        dest.writeString(User);
+        if (Uid == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Uid);
+        }
+        if (Time == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(Time);
+        }
+        if (Read == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Read);
+        }
+        if (Send == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Send);
+        }
+        dest.writeString(Title);
+        dest.writeString(Cont);
+        dest.writeString(Key);
+        dest.writeByte((byte) (lastCheck ? 1 : 0));
+        dest.writeByte((byte) (isMultChecked ? 1 : 0));
     }
 }

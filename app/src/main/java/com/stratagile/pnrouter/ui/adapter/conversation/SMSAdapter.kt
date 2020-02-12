@@ -54,6 +54,13 @@ class SMSAdapter(arrayList: MutableList<SMSEntity>) : BaseQuickAdapter<SMSEntity
         }else{
             helper.setVisible(R.id.nodePic,false)
         }
+        var checkBoxParent = helper.getView<RelativeLayout>(R.id.checkBoxParent)
+        if(item.getIsMultChecked())
+        {
+            checkBoxParent.visibility = View.VISIBLE
+        }else{
+            checkBoxParent.visibility = View.GONE
+        }
     }
 
 }

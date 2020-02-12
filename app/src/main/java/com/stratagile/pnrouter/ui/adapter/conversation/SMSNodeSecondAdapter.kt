@@ -1,6 +1,11 @@
 package com.stratagile.pnrouter.ui.adapter.conversation
 
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -23,7 +28,16 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
 
     override fun convert(helper: BaseViewHolder, item: SendSMSData) {
 
-
+        var checkBoxLeft = helper.getView<CheckBox>(R.id.checkBoxLeft)
+        var checkBoxRight = helper.getView<CheckBox>(R.id.checkBoxRight)
+        if(item.isMultChecked)
+        {
+            checkBoxLeft.visibility = View.VISIBLE
+            checkBoxRight.setButtonDrawable(R.drawable.checkbox_purple_style)
+        }else{
+            checkBoxLeft.visibility = View.GONE
+            checkBoxRight.setButtonDrawable(null)
+        }
         if(item.send == 2)
         {
             helper.setVisible(R.id.checkBoxLeft,false)

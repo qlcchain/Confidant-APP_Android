@@ -13,12 +13,13 @@
         android:layout_height="wrap_content">
         <CheckBox
             android:id="@+id/checkBoxLeft"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/x8"
             android:layout_marginLeft="@dimen/x5"
-            android:button="@drawable/checkbox_style"
+            android:button="@drawable/checkbox_purple_style"
             android:checked="false"
             android:clickable="false"
             android:focusable="false"
@@ -102,15 +103,17 @@
             android:textSize="@dimen/chat_nick_text_size"
             android:layout_toRightOf="@id/iv_userheadRight"
             android:visibility="gone" />
+
         <CheckBox
             android:id="@+id/checkBoxRight"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/x8"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/x5"
-            android:button="@drawable/checkbox_style"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="4dp"
+            android:button="@drawable/checkbox_purple_style"
             android:checked="false"
             android:clickable="false"
             android:focusable="false"
@@ -118,11 +121,11 @@
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:visibility="gone"
             android:id="@+id/iv_userheadRight"
+            android:layout_alignParentRight="true"
             android:layout_width="@dimen/x77"
             android:layout_height="@dimen/x77"
             android:layout_marginRight="@dimen/x5"
             app:imageButtonTextSize="16"
-            android:layout_toLeftOf="@id/checkBoxRight"
             android:layout_alignParentTop="true" />
 
         <android.support.constraint.ConstraintLayout
@@ -130,9 +133,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="46dp"
+            android:layout_marginRight="@dimen/x10"
             android:maxWidth="@dimen/x512"
-            android:layout_marginRight="@dimen/x12"
-            android:layout_toLeftOf="@id/iv_userheadRight"
+            android:gravity="right"
+            android:layout_toLeftOf="@+id/checkBoxRight"
             android:background="@drawable/ease_chatto_bg"
             >
             <LinearLayout

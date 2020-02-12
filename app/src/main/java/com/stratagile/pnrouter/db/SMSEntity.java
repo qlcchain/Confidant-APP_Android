@@ -36,7 +36,7 @@ public class SMSEntity implements Parcelable{
     private boolean lastCheck; //最后一次选中
     private boolean isUpload; //是否上传到节点
     //多选模式中是否选中
-    private boolean isMultChecked;
+    private boolean isMultChecked;//是否开启编辑
 
     public SMSEntity() {
     }

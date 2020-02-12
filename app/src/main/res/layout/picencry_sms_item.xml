@@ -42,6 +42,7 @@
         android:layout_marginTop="@dimen/x5"
         android:layout_marginLeft="@dimen/x10"
         android:layout_marginBottom="@dimen/x10"
+        android:layout_marginRight="@dimen/x15"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
@@ -94,7 +95,7 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x21"
+            android:layout_marginRight="@dimen/x15"
             android:layout_alignTop="@+id/title"
             android:layout_alignBottom="@+id/title"
             android:layout_alignParentRight="true"
@@ -153,10 +154,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/draft"
-            android:layout_marginRight="@dimen/x10"
             android:layout_below="@+id/title"
             android:maxLines="4"
-            android:text="测试"
+            android:text="测试测试测试测1111111111111111111111111111试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试"
             android:ellipsize="end"
             android:layout_marginTop="@dimen/x4"
             android:textColor="@color/contentColor"
@@ -172,12 +172,13 @@
             android:background="@color/color_f2f2f2"/>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/checkBoxParent"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:background="@color/white"
+        android:visibility="gone"
         android:layout_marginRight="@dimen/x5"
+        android:background="@color/white"
         android:layout_centerVertical="true"
 
         >
@@ -189,9 +190,8 @@
             android:focusableInTouchMode="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x1"
             android:checked="false"
-            android:button="@drawable/checkbox_style"
+            android:button="@drawable/checkbox_purple_style"
           />
 
     </RelativeLayout>

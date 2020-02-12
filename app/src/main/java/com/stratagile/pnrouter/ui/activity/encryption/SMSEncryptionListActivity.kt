@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.core.view.isVisible
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESToolsCipher
 import com.stratagile.pnrouter.R
@@ -73,6 +74,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
     var sentSMSLocalDataList = arrayListOf<SMSEntity>()
     var sentSMSChooseDataList = arrayListOf<SMSEntity>()
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -80,14 +82,21 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         setContentView(R.layout.activity_sms_list)
     }
     override fun initData() {
-        title.text = getString(R.string.msg_local)
+        tvTitle.text = getString(R.string.msg_local)
+        editBtn.visibility = View.VISIBLE
+        cancelBtn.visibility = View.GONE
         AppConfig.instance.messageReceiver?.bakContentCallback = this
         var smsMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().orderDesc(SMSEntityDao.Properties.Date).list()
         var emailMessageEntityList50 = mutableListOf<SMSEntity>()
         if(smsMessageEntityList.size >initSize)
         {
             for (index in 0 until initSize){
-                emailMessageEntityList50.add(index,smsMessageEntityList.get(index))
+                var item = smsMessageEntityList.get(index)
+                if(cancelBtn.isVisible)
+                {
+                    item.setIsMultChecked(true)
+                }
+                emailMessageEntityList50.add(index,item)
             }
         }else{
             emailMessageEntityList50 = smsMessageEntityList;
@@ -96,17 +105,21 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         recyclerView.adapter = smsAdapter
         recyclerView.scrollToPosition(0)
         smsAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var emailMeaasgeData =  smsAdapter!!.getItem(position)
-            emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
-            smsAdapter!!.notifyItemChanged(position)
-            showMenuUI()
-            sentSMSChooseDataList = arrayListOf<SMSEntity>()
-            smsAdapter!!.data.forEachIndexed { index, it ->
-                if(it.lastCheck)
-                {
-                    sentSMSChooseDataList.add(it)
+            if(cancelBtn.isVisible)
+            {
+                var emailMeaasgeData =  smsAdapter!!.getItem(position)
+                emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
+                smsAdapter!!.notifyItemChanged(position)
+                showMenuUI()
+                sentSMSChooseDataList = arrayListOf<SMSEntity>()
+                smsAdapter!!.data.forEachIndexed { index, it ->
+                    if(it.lastCheck)
+                    {
+                        sentSMSChooseDataList.add(it)
+                    }
                 }
             }
+
         }
         if(refreshLayout != null)
         {
@@ -128,7 +141,12 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     {
                         break;
                     }
-                    emailMessageEntityNextList.add(index,localEmailMessage.get(flagIndex))
+                    var item = localEmailMessage.get(flagIndex)
+                    if(cancelBtn.isVisible)
+                    {
+                        item.setIsMultChecked(true)
+                    }
+                    emailMessageEntityNextList.add(index,item)
                 }
             }
 
@@ -153,6 +171,28 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     toast(R.string.nomore)
                 }
             }
+        }
+        editBtn.setOnClickListener {
+            editBtn.visibility = View.GONE
+            cancelBtn.visibility = View.VISIBLE
+            smsAdapter!!.data.forEachIndexed { index, it ->
+                it.setIsMultChecked(true)
+            }
+            smsAdapter!!.notifyDataSetChanged()
+        }
+        backBtn.setOnClickListener {
+            finish()
+        }
+        cancelBtn.setOnClickListener {
+            editBtn.visibility = View.VISIBLE
+            cancelBtn.visibility = View.GONE
+            actionButton.visibility = View.GONE
+            smsAdapter!!.data.forEachIndexed { index, it ->
+                it.setIsMultChecked(false)
+                it.lastCheck = false;
+                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(it)
+            }
+            smsAdapter!!.notifyDataSetChanged()
         }
         actionButton.setOnClickListener {
             var count = 0;
@@ -251,6 +291,10 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         for (i in emailMessageList) {
             for(item in sentSMSChooseDataList)
             {
+                if(cancelBtn.isVisible)
+                {
+                    i.setIsMultChecked(true)
+                }
                 if(item.uuid == i.uuid)
                 {
                     i.lastCheck = item.lastCheck;
@@ -281,6 +325,12 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         {
             smsAdapter!!.setNewData(contactListTemp);
         }else{
+
+            for(item in emailMessageList) {
+                if (cancelBtn.isVisible) {
+                    item.setIsMultChecked(true)
+                }
+            }
             smsAdapter!!.setNewData(emailMessageList);
         }
     }
