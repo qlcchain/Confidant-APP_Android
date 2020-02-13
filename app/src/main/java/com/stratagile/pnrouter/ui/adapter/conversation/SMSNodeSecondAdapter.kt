@@ -37,7 +37,7 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
         {
             checkBoxLeft.visibility = View.VISIBLE
         }else{
-            checkBoxLeft.visibility = View.GONE
+            checkBoxLeft.visibility = View.INVISIBLE
         }
 
         helper.setVisible(R.id.iv_userheadLeft,false)

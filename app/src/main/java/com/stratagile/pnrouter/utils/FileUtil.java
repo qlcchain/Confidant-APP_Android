@@ -21,6 +21,7 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.smailnet.eamil.Utils.AESCipher;
 import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.BuildConfig;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.RecentFile;
@@ -1794,7 +1795,12 @@ public class FileUtil {
         int result = 0;
         try {
             Uri uri = Uri.parse("content://sms");
-            Cursor cur = context.getContentResolver().query(uri, null, null,
+            String selection = null;
+            if(BuildConfig.DEBUG)
+            {
+                selection = null;
+            }
+            Cursor cur = context.getContentResolver().query(uri, null, selection,
                     null, "date desc"); // 获取手机内部短信
             // 获取短信中最新的未读短信
             // Cursor cur = getContentResolver().query(uri, projection,
@@ -1834,7 +1840,12 @@ public class FileUtil {
             Uri uri = Uri.parse("content://sms");
             String[] projection = new String[] { "_id", "address", "person",
                     "date", "read", "type", "subject", "body", "service_center", };
-            Cursor cur = context.getContentResolver().query(uri, projection, null,
+            String selection = null;
+            if(BuildConfig.DEBUG)
+            {
+                selection = null;
+            }
+            Cursor cur = context.getContentResolver().query(uri, projection, selection,
                     null, "date desc"); // 获取手机内部短信
             // 获取短信中最新的未读短信
             // Cursor cur = getContentResolver().query(uri, projection,
@@ -1884,8 +1895,8 @@ public class FileUtil {
                     } else {
                         strType = "null";
                     }
-                    if(intType == 1 || intType == 4)
-                    {
+                    /*if(intType == 1 || intType == 4)
+                    {*/
                         String personName = "";
                         SMSEntity SMSEntityTemp = new SMSEntity();
                         SMSEntityTemp.setSmsId(intID);
@@ -1903,7 +1914,7 @@ public class FileUtil {
                         SMSEntityTemp.setUpload(false);
                         SMSEntityTemp.setMultChecked(false);
                         smsMessageEntityList.add(SMSEntityTemp);
-                    }
+                    /*}*/
 
                 } while (cur.moveToNext());
 

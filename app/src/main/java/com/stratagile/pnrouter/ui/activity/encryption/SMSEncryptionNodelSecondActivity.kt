@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import androidx.core.view.isVisible
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.EaseSmileUtils
 import com.pawegio.kandroid.toast
@@ -135,17 +136,21 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         recyclerView.adapter = SMSNodeSecondAdapter
         recyclerView.scrollToPosition(0)
         SMSNodeSecondAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
-            emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
-            SMSNodeSecondAdapter!!.notifyItemChanged(position)
-            showMenuUI()
-            sentSMSChooseDataList = arrayListOf<SendSMSData>()
-            SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
-                if(it.isLastCheck)
-                {
-                    sentSMSChooseDataList.add(it)
+            if(cancelBtn.isVisible)
+            {
+                var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
+                emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
+                SMSNodeSecondAdapter!!.notifyItemChanged(position)
+                showMenuUI()
+                sentSMSChooseDataList = arrayListOf<SendSMSData>()
+                SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
+                    if(it.isLastCheck)
+                    {
+                        sentSMSChooseDataList.add(it)
+                    }
                 }
             }
+
         }
         SMSNodeSecondAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
@@ -210,6 +215,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             SMSNodeSecondAdapter!!.notifyDataSetChanged()
         }
         backBtn.setOnClickListener {
+            AppConfig.instance.messageReceiver?.pullSecondBakContentCallback = null
             var intent =  Intent(this, SMSEncryptionNodelListActivity::class.java)
             startActivity(intent);
             finish()
@@ -270,6 +276,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            AppConfig.instance.messageReceiver?.pullSecondBakContentCallback = null
             var intent =  Intent(this, SMSEncryptionNodelListActivity::class.java)
             startActivity(intent);
             finish()

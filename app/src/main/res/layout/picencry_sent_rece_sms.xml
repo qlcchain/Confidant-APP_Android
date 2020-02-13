@@ -17,14 +17,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x16"
-        android:layout_marginRight="@dimen/x70"
-        android:layout_marginLeft="@dimen/x70"
+        android:layout_marginRight="@dimen/x30"
+        android:layout_marginLeft="@dimen/x40"
         android:layout_height="wrap_content">
         <CheckBox
             android:id="@+id/checkBoxLeft"
             android:visibility="visible"
             android:layout_width="wrap_content"
-            android:layout_marginRight="@dimen/x5"
+            android:layout_marginRight="@dimen/x15"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x8"
             android:button="@drawable/checkbox_purple_style"
@@ -42,20 +42,21 @@
             app:imageButtonTextSize="16"
             android:layout_alignParentTop="true"
             />
-
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:id="@+id/bubbleLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_userid"
             android:layout_centerHorizontal="true"
             android:layout_toRightOf="@+id/checkBoxLeft"
-            android:layout_marginRight="@dimen/x20"
-            android:background="@drawable/ease_chatto_bg"
+
+            android:orientation="horizontal"
             >
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:background="@drawable/ease_chatto_bg"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/tv_chatAssoccontentLeft"
@@ -85,6 +86,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/x10"
                     android:paddingRight="@dimen/x10"
+                    android:minWidth="@dimen/x500"
                     android:gravity="center|left"
                     android:autoLink="email|phone|web"
                     android:lineSpacingExtra="2dp"
@@ -93,17 +95,19 @@
                     android:textColor="@color/color_2c2c2c"
                     android:textSize="16sp" />
             </LinearLayout>
+            <TextView
+                android:id="@+id/timestampLeft"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="@dimen/x200"
+                android:layout_gravity="bottom"
+                android:layout_alignBottom="@+id/bubbleLeft"
+                android:textSize="12sp"
+                android:text="15:51" />
+        </LinearLayout>
 
-        </android.support.constraint.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/timestampLeft"
-            android:layout_toRightOf="@+id/bubbleLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/bubbleLeft"
-            android:textSize="12sp"
-            android:text="15:51" />
         <!-- android:autoLink="web"-->
         <TextView
             android:id="@+id/tv_userid"
