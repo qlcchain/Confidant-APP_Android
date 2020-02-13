@@ -88,7 +88,6 @@
                     android:paddingRight="@dimen/x10"
                     android:minWidth="@dimen/x500"
                     android:gravity="center|left"
-                    android:autoLink="email|phone|web"
                     android:lineSpacingExtra="2dp"
                     android:minHeight="32dp"
                     android:text="11111111111111111111111111111111111111111"

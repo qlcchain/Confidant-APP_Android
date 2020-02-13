@@ -1,5 +1,8 @@
 package com.stratagile.pnrouter.ui.adapter.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -27,11 +31,28 @@ class SMSNodeSecondAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapt
     override fun convert(helper: BaseViewHolder?, item: SendSMSData?, payloads: MutableList<Any>) {
         KLog.i("")
     }
-
     override fun convert(helper: BaseViewHolder, item: SendSMSData) {
-
+        var tv_chatcontentLeft = helper.getView<TextView>(R.id.tv_chatcontentLeft)
+       /* tv_chatcontentLeft.setOnLongClickListener()
+        {
+            val cm = AppConfig.instance.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            // 创建普通字符型ClipData
+            if(item!!.key !="")
+            {
+                var aesKey = LibsodiumUtil.DecryptShareKey(item!!.key,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                var souceContData = AESCipher.aesDecryptString(item!!.cont, aesKey)
+                var mClipData = ClipData.newPlainText(null, souceContData)
+                // 将ClipData内容放到系统剪贴板里。
+                cm.primaryClip = mClipData
+            }else{
+                var mClipData = ClipData.newPlainText(null, item!!.cont)
+                // 将ClipData内容放到系统剪贴板里。
+                cm.primaryClip = mClipData
+            }
+            AppConfig.instance.toast(R.string.copy_success)
+            false
+        }*/
         var checkBoxLeft = helper.getView<CheckBox>(R.id.checkBoxLeft)
-
 
         if(item.isMultChecked)
         {

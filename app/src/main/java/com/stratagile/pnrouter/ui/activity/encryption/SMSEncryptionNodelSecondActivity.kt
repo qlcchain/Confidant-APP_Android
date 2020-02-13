@@ -156,15 +156,19 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
             val cm = AppConfig.instance.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             // 创建普通字符型ClipData
-            var mClipData = ClipData.newPlainText(null, emailMeaasgeData!!.cont)
             if(emailMeaasgeData!!.key !="")
             {
                 var aesKey = LibsodiumUtil.DecryptShareKey(emailMeaasgeData!!.key,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                 var souceContData = AESCipher.aesDecryptString(emailMeaasgeData!!.cont, aesKey)
-                mClipData = ClipData.newPlainText(null, souceContData)
+                var mClipData = ClipData.newPlainText(null, souceContData)
+                // 将ClipData内容放到系统剪贴板里。
+                cm.primaryClip = mClipData
+            }else{
+                var mClipData = ClipData.newPlainText(null, emailMeaasgeData!!.cont)
+                // 将ClipData内容放到系统剪贴板里。
+                cm.primaryClip = mClipData
             }
-            // 将ClipData内容放到系统剪贴板里。
-            cm.primaryClip = mClipData
+
             toast(R.string.copy_success)
             true
         }
