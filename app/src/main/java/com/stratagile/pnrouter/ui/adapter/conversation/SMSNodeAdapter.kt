@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.entity.SendSMSData
 import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.TimeUtil
 import java.util.*
 
 class SMSNodeAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapter<SendSMSData, BaseViewHolder>(R.layout.picencry_node_sms_item, arrayList) {
@@ -48,7 +49,7 @@ class SMSNodeAdapter(arrayList: MutableList<SendSMSData>) : BaseQuickAdapter<Sen
         }
 
         var time = helper.getView<TextView>(R.id.time)
-        time.setText( DateUtil.getTimestampString(Date(item.time), AppConfig.instance))
+        time.setText( TimeUtil.getFileListTime1(item.time))
         var checkBox = helper.getView<CheckBox>(R.id.checkBox)
         checkBox.isChecked = item.isLastCheck
         var nodePic = helper.getView<TextView>(R.id.nodePic)

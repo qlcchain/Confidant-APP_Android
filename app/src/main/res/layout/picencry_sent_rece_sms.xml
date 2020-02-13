@@ -17,10 +17,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x16"
+        android:layout_marginRight="@dimen/x70"
+        android:layout_marginLeft="@dimen/x70"
         android:layout_height="wrap_content">
         <CheckBox
             android:id="@+id/checkBoxLeft"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_marginRight="@dimen/x5"
             android:layout_height="wrap_content"
@@ -28,7 +30,6 @@
             android:button="@drawable/checkbox_purple_style"
             android:checked="false"
             android:clickable="false"
-            android:layout_toLeftOf="@+id/bubbleLeft"
             android:focusable="false"
             android:focusableInTouchMode="false" />
         <com.stratagile.pnrouter.view.ImageButtonWithText
@@ -48,6 +49,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_userid"
             android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/checkBoxLeft"
+            android:layout_marginRight="@dimen/x20"
             android:background="@drawable/ease_chatto_bg"
             >
             <LinearLayout
@@ -82,9 +85,6 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/x10"
                     android:paddingRight="@dimen/x10"
-                    android:maxWidth="@dimen/x400"
-                    android:minWidth="@dimen/x400"
-                    android:layout_centerInParent="true"
                     android:gravity="center|left"
                     android:autoLink="email|phone|web"
                     android:lineSpacingExtra="2dp"
