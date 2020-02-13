@@ -94,6 +94,7 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
             var intent =  Intent(this, SMSEncryptionNodelSecondActivity::class.java)
             intent.putExtra("smsMeaasgeData",smsMeaasgeData)
             startActivity(intent);
+            finish();
             needRefresh = true
         }
         getNodeData(20,0)
@@ -135,14 +136,14 @@ class SMSEncryptionNodelListActivity : BaseActivity(), SMSEncryptionNodelListCon
 
     override fun onResume() {
         super.onResume()
-        if(needRefresh)
+        /*if(needRefresh)
         {
             needRefresh = false;
             var emailMessageEntityList50 = mutableListOf<SendSMSData>()
             SMSNodeAdapter!!.setNewData(emailMessageEntityList50)
             SMSNodeAdapter!!.notifyDataSetChanged()
             getNodeData(20,0)
-        }
+        }*/
     }
     fun initQuerData() {
         query.addTextChangedListener(object : TextWatcher {

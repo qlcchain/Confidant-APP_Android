@@ -20,15 +20,15 @@
         android:layout_height="wrap_content">
         <CheckBox
             android:id="@+id/checkBoxLeft"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="wrap_content"
-            android:layout_marginRight="@dimen/x5"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/x8"
+            android:layout_marginLeft="@dimen/x5"
             android:button="@drawable/checkbox_purple_style"
             android:checked="false"
             android:clickable="false"
-            android:layout_toLeftOf="@+id/bubbleLeft"
             android:focusable="false"
             android:focusableInTouchMode="false" />
         <com.stratagile.pnrouter.view.ImageButtonWithText
@@ -46,9 +46,11 @@
             android:id="@+id/bubbleLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/x512"
             android:layout_below="@+id/tv_userid"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/ease_chatto_bg"
+            android:layout_marginLeft="@dimen/x12"
+            android:layout_toRightOf="@id/iv_userheadLeft"
+            android:background="@drawable/ease_chatfrom_bg"
             >
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -75,35 +77,29 @@
                     android:background="@drawable/dash_line"
                     android:layerType="software"
                     android:layout_height="2dp" />
-
+                <TextView
+                    android:id="@+id/timestampLeft"
+                    style="@style/chat_text_date_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2019.12.15" />
                 <TextView
                     android:id="@+id/tv_chatcontentLeft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/x10"
                     android:paddingRight="@dimen/x10"
-                    android:maxWidth="@dimen/x350"
-                    android:minWidth="@dimen/x350"
                     android:layout_centerInParent="true"
                     android:gravity="center|left"
                     android:autoLink="email|phone|web"
                     android:lineSpacingExtra="2dp"
                     android:minHeight="32dp"
-                    android:text="11111111111111111111111111111111111111111"
+                    android:text=""
                     android:textColor="@color/color_2c2c2c"
                     android:textSize="16sp" />
             </LinearLayout>
 
         </android.support.constraint.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/timestampLeft"
-            android:layout_toRightOf="@+id/bubbleLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/bubbleLeft"
-            android:textSize="12sp"
-            android:text="15:51" />
         <!-- android:autoLink="web"-->
         <TextView
             android:id="@+id/tv_userid"
@@ -114,6 +110,96 @@
             android:textSize="@dimen/chat_nick_text_size"
             android:layout_toRightOf="@id/iv_userheadRight"
             android:visibility="gone" />
+
+        <CheckBox
+            android:id="@+id/checkBoxRight"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="4dp"
+            android:button="@drawable/checkbox_purple_style"
+            android:checked="false"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:visibility="gone"
+            android:id="@+id/iv_userheadRight"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginRight="@dimen/x5"
+            app:imageButtonTextSize="16"
+            android:layout_alignParentTop="true" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/bubbleRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="46dp"
+            android:layout_marginRight="@dimen/x10"
+            android:maxWidth="@dimen/x512"
+            android:gravity="right"
+            android:layout_toLeftOf="@+id/checkBoxRight"
+            android:background="@drawable/ease_chatto_bg"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_chatAssoccontent"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:layout_centerInParent="true"
+                    android:gravity="center|left"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="28dp"
+                    android:text=""
+                    android:textColor="@color/FF999999"
+                    android:textSize="14sp" />
+                <View
+                    android:id="@+id/tv_chatcontentDash"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/dash_line"
+                    android:layerType="software"
+                    android:layout_height="2dp" />
+                <TextView
+                    android:id="@+id/timestampRight"
+                    style="@style/chat_text_date_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2019.12.15" />
+                <TextView
+                    android:id="@+id/tv_chatcontentRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="2dp"
+                    android:paddingLeft="@dimen/x10"
+                    android:paddingRight="@dimen/x10"
+                    android:text=""
+                    android:autoLink="email|phone|web"
+                    android:textColor="@color/color_2c2c2c"
+                    android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/msg_sendstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:src="@drawable/send"
+                    android:visibility="invisible"
+                    android:layout_gravity="right"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
 
         <ImageView
             android:id="@+id/msg_status"

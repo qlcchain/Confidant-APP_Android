@@ -1,9 +1,16 @@
 package com.stratagile.pnrouter.ui.activity.encryption
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.hyphenate.easeui.utils.EaseSmileUtils
 import com.pawegio.kandroid.toast
+import com.smailnet.eamil.Utils.AESCipher
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -16,6 +23,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionNode
 import com.stratagile.pnrouter.ui.activity.encryption.module.SMSEncryptionNodelSecondModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.SMSEncryptionNodelSecondPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.SMSNodeSecondAdapter
+import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_node_sms_list.*
@@ -139,7 +147,22 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
                 }
             }
         }
-
+        SMSNodeSecondAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+            var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
+            val cm = AppConfig.instance.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            // 创建普通字符型ClipData
+            var mClipData = ClipData.newPlainText(null, emailMeaasgeData!!.cont)
+            if(emailMeaasgeData!!.key !="")
+            {
+                var aesKey = LibsodiumUtil.DecryptShareKey(emailMeaasgeData!!.key,ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                var souceContData = AESCipher.aesDecryptString(emailMeaasgeData!!.cont, aesKey)
+                mClipData = ClipData.newPlainText(null, souceContData)
+            }
+            // 将ClipData内容放到系统剪贴板里。
+            cm.primaryClip = mClipData
+            toast(R.string.copy_success)
+            true
+        }
         getNodeData(20,0)
 
 
@@ -187,6 +210,8 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             SMSNodeSecondAdapter!!.notifyDataSetChanged()
         }
         backBtn.setOnClickListener {
+            var intent =  Intent(this, SMSEncryptionNodelListActivity::class.java)
+            startActivity(intent);
             finish()
         }
         cancelBtn.setOnClickListener {
@@ -242,6 +267,14 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
 
     override fun closeProgressDialog() {
         progressDialog.hide()
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            var intent =  Intent(this, SMSEncryptionNodelListActivity::class.java)
+            startActivity(intent);
+            finish()
+        }
+        return true
     }
     override fun onDestroy() {
 
