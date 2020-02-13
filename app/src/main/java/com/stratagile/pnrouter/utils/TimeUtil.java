@@ -56,7 +56,7 @@ public class TimeUtil {
     }
     public static String getMMDDYY(long timeStamp) {
         SimpleDateFormat sdr = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        return sdr.format(new Date(timeStamp * 1000));
+        return sdr.format(new Date(timeStamp));
     }
     public static String getHHMM(long timeStamp) {
         SimpleDateFormat sdr = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
