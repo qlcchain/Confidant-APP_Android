@@ -95,10 +95,17 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                 if(cancelBtn.isVisible)
                 {
                     item.setIsMultChecked(true)
+                }else{
+                    item.setIsMultChecked(false)
                 }
                 emailMessageEntityList50.add(index,item)
             }
         }else{
+            for(item in smsMessageEntityList)
+            {
+                item.setIsMultChecked(false)
+                AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+            }
             emailMessageEntityList50 = smsMessageEntityList;
         }
         smsAdapter = SMSAdapter(emailMessageEntityList50)
@@ -145,6 +152,8 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                     if(cancelBtn.isVisible)
                     {
                         item.setIsMultChecked(true)
+                    }else{
+                        item.setIsMultChecked(false)
                     }
                     emailMessageEntityNextList.add(index,item)
                 }
@@ -294,6 +303,8 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                 if(cancelBtn.isVisible)
                 {
                     i.setIsMultChecked(true)
+                }else{
+                    i.setIsMultChecked(false)
                 }
                 if(item.uuid == i.uuid)
                 {
@@ -329,6 +340,8 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
             for(item in emailMessageList) {
                 if (cancelBtn.isVisible) {
                     item.setIsMultChecked(true)
+                }else{
+                    item.setIsMultChecked(false)
                 }
             }
             smsAdapter!!.setNewData(emailMessageList);
@@ -372,7 +385,12 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         progressDialog.hide()
     }
     override fun onDestroy() {
-
+        var smsMessageEntityList = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().orderDesc(SMSEntityDao.Properties.Date).list()
+        for(item in smsMessageEntityList)
+        {
+            item.setIsMultChecked(false)
+            AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(item)
+        }
         AppConfig.instance.messageReceiver?.bakContentCallback = null
         super.onDestroy()
     }

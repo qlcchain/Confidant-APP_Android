@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.SMSEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.encryption.component.DaggerSMSEncryptionNodelSecondComponent
 import com.stratagile.pnrouter.ui.activity.encryption.contract.SMSEncryptionNodelSecondContract
@@ -76,14 +77,24 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
 
 
             runOnUiThread {
-                for(position in delSMSLocalDataList)
+                for(position in delSMSLocalPositionList)
                 {
                     SMSNodeSecondAdapter!!.remove(position)
                     SMSNodeSecondAdapter!!.notifyItemChanged(position)
                 }
+                for(item in delSMSLocalDataList)
+                {
+                    var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.UUID.eq(item.tel+item.time)).list()
+                    if(list != null && list!!.size >0 )
+                    {
+                        var tempItem = list.get(0)
+                        tempItem.setIsUpload(false)
+                        AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.update(tempItem)
+                    }
+                }
                 actionButton.visibility = View.GONE
                 toast(R.string.success)
-                delSMSLocalDataList = arrayListOf<Int>()
+                delSMSLocalPositionList = arrayListOf<Int>()
             }
 
         }else{
@@ -100,7 +111,8 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
     var sendSMSData: SendSMSData? = null
     var nodeStartId = 0;
     var lastPayload : SendSMSData? = null
-    var delSMSLocalDataList = arrayListOf<Int>()
+    var delSMSLocalDataList = arrayListOf<SendSMSData>()
+    var delSMSLocalPositionList = arrayListOf<Int>()
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -193,13 +205,15 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         actionButton.setOnClickListener {
             var deletIndex = "";
             var count = 0;
-            delSMSLocalDataList = arrayListOf<Int>()
+            delSMSLocalPositionList = arrayListOf<Int>()
+            delSMSLocalDataList = arrayListOf<SendSMSData>()
             SMSNodeSecondAdapter!!.data.forEachIndexed { index, it ->
                 if(it.isLastCheck)
                 {
                     deletIndex += it.index.toString()+","
                     count ++;
-                    delSMSLocalDataList.add(index)
+                    delSMSLocalPositionList.add(index)
+                    delSMSLocalDataList.add(it);
                 }
             }
             showProgressDialog(getString(R.string.waiting))
