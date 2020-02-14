@@ -49,6 +49,16 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             var dataList = jPullBakContentRsp.params.payload
             if(dataList.size != 0)
             {
+                for(item in dataList)
+                {
+                    if(cancelBtn.isVisible)
+                    {
+                        item.isMultChecked = true;
+                    }else{
+                        item.isMultChecked = false;
+                    }
+
+                }
                 lastPayload = jPullBakContentRsp.params.payload.last()
                 runOnUiThread {
                     SMSNodeSecondAdapter!!.addData(dataList)
@@ -75,7 +85,6 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         if(jDelBakContentRsp.params.retCode == 0)
         {
 
-
             runOnUiThread {
                 for(position in delSMSLocalPositionList)
                 {
@@ -84,7 +93,8 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
                 }
                 for(item in delSMSLocalDataList)
                 {
-                    var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.UUID.eq(item.tel+item.time)).list()
+                    var sourceTel = String(RxEncodeTool.base64Decode(item!!.tel))
+                    var list = AppConfig.instance.mDaoMaster!!.newSession().smsEntityDao.queryBuilder().where(SMSEntityDao.Properties.UUID.eq(sourceTel+item.time)).list()
                     if(list != null && list!!.size >0 )
                     {
                         var tempItem = list.get(0)
@@ -274,16 +284,16 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,pullBakContent))
     }
     override fun setupActivityComponent() {
-       DaggerSMSEncryptionNodelSecondComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .sMSEncryptionNodelSecondModule(SMSEncryptionNodelSecondModule(this))
-               .build()
-               .inject(this)
+        DaggerSMSEncryptionNodelSecondComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .sMSEncryptionNodelSecondModule(SMSEncryptionNodelSecondModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: SMSEncryptionNodelSecondContract.SMSEncryptionNodelSecondContractPresenter) {
-            mPresenter = presenter as SMSEncryptionNodelSecondPresenter
-        }
+        mPresenter = presenter as SMSEncryptionNodelSecondPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
