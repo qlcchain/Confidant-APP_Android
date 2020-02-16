@@ -14,6 +14,8 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.location.Location
+import android.location.LocationManager
 import android.media.Image
 import android.media.ImageReader
 import android.media.MediaPlayer
@@ -3275,6 +3277,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mVirtualDisplay = null
     }
     override fun initData() {
+        /*var gps = LocationUtils.getGPSLocation(this);
+        if (gps == null) {
+            //设置定位监听，因为GPS定位，第一次进来可能获取不到，通过设置监听，可以在有效的时间范围内获取定位信息
+            LocationUtils.addLocationListener(this@MainActivity, LocationManager.GPS_PROVIDER, object :LocationUtils.ILocationListener {
+                override fun onSuccessLocation(location: Location)
+                {
+                    if (location != null) {
+                       Log.i("gpsData","gps onSuccessLocation location:  lat==" + location.getLatitude() + "     lng==" + location.getLongitude())
+                    } else {
+
+                    }
+                }
+            });
+        }*/
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }

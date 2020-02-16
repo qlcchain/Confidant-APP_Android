@@ -78,7 +78,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 .requestCode(101)
                 .permission(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 )
                 .callback(permission)
                 .start()

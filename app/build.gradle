@@ -322,8 +322,8 @@ dependencies {
     implementation files('libs/vinnie-2.0.2.jar')
     implementation 'com.rfksystems:blake2b:1.0.0'
     implementation 'net.i2p.crypto:eddsa:0.3.0'
-    /*implementation files('libs/libsodium-jni-aar-2.0.1-SNAPSHOT.aar')*/
-    implementation files('libs/libsodium-jni-release.aar')
+    implementation files('libs/libsodium-jni-aar-2.0.1-SNAPSHOT.aar')
+    /*implementation files('libs/libsodium-jni-release.aar')*/
     /*implementation files('libs/commons-codec-1.9.jar')*/
     implementation files('libs/commons-collections-3.2.2.jar')
 }

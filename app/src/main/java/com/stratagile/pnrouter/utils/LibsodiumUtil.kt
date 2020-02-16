@@ -184,6 +184,24 @@ object LibsodiumUtil {
         return signBase64;
 
     }
+    /**
+     * 解密签名
+     */
+    fun cryptoSignOpen(Sign:String,signPublicKey:String):Int
+    {
+        try {
+            val dst_signed_msg = RxEncodeTool.base64Decode(Sign)
+
+            val dst_Friend_TempPublicKey = ByteArray(32)
+            val msg_len = IntArray(1)
+            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(signPublicKey))
+            return crypto_sign_open
+        }catch (e:Exception)
+        {
+            return 1
+        }
+
+    }
     fun cryptoSign(souceStr:String,libsodiumprivateSignKey:String):String
     {
         var signBase64 = ""
