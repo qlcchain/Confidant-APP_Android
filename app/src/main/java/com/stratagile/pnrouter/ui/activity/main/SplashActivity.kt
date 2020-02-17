@@ -122,6 +122,11 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
+        if(BuildConfig.DEBUG)
+        {
+            SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
+            SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
+        }
         AppConfig.instance.isOpenSplashActivity = true
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         var aa = Base58.encode("Default Wechat Folder".toByteArray())

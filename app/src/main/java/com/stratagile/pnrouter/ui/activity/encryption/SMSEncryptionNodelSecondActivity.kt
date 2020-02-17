@@ -86,10 +86,12 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         {
 
             runOnUiThread {
+                var offIndex = 0;
                 for(position in delSMSLocalPositionList)
                 {
-                    SMSNodeSecondAdapter!!.remove(position)
-                    SMSNodeSecondAdapter!!.notifyItemChanged(position)
+                    SMSNodeSecondAdapter!!.remove(position - offIndex)
+                    SMSNodeSecondAdapter!!.notifyItemChanged(position - offIndex)
+                    offIndex ++;
                 }
                 for(item in delSMSLocalDataList)
                 {
