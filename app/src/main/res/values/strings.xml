@@ -890,7 +890,7 @@ Then enter your Email address and password to log in.</string>
     <string name="maillist_encryption">Encrypted Contacts</string>
     <string name="maillist_local">Local</string>
     <string name="node_local">Node</string>
-    <string name="msg_encryption">SMS</string>
+    <string name="msg_encryption">Encrypted SMS</string>
     <string name="msg_local">Local</string>
     <string name="nomsg_local">Filter</string>
     <string name="nodemsg_local">Node</string>
