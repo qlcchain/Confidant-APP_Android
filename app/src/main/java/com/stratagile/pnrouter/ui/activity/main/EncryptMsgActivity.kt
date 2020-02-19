@@ -39,12 +39,18 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
     }
     override fun initData() {
 
-
+       title.text = "Encrypt And Decrypt"
         regeditBtn.setOnClickListener {
             val qlcClient = QlcClient(ConstantValue.qlcNode)
             val rpc = DpkiRpc(qlcClient)
-            var getAllVerifiersResult =  rpc.getAllVerifiers(null)
-            var aa = ""
+            Thread(Runnable() {
+                run() {
+                    var getAllVerifiersResult =  rpc.getAllVerifiers(null)
+                    var aa = ""
+                }
+            }).start()
+
+
         }
         decryptBtn.setOnClickListener {
 
