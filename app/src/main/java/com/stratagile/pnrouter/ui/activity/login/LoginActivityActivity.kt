@@ -64,6 +64,7 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
 import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
 import com.stratagile.pnrouter.entity.events.ToxStatusEvent
+import com.stratagile.pnrouter.ui.activity.main.EncryptMsgActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
