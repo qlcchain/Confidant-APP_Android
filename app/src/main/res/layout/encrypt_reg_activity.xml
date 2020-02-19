@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/headmainColor">
+
+    <ImageView
+        android:id="@+id/emailLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x50"
+        android:src="@mipmap/tabbar_album_encryption_a" />
+    <LinearLayout
+        android:id="@+id/llCircle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
+        android:layout_marginLeft="@dimen/x43"
+        android:layout_marginRight="@dimen/x40"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/btn_maincolor5"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/ivNoCircle"
+            android:layout_width="@dimen/x50"
+            android:layout_height="@dimen/x50"
+            android:src="@mipmap/statusbar_leftbar_h"
+            android:visibility="visible" />
+
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/x80"
+            android:layout_height="@dimen/x80"
+            android:visibility="gone"
+            >
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+
+        <TextView
+            android:id="@+id/routerNameTips"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x15"
+            android:layout_weight="1"
+            android:text=""
+            android:hint="@string/Email"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize" />
+
+        <ImageView
+            android:id="@+id/routerNameTipsmore"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="@dimen/x20"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/arrow_enter" />
+    </LinearLayout>
+    <include layout="@layout/emailname_bar" />
+    <TextView
+        android:id="@+id/regeditBtn"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_marginLeft="@dimen/x50"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x58"
+        android:background="@drawable/btn_purcle"
+        android:text="注册"
+        android:textColor="@color/white"
+        android:textSize="@dimen/commemTextSize"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="需要加密内容："
+        android:textColor="@color/emailtextColor"
+        android:layout_marginTop="@dimen/x40"
+        android:layout_marginLeft="@dimen/x40"
+        android:textSize="16sp"
+        />
+    <include layout="@layout/encrypt_source" />
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/encryptBtn"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_purcle"
+            android:text="@string/Encrypt"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+        <TextView
+            android:id="@+id/decryptBtn"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_maincolor"
+            android:text="@string/Decrypt"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
+

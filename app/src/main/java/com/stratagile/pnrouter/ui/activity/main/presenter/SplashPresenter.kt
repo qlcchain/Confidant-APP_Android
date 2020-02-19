@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.os.Environment
 import android.util.Log
+import com.alibaba.fastjson.JSONArray
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hyphenate.easeui.utils.PathUtils
@@ -15,6 +16,8 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
 import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
+import com.stratagile.pnrouter.db.QLCAccount
+import com.stratagile.pnrouter.db.QLCAccountDao
 import com.stratagile.pnrouter.entity.CryptoBoxKeypair
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
@@ -27,6 +30,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import org.libsodium.jni.Sodium
+import qlc.mng.AccountMng
+import qlc.rpc.AccountRpc
+import qlc.utils.Helper
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -273,6 +279,37 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                             }
+                        }
+                        var seed = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)).toLowerCase();
+                        seed = seed.substring(0,64)
+                        try {
+                            var jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
+                            var priKey = jsonObject.getString("privKey");
+                            var pubKey = jsonObject.getString("pubKey");
+                            KLog.i(jsonObject.toJSONString());
+                            var jsonArray = JSONArray()
+                            jsonArray.add(seed);
+                            var mnemonics = AccountRpc.seedToMnemonics(jsonArray);
+                            KLog.i(mnemonics);
+                            var address =  QlcUtil.publicToAddress(pubKey).toLowerCase();
+                            var qlcAccountEntityList = AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.queryBuilder().where(QLCAccountDao.Properties.Address.eq(address)).list()
+                            if(qlcAccountEntityList == null || qlcAccountEntityList.size == 0)
+                            {
+                                var qlcAccount = QLCAccount();
+                                qlcAccount.setPrivKey(priKey.toLowerCase());
+                                qlcAccount.setPubKey(pubKey);
+                                qlcAccount.setAddress(address);
+                                qlcAccount.setMnemonic(mnemonics);
+                                qlcAccount.setIsCurrent(true);
+                                qlcAccount.setAccountName("confidant");
+                                qlcAccount.setSeed(seed);
+                                qlcAccount.setIsAccountSeed(true);
+                                qlcAccount.setWalletIndex(0);
+                                AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.insert(qlcAccount);
+                            }
+                        } catch (e:Exception) {
+                            //closeProgressDialog();
+                            e.printStackTrace();
                         }
                     }
                 }

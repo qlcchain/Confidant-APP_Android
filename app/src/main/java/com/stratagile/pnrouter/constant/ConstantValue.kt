@@ -15,6 +15,7 @@ object ConstantValue {
     var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
     var isAntox = false   //是antox 还是自己封装的tox
     var fileNonce = "OmcKJrqehqQwNvdHkRBddXYyAvbGW2A1"
+    var qlcNode = "http://wrpc.qlcchain.org:9735"
     var localPath = "/ARouterNewData"
     var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
     var httpMacTestUrl ="https://47.96.76.184:9001/v1/pprmap/"

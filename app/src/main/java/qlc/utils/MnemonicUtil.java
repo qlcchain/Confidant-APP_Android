@@ -2,7 +2,8 @@ package qlc.utils;
 
 import android.content.res.AssetManager;
 
-import com.stratagile.qlink.application.AppConfig;
+
+import com.stratagile.pnrouter.application.AppConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -181,7 +182,7 @@ public final class MnemonicUtil {
 //                	len = null;
 //                }
 
-                AssetManager am = AppConfig.getInstance().getAssets();
+                AssetManager am = AppConfig.instance.getAssets();
                 try {
                     BufferedReader br = new BufferedReader(new InputStreamReader(am.open("english.txt")));
                     String next = "";

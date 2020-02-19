@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.db.GroupVerifyEntity;
 import com.stratagile.pnrouter.db.LocalFileItem;
 import com.stratagile.pnrouter.db.LocalFileMenu;
 import com.stratagile.pnrouter.db.MessageEntity;
+import com.stratagile.pnrouter.db.QLCAccount;
 import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.RouterEntity;
 import com.stratagile.pnrouter.db.RouterUserEntity;
@@ -40,6 +41,7 @@ import com.stratagile.pnrouter.db.GroupVerifyEntityDao;
 import com.stratagile.pnrouter.db.LocalFileItemDao;
 import com.stratagile.pnrouter.db.LocalFileMenuDao;
 import com.stratagile.pnrouter.db.MessageEntityDao;
+import com.stratagile.pnrouter.db.QLCAccountDao;
 import com.stratagile.pnrouter.db.RecentFileDao;
 import com.stratagile.pnrouter.db.RouterEntityDao;
 import com.stratagile.pnrouter.db.RouterUserEntityDao;
@@ -68,6 +70,7 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig localFileItemDaoConfig;
     private final DaoConfig localFileMenuDaoConfig;
     private final DaoConfig messageEntityDaoConfig;
+    private final DaoConfig qLCAccountDaoConfig;
     private final DaoConfig recentFileDaoConfig;
     private final DaoConfig routerEntityDaoConfig;
     private final DaoConfig routerUserEntityDaoConfig;
@@ -87,6 +90,7 @@ public class DaoSession extends AbstractDaoSession {
     private final LocalFileItemDao localFileItemDao;
     private final LocalFileMenuDao localFileMenuDao;
     private final MessageEntityDao messageEntityDao;
+    private final QLCAccountDao qLCAccountDao;
     private final RecentFileDao recentFileDao;
     private final RouterEntityDao routerEntityDao;
     private final RouterUserEntityDao routerUserEntityDao;
@@ -136,6 +140,9 @@ public class DaoSession extends AbstractDaoSession {
         messageEntityDaoConfig = daoConfigMap.get(MessageEntityDao.class).clone();
         messageEntityDaoConfig.initIdentityScope(type);
 
+        qLCAccountDaoConfig = daoConfigMap.get(QLCAccountDao.class).clone();
+        qLCAccountDaoConfig.initIdentityScope(type);
+
         recentFileDaoConfig = daoConfigMap.get(RecentFileDao.class).clone();
         recentFileDaoConfig.initIdentityScope(type);
 
@@ -164,6 +171,7 @@ public class DaoSession extends AbstractDaoSession {
         localFileItemDao = new LocalFileItemDao(localFileItemDaoConfig, this);
         localFileMenuDao = new LocalFileMenuDao(localFileMenuDaoConfig, this);
         messageEntityDao = new MessageEntityDao(messageEntityDaoConfig, this);
+        qLCAccountDao = new QLCAccountDao(qLCAccountDaoConfig, this);
         recentFileDao = new RecentFileDao(recentFileDaoConfig, this);
         routerEntityDao = new RouterEntityDao(routerEntityDaoConfig, this);
         routerUserEntityDao = new RouterUserEntityDao(routerUserEntityDaoConfig, this);
@@ -183,6 +191,7 @@ public class DaoSession extends AbstractDaoSession {
         registerDao(LocalFileItem.class, localFileItemDao);
         registerDao(LocalFileMenu.class, localFileMenuDao);
         registerDao(MessageEntity.class, messageEntityDao);
+        registerDao(QLCAccount.class, qLCAccountDao);
         registerDao(RecentFile.class, recentFileDao);
         registerDao(RouterEntity.class, routerEntityDao);
         registerDao(RouterUserEntity.class, routerUserEntityDao);
@@ -204,6 +213,7 @@ public class DaoSession extends AbstractDaoSession {
         localFileItemDaoConfig.clearIdentityScope();
         localFileMenuDaoConfig.clearIdentityScope();
         messageEntityDaoConfig.clearIdentityScope();
+        qLCAccountDaoConfig.clearIdentityScope();
         recentFileDaoConfig.clearIdentityScope();
         routerEntityDaoConfig.clearIdentityScope();
         routerUserEntityDaoConfig.clearIdentityScope();
@@ -261,6 +271,10 @@ public class DaoSession extends AbstractDaoSession {
 
     public MessageEntityDao getMessageEntityDao() {
         return messageEntityDao;
+    }
+
+    public QLCAccountDao getQLCAccountDao() {
+        return qLCAccountDao;
     }
 
     public RecentFileDao getRecentFileDao() {

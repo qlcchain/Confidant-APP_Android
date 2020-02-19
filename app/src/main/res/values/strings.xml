@@ -938,4 +938,10 @@ Then enter your Email address and password to log in.</string>
 
     <string name="new_message_add_tips">Add multiple inbound and outbound messages</string>
     <string name="SMS">SMS</string>
+    <string name="email">Email</string>
+    <string name="Wechat">Wechat</string>
+    <string name="Encrypt">Encrypt</string>
+    <string name="content">Please enter or paste content</string>
+    <string name="Select_account_type">Select account type</string>
+
 </resources>
