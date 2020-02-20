@@ -256,12 +256,14 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                             }
                         }else{
                             runOnUiThread {
+                                closeProgressDialog()
                                 toast(R.string.Decryption_failed)
                             }
                         }
 
                     }else{
                         runOnUiThread {
+                            closeProgressDialog()
                             toast(R.string.Decryption_failed)
                         }
 
