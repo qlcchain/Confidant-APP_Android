@@ -345,8 +345,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_public_TemKey_My = ByteArray(32)
         var dst_private_Temkey_My = ByteArray(32)
         var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
-        var gg = dst_public_TemKey_My.toString()
-        var hh = dst_private_Temkey_My.toString()
         ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 

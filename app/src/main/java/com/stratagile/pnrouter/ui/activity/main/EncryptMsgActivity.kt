@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.pawegio.kandroid.toast
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -31,6 +32,7 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.encrypt_reg_activity.*
 import kotlinx.android.synthetic.main.encrypt_source.*
+import org.libsodium.jni.Sodium
 
 import javax.inject.Inject;
 import qlc.rpc.impl.*
@@ -149,12 +151,6 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
 
         }
         decryptBtn.setOnClickListener {
-            var emaiLAccount = account_editText.text.toString()
-            if(emaiLAccount =="")
-            {
-                toast(R.string.Account_cannot_be_empty)
-                return@setOnClickListener
-            }
             var password_editText = password_editText.text.toString()
             if(password_editText =="")
             {
@@ -187,11 +183,11 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                     tokenType = password_editText.substring(160,162)
                     miTxt = password_editText.substring(162,password_editText.length)
                 }
-                var random = RxEncodeTool.base64Encode2String(random_nonce.toByteArray())
-                var libsodiumpublicTemKeyByte = RxEncodeTool.base64Decode(libsodiumpublicTemKey)
-                var aaaa = LibsodiumUtil.decrypt_data_symmetric_string(miTxt,random,libsodiumpublicTemKey)
-                var msgMap = LibsodiumUtil.DecryptFriendMsg2(miTxt,random,ConstantValue.libsodiumprivateMiKey!!,libsodiumpublicTemKey)
-                var aa =""
+                var sourceTxt = LibsodiumUtil.DecryptFriendMsg2(miTxt,random_nonce,ConstantValue.libsodiumprivateMiKey!!,libsodiumpublicTemKey)
+                runOnUiThread {
+                    closeProgressDialog()
+                    showDialog("Original text:",sourceTxt)
+                }
             }catch (e:Exception)
             {
                 toast(R.string.Decryption_failed)
@@ -239,14 +235,21 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                                     break
                                 }
                             }
-                            val random = org.libsodium.jni.crypto.Random()
-
+                            var dst_public_TemKey_My = ByteArray(32)
+                            var dst_private_Temkey_My = ByteArray(32)
+                            var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
+                            var libsodiumprivateTemKeyNew = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
+                            var libsodiumpublicTemKeyNew  =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
+                            if(BuildConfig.DEBUG){
+                                libsodiumprivateTemKeyNew = ConstantValue.libsodiumprivateTemKey!!
+                                libsodiumpublicTemKeyNew = ConstantValue.libsodiumpublicTemKey!!
+                            }
                             var friendMiPublic = Helper.hexStringToBytes(pubKey)
-                            var msgMap = LibsodiumUtil.EncryptSendMsg(password_editText,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
+                            var msgMap = LibsodiumUtil.EncryptSendMsg(password_editText,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
                             var minTxt = msgMap.get("encryptedBase64") as String
                             var NonceBase64 =  msgMap.get("NonceBase64") as String
                             var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
-                            var miStrBegin ="UUxDSUQ="+ConstantValue.libsodiumpublicTemKey+"00"+NonceBase64+minTxt
+                            var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"00"+NonceBase64+minTxt
                             runOnUiThread {
                                 closeProgressDialog()
                                 showDialog("Ciphertext:",miStrBegin)
