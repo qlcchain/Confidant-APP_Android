@@ -166,7 +166,16 @@ public class DpkiRpc extends QlcRpc {
 	public JSONObject getPubKeyByTypeAndID(JSONArray params) throws IOException {
 		return client.call("dpki_getPubKeyByTypeAndID", params);
 	}
-
+	/**
+	 * Get publish info by type and id address
+	 * @param type : verifier type (email/weChat), id : id address
+	 * @return publishInfo : published infos
+	 * @throws QlcException qlc exception
+	 * @throws IOException io exception
+	 */
+	public JSONObject getRecommendPubKey(JSONArray params) throws IOException {
+		return client.call("dpki_getRecommendPubKey", params);
+	}
 	/**
 	 * Get publish info by type
 	 * @param type : verifier type (email/weChat)

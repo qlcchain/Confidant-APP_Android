@@ -18,7 +18,7 @@ public class RewardsMng {
      * @param client:qlc client
 	 * @param blockHash send block hash
 	 * @throws IOException io exception 
-	 * @return StateBlock:contract reward block
+	 * @return PublishBlock:contract reward block
 	 */
 	public static StateBlock getReceiveRewardBlock(QlcClient client, byte[] blockHash) throws IOException {
 

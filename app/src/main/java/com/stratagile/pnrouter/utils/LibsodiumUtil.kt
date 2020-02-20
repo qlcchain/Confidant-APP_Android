@@ -238,7 +238,7 @@ object LibsodiumUtil {
             val random = org.libsodium.jni.crypto.Random()
             var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
             //开始加密
-            var dst_shared_key  = ByteArray(32)
+            var dst_shared_key  = ByteArray(32)//对称密钥
             var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,friendMiPublic,myTempPrivate) //自己临时私钥和好友加解密公钥->生成对称密钥
             var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
             var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(Msg,NonceBase64,shared_keyBase64)//消息原文用对称密码加密后转base64
@@ -361,7 +361,25 @@ object LibsodiumUtil {
         }
 
     }
+    /**
+     * 解密好友的消息
+     */
+    fun DecryptFriendMsg2(msg:String,nonce:String,libsodiumprivateMiKey:String,dst_Friend_TempPublicKey:String):String
+    {
+        try {
+            val myMiPrivateBase64 = libsodiumprivateMiKey
+            val dst_Friend_TempPublicKeyByte = RxEncodeTool.base64Decode(dst_Friend_TempPublicKey)
+            val dst_share_key = ByteArray(32)
+            val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKeyByte, RxEncodeTool.base64Decode(myMiPrivateBase64))
+            val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(msg, nonce, RxEncodeTool.base64Encode2String(dst_share_key))
+            return msgSouce
+        }catch (e:Exception)
+        {
+            return ""
 
+        }
+
+    }
     /**
      * 解密自己的消息
      */

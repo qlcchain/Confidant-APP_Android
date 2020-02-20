@@ -23,7 +23,7 @@ public class LedgerMng {
      * @param client:qlc client
      * @param blockHash:block hash
      * @throws IOException io exception 
-     * @return StateBlock  
+     * @return PublishBlock
      */
     public static StateBlock getBlockInfoByHash(QlcClient client, byte[] blockHash) throws IOException {
     	
