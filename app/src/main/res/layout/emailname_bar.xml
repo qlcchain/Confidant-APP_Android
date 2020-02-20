@@ -24,7 +24,7 @@
         android:drawableLeft="@mipmap/sign_email_account"
         android:hint="@string/Account"
         android:textSize="16sp"
-        android:text="kuangzihui@163.com"
+        android:text="owen_vip@163.com"
         android:singleLine="true"
         />
 

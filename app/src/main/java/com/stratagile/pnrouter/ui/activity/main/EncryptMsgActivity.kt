@@ -72,6 +72,9 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
             verifiers= arrayListOf<String>()
             Thread(Runnable() {
                 run() {
+                    runOnUiThread {
+                        showProgressDialog(getString(R.string.waiting))
+                    }
                     var getAllVerifiersResult =  rpc.getAllVerifiers(null)
                     if(getAllVerifiersResult != null)
                     {
@@ -111,6 +114,9 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                             }catch (e:Exception)
                             {
                                 e.printStackTrace()
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
                                 return@Runnable
                             }
 
@@ -120,6 +126,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                              var block = firstResult.get("block")*/
 
                             runOnUiThread {
+                                closeProgressDialog()
                                 showDialog("seed:",qlcAccount.seed)
                             }
                             /* val verifiersBlock = JSONArray()
@@ -212,6 +219,9 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                     val publicBlock = JSONArray()
                     publicBlock.add("email")
                     publicBlock.add(emaiLAccount)
+                    runOnUiThread {
+                        showProgressDialog(getString(R.string.waiting))
+                    }
                     var getPubKeyByTypeAndIDResult =  rpc.getPubKeyByTypeAndID(publicBlock)
                     var pubKey = ""
                     if(getPubKeyByTypeAndIDResult != null)
@@ -238,6 +248,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                             var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                             var miStrBegin ="UUxDSUQ="+ConstantValue.libsodiumpublicTemKey+"00"+NonceBase64+minTxt
                             runOnUiThread {
+                                closeProgressDialog()
                                 showDialog("Ciphertext:",miStrBegin)
                             }
                         }else{
