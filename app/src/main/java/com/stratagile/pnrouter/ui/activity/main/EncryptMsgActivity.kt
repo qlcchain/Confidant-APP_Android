@@ -240,10 +240,10 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                             var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
                             var libsodiumprivateTemKeyNew = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
                             var libsodiumpublicTemKeyNew  =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
-                            if(BuildConfig.DEBUG){
+                           /* if(BuildConfig.DEBUG){
                                 libsodiumprivateTemKeyNew = ConstantValue.libsodiumprivateTemKey!!
                                 libsodiumpublicTemKeyNew = ConstantValue.libsodiumpublicTemKey!!
-                            }
+                            }*/
                             var friendMiPublic = Helper.hexStringToBytes(pubKey)
                             var msgMap = LibsodiumUtil.EncryptSendMsg(password_editText,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
                             var minTxt = msgMap.get("encryptedBase64") as String
