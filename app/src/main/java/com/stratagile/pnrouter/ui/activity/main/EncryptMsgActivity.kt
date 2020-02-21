@@ -60,6 +60,9 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
     override fun initData() {
 
         tvTitle.text = "Encrypt And Decrypt"
+        backBtn.setOnClickListener {
+            finish()
+        }
         decryptBtn.setOnClickListener {
             var password_editText = password_editText.text.toString()
             if(password_editText =="")

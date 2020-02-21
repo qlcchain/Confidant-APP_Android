@@ -132,7 +132,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
 
                                 runOnUiThread {
                                     closeProgressDialog()
-                                    showDialog("seed:",qlcAccount.seed +"/n"+"adress:" +qlcAccount.address)
+                                    showDialog("Seed:",qlcAccount.seed +"      "+"Adress:" +qlcAccount.address)
                                 }
                                 /* val verifiersBlock = JSONArray()
                                  verifiersBlock.add("email")
