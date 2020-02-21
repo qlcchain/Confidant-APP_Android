@@ -52,6 +52,14 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
     }
     override fun initData() {
         title.text = "Encrypt And Decrypt"
+        rechargeBtn.setOnClickListener {
+            var qlcAccountEntityList = AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.queryBuilder().where(QLCAccountDao.Properties.IsCurrent.eq(true)).list()
+            if(qlcAccountEntityList != null && qlcAccountEntityList.size > 0) {
+                var qlcAccount = qlcAccountEntityList.get(0)
+                showDialog("Seed:",qlcAccount.seed +"      "+"Address:" +qlcAccount.address)
+            }
+        }
+
         regeditBtn.setOnClickListener {
             var emaiLAccount = account_editText.text.toString()
             if(emaiLAccount =="")
@@ -59,6 +67,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
                 toast(R.string.Account_cannot_be_empty)
                 return@setOnClickListener
             }
+            emaiLAccount = emaiLAccount.trim().toLowerCase()
             if (!NetUtils.isNetworkAvalible(this)) {
                 toast(getString(R.string.internet_unavailable))
                 return@setOnClickListener
@@ -132,7 +141,8 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
 
                                 runOnUiThread {
                                     closeProgressDialog()
-                                    showDialog("Seed:",qlcAccount.seed +"      "+"Adress:" +qlcAccount.address)
+                                    toast(R.string.success)
+
                                 }
                                 /* val verifiersBlock = JSONArray()
                                  verifiersBlock.add("email")

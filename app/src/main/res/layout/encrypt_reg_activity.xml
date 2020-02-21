@@ -62,20 +62,38 @@
             android:src="@mipmap/arrow_enter" />
     </LinearLayout>
     <include layout="@layout/emailname_bar" />
-    <TextView
-        android:id="@+id/regeditBtn"
-        android:layout_marginRight="@dimen/x50"
-        android:layout_marginTop="@dimen/x50"
-        android:layout_marginLeft="@dimen/x50"
-        android:gravity="center"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x58"
-        android:background="@drawable/btn_purcle"
-        android:text="@string/register"
-        android:textColor="@color/white"
-        android:textSize="@dimen/commemTextSize"
-        />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
+        <TextView
+            android:id="@+id/regeditBtn"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_purcle"
+            android:text="@string/register"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+        <TextView
+            android:id="@+id/rechargeBtn"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_maincolor"
+            android:text="Recharge"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+    </LinearLayout>
 </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 

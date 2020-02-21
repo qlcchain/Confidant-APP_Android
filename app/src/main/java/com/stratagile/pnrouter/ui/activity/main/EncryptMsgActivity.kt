@@ -122,6 +122,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                 toast(R.string.Account_cannot_be_empty)
                 return@setOnClickListener
             }
+            emaiLAccount = emaiLAccount.trim().toLowerCase()
             var password_editText = password_editText.text.toString()
             if(password_editText =="")
             {
@@ -182,14 +183,14 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                             }else{
                                 runOnUiThread {
                                     closeProgressDialog()
-                                    toast(R.string.Please_registe_your_account_first)
+                                    toast("firstResult size =0")
                                 }
                             }
 
                         }else{
                             runOnUiThread {
                                 closeProgressDialog()
-                                toast(R.string.Decryption_failed)
+                                toast("getPubKeyByTypeAndIDResult= null")
                             }
 
                         }
@@ -197,7 +198,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                     {
                         runOnUiThread {
                             closeProgressDialog()
-                            toast(R.string.Decryption_failed)
+                            toast(R.string.Interface_call_failed)
                         }
                     }
 
