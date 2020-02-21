@@ -327,6 +327,9 @@
             android:name="com.stratagile.pnrouter.ui.activity.main.EncryptMsgActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.stratagile.pnrouter.ui.activity.main.EncryptMsgTypeActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.user.ImportAccountActivity"
             android:screenOrientation="portrait" />
         <activity

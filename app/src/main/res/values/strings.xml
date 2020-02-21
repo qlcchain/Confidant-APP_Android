@@ -945,4 +945,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Select_account_type">Select account type</string>
     <string name="Account_cannot_be_empty">Account cannot be empty</string>
     <string name="Please_enter_content">Please enter content</string>
+    <string name="Please_registe_your_account_first">Please register your account first</string>
+
 </resources>
