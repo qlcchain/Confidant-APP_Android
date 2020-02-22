@@ -198,7 +198,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                     {
                         runOnUiThread {
                             closeProgressDialog()
-                            toast(R.string.Interface_call_failed)
+                            toast(getString(R.string.Interface_call_failed) +":"+e.message)
                         }
                     }
 

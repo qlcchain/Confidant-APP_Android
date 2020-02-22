@@ -29,10 +29,10 @@ public class QlcClient {
 	}
 	
 	public JSONObject call(String method, JSONArray params) throws IOException {
-		
+
 		if (StringUtil.isBlank(url))
 			throw new QlcException(Constants.EXCEPTION_SYS_CODE_3001, Constants.EXCEPTION_SYS_MSG_3001);
-		
+
 		JSONObject reqParams = makeRequest(method, params);
 		JSONObject response = null;
 		if (url.toLowerCase().startsWith(Constants.URL_START_HTTP))
@@ -41,13 +41,12 @@ public class QlcClient {
 			response = wsReq(reqParams);
 		else
 			throw new QlcException(Constants.EXCEPTION_SYS_CODE_3002, Constants.EXCEPTION_SYS_MSG_3002);
-
 		if (response == null)
 			throw new QlcException(Constants.EXCEPTION_SYS_CODE_3003, Constants.EXCEPTION_SYS_MSG_3003);
 		if (response.containsKey("result") || response.containsKey("error"))
 			return response;
 		else
-			throw new IOException();
+			throw new IOException("IOException");
 	}
 	
 	private JSONObject makeRequest(String method, JSONArray params) {
