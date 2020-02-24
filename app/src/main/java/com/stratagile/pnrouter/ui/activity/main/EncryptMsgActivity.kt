@@ -190,7 +190,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                         }else{
                             runOnUiThread {
                                 closeProgressDialog()
-                                toast("getPubKeyByTypeAndIDResult= null")
+                                toast("getPubKeyByTypeAndIDResult == null")
                             }
 
                         }
