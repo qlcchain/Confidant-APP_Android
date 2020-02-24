@@ -129,7 +129,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
                                     e.printStackTrace()
                                     runOnUiThread {
                                         closeProgressDialog()
-                                        toast(R.string.fail)
+                                        toast(getString(R.string.fail)+":"+e.message)
                                     }
                                     return@Runnable
                                 }
@@ -155,17 +155,28 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
                                  verifiersBlock22.add("email")
                                  var getPubKeyByTypeAndIDResult2 =  rpc.getPublishInfosByAccountAndType(verifiersBlock22)
                                  var bb = ""*/
+                            }else{
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    toast("qlcAccountEntityList.size ==0")
+
+                                }
                             }
 
+                        }else{
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("getAllVerifiersResult ==null")
+
+                            }
                         }
                     }catch (e:Exception)
                     {
                         e.printStackTrace()
                         runOnUiThread {
                             closeProgressDialog()
-                            toast(R.string.fail)
+                            toast(getString(R.string.Interface_call_failed) +":"+e.message)
                         }
-                        return@Runnable
                     }
 
                 }
