@@ -1284,7 +1284,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(FriendId)).list();
                         if (localFriendList.size() > 0)
                             friendEntity = localFriendList.get(0);
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        if(Message.getNonce().equals("================================") && Message.getSign().equals("================================") )
+                        {
+                            msgSouce = new String(RxEncodeTool.base64Decode(Message.getMsg()));
+                        }else{
+                            msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        }
+
                     }
                 } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
@@ -2660,7 +2666,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(FriendId)).list();
                         if (localFriendList.size() > 0)
                             friendEntity = localFriendList.get(0);
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(messageData.getMsg(), messageData.getNonce(), FriendId, messageData.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        if(messageData.getNonce().equals("================================") && messageData.getSign().equals("================================") )
+                        {
+                            msgSouce = new String(RxEncodeTool.base64Decode(messageData.getMsg()));
+                        }else{
+                            msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(messageData.getMsg(), messageData.getNonce(), FriendId, messageData.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        }
                     }
                 } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());

@@ -125,7 +125,12 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                     val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(it.from)).list()
                     if (localFriendList.size > 0)
                         friendEntity = localFriendList[0]
-                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+                    if(it.nonce.equals("================================") && it.sign.equals("================================") )
+                    {
+                        msgSouce = String(RxEncodeTool.base64Decode(it.msg))
+                    }else{
+                        msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+                    }
                 }else{
                     //msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
                 }
