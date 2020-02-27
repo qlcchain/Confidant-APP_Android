@@ -55,14 +55,18 @@ android {
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
         ]
     }
-   /* productFlavors{
-        xiaomi{
-            manifestPlaceholders = [APP_CHANNEL_VALUE:"xiaomi"]
+    flavorDimensions "implementation"
+    productFlavors {
+        normal {
+            dimension "implementation"
+            buildConfigField 'boolean', 'isGooglePlay', 'false'
         }
-        baidu{
-            manifestPlaceholders = [APP_CHANNEL_VALUE:"baidu"]
+        googleplay {
+            dimension "implementation"
+            buildConfigField 'boolean', 'isGooglePlay', 'true'
+
         }
-    }*/
+    }
     aaptOptions {
         additionalParameters "--no-version-vectors"
     }
@@ -141,12 +145,18 @@ android {
             path "CMakeLists.txt"
         }
     }
+    sourceSets{
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['libs']
+        }
+        normal {
+        }
 
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDirs = ['libs']
+        googleplay {
+
+        }
     }
-
     androidExtensions {
         experimental = true
     }
@@ -240,7 +250,6 @@ dependencies {
     //implementation project(':easeui')
     implementation project(':library')
     implementation project(':brvaLibrary')
-    implementation project(':smspermission')
     /*implementation project(':appTox')*/
     implementation project(':zxing')
     implementation project(':picture_library')
@@ -248,7 +257,7 @@ dependencies {
     implementation project(':qmui')
     implementation project(':FloatBalllibrary')
     implementation project(':swipemenulib')
-
+    normalImplementation project(':smspermission')
     //api project(':eamil')
     implementation 'org.greenrobot:greendao:3.2.2'
 
