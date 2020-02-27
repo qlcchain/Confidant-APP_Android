@@ -101,7 +101,10 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
             mPresenter.getScanPermission()
-            mPresenter.getSMSPermission()
+            if(!BuildConfig.isGooglePlay)
+            {
+                mPresenter.getSMSPermission()
+            }
             getNodeData()
         }
     }
@@ -179,7 +182,12 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
             startActivity(intent);
         }
-        messagesParent.visibility = View.VISIBLE
+        if(!BuildConfig.isGooglePlay)
+        {
+            messagesParent.visibility = View.VISIBLE
+        }else{
+            messagesParent.visibility = View.GONE
+        }
         filterMessags.setOnClickListener {
 
             //PermissionUtils.toPermissionSetting(this@FileEncryptionFragment.context);
@@ -201,6 +209,10 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         if(foregroundCallBack.isForeground)
         {
             mPresenter.getScanPermission()
+            if(!BuildConfig.isGooglePlay)
+            {
+                mPresenter.getSMSPermission()
+            }
         }
     }
     override fun setPresenter(presenter: FileEncryptionContract.FileEncryptionContractPresenter) {

@@ -91,7 +91,10 @@ class SMSEncryptionActivity : BaseActivity(), SMSEncryptionContract.View , PNRou
             startActivity(Intent(this, SMSEncryptionNodelListActivity::class.java))
             needRefresh = true
         }
-        mPresenter.getScanPermission()
+        if(!BuildConfig.isGooglePlay)
+        {
+            mPresenter.getScanPermission()
+        }
         getNodeData()
     }
     fun getNodeData()

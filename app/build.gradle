@@ -64,7 +64,6 @@ android {
         googleplay {
             dimension "implementation"
             buildConfigField 'boolean', 'isGooglePlay', 'true'
-
         }
     }
     aaptOptions {

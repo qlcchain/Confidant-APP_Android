@@ -119,6 +119,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private lateinit var standaloneCoroutine : Job
 
     private val PREF_ACCOUNT_NAME = "accountName"
+    var countTime = 1;
 
     var routerId = ""
     var userSn = ""
@@ -1080,15 +1081,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var aa = Gmail
         GmailHelper.listMessagesMatchingQuery(aa,"","")*/
         textView7.setOnLongClickListener {
-            var email = arrayOf("283619512@qq.com"); // 需要注意，email必须以数组形式传入
+            /*var email = arrayOf("283619512@qq.com"); // 需要注意，email必须以数组形式传入
             var intent = Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822"); // 设置邮件格式
             intent.putExtra(Intent.EXTRA_EMAIL, email); // 接收人
             //intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
             intent.putExtra(Intent.EXTRA_SUBJECT, "这是邮件的主题部分"); // 主题
             intent.putExtra(Intent.EXTRA_TEXT, "这是邮件的正文部分"); // 正文
-            startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
-            //startActivity(Intent(this, EncryptMsgActivity::class.java))
+            startActivity(Intent.createChooser(intent, "请选择邮件类应用"));*/
+            startActivity(Intent(this, EncryptMsgActivity::class.java))
             true
         }
         if(ConstantValue.isGooglePlayServicesAvailable)
@@ -1764,7 +1765,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     while (true)
                     {
                         KLog.i("currentRouterIp== " + ConstantValue.currentRouterIp)
-                        if(count >=3)
+                        if(count >= countTime)
                         {
                             //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
                             if(!ConstantValue.currentRouterIp.equals(""))
@@ -2117,7 +2118,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                         while (true)
                                         {
-                                            if(count >=3)
+                                            if(count >=countTime)
                                             {
                                                 /* if(ConstantValue.currentRouterMac.equals(""))
                                                  {
@@ -2141,7 +2142,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             }
                                             count ++;
                                             MobileSocketClient.getInstance().init(handler,this)
-                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-7821")
                                             MobileSocketClient.getInstance().destroy()
                                             MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                             MobileSocketClient.getInstance().receive()
@@ -2217,7 +2218,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                     while (true)
                                     {
-                                        if(count >=3)
+                                        if(count >=countTime)
                                         {
                                             if(!ConstantValue.currentRouterIp.equals(""))
                                             {
@@ -2372,7 +2373,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                     while (true)
                                     {
-                                        if(count >=3)
+                                        if(count >=countTime)
                                         {
                                             if(!ConstantValue.currentRouterIp.equals(""))
                                             {
@@ -2507,7 +2508,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                     while (true)
                                     {
-                                        if(count >=3)
+                                        if(count >=countTime)
                                         {
                                             if(ConstantValue.currentRouterMac.equals(""))
                                             {
