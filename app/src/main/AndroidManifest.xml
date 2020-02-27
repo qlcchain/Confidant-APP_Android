@@ -40,7 +40,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="com.huawei.perission.sec.MDM" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -502,6 +501,9 @@
                 android:resource="@xml/file_path" />
         </provider>
         <!-- 设置环信应用的appkey -->
+      <!--  <meta-data
+            android:name="channel"
+            android:value="${APP_CHANNEL_VALUE}"/>-->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />

@@ -1,3 +1,4 @@
+/*apply from :'config.gradle'*/
 apply plugin: 'com.android.application'
 
 apply plugin: 'org.greenrobot.greendao'
@@ -54,6 +55,14 @@ android {
                 JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
         ]
     }
+   /* productFlavors{
+        xiaomi{
+            manifestPlaceholders = [APP_CHANNEL_VALUE:"xiaomi"]
+        }
+        baidu{
+            manifestPlaceholders = [APP_CHANNEL_VALUE:"baidu"]
+        }
+    }*/
     aaptOptions {
         additionalParameters "--no-version-vectors"
     }
@@ -231,7 +240,7 @@ dependencies {
     //implementation project(':easeui')
     implementation project(':library')
     implementation project(':brvaLibrary')
-
+    implementation project(':smspermission')
     /*implementation project(':appTox')*/
     implementation project(':zxing')
     implementation project(':picture_library')
