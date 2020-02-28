@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.stratagile.pnrouter.constant.ConstantValue;
 
 import qlc.bean.StateBlock;
 import qlc.mng.BlockMng;
@@ -114,6 +115,38 @@ public class DpkiRpc extends QlcRpc {
 		if (publishBlockResult.containsKey("result")) {
 			publishBlockResult = publishBlockResult.getJSONObject("result");
 			if (publishBlockResult.containsKey("block")) {
+				if (publishBlockResult.containsKey("verifiers")) {
+					JSONObject firstResult = publishBlockResult.getJSONObject("verifiers");
+                    if (firstResult.containsKey("19464572@qq.com")) {
+						JSONObject sencondeResult = firstResult.getJSONObject("19464572@qq.com");
+						String aa =sencondeResult.getString("code");
+						ConstantValue.INSTANCE.setOracleEmailCode(sencondeResult.getString("code"));
+						ConstantValue.INSTANCE.setOracleEmailhash(sencondeResult.getString("hash"));
+						ConstantValue.INSTANCE.setOracleEmailPubKey(sencondeResult.getString("pubKey"));
+                    }
+					String aa ="";
+					/*for(int i=0;i<firstResult.size();i++){
+						//3、把里面的对象转化为JSONObject
+						JSONObject job = firstResult.getJSONObject(i);
+						if(ConstantValue.INSTANCE.getOracleEmailAdress().equals(job.get("key")))
+						{
+							String aa ="";
+							//ConstantValue.INSTANCE.setOracleEmailCode();
+						}
+					}*/
+
+				/*for (i in 0..(firstResult.size - 1)){
+					if(i>3)
+					{
+						break;
+					}
+					var obj: JSONObject = firstResult.get(i) as JSONObject
+					var obj_account = obj.getString("account")
+					var obj_type = obj.getString("type")
+					var obj_id = obj.getString("id")
+					verifiers.add(obj_account)
+				}*/
+				}
 				StateBlock publishBlock = new Gson().fromJson(publishBlockResult.getString("block"), StateBlock.class);
 				if (privateKey!=null && privateKey.length==64) {
 					

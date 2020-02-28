@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
@@ -19,14 +20,18 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerEncryptMsgTypeCo
 import com.stratagile.pnrouter.ui.activity.main.contract.EncryptMsgTypeContract
 import com.stratagile.pnrouter.ui.activity.main.module.EncryptMsgTypeModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EncryptMsgTypePresenter
+import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.NetUtils
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.encrypt_reg_activity.*
+import org.libsodium.jni.Sodium
 import qlc.network.QlcClient
 import qlc.rpc.impl.DpkiRpc
 import qlc.utils.Helper
+import java.text.SimpleDateFormat
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -48,7 +53,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
     }
 
     override fun initView() {
-       setContentView(R.layout.encrypt_reg_activity)
+        setContentView(R.layout.encrypt_reg_activity)
     }
     override fun initData() {
         title.text = "Encrypt And Decrypt"
@@ -59,7 +64,55 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
                 showDialog("Seed:",qlcAccount.seed +"      "+"Address:" +qlcAccount.address)
             }
         }
+        VerifymailboxBtn.setOnClickListener {
+            var code = "SSAJ6aTejQ2Cb0AJ"
+            val mDateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+            val currentTime = mDateFormat.format(Date())
+            var singStr =  LibsodiumUtil.cryptoSign(code +currentTime,ConstantValue.libsodiumprivateSignKey!!)
+            var orignTxt =ConstantValue.libsodiumpublicSignKey +code+"79b1b1ed5fdcd7e9e8e962859d703140c80a893d4e3d5a456e2c777fa65444e8"+currentTime+singStr
+            var dst_public_TemKey_My = ByteArray(32)
+            var dst_private_Temkey_My = ByteArray(32)
+            var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
+            var libsodiumprivateTemKeyNew = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
+            var libsodiumpublicTemKeyNew  =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
+            var friendMiPublic = Helper.hexStringToBytes("0ae6c2ade291b398c3dc4b4c0164bf72813d6150b25da69371bb3008e4942211")
+            var msgMap = LibsodiumUtil.EncryptSendMsg(orignTxt,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
+            var minTxt = msgMap.get("encryptedBase64") as String
+            var NonceBase64 =  msgMap.get("NonceBase64") as String
+            //var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+            var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"04"+NonceBase64+minTxt
 
+            var email = arrayOf("19464572@qq.com"); // 需要注意，email必须以数组形式传入
+            var intent = Intent(Intent.ACTION_SEND);
+            intent.setType("message/rfc822"); // 设置邮件格式
+            intent.putExtra(Intent.EXTRA_EMAIL, email); // 接收人
+            //intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
+            intent.putExtra(Intent.EXTRA_SUBJECT, "dpki_verify"); // 主题
+            intent.putExtra(Intent.EXTRA_TEXT, miStrBegin); // 正文
+            startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
+        }
+        copyBtn.setOnClickListener {
+            var code = ConstantValue.oracleEmailCode
+            val mDateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+            val currentTime = mDateFormat.format(Date())
+            var singStr =  LibsodiumUtil.cryptoSign(code +currentTime,ConstantValue.libsodiumprivateSignKey!!)
+            var orignTxt =ConstantValue.libsodiumpublicSignKey +code+ConstantValue.oracleEmailhash+currentTime+singStr
+            var dst_public_TemKey_My = ByteArray(32)
+            var dst_private_Temkey_My = ByteArray(32)
+            var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
+            var libsodiumprivateTemKeyNew = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
+            var libsodiumpublicTemKeyNew  =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
+            var friendMiPublic = Helper.hexStringToBytes(ConstantValue.oracleEmailPubKey)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(orignTxt,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
+            var minTxt = msgMap.get("encryptedBase64") as String
+            var NonceBase64 =  msgMap.get("NonceBase64") as String
+            //var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+            var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"04"+NonceBase64+minTxt
+            var emailAdress ="Addressee:"+ConstantValue.oracleEmailAdress+"      subject:dpki_verify"
+            runOnUiThread {
+                showDialog("Email:",emailAdress+ "       body:"+miStrBegin)
+            }
+        }
         regeditBtn.setOnClickListener {
             var emaiLAccount = account_editText.text.toString()
             if(emaiLAccount =="")
@@ -75,6 +128,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
             val qlcClient = QlcClient(ConstantValue.qlcNode)
             val rpc = DpkiRpc(qlcClient)
             verifiers= arrayListOf<String>()
+            verifiers.add(0,ConstantValue.oracleEmailQlcAdress)
             Thread(Runnable() {
                 run() {
                     runOnUiThread {
@@ -86,7 +140,7 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
                         {
                             var firstResult = getAllVerifiersResult.get("result") as JSONArray
                             for (i in 0..(firstResult.size - 1)){
-                                if(i>4)
+                                if(i>3)
                                 {
                                     break;
                                 }
@@ -200,16 +254,16 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
 
     }
     override fun setupActivityComponent() {
-       DaggerEncryptMsgTypeComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .encryptMsgTypeModule(EncryptMsgTypeModule(this))
-               .build()
-               .inject(this)
+        DaggerEncryptMsgTypeComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .encryptMsgTypeModule(EncryptMsgTypeModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: EncryptMsgTypeContract.EncryptMsgTypeContractPresenter) {
-            mPresenter = presenter as EncryptMsgTypePresenter
-        }
+        mPresenter = presenter as EncryptMsgTypePresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

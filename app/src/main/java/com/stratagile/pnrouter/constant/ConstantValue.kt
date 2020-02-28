@@ -15,7 +15,7 @@ object ConstantValue {
     var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
     var isAntox = false   //是antox 还是自己封装的tox
     var fileNonce = "OmcKJrqehqQwNvdHkRBddXYyAvbGW2A1"
-    var qlcNode = "http://47.103.54.171:29735"
+    var qlcNode = "http://47.103.54.171:29735"//"http://47.103.54.171:29735"李超
     var localPath = "/ARouterNewData"
     var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
     var httpMacTestUrl ="https://47.96.76.184:9001/v1/pprmap/"
@@ -62,7 +62,11 @@ object ConstantValue {
     var libsodiumprivateSignKey:String? = ""
     var libsodiumpublicSignKey:String? = ""
     var localUserName:String? = ""
-
+    var oracleEmailQlcAdress = "qlc_38k6bk5wh9tpfh57wb3nicg9wyap4iaqhx9qxg18dz7u94cx7deweyhdsn6x";
+    var oracleEmailAdress = "19464572@qq.com";
+    var oracleEmailCode  =""
+    var oracleEmailPubKey = ""
+    var oracleEmailhash = ""
     var sendFileSizeMaxoInner = 1024 * 1024 * 2  //内网缓存区2M
     var sendFileSizeMaxoOuterNet = 1024 * 500 //外网缓存区500k
     var sendFileSizeMax = 1024 * 1024 * 2   //实际使用的缓冲区

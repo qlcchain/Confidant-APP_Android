@@ -94,6 +94,41 @@
             android:textSize="@dimen/commemTextSize"
             />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/emailAndCopyRoot"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x30"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/VerifymailboxBtn"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_purcle"
+            android:text="Email"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+        <TextView
+            android:id="@+id/copyBtn"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_maincolor"
+            android:text="Copy"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+    </LinearLayout>
 </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 

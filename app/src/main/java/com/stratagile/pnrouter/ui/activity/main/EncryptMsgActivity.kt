@@ -7,25 +7,17 @@ import android.content.Intent
 import android.os.Bundle
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.Gson
 import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.QLCAccountDao
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LogOutReq
-import com.stratagile.pnrouter.entity.PublishBlock
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEncryptMsgComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.EncryptMsgContract
 import com.stratagile.pnrouter.ui.activity.main.module.EncryptMsgModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.EncryptMsgPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import com.stratagile.tox.toxcore.KotlinToxService
-import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.encrypt_main_activity.*
 import kotlinx.android.synthetic.main.encrypt_source.*
@@ -96,7 +88,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                     tokenType = password_editText.substring(160,162)
                     miTxt = password_editText.substring(162,password_editText.length)
                 }
-                var sourceTxt = LibsodiumUtil.DecryptFriendMsg2(miTxt,random_nonce,ConstantValue.libsodiumprivateMiKey!!,libsodiumpublicTemKey)
+                var sourceTxt = LibsodiumUtil.DecryptProtocolMsg(miTxt,random_nonce,ConstantValue.libsodiumprivateMiKey!!,libsodiumpublicTemKey)
                 runOnUiThread {
                     closeProgressDialog()
                     if(sourceTxt !="")
@@ -174,7 +166,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                                 var msgMap = LibsodiumUtil.EncryptSendMsg(password_editText,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
                                 var minTxt = msgMap.get("encryptedBase64") as String
                                 var NonceBase64 =  msgMap.get("NonceBase64") as String
-                                var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                                //var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                                 var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"00"+NonceBase64+minTxt
                                 runOnUiThread {
                                     closeProgressDialog()

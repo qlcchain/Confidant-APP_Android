@@ -362,9 +362,9 @@ object LibsodiumUtil {
 
     }
     /**
-     * 解密好友的消息
+     * 解密自定义协议内容
      */
-    fun DecryptFriendMsg2(msg:String,nonce:String,libsodiumprivateMiKey:String,dst_Friend_TempPublicKey:String):String
+    fun DecryptProtocolMsg(msg:String, nonce:String, libsodiumprivateMiKey:String, dst_Friend_TempPublicKey:String):String
     {
         try {
             val myMiPrivateBase64 = libsodiumprivateMiKey

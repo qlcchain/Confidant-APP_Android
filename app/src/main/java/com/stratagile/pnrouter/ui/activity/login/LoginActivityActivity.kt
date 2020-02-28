@@ -1081,14 +1081,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var aa = Gmail
         GmailHelper.listMessagesMatchingQuery(aa,"","")*/
         textView7.setOnLongClickListener {
-            /*var email = arrayOf("283619512@qq.com"); // 需要注意，email必须以数组形式传入
-            var intent = Intent(Intent.ACTION_SEND);
-            intent.setType("message/rfc822"); // 设置邮件格式
-            intent.putExtra(Intent.EXTRA_EMAIL, email); // 接收人
-            //intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
-            intent.putExtra(Intent.EXTRA_SUBJECT, "这是邮件的主题部分"); // 主题
-            intent.putExtra(Intent.EXTRA_TEXT, "这是邮件的正文部分"); // 正文
-            startActivity(Intent.createChooser(intent, "请选择邮件类应用"));*/
             startActivity(Intent(this, EncryptMsgActivity::class.java))
             true
         }
