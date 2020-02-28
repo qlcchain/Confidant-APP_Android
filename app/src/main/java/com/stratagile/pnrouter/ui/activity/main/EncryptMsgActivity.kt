@@ -166,7 +166,7 @@ class EncryptMsgActivity : BaseActivity(), EncryptMsgContract.View {
                                 var msgMap = LibsodiumUtil.EncryptSendMsg(password_editText,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
                                 var minTxt = msgMap.get("encryptedBase64") as String
                                 var NonceBase64 =  msgMap.get("NonceBase64") as String
-                                //var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+                                var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
                                 var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"00"+NonceBase64+minTxt
                                 runOnUiThread {
                                     closeProgressDialog()

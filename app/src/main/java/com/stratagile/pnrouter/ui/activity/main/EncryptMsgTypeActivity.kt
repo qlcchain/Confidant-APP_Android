@@ -102,11 +102,35 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
             var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
             var libsodiumprivateTemKeyNew = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
             var libsodiumpublicTemKeyNew  =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
-            var friendMiPublic = Helper.hexStringToBytes(ConstantValue.oracleEmailPubKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(orignTxt,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
+
+            var mySignPublicHash = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+            var mySignPrivateHash = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey))
+            var friendSignPublic = Helper.hexStringToBytes(mySignPublicHash) //ConstantValue.oracleEmailPubKey  9a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
+            var friendSignPrivate = Helper.hexStringToBytes(mySignPrivateHash) //8dc78db2bd50ec8bf287c0e834c6df207248c38767eb008de3ebc5bc12d705129a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
+            var dst_public_MiKey = ByteArray(32)
+            var dst_private_Mikey = ByteArray(32)
+            var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,friendSignPublic)
+            var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,friendSignPrivate)
+            val strMiPublic:String =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+            val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+
+            val strMiPublicHash:String =  Helper.byteToHexString(dst_public_MiKey)
+            val strMiPrivateHash:String =  Helper.byteToHexString(dst_private_Mikey)
+            var dst_public_MiKey2 = RxEncodeTool.base64Decode("y1/BSOJSeK/f6hzhAsg0WsBhWhA4ct0xV6nppUl4PjA=")
+            var msgMap = LibsodiumUtil.EncryptSendMsg(orignTxt,dst_public_MiKey,ConstantValue.libsodiumprivateSignKey!!,libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,ConstantValue.libsodiumpublicMiKey!!)
             var minTxt = msgMap.get("encryptedBase64") as String
             var NonceBase64 =  msgMap.get("NonceBase64") as String
-            //var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+
+
+
+            var msgMap2 = LibsodiumUtil.EncryptSendMsg(orignTxt,dst_public_MiKey2,RxEncodeTool.base64Encode2String(friendSignPrivate),libsodiumprivateTemKeyNew,libsodiumpublicTemKeyNew,strMiPublic)
+            var minTxt2 = msgMap2.get("encryptedBase64") as String
+            var NonceBase642 =  msgMap2.get("NonceBase64") as String
+
+            var sourceTxt = LibsodiumUtil.DecryptProtocolMsg(minTxt2,NonceBase642,"SFMX3exCgfKWhY5IiXqPrK4jkLMWVlypWcgeXuzqClY=",libsodiumpublicTemKeyNew)
+            var msgSouce = LibsodiumUtil.DecryptMyMsg(minTxt, NonceBase64, msgMap.get("dst_shared_key_Mi_My64") as String, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+
+            var msgSouce2 = LibsodiumUtil.DecryptMyMsg(minTxt2, NonceBase642, msgMap2.get("dst_shared_key_Mi_My64") as String, strMiPublic, strMiPrivate)
             var miStrBegin ="UUxDSUQ="+libsodiumpublicTemKeyNew+"04"+NonceBase64+minTxt
             var emailAdress ="Addressee:"+ConstantValue.oracleEmailAdress+"      subject:dpki_verify"
             runOnUiThread {
