@@ -50,13 +50,13 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Cont
                         Manifest.permission.WRITE_CONTACTS
                 )
                 .rationale({ requestCode, rationale ->
-                    AndPermission
+                    /*AndPermission
                             .rationaleDialog(mView as Activity, rationale)
                             .setTitle(AppConfig.instance.getResources().getString(R.string.Permission_Requeset))
                             .setMessage(AppConfig.instance.getResources().getString(R.string.We_Need_Some_Permission_to_continue))
                             .setPositiveButton(AppConfig.instance.getResources().getString(R.string.continue_))
                             .setNegativeButton(AppConfig.instance.getResources().getString(R.string.close), DialogInterface.OnClickListener { dialog, which ->  AppConfig.instance.toast(R.string.permission_denied) })
-                            .show()
+                            .show()*/
                 }
                 )
                 .callback(permission)

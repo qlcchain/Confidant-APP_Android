@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileEncryption
 import javax.inject.Inject;
 
 import com.pawegio.kandroid.runOnUiThread
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -43,6 +44,14 @@ import org.greenrobot.eventbus.ThreadMode
  */
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
+    override fun getScanPermissionFaile() {
+        isGoContact = false
+    }
+
+    override fun getSMSPermissionFaile() {
+        isGoSms = false
+    }
+
     override fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp) {
         runOnUiThread {
             closeProgressDialog()
@@ -87,6 +96,8 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
 
     @Inject
     lateinit internal var mPresenter: FileEncryptionPresenter
+    var isGoContact = true
+    var isGoSms = true;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_file_encryption, null);
@@ -96,7 +107,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
-        {
+        {4
             var leftData = LocalFileUtils.coverlocalFilesList
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
@@ -174,13 +185,22 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             startActivity(intent);
         }
         contactsParent.setOnClickListener {
-            var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
-            startActivity(intent);
+            if(isGoContact)
+            {
+                var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
+                startActivity(intent);
+            }else{
+                toast(R.string.permission_denied)
+            }
         }
         messagesParent.setOnClickListener {
-
-            var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
-            startActivity(intent);
+            if(isGoSms)
+            {
+                var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
+                startActivity(intent);
+            }else{
+                toast(R.string.permission_denied)
+            }
         }
         if(!BuildConfig.isGooglePlay)
         {

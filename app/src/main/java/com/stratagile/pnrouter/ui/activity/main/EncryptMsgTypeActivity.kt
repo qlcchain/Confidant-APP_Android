@@ -105,8 +105,8 @@ class EncryptMsgTypeActivity : BaseActivity(), EncryptMsgTypeContract.View {
 
             var mySignPublicHash = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
             var mySignPrivateHash = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey))
-            var friendSignPublic = Helper.hexStringToBytes(mySignPublicHash) //ConstantValue.oracleEmailPubKey  9a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
-            var friendSignPrivate = Helper.hexStringToBytes(mySignPrivateHash) //8dc78db2bd50ec8bf287c0e834c6df207248c38767eb008de3ebc5bc12d705129a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
+            var friendSignPublic = Helper.hexStringToBytes("9a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c") //ConstantValue.oracleEmailPubKey  9a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
+            var friendSignPrivate = Helper.hexStringToBytes("8dc78db2bd50ec8bf287c0e834c6df207248c38767eb008de3ebc5bc12d705129a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c") //8dc78db2bd50ec8bf287c0e834c6df207248c38767eb008de3ebc5bc12d705129a444c87c79f566bc65e2434829c7e7916141177f4f7eb8065fcbb3895d2ad9c
             var dst_public_MiKey = ByteArray(32)
             var dst_private_Mikey = ByteArray(32)
             var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,friendSignPublic)

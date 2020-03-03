@@ -282,37 +282,41 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                         SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                                     }
                                 }
-                                var seed = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)).toLowerCase();
-                                seed = seed.substring(0,64)
-                                try {
-                                    var jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
-                                    var priKey = jsonObject.getString("privKey");
-                                    var pubKey = jsonObject.getString("pubKey");
-                                    KLog.i(jsonObject.toJSONString());
-                                    var jsonArray = JSONArray()
-                                    jsonArray.add(seed);
-                                    var mnemonics = AccountRpc.seedToMnemonics(jsonArray);
-                                    KLog.i(mnemonics);
-                                    var address =  QlcUtil.publicToAddress(pubKey).toLowerCase();
-                                    var qlcAccountEntityList = AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.queryBuilder().where(QLCAccountDao.Properties.Address.eq(address)).list()
-                                    if(qlcAccountEntityList == null || qlcAccountEntityList.size == 0)
-                                    {
-                                        var qlcAccount = QLCAccount();
-                                        qlcAccount.setPrivKey(priKey.toLowerCase());
-                                        qlcAccount.setPubKey(pubKey);
-                                        qlcAccount.setAddress(address);
-                                        qlcAccount.setMnemonic(mnemonics);
-                                        qlcAccount.setIsCurrent(true);
-                                        qlcAccount.setAccountName("confidant");
-                                        qlcAccount.setSeed(seed);
-                                        qlcAccount.setIsAccountSeed(true);
-                                        qlcAccount.setWalletIndex(0);
-                                        AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.insert(qlcAccount);
+                                if(ConstantValue.libsodiumprivateSignKey != "")
+                                {
+                                    var seed = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)).toLowerCase();
+                                    seed = seed.substring(0,64)
+                                    try {
+                                        var jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
+                                        var priKey = jsonObject.getString("privKey");
+                                        var pubKey = jsonObject.getString("pubKey");
+                                        KLog.i(jsonObject.toJSONString());
+                                        var jsonArray = JSONArray()
+                                        jsonArray.add(seed);
+                                        var mnemonics = AccountRpc.seedToMnemonics(jsonArray);
+                                        KLog.i(mnemonics);
+                                        var address =  QlcUtil.publicToAddress(pubKey).toLowerCase();
+                                        var qlcAccountEntityList = AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.queryBuilder().where(QLCAccountDao.Properties.Address.eq(address)).list()
+                                        if(qlcAccountEntityList == null || qlcAccountEntityList.size == 0)
+                                        {
+                                            var qlcAccount = QLCAccount();
+                                            qlcAccount.setPrivKey(priKey.toLowerCase());
+                                            qlcAccount.setPubKey(pubKey);
+                                            qlcAccount.setAddress(address);
+                                            qlcAccount.setMnemonic(mnemonics);
+                                            qlcAccount.setIsCurrent(true);
+                                            qlcAccount.setAccountName("confidant");
+                                            qlcAccount.setSeed(seed);
+                                            qlcAccount.setIsAccountSeed(true);
+                                            qlcAccount.setWalletIndex(0);
+                                            AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.insert(qlcAccount);
+                                        }
+                                    } catch (e:Exception) {
+                                        //closeProgressDialog();
+                                        e.printStackTrace();
                                     }
-                                } catch (e:Exception) {
-                                    //closeProgressDialog();
-                                    e.printStackTrace();
                                 }
+
                             }
                         }
                     }

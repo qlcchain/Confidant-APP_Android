@@ -52,13 +52,13 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
                         Manifest.permission.READ_SMS
                 )
                 .rationale({ requestCode, rationale ->
-                    AndPermission
-                            .rationaleDialog(mView as Activity, rationale)
+                    /*AndPermission
+                            .rationaleDialog(AppConfig.instance, rationale)
                             .setTitle(AppConfig.instance.getResources().getString(R.string.Permission_Requeset))
                             .setMessage(AppConfig.instance.getResources().getString(R.string.We_Need_Some_Permission_to_continue))
                             .setPositiveButton(AppConfig.instance.getResources().getString(R.string.continue_))
                             .setNegativeButton(AppConfig.instance.getResources().getString(R.string.close), DialogInterface.OnClickListener { dialog, which ->  AppConfig.instance.toast(R.string.permission_denied) })
-                            .show()
+                            .show()*/
                 }
                 )
                 .callback(permissionSMS)
@@ -72,13 +72,13 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
                         Manifest.permission.WRITE_CONTACTS
                 )
                 .rationale({ requestCode, rationale ->
-                    AndPermission
-                            .rationaleDialog(mView as Activity, rationale)
+                    /*AndPermission
+                            .rationaleDialog(AppConfig.instance, rationale)
                             .setTitle(AppConfig.instance.getResources().getString(R.string.Permission_Requeset))
                             .setMessage(AppConfig.instance.getResources().getString(R.string.We_Need_Some_Permission_to_continue))
                             .setPositiveButton(AppConfig.instance.getResources().getString(R.string.continue_))
                             .setNegativeButton(AppConfig.instance.getResources().getString(R.string.close), DialogInterface.OnClickListener { dialog, which ->  AppConfig.instance.toast(R.string.permission_denied) })
-                            .show()
+                            .show()*/
                 }
                 )
                 .callback(permission)
@@ -98,6 +98,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
             // 权限申请失败回调。
             if (requestCode == 101) {
                 KLog.i("权限申请失败")
+                mView.getScanPermissionFaile()
                 AppConfig.instance.toast(R.string.permission_denied)
             }
         }
@@ -114,6 +115,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
             // 权限申请失败回调。
             if (requestCode == 102) {
                 KLog.i("权限申请失败")
+                mView.getSMSPermissionFaile()
                 AppConfig.instance.toast(R.string.permission_denied)
             }
         }
