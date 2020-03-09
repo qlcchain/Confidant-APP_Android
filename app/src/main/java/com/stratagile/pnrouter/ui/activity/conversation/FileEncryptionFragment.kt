@@ -1,9 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,17 +69,36 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         }
     }
    override fun getSMSPermissionSuccess() {
-        var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
-        runOnUiThread {
-            localMessags.text = msgCount.toString();
-        }
+       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+       {
+           var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
+           runOnUiThread {
+               localContacts.text = count.toString();
+           }
+       }
+       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED)
+       {
+           var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+           runOnUiThread {
+               localMessags.text = msgCount.toString();
+           }
+       }
     }
 
     override fun getScanPermissionSuccess() {
-        //var count = FileUtil.getContantsCount(this@FileEncryptionFragment.context)
-        var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
-        runOnUiThread {
-            localContacts.text = count.toString();
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localContacts.text = count.toString();
+            }
+        }
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localMessags.text = msgCount.toString();
+            }
         }
     }
 
@@ -107,14 +129,30 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
-        {4
+        {
             var leftData = LocalFileUtils.coverlocalFilesList
             FileUtil.saveRouterData("fileData6", "")
             LocalFileUtils.coverUpdateList(leftData)
-            mPresenter.getScanPermission()
+
+            if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+            {
+                var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
+                runOnUiThread {
+                    localContacts.text = count.toString();
+                }
+            }
+            if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+            {
+                var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+                runOnUiThread {
+                    localMessags.text = msgCount.toString();
+                }
+            }
             if(!BuildConfig.isGooglePlay)
             {
                 mPresenter.getSMSPermission()
+            }else{
+                mPresenter.getScanPermission()
             }
             getNodeData()
         }
@@ -185,7 +223,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             startActivity(intent);
         }
         contactsParent.setOnClickListener {
-            if(isGoContact)
+            if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
             {
                 var intent =  Intent(activity!!, ContactsEncryptionActivity::class.java)
                 startActivity(intent);
@@ -194,7 +232,7 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
             }
         }
         messagesParent.setOnClickListener {
-            if(isGoSms)
+            if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
             {
                 var intent =  Intent(activity!!, SMSEncryptionActivity::class.java)
                 startActivity(intent);
@@ -226,14 +264,15 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(foregroundCallBack: ForegroundCallBack) {
-        if(foregroundCallBack.isForeground)
+       /* if(foregroundCallBack.isForeground)
         {
-            mPresenter.getScanPermission()
             if(!BuildConfig.isGooglePlay)
             {
                 mPresenter.getSMSPermission()
+            }else{
+                mPresenter.getScanPermission()
             }
-        }
+        }*/
     }
     override fun setPresenter(presenter: FileEncryptionContract.FileEncryptionContractPresenter) {
         mPresenter = presenter as FileEncryptionPresenter

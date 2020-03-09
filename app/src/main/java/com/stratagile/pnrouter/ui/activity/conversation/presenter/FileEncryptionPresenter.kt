@@ -49,6 +49,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
         AndPermission.with(mView as Fragment)
                 .requestCode(102)
                 .permission(
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS,
                         Manifest.permission.READ_SMS
                 )
                 .rationale({ requestCode, rationale ->
