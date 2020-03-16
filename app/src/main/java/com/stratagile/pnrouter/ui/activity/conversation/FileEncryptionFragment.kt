@@ -48,11 +48,37 @@ import org.greenrobot.eventbus.ThreadMode
 
 class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNRouterServiceMessageReceiver.BakAddrUserNumOutCallback{
     override fun getScanPermissionFaile() {
-        isGoContact = false
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localContacts.text = count.toString();
+            }
+        }
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localMessags.text = msgCount.toString();
+            }
+        }
     }
 
     override fun getSMSPermissionFaile() {
-        isGoSms = false
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localContacts.text = count.toString();
+            }
+        }
+        if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+        {
+            var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
+            runOnUiThread {
+                localMessags.text = msgCount.toString();
+            }
+        }
     }
 
     override fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp) {
@@ -69,14 +95,14 @@ class FileEncryptionFragment : BaseFragment(), FileEncryptionContract.View , PNR
         }
     }
    override fun getSMSPermissionSuccess() {
-       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
        {
            var count = FileUtil.getContactCount(this@FileEncryptionFragment.context)
            runOnUiThread {
                localContacts.text = count.toString();
            }
        }
-       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED)
+       if(ContextCompat.checkSelfPermission(AppConfig.instance, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
        {
            var msgCount = FileUtil.getAllSmsCount(this@FileEncryptionFragment.context)
            runOnUiThread {
