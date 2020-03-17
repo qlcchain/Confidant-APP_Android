@@ -1829,6 +1829,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             {
                 needOp = false
             }
+            if(emailMeaasgeData!!.content.contains("using Confidant to send and receive"))
+            {
+                needOp = false
+            }
         }
 
         if(emailMeaasgeData!!.originalText!= null)
@@ -1845,6 +1849,14 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             if(emailMeaasgeData!!.originalText.contains("cid:") || emailMeaasgeData!!.originalText.contains("file:///"))
             {
                 needOp = true
+            }
+            if(emailMeaasgeData!!.originalText.contains("Confidant full services"))
+            {
+                needOp = false
+            }
+            if(emailMeaasgeData!!.originalText.contains("using Confidant to send and receive"))
+            {
+                needOp = false
             }
         }
         NestedScrollViewParent.setOnTouchListener(object : View.OnTouchListener {
@@ -1880,6 +1892,10 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             //webSettings.setTextSize(WebSettings.TextSize.LARGEST)
 //        webSettings.setPluginState(WebSettings.PluginState.ON);
             webSettings.setSupportZoom(true)// 设置可以支持缩放
+
+           /* webSettings.setUseWideViewPort(true);    //设置webview推荐使用的窗口，使html界面自适应屏幕
+            webSettings.setLoadWithOverviewMode(true);     //缩放至屏幕的大小*/
+
             webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
 
             webSettings.displayZoomControls = false//隐藏缩放工具

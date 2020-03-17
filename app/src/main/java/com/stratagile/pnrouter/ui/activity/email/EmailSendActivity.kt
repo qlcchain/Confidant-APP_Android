@@ -1051,9 +1051,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
-                    (toAdressEdit.text as SpannableStringBuilder)
+                   /* (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(";")
+                            .append(";")*/
                 }
             }
             toAdressEdit.post(Runnable {
@@ -2018,11 +2018,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 "        }/*]]>*/</style> "+
                 "   <section> "+
                 "    <div class=\"rowDiv\"> "+
-                "     <p>Sent from MyConfidant, the app for encrypted email.</p> "+
                 "    </div> "+
                 "    <div class=\"rowDiv\" style=\"border: 0;\"> "+
-                "     <p style=\"font-size: 14px;\">You have received a message from</p> "+
-                "     <h3 style=\"color:#6646F7\">"+myAccountStr+"</h3> "+
                 "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> "+
                 "    </div>"+
                 "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">"+
