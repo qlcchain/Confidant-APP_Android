@@ -1,5 +1,10 @@
 <resources>
 
+    <style name="MyAppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:windowAnimationStyle">@style/AnimaActivity</item>
+        <item name="android:windowBackground">@mipmap/img_logo</item>
+    </style>
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -79,7 +84,8 @@
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@color/main_color</item>
+       <!-- <item name="android:windowBackground">@color/main_color</item>-->
+        <item name="android:windowBackground">@mipmap/first</item>
         <!--<item name="android:actionMenuTextAppearance">@style/MenuTextStyle</item>-->
     </style>
 
