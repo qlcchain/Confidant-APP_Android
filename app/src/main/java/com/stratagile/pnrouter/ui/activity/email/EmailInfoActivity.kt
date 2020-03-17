@@ -1831,8 +1831,18 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
             if(emailMeaasgeData!!.content.contains("using Confidant to send and receive"))
             {
-                needOp = false
+                var countJpg = (emailMeaasgeData!!.content.length - emailMeaasgeData!!.content.replace(".jpg", "").length) / ".jpg".length
+                var countJpeg = (emailMeaasgeData!!.content.length - emailMeaasgeData!!.content.replace(".jpeg", "").length) / ".jpeg".length
+                var countPng = (emailMeaasgeData!!.content.length - emailMeaasgeData!!.content.replace(".png", "").length) / ".png".length
+                var leftCount = countJpg + countJpeg+ countPng - 2;
+                if(leftCount >0)
+                {
+                    needOp = true
+                }else{
+                    needOp = false
+                }
             }
+
         }
 
         if(emailMeaasgeData!!.originalText!= null)
@@ -1856,7 +1866,17 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
             }
             if(emailMeaasgeData!!.originalText.contains("using Confidant to send and receive"))
             {
-                needOp = false
+                var countJpg = (emailMeaasgeData!!.originalText.length - emailMeaasgeData!!.originalText.replace(".jpg", "").length) / ".jpg".length
+                var countJpeg = (emailMeaasgeData!!.originalText.length - emailMeaasgeData!!.originalText.replace(".jpeg", "").length) / ".jpeg".length
+                var countPng = (emailMeaasgeData!!.originalText.length - emailMeaasgeData!!.originalText.replace(".png", "").length) / ".png".length
+                var leftCount = countJpg + countJpeg+ countPng - 2;
+                if(leftCount >0)
+                {
+                    needOp = true
+                }else{
+                    needOp = false
+                }
+
             }
         }
         NestedScrollViewParent.setOnTouchListener(object : View.OnTouchListener {
