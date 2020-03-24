@@ -70,7 +70,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         KLog.i("SplashActivityAAAA：onCreate")
-        //var sodium: Sodium = NaCl.sodium()
+        var sodium: Sodium = NaCl.sodium()
         needFront = true
         AppConfig.instance.stopAllService()
         super.onCreate(savedInstanceState)

@@ -1080,10 +1080,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         .setFromTokenResponse(response);
         var aa = Gmail
         GmailHelper.listMessagesMatchingQuery(aa,"","")*/
-        textView7.setOnLongClickListener {
+        /*textView7.setOnLongClickListener {
             startActivity(Intent(this, EncryptMsgActivity::class.java))
             true
-        }
+        }*/
         if(ConstantValue.isGooglePlayServicesAvailable)
         {
             var gso = GoogleSignInOptions

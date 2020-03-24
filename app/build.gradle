@@ -150,10 +150,13 @@ android {
             jniLibs.srcDirs = ['libs']
         }
         normal {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['libs']
         }
 
         googleplay {
-
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['libs']
         }
     }
     androidExtensions {

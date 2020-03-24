@@ -85,7 +85,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
        <!-- <item name="android:windowBackground">@color/main_color</item>-->
-        <item name="android:windowBackground">@mipmap/first</item>
+        <item name="android:windowBackground">@drawable/main_bitmap_splash_bg</item>
         <!--<item name="android:actionMenuTextAppearance">@style/MenuTextStyle</item>-->
     </style>
 

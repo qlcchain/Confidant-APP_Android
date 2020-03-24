@@ -349,7 +349,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     }
                 }
             }
-            if(ConstantValue.libsodiumprivateSignKey != "")
+            /*if(ConstantValue.libsodiumprivateSignKey != "")
             {
                 var seed = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)).toLowerCase();
                 seed = seed.substring(0,64)
@@ -382,7 +382,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     //closeProgressDialog();
                     e.printStackTrace();
                 }
-            }
+            }*/
 
         }
         return true;
