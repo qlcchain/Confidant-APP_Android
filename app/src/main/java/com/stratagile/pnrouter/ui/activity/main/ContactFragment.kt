@@ -451,7 +451,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             it.nickSouceName
         }
 
-        if(contactList.size == 1 && ConstantValue.isNewUser)
+        /*if(contactList.size == 1 && ConstantValue.isNewUser)
         {
             var adminTemp = contactList.get(0)
             val gson = Gson()
@@ -465,7 +465,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             Message.chatType = EMMessage.ChatType.Chat
             val baseDataJson = gson.toJson(Message)
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + adminTemp.userId, baseDataJson)
-        }
+        }*/
         //一对多数据处理begin
         var contactMapList = HashMap<String, MyFriend>()
         for (i in contactList) {

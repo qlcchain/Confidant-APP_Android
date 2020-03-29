@@ -1051,9 +1051,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     fromNameTemp= fromNameTemp.replace("\"","")
                     fromNameTemp= fromNameTemp.replace("\"","")
                     var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
-                    (toAdressEdit.text as SpannableStringBuilder)
+                   /* (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
-                            .append(";")
+                            .append(";")*/
                 }
             }
             toAdressEdit.post(Runnable {
@@ -1849,6 +1849,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
          {
              contactMapList = HashMap<String, String>()
          }*/
+        var needEncryptEmail = false;
         var fileKey = RxEncryptTool.generateAESKey()
         if(userPassWord != "")
         {
@@ -2005,9 +2006,47 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 getString(R.string.sendfromconfidant)+
                 "</span>"+
                 "</div>"
-        if(needTipsShow)
+
+
+        var myAccountStr = ConstantValue.currentEmailConfigEntity!!.account
+        var addEnd = "<div id=\"box\"> "+
+                "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;} .jusCenter {display: flex;justify-content: center;align-items: center;} .rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}.h3logo {"+
+                "            position: relative;"+
+                "            top: 5px;"+
+                "            width: 24px;"+
+                "            margin-right: 5px;"+
+                "        }/*]]>*/</style> "+
+                "   <section> "+
+                "    <div class=\"rowDiv\"> "+
+                "    </div> "+
+                "    <div class=\"rowDiv\" style=\"border: 0;\"> "+
+                "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> "+
+                "    </div>"+
+                "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">"+
+                "     <div style=\"padding:15px;\">"+
+                "      <a href=\"https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/apps_tore.png\'></a>"+
+                "     </div>"+
+                "     <div style=\"padding:15px;\">"+
+                "      <a href=\"https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/google_play.png\'></a>"+
+                "     </div>"+
+                "    </div>  "+
+                "   </section>"+
+                "  </div>";
+
+        if(userPassWord == "")
+        {
+            if(contactMapList.size == needSize)//需要加密
+            {
+                needEncryptEmail = true;
+            }
+        }else{//手动加密
+            needEncryptEmail = true;
+        }
+        if(needEncryptEmail)
         {
             contentHtml += endStr
+        }else{
+            contentHtml += addEnd
         }
         var toAdress = getEditText(toAdressEdit)
         var ccAdress = getEditText(ccAdressEdit)

@@ -69,6 +69,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     internal lateinit var mPresenter: SplashPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        KLog.i("SplashActivityAAAA：onCreate")
         var sodium: Sodium = NaCl.sodium()
         needFront = true
         AppConfig.instance.stopAllService()
@@ -122,57 +123,14 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
-        AppConfig.instance.isOpenSplashActivity = true
-        ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
-        var aa = Base58.encode("Default Wechat Folder".toByteArray())
-        var bb = ""
-        /*if(BuildConfig.DEBUG)
+        KLog.i("SplashActivityAAAA：initData")
+        if(BuildConfig.DEBUG)
         {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
-        }*/
-        //AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.deleteAll()
-        /* var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-         if(emailConfigEntityChoose.size > 0) {
-             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-             var susan = SpUtil.getBoolean(this,"susan2",false)
-             if(emailConfigEntity.account != null && emailConfigEntity.account == "susan.zhou@qlink.mobi" && !susan)
-             //if(emailConfigEntity.account != null)
-             {
-                 SpUtil.putBoolean(this, "susan2", true)
-                 var localEmailMessage = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("INBOX")).list()
-                 for (item in localEmailMessage)
-                 {
-                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
-                 }
-                 var localEmailMessage2 = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(emailConfigEntity.account ), EmailMessageEntityDao.Properties.Menu.eq("Drafts")).list()
-                 for (item in localEmailMessage2)
-                 {
-                     AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.delete(item)
-                 }
-                 var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                 if(emailConfigEntityChoose.size > 0) {
-                     var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-                     emailConfigEntity.totalCount = 0;
-                     emailConfigEntity.inboxMinMessageId = 0;
-                     emailConfigEntity.inboxMaxMessageId = 0;
-
-                     emailConfigEntity.drafTotalCount = 0;
-                     emailConfigEntity.drafMaxMessageId = 0
-                     emailConfigEntity.drafMinMessageId = 0
-                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
-                 }
-
-
-             }
-         }*/
-        /* var googleApiAvailability = GoogleApiAvailability.getInstance();
-         var resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
-         if(resultCode != ConnectionResult.SUCCESS) {
-             if(googleApiAvailability.isUserResolvableError(resultCode)) {
-                 googleApiAvailability.getErrorDialog(this, resultCode, 2404).show();
-             }
-             ConstantValue.googleserviceFlag = false;
-         }*/
+            SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
+        }
+        AppConfig.instance.isOpenSplashActivity = true
+        ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
         var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
         for(item in localMessageList)
         {
@@ -266,6 +224,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
+        KLog.i("SplashActivityAAAA：initData00")
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
         var this_ = this
@@ -314,18 +273,12 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             }
         }
         MobileSocketClient.getInstance().init(handler,this)
+        KLog.i("SplashActivityAAAA：initData0011")
         mPresenter.getPermission()
+        KLog.i("SplashActivityAAAA：initData001122")
 
 
-        //这里不要注释
-        var dst_public_TemKey_My = ByteArray(32)
-        var dst_private_Temkey_My = ByteArray(32)
-        var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
-        var gg = dst_public_TemKey_My.toString()
-        var hh = dst_private_Temkey_My.toString()
-        ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
-        ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
-
+        KLog.i("SplashActivityAAAA：initData00112233")
         mPresenter.observeJump()
     }
 

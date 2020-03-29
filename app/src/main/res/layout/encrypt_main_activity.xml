@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/headmainColor">
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/statusBar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/headmainColor"
+        android:layout_height="@dimen/x104">
+        <LinearLayout
+            android:id="@+id/llCancel"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/backBtn"
+                android:layout_width="@dimen/x40"
+                android:src="@mipmap/arrow_exit_h"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="@dimen/x5"
+                android:layout_height="@dimen/x40" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_marginLeft="@dimen/x20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/Inbox"
+            android:textColor="@color/mainColor"
+            android:textSize="@dimen/commemTextSize" />
+        <RelativeLayout
+            android:id="@+id/multiSelectBtn"
+            android:layout_width="@dimen/x100"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/x12"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/registerBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/x50"
+                android:textColor="@color/mainColor"
+                android:layout_centerInParent="true"
+                android:textSize="13sp"
+                android:background="@drawable/btn_maincolor5"
+                android:text="@string/register"/>
+            <TextView
+                android:id="@+id/cancelBtn"
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/mainColor"
+                android:textSize="15sp"
+                android:text="@string/Cancel"/>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/emailLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x50"
+        android:src="@mipmap/tabbar_album_encryption_a" />
+    <LinearLayout
+        android:id="@+id/llCircle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
+        android:layout_marginLeft="@dimen/x40"
+        android:layout_marginRight="@dimen/x40"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/btn_maincolor5"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/ivNoCircle"
+            android:layout_width="@dimen/x50"
+            android:layout_height="@dimen/x50"
+            android:src="@mipmap/statusbar_leftbar_h"
+            android:visibility="visible" />
+
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/x80"
+            android:layout_height="@dimen/x80"
+            android:visibility="gone"
+            >
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+
+        <TextView
+            android:id="@+id/routerNameTips"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x15"
+            android:layout_weight="1"
+            android:text=""
+            android:hint="@string/Email"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize" />
+
+        <ImageView
+            android:id="@+id/routerNameTipsmore"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="@dimen/x20"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/arrow_enter" />
+    </LinearLayout>
+    <include layout="@layout/emailname_bar" />
+    <TextView
+        android:id="@+id/regeditBtn"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_marginLeft="@dimen/x50"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x58"
+        android:background="@drawable/btn_purcle"
+        android:text="@string/register"
+        android:textColor="@color/white"
+        android:textSize="@dimen/commemTextSize"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Encryption and decryption content："
+        android:textColor="@color/emailtextColor"
+        android:layout_marginTop="@dimen/x40"
+        android:layout_marginLeft="@dimen/x40"
+        android:textSize="16sp"
+        />
+    <include layout="@layout/encrypt_source" />
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/encryptBtn"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_purcle"
+            android:text="@string/Encrypt"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+        <TextView
+            android:id="@+id/decryptBtn"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x58"
+            android:background="@drawable/btn_maincolor"
+            android:text="@string/Decrypt"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+
+

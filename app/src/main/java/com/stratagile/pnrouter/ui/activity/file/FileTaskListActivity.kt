@@ -62,7 +62,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
+                            var msgId = localMedia!!.msgId
+                            if(msgId == null)
+                            {
+                                msgId = ""
+                            }
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -74,8 +79,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 }
                             }
                         }
-                        "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false,fromPorperty,aesKey)
+                        "image/png" -> {
+                            var msgId = localMedia!!.msgId
+                            if(msgId == null)
+                            {
+                                msgId = ""
+                            }
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -88,7 +98,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "video/mp4" -> {
-                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"",fromPorperty,aesKey)
+                            var msgId = localMedia!!.msgId
+                            if(msgId == null)
+                            {
+                                msgId = ""
+                            }
+                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,msgId,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -101,7 +116,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         else -> {
-                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"",fromPorperty,aesKey)
+                            var msgId = localMedia!!.msgId
+                            if(msgId == null)
+                            {
+                                msgId = ""
+                            }
+                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,msgId,fromPorperty,aesKey)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -136,7 +156,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
     var fromPorperty:Int? = null;
     var aesKey:String? = null
-
+    var noVerification:Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
             if (name.equals("com.android.internal.view.menu.IconMenuItemView", ignoreCase = true) || name.equals("com.android.internal.view.menu.ActionMenuItemView", ignoreCase = true) || name.equals("android.support.v7.view.menu.ActionMenuItemView", ignoreCase = true)) {
@@ -321,49 +341,144 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             aesKey = intent.getStringExtra("aesKey")
         }
+        if(intent.hasExtra("noVerification"))
+        {
+            noVerification = intent.getBooleanExtra("noVerification",false)
+        }
         if (listData != null && listData.size > 0) {
-            for (i in listData) {
-                var file = File(i.path)
-                if (file.exists()) {
-                    localMedia = i
-                    var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
-                    val fileNameBase58 = Base58.encode(fileName.toByteArray())
-                    var fileSize = file.length()
-                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var fileType = 1
-                    when (localMedia!!.pictureType) {
-                        "image/jpeg" -> {
-                            fileType = 1
+            Thread(Runnable() {
+                run() {
+                    for (i in listData) {
+                        var file = File(i.path)
+                        if (file.exists()) {
+                            localMedia = i
+                            var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
+                            val fileNameBase58 = Base58.encode(fileName.toByteArray())
+                            var fileSize = file.length()
+                            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            var fileType = 1
+                            when (localMedia!!.pictureType) {
+                                "image/jpeg" -> {
+                                    fileType = 1
+                                }
+                                "image/png" -> {
+                                    fileType = 1
+                                }
+                                "video/mp4" -> {
+                                    fileType = 4
+                                }
+                                else -> {
+                                    fileType = 6
+                                }
+                            }
+                            if(!noVerification)
+                            {
+                                runOnUiThread {
+                                    showProgressDialog(getString(R.string.waiting))
+                                }
+                                var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
+                                if (ConstantValue.isWebsocketConnected) {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
+                                } else if (ConstantValue.isToxConnected) {
+                                    var baseData = BaseData(2, msgData)
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    if (ConstantValue.isAntox) {
+                                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    } else {
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                    }
+                                }
+                            }else{
+                                var file = File(localMedia!!.path)
+                                if (file.exists()) {
+
+                                    when (localMedia!!.pictureType) {
+                                        "image/jpeg" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                        "image/png" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,msgId, false,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                        "video/mp4" -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                        else -> {
+                                            var msgId = localMedia!!.msgId
+                                            if(msgId == null)
+                                            {
+                                                msgId = ""
+                                            }
+                                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,msgId,fromPorperty,aesKey)
+                                            if(result  == 1)
+                                            {
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Start_uploading))
+                                                }
+                                            }else{
+                                                runOnUiThread {
+                                                    toast(getString(R.string.Already_on_the_list))
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+
                         }
-                        "image/png" -> {
-                            fileType = 1
-                        }
-                        "video/mp4" -> {
-                            fileType = 4
-                        }
-                        else -> {
-                            fileType = 6
-                        }
-                    }
-                    runOnUiThread {
-                        showProgressDialog(getString(R.string.waiting))
-                    }
-                    var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
-                    if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
-                    } else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(2, msgData)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        } else {
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                        }
+                        Thread.sleep(1000)
                     }
                 }
+            }).start()
 
-            }
+
+
 
         }
 

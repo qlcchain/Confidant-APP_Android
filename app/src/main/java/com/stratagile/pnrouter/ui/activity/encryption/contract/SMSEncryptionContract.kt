@@ -19,12 +19,11 @@ interface SMSEncryptionContract {
          *
          */
         fun closeProgressDialog()
+
+        abstract fun getScanPermissionSuccess()
     }
 
     interface SMSEncryptionContractPresenter : BasePresenter {
-//        /**
-//         *
-//         */
-//        fun getBusinessInfo(map : Map)
+        abstract fun getScanPermission()
     }
 }

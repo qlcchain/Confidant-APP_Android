@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/color_f2f2f2"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:id="@+id/searchParent"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/email_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srlEnableNestedScrolling="true"
+        app:srlPrimaryColor="@color/colorPrimary"
+        app:srlAccentColor="@android:color/white"
+        app:srlEnableAutoLoadMore="false">
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srlAccentColor="#aaa"
+            app:srlDrawableProgressSize="25dp"
+            app:srlDrawableProgress="@drawable/animation_loading_rotate"
+            app:srlPrimaryColor="@color/colorBackgroundDark"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.RecyclerView>
+        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray"
+            app:srlClassicsSpinnerStyle="Translate"/>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        <com.stratagile.pnrouter.utils.DragFloatActionButton
+            android:id="@+id/actionButton1"
+            android:visibility="gone"
+            android:layout_width="@dimen/x150"
+            android:layout_height="@dimen/x150"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="100px"
+            android:background="@mipmap/upload_hover"/>
+
+        <TextView
+            android:id="@+id/actionButton"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="0px"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_maincolor2"
+            android:text="@string/Delete"
+            android:layout_height="@dimen/x65" />
+    </FrameLayout>
+</LinearLayout>

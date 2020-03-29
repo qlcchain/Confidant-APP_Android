@@ -42,7 +42,7 @@ class FileDownloadUploadService : Service() {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun startNewConnect(fileMangerTransformEntity: FileMangerTransformEntity) {
         if (fileMangerTransformEntity.message == 0) {
-            KLog.i("收到eventbus消息。。")
+            KLog.i("开始上传拉。。"+fileMangerTransformEntity.toId)
             val fileWebSocketConnection = FileMangerWebSocketConnection(fileMangerTransformEntity.httpUrl, AppConfig.instance.messageReceiver!!.getTrustStore(), fileMangerTransformEntity.userAgent,null)
             fileWebSocketConnection.connect()
             fileWebSocketConnection.toId = fileMangerTransformEntity.toId
@@ -51,6 +51,7 @@ class FileDownloadUploadService : Service() {
             ConstantValue.webSockeFileMangertList.forEach {
                 if (it.toId.equals(fileMangerTransformEntity.toId)) {
                     it.disconnect(true)
+                    KLog.i("开始上传拉。。结束"+fileMangerTransformEntity.toId)
                     ConstantValue.webSockeFileMangertList.remove(it)
                     return
                 }

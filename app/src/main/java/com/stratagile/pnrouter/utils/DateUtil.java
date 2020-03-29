@@ -25,25 +25,33 @@ public class DateUtil {
     }
 
     public static String getTimestampString(Date var0, Context context) {
-        String var1 = null;
-        String var2 = Locale.getDefault().getLanguage();
-        boolean var3 = var2.startsWith("zh");
-        long var4 = var0.getTime();
-        if(isSameDay(var4)) {//同一天
-            if (is24Time(context)) {
-                var1 = "HH:mm";
-            } else {
-                var1 = "hh:mm aa";
+        try {
+            String var1 = null;
+            String var2 = Locale.getDefault().getLanguage();
+            boolean var3 = var2.startsWith("zh");
+            long var4 = var0.getTime();
+            if(isSameDay(var4)) {//同一天
+                if (is24Time(context)) {
+                    var1 = "HH:mm";
+                } else {
+                    var1 = "hh:mm aa";
+                }
+            }  else if(isSameWeek(var4) && isSameYear(var4) ) {//同一周且在同一年
+                var1 = "EEE";
+            } else if(isDifferentWeek(var4) && isSameYear(var4) ) {//不在同一周，但在同一年
+                var1 = "dd MMM";
+            }else if(var3) {//不在同一年
+                var1 = "dd/MM/yyyy";
             }
-        }  else if(isSameWeek(var4) && isSameYear(var4) ) {//同一周且在同一年
-            var1 = "EEE";
-        } else if(isDifferentWeek(var4) && isSameYear(var4) ) {//不在同一周，但在同一年
-            var1 = "dd MMM";
-        }else if(var3) {//不在同一年
-            var1 = "dd/MM/yyyy";
+            if(var1 == null || var0 == null)
+            {
+                return "";
+            }
+            return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
+        }catch (Exception e)
+        {
+            return "";
         }
-
-        return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
     }
 
     public static String getTimestampString(long var0, Context context) {

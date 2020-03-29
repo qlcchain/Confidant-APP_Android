@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -40,7 +40,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="com.huawei.perission.sec.MDM" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -75,6 +74,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme.Base"
         tools:replace="android:allowBackup">
         <activity
@@ -323,7 +323,12 @@
         <activity
             android:name=".ui.activity.user.CreateLocalAccountActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name="com.stratagile.pnrouter.ui.activity.main.EncryptMsgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.stratagile.pnrouter.ui.activity.main.EncryptMsgTypeActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.user.ImportAccountActivity"
             android:screenOrientation="portrait" />
@@ -360,6 +365,18 @@
         </activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionNodelListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.activity.encryption.SMSEncryptionNodelSecondActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -484,6 +501,9 @@
                 android:resource="@xml/file_path" />
         </provider>
         <!-- 设置环信应用的appkey -->
+      <!--  <meta-data
+            android:name="channel"
+            android:value="${APP_CHANNEL_VALUE}"/>-->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />

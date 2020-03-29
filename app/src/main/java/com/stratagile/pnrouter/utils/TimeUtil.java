@@ -54,4 +54,12 @@ public class TimeUtil {
         SimpleDateFormat sdr = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA);
         return sdr.format(new Date(timeStamp));
     }
+    public static String getMMDDYY(long timeStamp) {
+        SimpleDateFormat sdr = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        return sdr.format(new Date(timeStamp));
+    }
+    public static String getHHMM(long timeStamp) {
+        SimpleDateFormat sdr = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+        return sdr.format(new Date(timeStamp));
+    }
 }
