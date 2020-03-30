@@ -114,13 +114,8 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
                 simplePagerTitleView.normalColor =  Color.parseColor("#FF9496A1")
                 simplePagerTitleView.textSize = 17f
                 var icon: Drawable = icon.get(index)
-                 icon.setBounds(120,0,210,90);
-                /*if(index == 0)
-                {
-                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x105).toInt(),resources.getDimension(R.dimen.x60).toInt());
-                }else{
-                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x125).toInt(),resources.getDimension(R.dimen.x60).toInt());
-                }*/
+                 //icon.setBounds(120,0,210,90);
+                icon.setBounds(resources.getDimension(R.dimen.x80).toInt(),0,resources.getDimension(R.dimen.x140).toInt(),resources.getDimension(R.dimen.x60).toInt());
                 simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
                 simplePagerTitleView.selectedColor = Color.parseColor("#FF2B2B2B")
                 simplePagerTitleView.setOnClickListener {  viewPager.setCurrentItem(index) }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/qqCompany"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/tabbar_email_selected"
+        app:itemText="@string/email"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x110"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/qq"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        app:itemSrc="@mipmap/tabbar_wechat_encryption"
+        app:itemText="@string/Wechat"/>
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

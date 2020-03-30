@@ -169,7 +169,7 @@ public class LocalMediaLoader {
                                                 (data.getColumnIndexOrThrow(PROJECTION[5]));
 
                                         LocalMedia image = new LocalMedia
-                                                (path, duration, type, pictureType, w, h);
+                                                ("",path, duration, type, pictureType, w, h);
 
                                         LocalMediaFolder folder = getImageFolder(path, imageFolders);
                                         List<LocalMedia> images = folder.getImages();

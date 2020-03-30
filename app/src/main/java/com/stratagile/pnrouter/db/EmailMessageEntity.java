@@ -39,44 +39,10 @@ public class EmailMessageEntity implements Parcelable{
     private String emailAttachPath;
     private String userId;
     private Long sortId;//用于排序
+    private String originalBody; //原始正文，用于解析不出问题
     
     public EmailMessageEntity() {
 
-    }
-
-
-    @Generated(hash = 119569384)
-    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject, String from, String to,
-            String cc, String bcc, String date, Long timeStamp, boolean isSeen, boolean isStar, String priority,
-            boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,
-            String contentText, String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
-            String userId, Long sortId) {
-        this.id = id;
-        this.account = account;
-        this.msgId = msgId;
-        this.menu = menu;
-        this.subject = subject;
-        this.from = from;
-        this.to = to;
-        this.cc = cc;
-        this.bcc = bcc;
-        this.date = date;
-        this.timeStamp = timeStamp;
-        this.isSeen = isSeen;
-        this.isStar = isStar;
-        this.priority = priority;
-        this.isReplySign = isReplySign;
-        this.size = size;
-        this.isContainerAttachment = isContainerAttachment;
-        this.attachmentCount = attachmentCount;
-        this.content = content;
-        this.contentText = contentText;
-        this.originalText = originalText;
-        this.aesKey = aesKey;
-        this.messageTotalCount = messageTotalCount;
-        this.emailAttachPath = emailAttachPath;
-        this.userId = userId;
-        this.sortId = sortId;
     }
 
 
@@ -119,6 +85,44 @@ public class EmailMessageEntity implements Parcelable{
         } else {
             sortId = in.readLong();
         }
+        originalBody = in.readString();
+    }
+
+
+    @Generated(hash = 1086322148)
+    public EmailMessageEntity(Long id, String account, String msgId, String menu, String subject,
+            String from, String to, String cc, String bcc, String date, Long timeStamp, boolean isSeen,
+            boolean isStar, String priority, boolean isReplySign, long size,
+            boolean isContainerAttachment, int attachmentCount, String content, String contentText,
+            String originalText, String aesKey, long messageTotalCount, String emailAttachPath,
+            String userId, Long sortId, String originalBody) {
+        this.id = id;
+        this.account = account;
+        this.msgId = msgId;
+        this.menu = menu;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.date = date;
+        this.timeStamp = timeStamp;
+        this.isSeen = isSeen;
+        this.isStar = isStar;
+        this.priority = priority;
+        this.isReplySign = isReplySign;
+        this.size = size;
+        this.isContainerAttachment = isContainerAttachment;
+        this.attachmentCount = attachmentCount;
+        this.content = content;
+        this.contentText = contentText;
+        this.originalText = originalText;
+        this.aesKey = aesKey;
+        this.messageTotalCount = messageTotalCount;
+        this.emailAttachPath = emailAttachPath;
+        this.userId = userId;
+        this.sortId = sortId;
+        this.originalBody = originalBody;
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -357,6 +361,14 @@ public class EmailMessageEntity implements Parcelable{
         this.sortId = sortId;
     }
 
+    public String getOriginalBody() {
+        return originalBody;
+    }
+
+    public void setOriginalBody(String originalBody) {
+        this.originalBody = originalBody;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -405,5 +417,6 @@ public class EmailMessageEntity implements Parcelable{
             dest.writeByte((byte) 1);
             dest.writeLong(sortId);
         }
+        dest.writeString(originalBody);
     }
 }

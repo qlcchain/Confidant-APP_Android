@@ -61,7 +61,13 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
             if (localFriendList.size > 0)
                 friendEntity = localFriendList[0]
-            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+            if(pushMsgRsp.getParams().getNonce().equals("================================") && pushMsgRsp.getParams().getSign().equals("================================") )
+            {
+                msgSouce = String(RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg()))
+            }else{
+                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+            }
+
         }else{
             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
         }
@@ -119,7 +125,12 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                     val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(it.from)).list()
                     if (localFriendList.size > 0)
                         friendEntity = localFriendList[0]
-                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+                    if(it.nonce.equals("================================") && it.sign.equals("================================") )
+                    {
+                        msgSouce = String(RxEncodeTool.base64Decode(it.msg))
+                    }else{
+                        msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign,ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+                    }
                 }else{
                     //msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
                 }

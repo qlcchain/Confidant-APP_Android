@@ -1284,7 +1284,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(FriendId)).list();
                         if (localFriendList.size() > 0)
                             friendEntity = localFriendList.get(0);
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        if(Message.getNonce().equals("================================") && Message.getSign().equals("================================") )
+                        {
+                            msgSouce = new String(RxEncodeTool.base64Decode(Message.getMsg()));
+                        }else{
+                            msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        }
+
                     }
                 } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
@@ -2660,7 +2666,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(FriendId)).list();
                         if (localFriendList.size() > 0)
                             friendEntity = localFriendList.get(0);
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(messageData.getMsg(), messageData.getNonce(), FriendId, messageData.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        if(messageData.getNonce().equals("================================") && messageData.getSign().equals("================================") )
+                        {
+                            msgSouce = new String(RxEncodeTool.base64Decode(messageData.getMsg()));
+                        }else{
+                            msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(messageData.getMsg(), messageData.getNonce(), FriendId, messageData.getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());
+                        }
                     }
                 } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
@@ -4595,7 +4606,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(jPushMsgRsp.getParams().getFrom())).list();
         if (localFriendList.size() > 0)
             friendEntity = localFriendList.get(0);
-        String msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(), jPushMsgRsp.getParams().getNonce(), jPushMsgRsp.getParams().getFrom(), jPushMsgRsp.getParams().getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());//,ConstantValue.libsodiumprivateMiKey!!
+        String msgSouce = "";
+        if(jPushMsgRsp.getParams().getNonce().equals("================================") && jPushMsgRsp.getParams().getSign().equals("================================"))
+        {
+            msgSouce = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getMsg()));
+        }else{
+            msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(), jPushMsgRsp.getParams().getNonce(), jPushMsgRsp.getParams().getFrom(), jPushMsgRsp.getParams().getSign(),ConstantValue.INSTANCE.getLibsodiumprivateMiKey(),friendEntity.getSignPublicKey());//,ConstantValue.libsodiumprivateMiKey!!
+        }
         if (msgSouce != null && !msgSouce.equals("")) {
             jPushMsgRsp.getParams().setMsg(msgSouce);
         }

@@ -68,8 +68,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.*
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 import javax.inject.Inject;
@@ -227,8 +226,8 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                 override fun onSelect(position: Int, obj: Any) {
                                     KLog.i("" + position)
                                     var data = obj as FileOpreateType
-                                    when (data.name) {
-                                        "Rename" -> {
+                                    when (data.icon) {
+                                        "sheet_rename" -> {
                                             var oldName = chooseFileData!!.fileName.substring(0,chooseFileData!!.fileName.lastIndexOf("."));
                                             var oldExit = chooseFileData!!.fileName.substring(chooseFileData!!.fileName.lastIndexOf("."),chooseFileData!!.fileName.length);
                                             PopWindowUtil.showRenameFolderWindow(_this as Activity,  opMenu,oldName, object : PopWindowUtil.OnSelectListener {
@@ -279,7 +278,7 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                                                 }
                                             })
                                         }
-                                        "Delete" -> {
+                                        "statusbar_delete" -> {
                                             SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
                                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_delete_the_file))
                                                     .setConfirmClickListener {
@@ -981,11 +980,11 @@ class WeXinEncryptionNodelListActivity : BaseActivity(), WeXinEncryptionNodelLis
                 var isHas = file.exists();
                 if (isHas) {
                     var filePath = needPicPath
-                    val imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
-                    val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                    var uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
                     chooseFileData = LocalFileItem();
                     localMediaUpdate = LocalMedia()
                     localMediaUpdate!!.path = filePath
+                    localMediaUpdate!!.msgId = uuid;
                     val MsgType = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase()
                     localMediaUpdate!!.pictureType = "file"
                     when (MsgType) {

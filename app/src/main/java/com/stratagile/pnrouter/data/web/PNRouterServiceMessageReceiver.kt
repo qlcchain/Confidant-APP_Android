@@ -632,6 +632,25 @@ val credentialsProvider: CredentialsProvider, private
                     bakAddrUserNumCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
                     bakAddrUserNumOutCallback?.bakAddrUserNum(jBakAddrUserNumRsp)
                 }
+                "BakContent" -> {
+                    val JBakContentRsp = gson.fromJson(text, JBakContentRsp::class.java)
+                    bakContentCallback?.BakContentBack(JBakContentRsp)
+                }
+                "PullBakContent" -> {
+                    val JPullBakContentRsp = gson.fromJson(text, JPullBakContentRsp::class.java)
+                    pullBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
+                    pullSecondBakContentCallback?.pullBakContentBack(JPullBakContentRsp)
+                }
+                "GetBakContentStat" -> {
+                    val jGetBakContentStatRsp = gson.fromJson(text, JGetBakContentStatRsp::class.java)
+                    getBakContentStatCallback?.getBakContentStatCallback(jGetBakContentStatRsp)
+                    bakAddrUserNumOutCallback?.getBakContentStatCallback(jGetBakContentStatRsp)
+                }
+                "DelBakContent" -> {
+                    val JDelBakContentRsp = gson.fromJson(text, JDelBakContentRsp::class.java)
+                    pullBakContentCallback?.delBakContentBack(JDelBakContentRsp)
+                    pullSecondBakContentCallback?.delBakContentBack(JDelBakContentRsp)
+                }
             }
         }
 
@@ -736,6 +755,12 @@ val credentialsProvider: CredentialsProvider, private
     var bakAddrUserNumCallback:BakAddrUserNumCallback? = null;
 
     var bakAddrUserNumOutCallback:BakAddrUserNumOutCallback? = null;
+
+    var bakContentCallback:BakContentCallback? = null;
+
+    var getBakContentStatCallback:GetBakContentStatCallback? = null
+    var pullBakContentCallback:PullBakContentCallback? = null;
+    var pullSecondBakContentCallback:PullBakContentCallback? = null;
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -1152,6 +1177,17 @@ val credentialsProvider: CredentialsProvider, private
     }
     interface BakAddrUserNumOutCallback {
         fun bakAddrUserNum(jBakAddrUserNumRsp: JBakAddrUserNumRsp)
+        fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp)
+    }
+    interface BakContentCallback {
+        fun BakContentBack(jBakContentRsp: JBakContentRsp)
+    }
+    interface GetBakContentStatCallback {
+        fun getBakContentStatCallback(jGetBakContentStatRsp: JGetBakContentStatRsp)
+    }
+    interface PullBakContentCallback {
+        fun pullBakContentBack(jPullBakContentRsp: JPullBakContentRsp)
+        fun delBakContentBack(jDelBakContentRsp: JDelBakContentRsp)
     }
 }
 

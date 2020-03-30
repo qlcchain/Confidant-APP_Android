@@ -21,10 +21,12 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.smailnet.eamil.Utils.AESCipher;
 import com.smailnet.eamil.Utils.AESToolsCipher;
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.BuildConfig;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.RecentFileDao;
+import com.stratagile.pnrouter.db.SMSEntity;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,9 +55,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okio.ByteString;
+import rx.internal.schedulers.NewThreadWorker;
 
 
 /**
@@ -1739,7 +1743,14 @@ public class FileUtil {
      * @return 手里通讯录中联系人的个数
      */
     public static int getContactCount(Context context){
-        Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
+        try{
+            return getPhoneContacts(context);
+        }catch(Exception e){
+            return 0;
+        }finally{
+
+        }
+       /* Cursor c = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts._COUNT}, null, null, null);
         try{
             c.moveToFirst();
             return c.getInt(0);
@@ -1747,15 +1758,49 @@ public class FileUtil {
             return 0;
         }finally{
             c.close();
-        }
+        }*/
     }
-
+    //获取系统联系人，获取1000个联系人0.2秒，最快速
+    public static int getPhoneContacts(Context context) {
+        //联系人集合
+        int count = 0;
+        List<ContactsContract.Contacts> data = new ArrayList<>();
+        ContentResolver resolver = context.getContentResolver();
+        //搜索字段
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.Contacts.DISPLAY_NAME};
+        // 获取手机联系人
+        Cursor contactsCursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection, null, null, null);
+        if (contactsCursor != null) {
+            //key: contactId,value: 该contactId在联系人集合data的index
+            Map<Integer, Integer> contactIdMap = new HashMap<>();
+            while (contactsCursor.moveToNext()) {
+                //获取联系人的ID
+                //获取联系人的ID
+                int contactId = contactsCursor.getInt(0);
+                if (!contactIdMap.containsKey(contactId)) {
+                    count ++;
+                    contactIdMap.put(contactId, count);
+                }
+            }
+            contactsCursor.close();
+        }
+        return count;
+    }
     //得到未读短信的数量  通过查询数据库得到
     public static int getAllSmsCount(Context context) {
         int result = 0;
         try {
             Uri uri = Uri.parse("content://sms");
-            Cursor cur = context.getContentResolver().query(uri, null, null,
+            String selection = null;
+            if(BuildConfig.DEBUG)
+            {
+                selection = null;
+            }
+            Cursor cur = context.getContentResolver().query(uri, null, selection,
                     null, "date desc"); // 获取手机内部短信
             // 获取短信中最新的未读短信
             // Cursor cur = getContentResolver().query(uri, projection,
@@ -1789,40 +1834,49 @@ public class FileUtil {
         return result;
     }
     //得到未读短信的数量  通过查询数据库得到
-    public static String getAllSms(Context context) {
-        StringBuilder smsBuilder = new StringBuilder();
+    public static List<SMSEntity> getAllSms(Context context) {
+        List<SMSEntity> smsMessageEntityList = new ArrayList<SMSEntity>();
         try {
-            Uri uri = Uri.parse("content://sms/sent");
+            Uri uri = Uri.parse("content://sms");
             String[] projection = new String[] { "_id", "address", "person",
-                    "body", "date", "type", };
-            Cursor cur = context.getContentResolver().query(uri, projection, null,
+                    "date", "read", "type", "subject", "body", "service_center", };
+            String selection = null;
+            if(BuildConfig.DEBUG)
+            {
+                selection = null;
+            }
+            Cursor cur = context.getContentResolver().query(uri, projection, selection,
                     null, "date desc"); // 获取手机内部短信
             // 获取短信中最新的未读短信
             // Cursor cur = getContentResolver().query(uri, projection,
             // "read = ?", new String[]{"0"}, "date desc");
-
             if (cur.moveToFirst()) {
+                int index_id = cur.getColumnIndex("_id");
                 int index_Address = cur.getColumnIndex("address");
                 int index_Person = cur.getColumnIndex("person");
-                int index_Body = cur.getColumnIndex("body");
                 int index_Date = cur.getColumnIndex("date");
+                int index_Read = cur.getColumnIndex("read");
                 int index_Type = cur.getColumnIndex("type");
-
+                int index_Subject = cur.getColumnIndex("subject");
+                int index_Body = cur.getColumnIndex("body");
+                int index_Service_Center = cur.getColumnIndex("service_center");
                 do {
-                    int getColumnCount = cur.getColumnCount();
+                    /*int getColumnCount = cur.getColumnCount();
                     int getCount = cur.getCount();
-                    String[] getColumnCountNames = cur.getColumnNames();
+                    String[] getColumnCountNames = cur.getColumnNames();*/
+                    int intID = cur.getInt(index_id);
                     String strAddress = cur.getString(index_Address);
                     int intPerson = cur.getInt(index_Person);
-                    String strbody = cur.getString(index_Body);
                     long longDate = cur.getLong(index_Date);
+                    int intRead = cur.getInt(index_Read);
                     int intType = cur.getInt(index_Type);
-
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    String strSubject = cur.getString(index_Subject);
+                    String strbody = cur.getString(index_Body);
+                    String strService_Center = cur.getString(index_Service_Center);
+                    /*SimpleDateFormat dateFormat = new SimpleDateFormat(
                             "yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);
-                    String strDate = dateFormat.format(d);
-
+                    String strDate = dateFormat.format(d);*/
                     String strType = "";
                     if (intType == 1) {
                         strType = "接收";
@@ -1837,18 +1891,31 @@ public class FileUtil {
                     } else if (intType == 6) {
                         strType = "待发送列表";
                     } else if (intType == 0) {
-                        strType = "所以短信";
+                        strType = "所有短信";
                     } else {
                         strType = "null";
                     }
+                    /*if(intType == 1 || intType == 4)
+                    {*/
+                        String personName = "";
+                        SMSEntity SMSEntityTemp = new SMSEntity();
+                        SMSEntityTemp.setSmsId(intID);
+                        SMSEntityTemp.setUUID(strAddress+longDate);
+                        SMSEntityTemp.setAddress(strAddress);
+                        SMSEntityTemp.setPerson(intPerson);
+                        SMSEntityTemp.setPersonName(personName);
+                        SMSEntityTemp.setDate(longDate);
+                        SMSEntityTemp.setRead(intRead);
+                        SMSEntityTemp.setType(intType);
+                        SMSEntityTemp.setSubject(strSubject);
+                        SMSEntityTemp.setBody(strbody);
+                        SMSEntityTemp.setService_center(strService_Center);
+                        SMSEntityTemp.setLastCheck(false);
+                        SMSEntityTemp.setUpload(false);
+                        SMSEntityTemp.setMultChecked(false);
+                        smsMessageEntityList.add(SMSEntityTemp);
+                    /*}*/
 
-                    smsBuilder.append("[ ");
-                    smsBuilder.append(strAddress + ", ");
-                    smsBuilder.append(intPerson + ", ");
-                    smsBuilder.append(strbody + ", ");
-                    smsBuilder.append(strDate + ", ");
-                    smsBuilder.append(strType);
-                    smsBuilder.append(" ]\n\n");
                 } while (cur.moveToNext());
 
                 if (!cur.isClosed()) {
@@ -1856,12 +1923,76 @@ public class FileUtil {
                     cur = null;
                 }
             } else {
-                smsBuilder.append("no result!");
+
             }
-            smsBuilder.append("getSmsInPhone has executed!");
         } catch (SQLiteException ex) {
             Log.d("SQLiteException", ex.getMessage());
         }
-        return smsBuilder.toString();
+        return smsMessageEntityList;
     }
+    public static String getPeopleNameFromPerson(String address,Context context) {
+        if (address == null || address.equals("")) {
+            return "";
+        }
+
+        String strPerson = "";
+        try {
+            String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+            Uri uri_Person = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, address);  // address 手机号过滤
+            Cursor cursor = context.getContentResolver().query(uri_Person, projection, null, null, null);
+
+            if (cursor.moveToFirst()) {
+                int index_PeopleName = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                String strPeopleName = cursor.getString(index_PeopleName);
+                strPerson = strPeopleName;
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return strPerson;
+        }
+    }
+    /**
+     *
+     * @param obj  将要保存的对象
+     * @param filePath  对象转储文件的位置
+     */
+    public static void saveObj2File(Object obj,String filePath) {
+
+        try {
+            FileOutputStream fos=new FileOutputStream(filePath);
+            ObjectOutputStream objectOutputStream=new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(obj);
+            objectOutputStream.close();
+            fos.close();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     *
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    public static  Object readFile2Obj(String filePath){
+        Object obj = null;
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            obj =  ois.readObject();
+            fis.close();
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return  obj;
+    }
+
 }

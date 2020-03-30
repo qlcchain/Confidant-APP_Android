@@ -12,12 +12,21 @@ class BootReceiver : BroadcastReceiver() {
         if (intent != null && Intent.ACTION_BOOT_COMPLETED == intent.action) {
             val messageRetrievalService = Intent(context, MessageRetrievalService::class.java)
             try {
-                context.startService(messageRetrievalService)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(messageRetrievalService);
+                }else{
+                    context.startService(messageRetrievalService);
+                }
             }catch (e:Exception)
             {
                 e.printStackTrace()
                 try {
-                    context.startForegroundService(messageRetrievalService);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(messageRetrievalService);
+                    }else{
+                        context.startService(messageRetrievalService);
+                    }
+
                 }catch (e:Exception)
                 {
                     e.printStackTrace()

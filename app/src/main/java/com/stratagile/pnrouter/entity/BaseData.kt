@@ -830,3 +830,24 @@ data class FileActionReq(var UserId : String, var Depens :Int, var Type : Int,va
  * (1)	请求（APP-->Router）
  */
 data class BakAddrUserNumReq(var User : String, var FileId :Int,var Action : String = "BakAddrBookInfo")
+/**
+ * 103.	用户备份短信到节点上
+ * (1)	请求（APP-->Router）
+ */
+data class BakContentReq(var Type : String, var UserId : String, var Num :Int, var Payload :List<SendSMSData>,var Action : String = "BakContent")
+/**
+ * 104.	用户查询自己账户下备份的短信
+ * (1)	请求（APP-->Router）
+ */
+data class PullBakContentReq(var UserId : String,var Type : Int, var Tel :String, var Num :Int,var StartId : Int,var Action : String = "PullBakContent")
+
+/**
+ * 105.	用户查询自己账户备份内容统计信息
+ * (1)	请求（APP-->Router）
+ */
+data class GetBakContentStatReq(var Type : Int,var UserId : String,var Action : String = "GetBakContentStat")
+/**
+ * 106.	用户删除节点上备份的短信
+ * (1)	请求（APP-->Router）
+ */
+data class DelBakContentReq(var Type : String,var UserId : String, var Num :Int,var Index : String,var Action : String = "DelBakContent")

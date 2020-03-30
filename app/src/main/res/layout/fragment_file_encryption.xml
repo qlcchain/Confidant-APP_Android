@@ -380,6 +380,7 @@
                     />
             </LinearLayout>
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -404,7 +405,7 @@
                    />
             </LinearLayout>
         </LinearLayout>
-        <View style="@style/divide_line_nomarge"/>
+        <!--<View style="@style/divide_line_nomarge"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -419,7 +420,7 @@
                 android:textColor="#7ED321"
                 android:textSize="12sp"
                 android:layout_weight="1"
-                android:text="@string/new_message_add_tips"/>
+                android:text=""/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -427,8 +428,8 @@
                 android:textSize="14sp"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="@string/sy_message_tips"/>
-        </LinearLayout>
+                android:text=""/>
+        </LinearLayout>-->
     </LinearLayout>
 </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -56,6 +56,7 @@ object LocalFileUtils {
     //根据传入的集合(旧集合)获取迭代器
     //遍历老集合
     //记录每一个元素
+
     val localFilesList: ArrayList<MyFile>
         get() {
             synchronized(fileLock){
@@ -92,7 +93,52 @@ object LocalFileUtils {
                 return localNeedAssetArrayList
             }
         }
+    val coverlocalFilesList: ArrayList<MyFile>
+        get() {
+            synchronized(fileLock){
+                var userId = "fileData6"
+                var localAssetArrayList: ArrayList<MyFile> = ArrayList()
+                if(userId.equals(""))
+                {
+                    return localAssetArrayList
+                }
+                val gson = Gson()
 
+                try {
+                    var assetStr = FileUtil.readRoutersData(userId)
+                    if (assetStr != "") {
+                        localAssetArrayList = gson.fromJson<ArrayList<MyFile>>(assetStr, object : TypeToken<ArrayList<MyFile>>() {
+
+                        }.type)
+                    }
+
+                } catch (e: Exception) {
+                    System.out.println("出错啦_localFilesList")
+                    //e.printStackTrace()
+                } finally {
+
+                }
+                var localNeedAssetArrayList: ArrayList<MyFile> = ArrayList()
+                var completeCount = 0;
+                for (myFile in localAssetArrayList)
+                {
+                    if(myFile.type == 0 && myFile.userSn.equals(ConstantValue.currentRouterSN))
+                    {
+                        if(myFile.upLoadFile.isComplete)
+                        {
+                            if(completeCount >=20)
+                            {
+                                continue;
+                            }
+                            completeCount++;
+                        }
+                        localNeedAssetArrayList.add(myFile)
+
+                    }
+                }
+                return localNeedAssetArrayList
+            }
+        }
     /**
      * 同步sd上的文件数据到greenDao
      */
@@ -214,6 +260,61 @@ object LocalFileUtils {
                     FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
                 }
 
+            } catch (e: Exception) {
+                System.out.println("出错啦_insertLocalAssets")
+                //e.printStackTrace()
+            } finally {
+
+            }
+        }
+    }
+    /**
+     * 新增本地文件数据
+     *
+     * @param myRouter
+     */
+    fun coverInsertLocalAssets(myRouter: MyFile?) {
+        synchronized(fileLock){
+            if (myRouter == null) {
+                return
+            }
+            var userId = "fileData6"
+            if(userId.equals(""))
+            {
+                return
+            }
+            val gson = Gson()
+            val localAssetArrayList: ArrayList<MyFile>
+            try {
+                //开始读取sd卡的文件数据
+                var routerStr = FileUtil.readRoutersData(userId)
+                if (routerStr != "") {
+                    localAssetArrayList = gson.fromJson<ArrayList<MyFile>>(routerStr, object : TypeToken<ArrayList<MyFile>>() {
+
+                    }.type)
+                    var isHad = false
+                    for (myRouterItem in localAssetArrayList) {
+
+                        if (myRouter!!.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
+                        {
+                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().msgId.equals(myRouterItem.getUpLoadFile().msgId)) {
+                                isHad = true
+                                break
+                            }
+                        }
+                    }
+                    if (isHad) {
+                        LocalFileUtils.updateLocalAssets(myRouter)
+                    } else {
+                        localAssetArrayList.add(myRouter)
+                        FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
+                    }
+
+                } else {
+                    localAssetArrayList = ArrayList()
+                    localAssetArrayList.add(myRouter)
+                    FileUtil.saveRouterData(userId, gson.toJson(localAssetArrayList))
+                }
             } catch (e: Exception) {
                 System.out.println("出错啦_insertLocalAssets")
                 //e.printStackTrace()
@@ -379,7 +480,45 @@ object LocalFileUtils {
         }
 
     }
+    /**
+     * 批量更新
+     *
+     * @param myAssets
+     */
+    fun coverUpdateList(myAssets: ArrayList<MyFile>?) {
+        synchronized(fileLock){
+            var userId = "fileData6"
+            if(userId.equals(""))
+            {
+                return
+            }
+            var myAssets: ArrayList<MyFile>? = myAssets ?: return
+            val newList = ArrayList<MyFile>()     //创建新集合
+            val it = myAssets!!.iterator()        //根据传入的集合(旧集合)获取迭代器
+            while (it.hasNext()) {          //遍历老集合
+                val obj = it.next() as MyFile       //记录每一个元素
+                if (!newList.contains(obj)) {      //如果新集合中不包含旧集合中的元素
+                    newList.add(obj)       //将元素添加
+                }
+            }
+            myAssets = newList
+            val gson = Gson()
+            try {
+                val itadd = myAssets!!.iterator()        //根据传入的集合(旧集合)获取迭代器
+                while (itadd.hasNext()) {          //遍历老集合
+                    val obj = itadd.next() as MyFile
+                    coverInsertLocalAssets(obj)
+                }
+                //FileUtil.saveRouterData(wallet.getAddress(), gson.toJson(myAssets));
+            } catch (e: Exception) {
+                System.out.println("出错啦_localFilesList")
+                //e.printStackTrace()
+            } finally {
 
+            }
+        }
+
+    }
     /**
      * 更新某个本地文件
      *

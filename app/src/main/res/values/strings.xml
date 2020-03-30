@@ -890,7 +890,7 @@ Then enter your Email address and password to log in.</string>
     <string name="maillist_encryption">Encrypted Contacts</string>
     <string name="maillist_local">Local</string>
     <string name="node_local">Node</string>
-    <string name="msg_encryption">SMS</string>
+    <string name="msg_encryption">Encrypted SMS</string>
     <string name="msg_local">Local</string>
     <string name="nomsg_local">Filter</string>
     <string name="nodemsg_local">Node</string>
@@ -936,6 +936,17 @@ Then enter your Email address and password to log in.</string>
     <string name="There_is_no_Node">The contacts haven\'t been backuped to Node. You may sync to Node firstly.</string>
     <string name="No_need_to_update">No need to update</string>
 
-    <string name="new_message_add_tips">新增多条来往短信</string>
-    <string name="sy_message_tips">马上同步</string>
+    <string name="new_message_add_tips">Add multiple inbound and outbound messages</string>
+    <string name="SMS">SMS</string>
+    <string name="email">Email</string>
+    <string name="Wechat">Wechat</string>
+    <string name="Encrypt">Encrypt</string>
+    <string name="content">Please enter or paste content</string>
+    <string name="Select_account_type">Select account type</string>
+    <string name="Account_cannot_be_empty">Account cannot be empty</string>
+    <string name="Please_enter_content">Please enter content</string>
+    <string name="Please_registe_your_account_first">Please register your account first</string>
+    <string name="Encryption_failed">Encryption failed</string>
+    <string name="Interface_call_failed">Interface call failed</string>
+
 </resources>

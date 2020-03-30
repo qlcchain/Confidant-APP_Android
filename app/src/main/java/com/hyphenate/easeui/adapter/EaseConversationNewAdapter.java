@@ -217,22 +217,29 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
         String time = lastMessage.getEmMessage().getMsgTime() + "";
-        if (time.length() == 10) {
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() * 1000), getContext()));
-        } else if(time.length() == 16){
-            long timeTemp = Long.valueOf(lastMessage.getEmMessage().getMsgTime() /1000);
-            holder.time.setText(DateUtil.getTimestampString(new Date(timeTemp), getContext()));
-        }else{
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
-        }
-        if (lastMessage.getEmMessage().isUnread()) {
-            // show the content of latest message
-            if (lastMessage.getEmMessage().direct() == EMMessage.Direct.SEND && lastMessage.getEmMessage().status() == EMMessage.Status.FAIL) {
-                holder.msgState.setVisibility(View.VISIBLE);
-            } else {
-                holder.msgState.setVisibility(View.GONE);
+        try
+        {
+            if (time.length() == 10) {
+                holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() * 1000), getContext()));
+            } else if(time.length() == 16){
+                long timeTemp = Long.valueOf(lastMessage.getEmMessage().getMsgTime() /1000);
+                holder.time.setText(DateUtil.getTimestampString(new Date(timeTemp), getContext()));
+            }else{
+                holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
             }
+            if (lastMessage.getEmMessage().isUnread()) {
+                // show the content of latest message
+                if (lastMessage.getEmMessage().direct() == EMMessage.Direct.SEND && lastMessage.getEmMessage().status() == EMMessage.Status.FAIL) {
+                    holder.msgState.setVisibility(View.VISIBLE);
+                } else {
+                    holder.msgState.setVisibility(View.GONE);
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
+
         holder.message.setTextColor(secondaryColor);
         String content = null;
         if (cvsListHelper != null) {

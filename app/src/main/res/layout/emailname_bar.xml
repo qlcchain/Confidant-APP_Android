@@ -6,6 +6,8 @@
     android:paddingRight="20dp"
     android:paddingTop="7dp"
     android:paddingBottom="7dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:background="@color/headmainColor"
     >
 
