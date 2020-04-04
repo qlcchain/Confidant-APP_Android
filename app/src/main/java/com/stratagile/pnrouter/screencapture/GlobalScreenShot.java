@@ -67,7 +67,7 @@ class SaveImageInBackgroundData {
  * TODO: - Performance when over gl surfaces? Ie. Gallery - what do we say in the Toast? Which icon
  * do we get if the user uses another type of gallery?
  */
-class GlobalScreenshot {
+public class GlobalScreenShot {
   private static final String TAG = "GlobalScreenshot";
 
   private static final int SCREENSHOT_FLASH_TO_PEAK_DURATION = 130;
@@ -108,7 +108,7 @@ class GlobalScreenshot {
   /**
    * @param context everything needs a context :(
    */
-  public GlobalScreenshot(Context context) {
+  public GlobalScreenShot(Context context) {
     Resources r = context.getResources();
     mContext = context;
     LayoutInflater layoutInflater = (LayoutInflater)

@@ -73,6 +73,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var sodium: Sodium = NaCl.sodium()
         needFront = true
         AppConfig.instance.stopAllService()
+        FireBaseUtils.logEvent(this, FireBaseUtils.eventStartApp)
         super.onCreate(savedInstanceState)
 
         /*try {

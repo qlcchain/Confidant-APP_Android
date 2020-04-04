@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import androidx.core.view.isVisible
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESToolsCipher
 import com.stratagile.pnrouter.R
@@ -92,7 +91,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         {
             for (index in 0 until initSize){
                 var item = smsMessageEntityList.get(index)
-                if(cancelBtn.isVisible)
+                if(cancelBtn.visibility == View.VISIBLE)
                 {
                     item.setIsMultChecked(true)
                 }else{
@@ -112,7 +111,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         recyclerView.adapter = smsAdapter
         recyclerView.scrollToPosition(0)
         smsAdapter!!.setOnItemClickListener { adapter, view, position ->
-            if(cancelBtn.isVisible)
+            if(cancelBtn.visibility == View.VISIBLE)
             {
                 var emailMeaasgeData =  smsAdapter!!.getItem(position)
                 emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;
@@ -149,7 +148,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
                         break;
                     }
                     var item = localEmailMessage.get(flagIndex)
-                    if(cancelBtn.isVisible)
+                    if(cancelBtn.visibility == View.VISIBLE)
                     {
                         item.setIsMultChecked(true)
                     }else{
@@ -300,7 +299,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         for (i in emailMessageList) {
             for(item in sentSMSChooseDataList)
             {
-                if(cancelBtn.isVisible)
+                if(cancelBtn.visibility == View.VISIBLE)
                 {
                     i.setIsMultChecked(true)
                 }else{
@@ -338,7 +337,7 @@ class SMSEncryptionListActivity : BaseActivity(), SMSEncryptionListContract.View
         }else{
 
             for(item in emailMessageList) {
-                if (cancelBtn.isVisible) {
+                if (cancelBtn.visibility == View.VISIBLE) {
                     item.setIsMultChecked(true)
                 }else{
                     item.setIsMultChecked(false)

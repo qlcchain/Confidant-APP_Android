@@ -17,7 +17,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 /**
  *
  */
-public class PreviewPictureActivity extends FragmentActivity implements GlobalScreenshot.onScreenShotListener {
+public class PreviewPictureActivity extends FragmentActivity implements GlobalScreenShot.onScreenShotListener {
 
   public static final Intent newIntent(Context context) {
     Intent intent = new Intent(context, PreviewPictureActivity.class);
@@ -35,7 +35,7 @@ public class PreviewPictureActivity extends FragmentActivity implements GlobalSc
     setContentView(R.layout.activity_preview_layout);
     mPreviewImageView = (ImageView) findViewById(R.id.preview_image);
 
-    GlobalScreenshot screenshot = new GlobalScreenshot(getApplicationContext());
+    GlobalScreenShot screenshot = new GlobalScreenShot(getApplicationContext());
 
     Bitmap bitmap = ((AppConfig) getApplication()).getmScreenCaptureBitmap();
 

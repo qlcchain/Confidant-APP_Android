@@ -78,7 +78,7 @@
         android:theme="@style/AppTheme.Base"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".ui.activity.main.SplashActivity"
+            android:name="com.stratagile.pnrouter.ui.activity.main.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
