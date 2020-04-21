@@ -5,6 +5,8 @@ package com.stratagile.pnrouter.data.api;
  */
 
 
+import com.socks.library.KLog;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,7 +34,7 @@ public class HttpInfoInterceptor implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
         ResponseBody responseBody = response.body();
-//        KLog.i("网络请求的网址为:" + request.toString());
+        KLog.i("网络请求的网址为:" + request.toString());
         long contentLength = responseBody.contentLength();
 //        KLog.i("请求的地址为：" + request.url());
 //        KLog.i("reqeust的body为:" + request.body());
@@ -67,7 +69,7 @@ public class HttpInfoInterceptor implements Interceptor {
                 //获取到response的body的string字符串
                 //do something .... <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 String result = buffer.clone().readString(charset);
-//                KLog.i("拦截到的okhttp结果:" + result);
+                KLog.i("拦截到的okhttp结果:" + result);
             }
         }
         return response;

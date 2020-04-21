@@ -24,7 +24,10 @@ import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicEncryptionPre
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_encrption_local.*
+import kotlinx.android.synthetic.main.activity_encrption_local.statusBar
+import kotlinx.android.synthetic.main.email_send_edit.*
 import net.lucode.hackware.magicindicator.ViewPagerHelper
 import net.lucode.hackware.magicindicator.buildins.UIUtil
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
@@ -63,6 +66,8 @@ class PicEncryptionActivity : BaseActivity(), PicEncryptionContract.View {
         commonNavigator = CommonNavigator(this)
         //setContentView(R.layout.picencry_menu_list)
         setContentView(R.layout.activity_encrption_local)
+        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp2)
         tvTitle.text = getString(R.string.Album_encryption)
 
     }

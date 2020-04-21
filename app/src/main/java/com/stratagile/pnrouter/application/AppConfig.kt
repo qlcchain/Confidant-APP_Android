@@ -30,6 +30,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
@@ -120,6 +121,7 @@ class AppConfig : MultiDexApplication() {
         {
             CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
         }
+        DotLog.init()
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
         instance = this

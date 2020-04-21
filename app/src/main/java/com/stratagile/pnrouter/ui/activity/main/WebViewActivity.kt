@@ -109,11 +109,14 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         }
         webView.webViewClient = object  : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                KLog.i(url)
                 view.loadUrl(url)
                 return false
             }
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
+                KLog.i("cccccc")
+                KLog.i(error.primaryError)
                 if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
                         || error.getPrimaryError() == SslError.SSL_EXPIRED
                         || error.getPrimaryError() == SslError.SSL_INVALID

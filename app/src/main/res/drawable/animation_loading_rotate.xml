@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-rotate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="1000"
+    android:duration="500"
     android:fromDegrees="0.0"
     android:toDegrees="360.0"
     android:interpolator="@android:anim/accelerate_decelerate_interpolator"

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.LogUtil
@@ -25,6 +26,7 @@ val credentialsProvider: CredentialsProvider, private
 //        KLog.i(baseData.params.toString())
         var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
+        DotLog.receiveLog(paramsStr)
         var action = JSONObject.parseObject(paramsStr).getString("Action")
         if (ConstantValue.loginOut) {
             if (action.toString().contains("Recovery") || action.toString().contains("Register") || action.toString().contains("Login") || action.toString().contains("LogOut") || action.toString().contains("RouterLogin") || action.toString().contains("ResetRouterKey") || action.toString().contains("ResetUserIdcode") || action.toString().contains("ResetRouterName") || action.toString().contains("OnlineStatusPush")) {

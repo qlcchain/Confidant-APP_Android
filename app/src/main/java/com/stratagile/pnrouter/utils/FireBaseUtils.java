@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class FireBaseUtils {
+    //url = https://github.com/huzhipeng111/Confidant-APP_Android.git
     public static String eventLogin = "login";
     public static String eventStartApp = "startApp";
     public static String eventRegiester = "regiester";

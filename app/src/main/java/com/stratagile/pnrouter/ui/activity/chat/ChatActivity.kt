@@ -2084,6 +2084,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        isEditActivity = true
         KLog.i("insertMessage:ChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
@@ -2094,6 +2095,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun initView() {
         setContentView(R.layout.activity_chat)
+        window.navigationBarColor = resources.getColor(R.color.color_f6f6f6)
         //禁止截屏
         var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
         if(screenshotsSettingFlag.equals("1"))
@@ -2110,8 +2112,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         chatFragment?.setArguments(intent.extras)
         chatFragment?.setChatUserId(toChatUserID)
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment!!).commit()
-        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        view1.setLayoutParams(llp)
+//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+//        view1.setLayoutParams(llp)
         parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(this@ChatActivity)
         queryFriend(toChatUserID!!)
     }

@@ -34,6 +34,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import cn.jpush.android.api.JPushInterface
 import com.alibaba.fastjson.JSONObject
@@ -91,6 +92,7 @@ import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.gmail.GmailQuickstart
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.add.addFriendOrGroupActivity
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
@@ -127,6 +129,7 @@ import com.xiaomi.mipush.sdk.MiPushClient
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_menu.*
+import kotlinx.android.synthetic.main.layout_add.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -2939,6 +2942,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
     fun setToNews() {
+        StatusBarCompat.changeToLightStatusBar(this)
+        statusBar.setBackgroundColor(resources.getColor(R.color.headmainColor))
         rl1.setBackgroundResource(R.color.headmainColor)
         tvTitle.visibility = View.VISIBLE
         //tvTitle.text = getString(R.string.app_name)
@@ -2953,7 +2958,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToFile() {
+        StatusBarCompat.changeToLightStatusBar(this)
         rl1.setBackgroundResource(R.color.headmainColor)
+        statusBar.setBackgroundColor(resources.getColor(R.color.headmainColor))
         tvTitle.text = getString(R.string.Encrypted_Vualt)
         tvTitle.setTextColor(resources.getColor(R.color.emailtextColor))
         tvTitle.visibility = View.VISIBLE
@@ -2967,7 +2974,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToContact() {
+        StatusBarCompat.cancelLightStatusBar(this)
         rl1.setBackgroundResource(R.color.mainColor)
+        statusBar.setBackgroundColor(resources.getColor(R.color.mainColor))
         tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.contacts)
@@ -2982,7 +2991,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToMy() {
+        StatusBarCompat.cancelLightStatusBar(this)
         rl1.setBackgroundResource(R.color.mainColor)
+        statusBar.setBackgroundColor(resources.getColor(R.color.mainColor))
         tvTitle.setTextColor(resources.getColor(R.color.white))
         tvTitle.visibility = View.VISIBLE
         tvTitle.text = getString(R.string.my)
@@ -2997,7 +3008,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun initView() {
         setContentView(R.layout.activity_main)
-        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
         /* tvTitle.text = getString(R.string.news)
          tvTitle.visibility = View.GONE*/
         tvTitle.visibility = View.VISIBLE
@@ -3006,13 +3016,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        statusBar.setLayoutParams(llp)
         val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         reConnect.setLayoutParams(llp1)
+
+        val llp2 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp2)
+
+        val llp3 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        drawerTopView.setLayoutParams(llp3)
+
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
         chatAndEmailFragment = ChatAndEmailFragment()
         contactFragment = ContactFragment()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
+//        }
         //initFlatBall()
 
     }

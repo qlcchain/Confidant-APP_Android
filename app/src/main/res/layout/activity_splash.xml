@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/main_color"
     android:orientation="vertical"
+    android:visibility="gone"
     android:gravity="center"
     android:layout_height="match_parent">
-    <ImageView
-        android:layout_width="@dimen/x200"
-        android:src="@mipmap/img_logo"
-        android:layout_height="@dimen/x200" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="36sp"
-        android:layout_marginTop="@dimen/x67"
-        android:layout_height="wrap_content" />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:drawableLeft="@mipmap/startup_a"
-            android:text=""
-            android:layout_toLeftOf="@+id/tips"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="@dimen/x67"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tips"
-            android:layout_width="wrap_content"
-            android:text="@string/Stay"
-            android:paddingTop="@dimen/x14"
-            android:paddingLeft="@dimen/x5"
-            android:paddingRight="@dimen/x5"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="@dimen/x17"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:drawableLeft="@mipmap/startup_b"
-            android:text=""
-            android:layout_toRightOf="@+id/tips"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:paddingTop="@dimen/x40"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="@dimen/x67"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
+<!--    <ImageView-->
+<!--        android:layout_width="@dimen/x200"-->
+<!--        android:src="@mipmap/img_logo"-->
+<!--        android:layout_height="@dimen/x200" />-->
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:text="@string/app_name"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="36sp"-->
+<!--        android:layout_marginTop="@dimen/x67"-->
+<!--        android:layout_height="wrap_content" />-->
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:drawableLeft="@mipmap/startup_a"-->
+<!--            android:text=""-->
+<!--            android:layout_toLeftOf="@+id/tips"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="14sp"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_marginTop="@dimen/x67"-->
+<!--            android:layout_height="wrap_content" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/tips"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:text="@string/Stay"-->
+<!--            android:paddingTop="@dimen/x14"-->
+<!--            android:paddingLeft="@dimen/x5"-->
+<!--            android:paddingRight="@dimen/x5"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="14sp"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_marginTop="@dimen/x17"-->
+<!--            android:layout_height="wrap_content" />-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:drawableLeft="@mipmap/startup_b"-->
+<!--            android:text=""-->
+<!--            android:layout_toRightOf="@+id/tips"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="14sp"-->
+<!--            android:paddingTop="@dimen/x40"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_marginTop="@dimen/x67"-->
+<!--            android:layout_height="wrap_content" />-->
+<!--    </RelativeLayout>-->
 
 </LinearLayout>

@@ -13,4 +13,7 @@ open class BaseBackA {
 
     var code: String? = null
     var msg: String? = null
+    override fun toString(): String {
+        return "BaseBackA(code=$code, msg=$msg)"
+    }
 }

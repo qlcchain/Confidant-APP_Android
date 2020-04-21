@@ -36,6 +36,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
@@ -64,6 +65,7 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
 import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
 import com.stratagile.pnrouter.entity.events.ToxStatusEvent
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.main.EncryptMsgActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -493,6 +495,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var loginGoMain:Boolean = false
     var isUnlock = false
     override fun loginBack(loginRsp: JLoginRsp) {
+        KLog.i("登陆返回。")
+//        DotLog.uLogStr(DotLog.PNR_IM_CMDTYPE_LOGIN)
 //        if (!loginRsp.params.userId.equals(userId)) {
 //            KLog.i("过滤掉userid错误的请求")
 //            return
@@ -506,6 +510,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         if(standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
+//            DotLog.uLogStr(DotLog.PNR_IM_CMDTYPE_LOGIN, DotLog.getId(DotLog.PNR_IM_CMDTYPE_LOGIN_str), DotLog.typeFailed, loginRsp.params.retCode , "")
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
                     toast(R.string.need_Verification)
@@ -567,6 +572,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
         } else {
+//            DotLog.uLogStr(DotLog.PNR_IM_CMDTYPE_LOGIN, DotLog.getId(DotLog.PNR_IM_CMDTYPE_LOGIN_str), DotLog.typeSuccess, DotLog.resultSucceess, "")
             islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
@@ -705,11 +711,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initView() {
-        StatusBarUtil.setTransparent(this)
         setContentView(R.layout.activity_login)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
-        }
+        rootLayout!!.setBackgroundColor(resources.getColor(R.color.mainColor))
+        StatusBarCompat.cancelLightStatusBar(this)
         ivAvatar.withShape = true
     }
     override fun onResume() {
@@ -1328,8 +1332,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         initRouterUI()
         showUnlock()
     }
-    fun autoClickLoginBtn()
-    {
+    fun autoClickLoginBtn() {
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
         if(needAutoClickLogin)
         {
@@ -1627,6 +1630,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             isClickLogin = true
             if(!ConstantValue.isWebsocketConnected)
             {
+//                var logId = DotLog.generateNewId()
+//                DotLog.idMap[DotLog.PNR_IM_CMDTYPE_LOGIN_str] = logId
+//                DotLog.uLogStr(DotLog.PNR_IM_CMDTYPE_LOGIN, logId, 0, 0, "start login")
                 if (intent.hasExtra("flag")) {
                     if(ConstantValue.isHasWebsocketInit)
                     {

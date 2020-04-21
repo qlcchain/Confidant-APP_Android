@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.helpUrl
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.entity.events.ResetAvatar
@@ -95,7 +97,6 @@ class MyFragment : BaseFragment(), MyContract.View {
         var count = 0
         version.setOnClickListener {
             count++
-
         }
        /* viewDot.setOnClickListener {
             if (count == 5) {

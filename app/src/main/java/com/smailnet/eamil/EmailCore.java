@@ -29,6 +29,7 @@ import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.MailUtil;
 import com.smailnet.eamil.Utils.PraseMimeMessage;
 import com.smailnet.eamil.Utils.TimeUtil;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.BuildConfig;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
@@ -323,8 +324,8 @@ class EmailCore {
         {
             com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage)message);
             messageGmail = service.users().messages().send(userId, messageGmail).execute();
-            System.out.println("Message id: " + messageGmail.getId());
-            System.out.println(messageGmail.toPrettyString());
+            KLog.i("Message id: " + messageGmail.getId());
+            KLog.i(messageGmail.toPrettyString());
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -868,9 +869,9 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveNewMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
@@ -883,13 +884,13 @@ class EmailCore {
             noMoreData = false;
             int startIndex = lastTotalCount+1;
             int endIndex = lastTotalCount+pageSize;
-            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+            KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
             messagesAll = folder.getMessages(startIndex,endIndex);
         }else if(newSize >0){
             noMoreData = true;
             int startIndex = lastTotalCount+1;
             int endIndex = lastTotalCount+newSize;
-            System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+            KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
             if(startIndex== 0 || startIndex > endIndex)
             {
                 messagesAll = new Message[]{};
@@ -908,11 +909,11 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         for (Message message : list){
             uuid = folder.getUID(message) +"";
             try {
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -921,15 +922,15 @@ class EmailCore {
 
                 }
 
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -954,7 +955,7 @@ class EmailCore {
                 {
 
                 }
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -974,12 +975,12 @@ class EmailCore {
                 {
 
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -998,7 +999,7 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
@@ -1017,9 +1018,9 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveMoreMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
@@ -1027,7 +1028,7 @@ class EmailCore {
         int totalSize =   folder.getMessageCount();
         int newSize=  totalSize - lastTotalCount;
         int lastTotalCountTemp = lastTotalCount;
-        System.out.println("newSize_"+newSize+"lastTotalCount:"+lastTotalCount+"totalSize:"+totalSize);
+        KLog.i("newSize_"+newSize+"lastTotalCount:"+lastTotalCount+"totalSize:"+totalSize);
         if(newSize < 0)
         {
             lastTotalCountTemp = totalSize;
@@ -1047,13 +1048,13 @@ class EmailCore {
                         noMoreData = false;
                         int startIndex = totalSize - pageSize;
                         int endIndex = totalSize ;
-                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
                         messagesAll = folder.getMessages(startIndex,endIndex);
                     }else{
                         noMoreData = false;
                         int startIndex = 1;
                         int endIndex = totalSize ;
-                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
                         messagesAll = folder.getMessages(startIndex,endIndex);
                     }
 
@@ -1063,14 +1064,14 @@ class EmailCore {
                         noMoreData = false;
                         int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
                         int endIndex = totalSize - beginIndex - newSize;
-                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
                         messagesAll = folder.getMessages(startIndex,endIndex);
                     }else{
                         noMoreData = true;
                         int addSize = lastTotalCountTemp - beginIndex;
                         int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
                         int endIndex = totalSize - beginIndex - newSize;
-                        System.out.println(startIndex+"###"+endIndex +"###"+noMoreData);
+                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
                         if(startIndex== 0 || startIndex > endIndex)
                         {
                             messagesAll = new Message[]{};
@@ -1096,13 +1097,13 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
             try {
                 uuid = folder.getUID(message) +"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -1110,19 +1111,19 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -1147,7 +1148,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -1177,12 +1178,12 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -1202,8 +1203,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
@@ -1234,7 +1235,7 @@ class EmailCore {
             boolean isStop = false;
             for(com.google.api.services.gmail.model.Message messageTemp : listMesResponse.getMessages())
             {
-                System.out.println("getThreadId:"+ messageTemp.getThreadId() +"--old:"+firstMessageId);
+                KLog.i("getThreadId:"+ messageTemp.getThreadId() +"--old:"+firstMessageId);
                 if(messageTemp.getThreadId().equals(firstMessageId))
                 {
                     isStop = true;
@@ -1261,7 +1262,7 @@ class EmailCore {
         int i = 0;
         HashMap<String, String> messageMapId = new HashMap<>();
         for (com.google.api.services.gmail.model.Message message : messagesGmail) {
-            System.out.println(message.toPrettyString());
+            KLog.i(message.toPrettyString());
             com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, message.getId()).setFormat("raw").execute();
 
             Base64 base64Url = new Base64(true);
@@ -1286,14 +1287,14 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
             try {
                 String messageId = ((MimeMessage)message).getMessageID();
                 uuid = messageMapId.get(messageId)+"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -1301,19 +1302,19 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -1338,7 +1339,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -1368,12 +1369,12 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -1393,8 +1394,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",0);//totalSize
         messageMap.put("totalUnreadCount",0);//totalUnreadCount
@@ -1431,7 +1432,7 @@ class EmailCore {
         int i = 0;
         HashMap<String, String> messageMapId = new HashMap<>();
         for (com.google.api.services.gmail.model.Message message : messagesGmail) {
-            System.out.println(message.toPrettyString());
+            KLog.i(message.toPrettyString());
             com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, message.getId()).setFormat("raw").execute();
 
             Base64 base64Url = new Base64(true);
@@ -1456,14 +1457,14 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
             try {
                 String messageId = ((MimeMessage)message).getMessageID();
                 uuid = messageMapId.get(messageId)+"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -1471,19 +1472,19 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -1508,7 +1509,7 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -1538,12 +1539,12 @@ class EmailCore {
                 {
                     errorMsg += e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -1563,8 +1564,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         messageMap.put("emailMessageList",emailMessageList);
         messageMap.put("totalCount",0);//totalSize
         messageMap.put("totalUnreadCount",0);//totalUnreadCount
@@ -1576,6 +1577,7 @@ class EmailCore {
     }
     /**
      * 使用IMAP协议接收服务器上的历史邮件
+     * 拉新的邮件，要优化拉所有的邮件，在这里下手。
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -1584,9 +1586,9 @@ class EmailCore {
         //LogUtil.addLogEmail("2_minUUID:"+minUIID+"  &&&  maxUUID:"+maxUUID+"  &&&  pageSize:"+pageSize,"EmailCore");
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
@@ -1668,7 +1670,7 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         //LogUtil.addLogEmail("6_list size:"+list.size(),"EmailCore");
@@ -1681,7 +1683,7 @@ class EmailCore {
             }
             try {
                 uuid = folder.getUID(message) +"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                   /*  if(BuildConfig.DEBUG)
@@ -1697,21 +1699,21 @@ class EmailCore {
                     errorMsg+=e.getMessage();
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_errorMsg:"+errorMsg,"EmailCore");
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_from:"+from,"EmailCore");
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 isReplySign = isReplySign((MimeMessage)message);
@@ -1726,7 +1728,7 @@ class EmailCore {
                     errorMsg+=e.getMessage();
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -1778,12 +1780,12 @@ class EmailCore {
                     }
                 }
                 //LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_from:"+from+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc+"_content:"+_content+"_content:"+_content+"_contentText:"+_contentText+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
 
               /*  if(!file.exists()){
@@ -1804,8 +1806,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
         //LogUtil.addLogEmail("9_"+index+"_"+"_emailMessageList size:"+emailMessageList.size(),"EmailCore");
@@ -1828,9 +1830,9 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveOneMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
@@ -1845,7 +1847,7 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
@@ -1856,7 +1858,7 @@ class EmailCore {
             }
             try {
                 uuid = folder.getUID(message) +"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -1864,19 +1866,19 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -1901,7 +1903,7 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -1930,12 +1932,12 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
             }catch (Exception e)
             {
@@ -1945,8 +1947,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
@@ -1968,9 +1970,9 @@ class EmailCore {
     public HashMap<String, Object> imapReceiveMoreMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
@@ -2053,7 +2055,7 @@ class EmailCore {
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         for (Message message : list){
@@ -2064,7 +2066,7 @@ class EmailCore {
             }
             try {
                 uuid = folder.getUID(message) +"";
-                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
                 subject = "";
                 try {
                     subject = getSubject((MimeMessage)message);
@@ -2072,19 +2074,19 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 if("".equals(from))
                 {
                     from = this.account;
                 }
-                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
                 to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
                 cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
                 bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate());
-                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                date = TimeUtil.getDate(message.getSentDate() == null? message.getReceivedDate() : message.getSentDate());
+                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
                 isSeen = isSeen((MimeMessage)message);
                 isStar = isStar((MimeMessage)message);
                 //设置标记
@@ -2109,7 +2111,7 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
                 StringBuffer contentTemp = new StringBuffer(30);
@@ -2144,12 +2146,12 @@ class EmailCore {
                 {
                     errorMsg+=e.getMessage();
                 }
-                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
-                System.out.println(index+"_"+"getSubject8:"+System.currentTimeMillis());
+                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
                 Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
             }catch (Exception e)
             {
@@ -2159,8 +2161,8 @@ class EmailCore {
 
             index ++;
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
-        System.out.println("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
         folder.close(false);
         imapStore.close();
         messageMap.put("emailMessageList",emailMessageList);
@@ -2181,9 +2183,9 @@ class EmailCore {
      */
     public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
         Message message= folder.getMessageByUID(Long.valueOf(uid));
@@ -2191,16 +2193,16 @@ class EmailCore {
         /*message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
             //pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getAttachment(message, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
             MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
            /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {
@@ -2210,7 +2212,7 @@ class EmailCore {
         {
             e.printStackTrace();
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
         return mailAttachments;
@@ -2224,7 +2226,7 @@ class EmailCore {
      */
     public List<MailAttachment> gmailDownloadMailAttch(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
             com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, uid).setFormat("raw").execute();
@@ -2239,15 +2241,15 @@ class EmailCore {
 
             MailUtil.getAttachment(email, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
             MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
         return mailAttachments;
     }
     /**
@@ -2258,9 +2260,9 @@ class EmailCore {
      */
     public List<MailAttachment> imapDownloadMailCid(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        System.out.println("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        System.out.println("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        KLog.i("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
         Message message= folder.getMessageByUID(Long.valueOf(uid));
@@ -2268,21 +2270,21 @@ class EmailCore {
         /*message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
         PraseMimeMessage pmm = null;
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
             pmm = new PraseMimeMessage((MimeMessage)message);
             MailUtil.getCid(message, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
             MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
         return mailAttachments;
@@ -2294,7 +2296,7 @@ class EmailCore {
      * @throws IOException
      */
     public List<MailAttachment> gmailDownloadMailCid(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
-        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_"+"begin:"+System.currentTimeMillis());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
 
@@ -2310,15 +2312,15 @@ class EmailCore {
 
             MailUtil.getCid(email, mailAttachments,uid,this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            System.out.println("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
             long aa = System.currentTimeMillis();
             MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            System.out.println("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-        System.out.println("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_"+"end:"+System.currentTimeMillis());
         return mailAttachments;
     }
     /**
@@ -2396,8 +2398,8 @@ class EmailCore {
             ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd)
                     .setRemoveLabelIds(labelsToRemove);
             com.google.api.services.gmail.model.Message message = service.users().messages().modify(userId, messageId, mods).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
+            KLog.i("Message id: " + message.getId());
+            KLog.i(message.toPrettyString());
             return true;
         }catch (Exception e)
         {
@@ -2422,7 +2424,7 @@ class EmailCore {
                 //移动到“已删除”
                 gmailService.users().messages().trash(userId, threadId).execute();
             }
-            System.out.println("Thread with id: " + threadId + " deleted successfully.");
+            KLog.i("Thread with id: " + threadId + " deleted successfully.");
             return true;
         }catch (Exception e)
         {
@@ -2474,8 +2476,8 @@ class EmailCore {
             Draft draft = new Draft();
             draft.setMessage(messageGmail);
             draft = service.users().drafts().create(userId, draft).execute();
-            System.out.println("draft id: " + draft.getId());
-            System.out.println(draft.toPrettyString());
+            KLog.i("draft id: " + draft.getId());
+            KLog.i(draft.toPrettyString());
             return true;
         }catch (Exception e)
         {
@@ -2773,11 +2775,11 @@ class EmailCore {
         boolean isnew = false;
         Flags flags = msg.getFlags();
         Flags.Flag []flag = flags.getSystemFlags();
-        System.out.println("flags's length: "+flag.length);
+        KLog.i("flags's length: "+flag.length);
         for(int i=0;i<flag.length;i++){
             if(flag[i] == Flags.Flag.SEEN){
                 isnew=true;
-                System.out.println("seen Message.......");
+                KLog.i("seen Message.......");
                 break;
             }
         }

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.data.api
 
 
+import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.entity.BaseBackA
 
@@ -12,7 +13,12 @@ import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
+import java.util.*
 
 /**
  * @author hu
@@ -29,6 +35,13 @@ class HttpAPIWrapper @Inject constructor(private val mHttpAPI: HttpApi) {
             it.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
         })
     }
+
+    fun uLogStr(map : Map<String, String>): Observable<BaseBackA> {
+        return wrapper(mHttpAPI.uLogStr(map)).compose(ObservableTransformer {
+            it.subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+        })
+    }
+
 
     /**
      * 给任何Http的Observable加上通用的线程调度器
