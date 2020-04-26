@@ -20,12 +20,14 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
+import com.stratagile.pnrouter.view.FitRelativeLayout
 import com.stratagile.pnrouter.view.RxDialogLoading
 import com.tencent.bugly.crashreport.CrashReport
 
@@ -42,23 +44,24 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     var rootLayout: RelativeLayout? = null
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
+    var mainColor = R.color.white
     lateinit var progressDialog: RxDialogLoading
     lateinit var title: TextView
     val point = Point()
+    var isEditActivity = false
+    var sentContent = true
 
     var inputMethodManager: InputMethodManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 //        initSwipeBackFinish()
         super.onCreate(savedInstanceState)
-        // 这句很关键，注意是调用父类的方法
         super.setContentView(R.layout.activity_base)
-        StatusBarUtil.setColor(this, resources.getColor(R.color.white), 0)
-//        StatusBarUtil.setTranslucent(this, 0)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
+        // 这句很关键，注意是调用父类的方法
+        if (!isEditActivity) {
+            StatusBarCompat.translucentStatusBar(this, true)
+            StatusBarCompat.cancelLightStatusBar(this)
         }
-//        window.navigationBarColor = resources.getColor(R.color.white)
         AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {
             KLog.i("isTaskRoot")
@@ -78,7 +81,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//        initToolbar()
+        initToolbar()
         setupActivityComponent()
         if (savedInstanceState != null) {
             KLog.i("保存的东西不为空," + savedInstanceState.getString("baseSave"))
@@ -188,23 +191,36 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         relativeLayout_root = findViewById<View>(R.id.root_rl) as RelativeLayout
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))
-        //        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(getResources().getDimension(R.dimen.dp_69), this) - (UIUtils.getStatusBarHeight(this)));
+//                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(getResources().getDimension(R.dimen.dp_69), this) - (UIUtils.getStatusBarHeight(this)));
         //        toolbar.setLayoutParams(rlp);
         toolbar?.setTitle("")
         if (toolbar != null) {
             setSupportActionBar(toolbar)
         }
+        if (mainColor == R.color.white) {
+//            title.setTextColor(resources.getColor(R.color.color_1F314A))
+//            toolbar?.setNavigationIcon(resources.getDrawable(R.mipmap.icon_back_dark))
+            StatusBarCompat.changeToLightStatusBar(this)
+        } else {
+            StatusBarCompat.cancelLightStatusBar(this)
+        }
+        relativeLayout_root.layoutParams = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) + UIUtils.dip2px(42f, this))
+        if (isEditActivity) {
+            relativeLayout_root.layoutParams = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(42f, this))
+            view.visibility = View.GONE
+            StatusBarUtil.setColor(this, resources.getColor(R.color.white), 0)
+        }
     }
 
     fun showView() {
-        StatusBarUtil.setTransparent(this)
-        view.visibility = View.VISIBLE
-        relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x84).toInt())))
+//        StatusBarUtil.setTransparent(this)
+//        view.visibility = View.VISIBLE
+//        relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x84).toInt())))
     }
 
     fun showViewNeedFront() {
-        StatusBarUtil.setTransparent(this)
-        relativeLayout_root.visibility = View.GONE
+//        StatusBarUtil.setTransparent(this)
+//        relativeLayout_root.visibility = View.GONE
     }
 
     fun isShouldHideInput(v: View?, event: MotionEvent): Boolean {

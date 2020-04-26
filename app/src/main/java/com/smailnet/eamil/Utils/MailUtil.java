@@ -3,6 +3,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.smailnet.eamil.MailAttachment;
+import com.socks.library.KLog;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.pop3.POP3Folder;
@@ -121,7 +122,7 @@ public class MailUtil {
             e.printStackTrace();
             String err = e.getMessage();
             // 在这里处理message内容， 格式是固定的
-            System.out.println(err);
+            KLog.i(err);
         }
     }
 
@@ -167,7 +168,7 @@ public class MailUtil {
             e.printStackTrace();
             String err = e.getMessage();
             // 在这里处理message内容， 格式是固定的
-            System.out.println(err);
+            KLog.i(err);
         }
 
     }
@@ -203,7 +204,7 @@ public class MailUtil {
             return Session.getInstance(props, authenticator);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("mail session is null");
+            KLog.i("mail session is null");
         }
         return null;
     }
@@ -260,9 +261,9 @@ public class MailUtil {
             File file = Environment.getExternalStorageDirectory();
             String storedir = file.toString()+"/";
             String separator = "";
-            System.out.println(osName);
+            KLog.i(osName);
             File storefile = new File(storedir+separator+mailAttachment.getName());
-            System.out.println("文件路径: "+storefile.toString());
+            KLog.i("文件路径: "+storefile.toString());
             /*for(int i=0;storefile.exists();i++){
                 storefile = new File(storedir+separator+mailAttachment.getName()+i);
             }*/
@@ -333,35 +334,35 @@ public class MailUtil {
      */
     public static void getAttachment(Part part, List<MailAttachment> list,String msgId,String account) throws UnsupportedEncodingException, MessagingException,
             FileNotFoundException, IOException {
-        System.out.println("getAttachment:begin"+System.currentTimeMillis());
+        KLog.i("getAttachment:begin"+System.currentTimeMillis());
         if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
             //复杂体邮件包含多个邮件体
             int partCount = multipart.getCount();
-            System.out.println("getAttachment:for"+System.currentTimeMillis());
+            KLog.i("getAttachment:for"+System.currentTimeMillis());
             for (int i = 0; i < partCount; i++) {
                 //获得复杂体邮件中其中一个邮件体
-                System.out.println("getAttachment:for:"+i+System.currentTimeMillis());
+                KLog.i("getAttachment:for:"+i+System.currentTimeMillis());
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disposition = bodyPart.getDisposition();
                 if (disposition != null && (disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE))) {
 
                     InputStream is = bodyPart.getInputStream();
-                    System.out.println("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
+                    KLog.i("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
                     //byte[] byt = MailUtil.toByteArray(is);
                     byte[] byt = new byte[0];
-                    System.out.println("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                    KLog.i("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
                     Log.i("getAttachment",byt.length +"");
                     // 附件名通过MimeUtility解码，否则是乱码
-                    System.out.println("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
+                    KLog.i("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
                     int aaabb= bodyPart.getSize();
                     String name = "";
                     if(bodyPart.getFileName() != null)
                     {
                         name = MimeUtility.decodeText(bodyPart.getFileName());
                     }
-                    System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
+                    KLog.i("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
                     list.add(new MailAttachment(name,is, byt,msgId,account,""));
                 } else if (bodyPart.isMimeType("multipart/*")) {
                     getAttachment(bodyPart, list,msgId,account);
@@ -374,26 +375,26 @@ public class MailUtil {
                     if ((fileName != null)) {
                         String cid = getCid(bodyPart);
                         InputStream is = bodyPart.getInputStream();
-                        System.out.println("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
+                        KLog.i("getAttachment:for:toByteArrayText:"+i+System.currentTimeMillis());
                         //byte[] byt = MailUtil.toByteArray(is);
                         byte[] byt = new byte[0];
-                        System.out.println("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                        KLog.i("getAttachment:for:toByteArrayEndText:"+i+System.currentTimeMillis());
                         Log.i("getAttachment",byt.length +"");
                         // 附件名通过MimeUtility解码，否则是乱码
-                        System.out.println("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
+                        KLog.i("getAttachment:for:decodeText:"+i+System.currentTimeMillis());
                         int aaabb= bodyPart.getSize();
                         String name = "";
                         if(bodyPart.getFileName() != null)
                         {
                             name = MimeUtility.decodeText(bodyPart.getFileName());
                         }
-                        System.out.println("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
+                        KLog.i("getAttachment:for:decodeEndText:"+i+System.currentTimeMillis());
                         list.add(new MailAttachment(name,is, byt,msgId,account));
                         Log.i("getCid 内嵌= ", cid);
                     }*/
                 }
             }
-            System.out.println("getAttachment:end"+System.currentTimeMillis());
+            KLog.i("getAttachment:end"+System.currentTimeMillis());
         } else if (part.isMimeType("message/rfc822")) {
             getAttachment((Part) part.getContent(), list,msgId,account);
         }
@@ -411,15 +412,15 @@ public class MailUtil {
      */
     public static void getCid(Part part, List<MailAttachment> list,String msgId,String account) throws UnsupportedEncodingException, MessagingException,
             FileNotFoundException, IOException {
-        System.out.println("getCid:begin"+System.currentTimeMillis());
+        KLog.i("getCid:begin"+System.currentTimeMillis());
         if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
             //复杂体邮件包含多个邮件体
             int partCount = multipart.getCount();
-            System.out.println("getCid:for"+System.currentTimeMillis());
+            KLog.i("getCid:for"+System.currentTimeMillis());
             for (int i = 0; i < partCount; i++) {
                 //获得复杂体邮件中其中一个邮件体
-                System.out.println("getCid:for:"+i+System.currentTimeMillis());
+                KLog.i("getCid:for:"+i+System.currentTimeMillis());
                 BodyPart bodyPart = multipart.getBodyPart(i);
                 //某一个邮件体也有可能是由多个邮件体组成的复杂体
                 String disposition = bodyPart.getDisposition();
@@ -436,26 +437,26 @@ public class MailUtil {
                     if ((fileName != null)) {
                         String cid = getCid(bodyPart);
                         InputStream is = bodyPart.getInputStream();
-                        System.out.println("getCid:for:toByteArrayText:"+i+System.currentTimeMillis());
+                        KLog.i("getCid:for:toByteArrayText:"+i+System.currentTimeMillis());
                         //byte[] byt = MailUtil.toByteArray(is);
                         byte[] byt = new byte[0];
-                        System.out.println("getCid:for:toByteArrayEndText:"+i+System.currentTimeMillis());
+                        KLog.i("getCid:for:toByteArrayEndText:"+i+System.currentTimeMillis());
                         Log.i("getCid",byt.length +"");
                         // 附件名通过MimeUtility解码，否则是乱码
-                        System.out.println("getCid:for:decodeText:"+i+System.currentTimeMillis());
+                        KLog.i("getCid:for:decodeText:"+i+System.currentTimeMillis());
                         int aaabb= bodyPart.getSize();
                         String name = "";
                         if(bodyPart.getFileName() != null)
                         {
                             name = MimeUtility.decodeText(bodyPart.getFileName());
                         }
-                        System.out.println("getCid:for:decodeEndText:"+i+System.currentTimeMillis());
+                        KLog.i("getCid:for:decodeEndText:"+i+System.currentTimeMillis());
                         list.add(new MailAttachment(name,is, byt,msgId,account,cid.substring(4,cid.length())));
                         Log.i("getCid 内嵌= ", cid);
                     }
                 }
             }
-            System.out.println("getCid:end"+System.currentTimeMillis());
+            KLog.i("getCid:end"+System.currentTimeMillis());
         } else if (part.isMimeType("message/rfc822")) {
             getCid((Part) part.getContent(), list,msgId,account);
         }

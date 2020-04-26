@@ -25,10 +25,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.hyphenate.easeui.model.EaseCompat
@@ -64,6 +61,7 @@ import com.stratagile.pnrouter.method.Method
 import com.stratagile.pnrouter.method.MethodContext
 import com.stratagile.pnrouter.method.User
 import com.stratagile.pnrouter.method.Weibo
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
@@ -78,8 +76,10 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.email_picture_image_grid_item.*
 import kotlinx.android.synthetic.main.email_send_edit.*
+import kotlinx.android.synthetic.main.email_send_edit.statusBar
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
 import java.io.File
@@ -276,11 +276,18 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+//        isEditActivity = true
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
         setContentView(R.layout.email_send_edit)
+
+        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp2)
+//        StatusBarCompat.setStatusBarColor(this, resources.getColor(R.color.headmainColor))
+//        StatusBarCompat.changeToLightStatusBar(this)
+//        window.navigationBarColor = resources.getColor(R.color.white)
     }
     override fun initData() {
         InviteURLText = ""

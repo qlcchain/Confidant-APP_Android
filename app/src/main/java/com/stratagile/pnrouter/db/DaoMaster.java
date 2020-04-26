@@ -21,48 +21,48 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        DraftEntityDao.createTable(db, ifNotExists);
+        LocalFileItemDao.createTable(db, ifNotExists);
         EmailAttachEntityDao.createTable(db, ifNotExists);
-        EmailCidEntityDao.createTable(db, ifNotExists);
-        EmailConfigEntityDao.createTable(db, ifNotExists);
         EmailContactsEntityDao.createTable(db, ifNotExists);
+        GroupVerifyEntityDao.createTable(db, ifNotExists);
         EmailMessageEntityDao.createTable(db, ifNotExists);
-        FileUploadItemDao.createTable(db, ifNotExists);
+        RouterUserEntityDao.createTable(db, ifNotExists);
+        UserEntityDao.createTable(db, ifNotExists);
+        RouterEntityDao.createTable(db, ifNotExists);
+        RecentFileDao.createTable(db, ifNotExists);
+        DraftEntityDao.createTable(db, ifNotExists);
+        EmailConfigEntityDao.createTable(db, ifNotExists);
+        LocalFileMenuDao.createTable(db, ifNotExists);
+        EmailCidEntityDao.createTable(db, ifNotExists);
         FriendEntityDao.createTable(db, ifNotExists);
         GroupEntityDao.createTable(db, ifNotExists);
-        GroupVerifyEntityDao.createTable(db, ifNotExists);
-        LocalFileItemDao.createTable(db, ifNotExists);
-        LocalFileMenuDao.createTable(db, ifNotExists);
-        MessageEntityDao.createTable(db, ifNotExists);
         QLCAccountDao.createTable(db, ifNotExists);
-        RecentFileDao.createTable(db, ifNotExists);
-        RouterEntityDao.createTable(db, ifNotExists);
-        RouterUserEntityDao.createTable(db, ifNotExists);
+        MessageEntityDao.createTable(db, ifNotExists);
+        FileUploadItemDao.createTable(db, ifNotExists);
         SMSEntityDao.createTable(db, ifNotExists);
-        UserEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        DraftEntityDao.dropTable(db, ifExists);
+        LocalFileItemDao.dropTable(db, ifExists);
         EmailAttachEntityDao.dropTable(db, ifExists);
-        EmailCidEntityDao.dropTable(db, ifExists);
-        EmailConfigEntityDao.dropTable(db, ifExists);
         EmailContactsEntityDao.dropTable(db, ifExists);
+        GroupVerifyEntityDao.dropTable(db, ifExists);
         EmailMessageEntityDao.dropTable(db, ifExists);
-        FileUploadItemDao.dropTable(db, ifExists);
+        RouterUserEntityDao.dropTable(db, ifExists);
+        UserEntityDao.dropTable(db, ifExists);
+        RouterEntityDao.dropTable(db, ifExists);
+        RecentFileDao.dropTable(db, ifExists);
+        DraftEntityDao.dropTable(db, ifExists);
+        EmailConfigEntityDao.dropTable(db, ifExists);
+        LocalFileMenuDao.dropTable(db, ifExists);
+        EmailCidEntityDao.dropTable(db, ifExists);
         FriendEntityDao.dropTable(db, ifExists);
         GroupEntityDao.dropTable(db, ifExists);
-        GroupVerifyEntityDao.dropTable(db, ifExists);
-        LocalFileItemDao.dropTable(db, ifExists);
-        LocalFileMenuDao.dropTable(db, ifExists);
-        MessageEntityDao.dropTable(db, ifExists);
         QLCAccountDao.dropTable(db, ifExists);
-        RecentFileDao.dropTable(db, ifExists);
-        RouterEntityDao.dropTable(db, ifExists);
-        RouterUserEntityDao.dropTable(db, ifExists);
+        MessageEntityDao.dropTable(db, ifExists);
+        FileUploadItemDao.dropTable(db, ifExists);
         SMSEntityDao.dropTable(db, ifExists);
-        UserEntityDao.dropTable(db, ifExists);
     }
 
     /**
@@ -81,25 +81,25 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DraftEntityDao.class);
+        registerDaoClass(LocalFileItemDao.class);
         registerDaoClass(EmailAttachEntityDao.class);
-        registerDaoClass(EmailCidEntityDao.class);
-        registerDaoClass(EmailConfigEntityDao.class);
         registerDaoClass(EmailContactsEntityDao.class);
+        registerDaoClass(GroupVerifyEntityDao.class);
         registerDaoClass(EmailMessageEntityDao.class);
-        registerDaoClass(FileUploadItemDao.class);
+        registerDaoClass(RouterUserEntityDao.class);
+        registerDaoClass(UserEntityDao.class);
+        registerDaoClass(RouterEntityDao.class);
+        registerDaoClass(RecentFileDao.class);
+        registerDaoClass(DraftEntityDao.class);
+        registerDaoClass(EmailConfigEntityDao.class);
+        registerDaoClass(LocalFileMenuDao.class);
+        registerDaoClass(EmailCidEntityDao.class);
         registerDaoClass(FriendEntityDao.class);
         registerDaoClass(GroupEntityDao.class);
-        registerDaoClass(GroupVerifyEntityDao.class);
-        registerDaoClass(LocalFileItemDao.class);
-        registerDaoClass(LocalFileMenuDao.class);
-        registerDaoClass(MessageEntityDao.class);
         registerDaoClass(QLCAccountDao.class);
-        registerDaoClass(RecentFileDao.class);
-        registerDaoClass(RouterEntityDao.class);
-        registerDaoClass(RouterUserEntityDao.class);
+        registerDaoClass(MessageEntityDao.class);
+        registerDaoClass(FileUploadItemDao.class);
         registerDaoClass(SMSEntityDao.class);
-        registerDaoClass(UserEntityDao.class);
     }
 
     public DaoSession newSession() {

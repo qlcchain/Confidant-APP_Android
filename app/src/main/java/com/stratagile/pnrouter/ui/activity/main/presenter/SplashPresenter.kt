@@ -91,43 +91,58 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     }
 
     override fun observeJump() {
-        Observable.interval(0, 1, TimeUnit.SECONDS).take(2)
-                .map { aLong -> 2 - aLong }
-                .observeOn(AndroidSchedulers.mainThread())//发射用的是observeOn
-                .doOnSubscribe {
-                    KLog.i("1")
-                }
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<Long> {
-                    override fun onSubscribe(d: Disposable) {
-                        KLog.i("2")
-                    }
+        AppConfig.instance.messageReceiver = null
+        //                        jump = JUMPTOGUEST;
+        timeOver = true
+        KLog.i("时间到，开始跳转")
+        if (permissionState != 0) {
+            return
+        }
+        if (jumpToGuest) {
+            mView.jumpToGuest()
+            return
+        }
+        if (jump == JUMPTOLOGIN) {
+            mView.jumpToLogin()
+        }
 
-                    override fun onNext(remainTime: Long) {
-                        KLog.i("剩余时间$remainTime")
-                    }
-
-                    override fun onError(e: Throwable) {
-                        KLog.i("4")
-                    }
-
-                    override fun onComplete() {
-                        AppConfig.instance.messageReceiver = null
-                        //                        jump = JUMPTOGUEST;
-                        timeOver = true
-                        KLog.i("时间到，开始跳转")
-                        if (permissionState != 0) {
-                            return
-                        }
-                        if (jumpToGuest) {
-                            mView.jumpToGuest()
-                            return
-                        }
-                        if (jump == JUMPTOLOGIN) {
-                            mView.jumpToLogin()
-                        }
-                    }
-                })
+//        Observable.interval(0, 1, TimeUnit.SECONDS).take(2)
+//                .map { aLong -> 2 - aLong }
+//                .observeOn(AndroidSchedulers.mainThread())//发射用的是observeOn
+//                .doOnSubscribe {
+//                    KLog.i("1")
+//                }
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .subscribe(object : Observer<Long> {
+//                    override fun onSubscribe(d: Disposable) {
+//                        KLog.i("2")
+//                    }
+//
+//                    override fun onNext(remainTime: Long) {
+//                        KLog.i("剩余时间$remainTime")
+//                    }
+//
+//                    override fun onError(e: Throwable) {
+//                        KLog.i("4")
+//                    }
+//
+//                    override fun onComplete() {
+//                        AppConfig.instance.messageReceiver = null
+//                        //                        jump = JUMPTOGUEST;
+//                        timeOver = true
+//                        KLog.i("时间到，开始跳转")
+//                        if (permissionState != 0) {
+//                            return
+//                        }
+//                        if (jumpToGuest) {
+//                            mView.jumpToGuest()
+//                            return
+//                        }
+//                        if (jump == JUMPTOLOGIN) {
+//                            mView.jumpToLogin()
+//                        }
+//                    }
+//                })
     }
 
     init {

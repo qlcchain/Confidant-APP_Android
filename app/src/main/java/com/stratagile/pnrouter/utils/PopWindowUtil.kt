@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.animation.ScaleAnimation
 import android.view.animation.TranslateAnimation
 import android.widget.*
 
@@ -380,12 +381,13 @@ object PopWindowUtil {
         val contentView = maskView.findViewById<View>(R.id.cardView)
 //        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
         //contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val animation = ScaleAnimation(0F, 1F, 0F, 1F, Animation.RELATIVE_TO_SELF, 0.9f, 1, 0f)
         val translate = TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f,
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f
         )
-        translate.duration = 200
-        contentView.animation = translate
+        animation.duration = 250
+        contentView.animation = animation
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager

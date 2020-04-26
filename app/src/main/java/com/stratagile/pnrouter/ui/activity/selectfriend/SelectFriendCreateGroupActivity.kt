@@ -54,8 +54,8 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
         EventBus.getDefault().register(this)
         setToorBar(false)
         tvTitle.text = "Add Group Members"
-//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-//        statusBar.setLayoutParams(llp)
+        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp)
     }
     override fun initData() {
         fragment = ContactFragment();

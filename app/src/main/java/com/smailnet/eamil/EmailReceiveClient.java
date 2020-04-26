@@ -24,6 +24,7 @@ import com.google.api.services.gmail.Gmail;
 import com.smailnet.eamil.Callback.GetAttachCallback;
 import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetGmailReceiveCallback;
+import com.smailnet.eamil.Callback.GetMessagesBack;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.Callback.GmailAuthCallback;
 import com.smailnet.eamil.Callback.MarkCallback;
@@ -377,21 +378,27 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveMoreMailByUUID(menu,minUUID,pageSize,maxUUID);
-                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
-                   /* messageMap.put("totalCount",totalSize);
-                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
-                    final int totalCount = (int)messageMap.get("totalCount");
-                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
-                    final long minUIIDNew = (long)messageMap.get("minUIID");
-                    final long maxUUIDNew = (long)messageMap.get("maxUUID");
-                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
-                    final String errorMsg = (String)messageMap.get("errorMsg");
-                    final String menuFlag = (String)messageMap.get("menu");
-                    activity.runOnUiThread(new Runnable() {
+//                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveMoreMailByUUID(menu,minUUID,pageSize,maxUUID);
+
+                    Operator.Core(emailConfig).imapReceiveMoreMailByUUID(menu, minUUID, pageSize, maxUUID, new GetMessagesBack() {
                         @Override
-                        public void run() {
-                            getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                        public void onBack(HashMap<String, Object> messageList1) {
+                            final HashMap<String, Object> messageMap = messageList1;
+
+                            final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                            final int totalCount = (int)messageMap.get("totalCount");
+                            final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                            final long minUIIDNew = (long)messageMap.get("minUIID");
+                            final long maxUUIDNew = (long)messageMap.get("maxUUID");
+                            final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                            final String errorMsg = (String)messageMap.get("errorMsg");
+                            final String menuFlag = (String)messageMap.get("menu");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                                }
+                            });
                         }
                     });
                 } catch (final MessagingException e) {

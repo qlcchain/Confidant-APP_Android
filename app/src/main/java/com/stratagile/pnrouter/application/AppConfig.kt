@@ -21,7 +21,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.gmail.GmailRequestInitializer
 import com.google.api.services.gmail.GmailScopes
-import com.huawei.android.hms.agent.HMSAgent
+import com.huawei.hms.push.HmsMessaging
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
@@ -30,6 +30,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
@@ -120,6 +121,7 @@ class AppConfig : MultiDexApplication() {
         {
             CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
         }
+        DotLog.init()
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
         instance = this
@@ -131,7 +133,6 @@ class AppConfig : MultiDexApplication() {
         UserProvider.init()
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
-            HMSAgent.init(this)
         }else{
             initMiPush()
         }

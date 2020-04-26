@@ -1,10 +1,5 @@
 <resources>
 
-    <style name="MyAppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-        <item name="android:windowAnimationStyle">@style/AnimaActivity</item>
-        <item name="android:windowBackground">@mipmap/img_logo</item>
-    </style>
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -12,6 +7,14 @@
         <!--<item name="android:windowIsTranslucent">true</item>-->
         <item name="android:windowAnimationStyle">@style/AnimaActivity</item>
     </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/icon_splash</item>
+    </style>
+
     <style name="EditorIcon">
         <item name="android:layout_width">40dp</item>
         <item name="android:layout_height">20dp</item>
@@ -79,14 +82,6 @@
         <item name="android:layout_height">@dimen/x2</item>
         <item name="android:layout_marginLeft">@dimen/x30</item>
         <item name="android:background">@color/black</item>
-    </style>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
-    <style name="SplashTheme" parent="AppTheme">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-       <!-- <item name="android:windowBackground">@color/main_color</item>-->
-        <item name="android:windowBackground">@drawable/main_bitmap_splash_bg</item>
-        <!--<item name="android:actionMenuTextAppearance">@style/MenuTextStyle</item>-->
     </style>
 
     <style name="SwipeBackLayout">

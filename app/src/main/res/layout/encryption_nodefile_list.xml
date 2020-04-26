@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/mainColor"
                 android:layout_marginRight="@dimen/x20"
-                android:drawableLeft="@mipmap/statusbar_plus"
+                android:drawableLeft="@mipmap/statusbar_search_n"
                 android:textSize="15sp"
                 android:text=""/>
             <TextView

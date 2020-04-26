@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.pawegio.kandroid.setHeight
@@ -45,6 +46,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.CommonPagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeAnchor
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgePagerTitleView
@@ -115,65 +117,44 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
             }
 
             override fun getTitleView(context: Context, index: Int): IPagerTitleView {
-                //val badgePagerTitleView = BadgePagerTitleView(context)
-                val simplePagerTitleView = ColorTransitionPagerTitleView(context)
-                simplePagerTitleView.setText(titles.get(index))
-                simplePagerTitleView.normalColor =  Color.parseColor("#FF9496A1")
-                simplePagerTitleView.textSize = 17f
-                var icon: Drawable = icon.get(index)
-               // icon.setBounds(60,0,150,90);
-                if(index == 0)
-                {
-                    icon.setBounds(resources.getDimension(R.dimen.x40).toInt(),0,resources.getDimension(R.dimen.x105).toInt(),resources.getDimension(R.dimen.x60).toInt());
-                }else{
-                    icon.setBounds(resources.getDimension(R.dimen.x60).toInt(),0,resources.getDimension(R.dimen.x125).toInt(),resources.getDimension(R.dimen.x60).toInt());
+                var commonPagerTitleView = CommonPagerTitleView(context)
+                var view = layoutInflater.inflate(R.layout.main_indicator_layout, null, false)
+                var ivAvatar = view.findViewById<ImageView>(R.id.ivAvatar)
+                var tvContent = view.findViewById<TextView>(R.id.tvContent)
+                if (index == 0) {
+                    ivAvatar.setImageResource(R.mipmap.tabbar_circle_selected)
+                    tvContent.text = getString(R.string.Message)
+                } else {
+                    ivAvatar.setImageResource(R.mipmap.tabbar_email_selected)
+                    tvContent.text = getString(R.string.Email)
                 }
-                simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
-                simplePagerTitleView.selectedColor = Color.parseColor("#FF2B2B2B")
-                simplePagerTitleView.setOnClickListener {  viewPager.setCurrentItem(index) }
-                return simplePagerTitleView
-               /* val simplePagerTitleView = SimplePagerTitleView(context)
+                commonPagerTitleView.setContentView(view)
+                commonPagerTitleView.setOnClickListener { viewPager.setCurrentItem(index) }
+                commonPagerTitleView.onPagerTitleChangeListener = object : CommonPagerTitleView.OnPagerTitleChangeListener {
+                    override fun onDeselected(p0: Int, p1: Int) {
 
-                //simplePagerTitleView.setLayoutParams(LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-                var icon: Drawable = icon.get(index)
-                icon.setBounds(-30,0,60,90);
-                simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
-                simplePagerTitleView.setText(titles.get(index))
-                simplePagerTitleView.normalColor = resources.getColor(R.color.color_999999)
-                simplePagerTitleView.selectedColor = resources.getColor(R.color.color_2B2B2B)
-                simplePagerTitleView.setOnClickListener {
-                    viewPager.setCurrentItem(index)
-//                    badgePagerTitleView.badgeView = null // cancel badge when click tab
+                    }
+
+                    override fun onSelected(p0: Int, p1: Int) {
+
+                    }
+
+                    override fun onLeave(p0: Int, p1: Int, p2: Float, p3: Boolean) {
+
+                    }
+
+                    override fun onEnter(p0: Int, p1: Int, p2: Float, p3: Boolean) {
+
+                    }
+
                 }
-                badgePagerTitleView.innerPagerTitleView = simplePagerTitleView
-
-                val badgeImageView = LayoutInflater.from(context).inflate(R.layout.simple_red_dot_badge_layout, null) as ImageView
-                badgePagerTitleView.badgeView = badgeImageView
-
-                // set badge position
-                badgePagerTitleView.xBadgeRule = BadgeRule(BadgeAnchor.CONTENT_RIGHT, 0)
-                badgePagerTitleView.yBadgeRule = BadgeRule(BadgeAnchor.CONTENT_TOP, 0)
-
-                // don't cancel badge when tab selected
-                badgePagerTitleView.isAutoCancelBadge = false
-                badgePagerTitleView.badgeView.visibility = View.GONE
-                return badgePagerTitleView*/
-//                val colorTransitionPagerTitleView = ColorTransitionPagerTitleView(context)
-//                colorTransitionPagerTitleView.normalColor = Color.GRAY
-//                colorTransitionPagerTitleView.selectedColor = Color.BLACK
-//                colorTransitionPagerTitleView.setText(titles.get(index))
-//                colorTransitionPagerTitleView.setOnClickListener(object : View.OnClickListener {
-//                    override fun onClick(view: View) {
-//                        viewPager.setCurrentItem(index)
-//                    }
-//                })
-//                return colorTransitionPagerTitleView
+                return commonPagerTitleView
             }
 
             override fun getIndicator(context: Context): IPagerIndicator {
                 val indicator = LinePagerIndicator(context)
                 indicator.setColors(Color.parseColor("#FF6646F7"))
-                indicator.lineHeight = UIUtil.dip2px(context, 1.5).toFloat()
+                indicator.lineHeight = UIUtil.dip2px(context, 2.toDouble()).toFloat()
                 return indicator
             }
 

@@ -37,6 +37,7 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.stratagile.pnrouter.entity.events.ToxStatusEvent
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import kotlinx.android.synthetic.main.activity_router_management.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -215,9 +216,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         setContentView(R.layout.activity_router_management)
         EventBus.getDefault().register(this)
         showViewNeedFront()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
-        }
+        StatusBarCompat.cancelLightStatusBar(this)
         userAvatar.withShape = true
         userAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivBack.setOnClickListener {

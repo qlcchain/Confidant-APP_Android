@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98944952203",
+    "firebase_url": "https://confident-d6fd8.firebaseio.com",
+    "project_id": "confident-d6fd8",
+    "storage_bucket": "confident-d6fd8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98944952203:android:35632a5870525be883318e",
+        "android_client_info": {
+          "package_name": "com.stratagile.pnrouter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98944952203-oo7l8r76hs45o59go2n0v9vntf4qj9dn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg0x446IWbsfAPBFEDNmFTXV0hns3o9Ik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98944952203-oo7l8r76hs45o59go2n0v9vntf4qj9dn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "98944952203-lr1cgi3cf761nr7kivfk40hsm1pei94b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.winq.routerchat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

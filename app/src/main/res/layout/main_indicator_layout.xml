@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:gravity="center"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:src="@mipmap/tabbar_circle_selected"
+        android:scaleType="centerCrop"
+        android:layout_width="21dp"
+        android:layout_height="18dp"/>
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="11dp"
+        android:includeFontPadding="false"
+        android:text="@string/Message"
+        android:textSize="13sp"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

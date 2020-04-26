@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Message
 import android.view.KeyEvent
 import android.view.View
+import android.widget.LinearLayout
 import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
@@ -39,6 +40,9 @@ import com.stratagile.pnrouter.entity.events.ToxFriendStatusEvent
 import com.stratagile.pnrouter.entity.events.ToxSendInfoEvent
 import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_select_circle.*
+import kotlinx.android.synthetic.main.activity_select_circle.llCancel
+import kotlinx.android.synthetic.main.activity_select_circle.statusBar
+import kotlinx.android.synthetic.main.email_send_edit.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -366,6 +370,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
     override fun initView() {
         setContentView(R.layout.activity_select_circle)
+        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp2)
         tvTitle.text = "Select a Circle"
         llCancel.setOnClickListener {
             finish()

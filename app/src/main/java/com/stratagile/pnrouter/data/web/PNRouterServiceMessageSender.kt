@@ -11,6 +11,7 @@ import com.smailnet.eamil.Utils.AESToolsCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.api.DotLog
 import com.stratagile.pnrouter.db.MessageEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -115,6 +116,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
     fun send(message: BaseData){
         Log.i("sender", "添加")
+        DotLog.sendLog(message)
         toSendMessage.offer(message)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         /*if (thread.state == Thread.State.NEW) {

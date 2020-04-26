@@ -2186,6 +2186,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        isEditActivity = true
         KLog.i("insertMessage:GroupChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         groupEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_CHAT_GROUP)

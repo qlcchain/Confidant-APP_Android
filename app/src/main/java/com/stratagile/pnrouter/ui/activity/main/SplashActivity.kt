@@ -7,6 +7,7 @@ import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
+import android.view.View
 import com.hyphenate.easeui.utils.PathUtils
 import com.jaeger.library.StatusBarUtil
 import com.smailnet.eamil.Utils.AESCipher
@@ -20,6 +21,7 @@ import com.stratagile.pnrouter.db.LocalFileMenu
 import com.stratagile.pnrouter.db.LocalFileMenuDao
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
@@ -69,11 +71,15 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     internal lateinit var mPresenter: SplashPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
+        sentContent = false
+        super.onCreate(savedInstanceState)
+        StatusBarCompat.translucentStatusBar(this, false)
+
         KLog.i("SplashActivityAAAA：onCreate")
         var sodium: Sodium = NaCl.sodium()
-        needFront = true
         AppConfig.instance.stopAllService()
-        super.onCreate(savedInstanceState)
+        FireBaseUtils.logEvent(this, FireBaseUtils.eventStartApp)
 
         /*try {
             var intent = getIntent();
@@ -120,7 +126,9 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_splash)
-        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
+        rootLayout!!.visibility = View.GONE
+//        StatusBarCompat.changeToLightStatusBar(this)
+//        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
         KLog.i("SplashActivityAAAA：initData")

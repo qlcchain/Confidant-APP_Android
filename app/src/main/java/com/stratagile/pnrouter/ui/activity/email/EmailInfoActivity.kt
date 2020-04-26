@@ -21,9 +21,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.webkit.*
-import android.widget.PopupWindow
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
@@ -59,6 +57,7 @@ import com.stratagile.pnrouter.entity.events.ChangeEmailConfig
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.gmail.GmailQuickstart
+import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
@@ -69,6 +68,7 @@ import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.email_info_view.*
+import kotlinx.android.synthetic.main.email_info_view.tvTitle
 import kotlinx.android.synthetic.main.emailpassword_bar3.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -166,6 +166,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+//        isEditActivity = true
         this_ = this
         hasPassWord = false
         clickDecryptBtn = false
@@ -198,6 +199,9 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
     }
     override fun initView() {
         setContentView(R.layout.email_info_view)
+        StatusBarCompat.changeToLightStatusBar(this)
+        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp2)
     }
 
     override fun initData() {
@@ -1184,6 +1188,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View , PNRouterServi
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
+        KLog.i(emailMeaasgeData.toString())
         mailInfo.revDate = (DateUtil.getDate(emailMeaasgeData!!.date).time / 1000).toInt()
         fromName_Time.text = emailMeaasgeData!!.date
         attach_info.setOnClickListener {

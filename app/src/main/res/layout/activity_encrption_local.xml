@@ -5,6 +5,14 @@
     android:orientation="vertical"
     android:background="@color/white"
     android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/headmainColor"
+        android:gravity="center" />
+
     <RelativeLayout
         android:id="@+id/rl1"
         android:visibility="visible"
@@ -36,7 +44,7 @@
                 android:layout_width="@dimen/x60"
                 android:padding="@dimen/x10"
                 android:layout_height="@dimen/x60"
-                android:src="@mipmap/statusbar_search_n"
+                android:src="@mipmap/statusbar_plus"
                 android:visibility="visible" />
         </RelativeLayout>
         <RelativeLayout
@@ -67,7 +75,7 @@
                 android:layout_marginLeft="@dimen/x15"
                 android:padding="@dimen/x10"
                 android:layout_height="@dimen/x60"
-                android:src="@mipmap/statusbar_plus"
+                android:src="@mipmap/statusbar_search_n"
                 android:visibility="gone" />
         </RelativeLayout>
 

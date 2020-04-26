@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import androidx.core.view.isVisible
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.EaseSmileUtils
 import com.pawegio.kandroid.toast
@@ -29,6 +28,14 @@ import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_node_sms_list.*
+import kotlinx.android.synthetic.main.activity_node_sms_list.actionButton
+import kotlinx.android.synthetic.main.activity_node_sms_list.backBtn
+import kotlinx.android.synthetic.main.activity_node_sms_list.cancelBtn
+import kotlinx.android.synthetic.main.activity_node_sms_list.editBtn
+import kotlinx.android.synthetic.main.activity_node_sms_list.recyclerView
+import kotlinx.android.synthetic.main.activity_node_sms_list.refreshLayout
+import kotlinx.android.synthetic.main.activity_node_sms_list.tvTitle
+import kotlinx.android.synthetic.main.activity_sms_list.*
 
 import javax.inject.Inject;
 
@@ -51,7 +58,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
             {
                 for(item in dataList)
                 {
-                    if(cancelBtn.isVisible)
+                    if(cancelBtn.visibility == View.VISIBLE)
                     {
                         item.isMultChecked = true;
                     }else{
@@ -160,7 +167,7 @@ class SMSEncryptionNodelSecondActivity : BaseActivity(), SMSEncryptionNodelSecon
         recyclerView.adapter = SMSNodeSecondAdapter
         recyclerView.scrollToPosition(0)
         SMSNodeSecondAdapter!!.setOnItemClickListener { adapter, view, position ->
-            if(cancelBtn.isVisible)
+            if(cancelBtn.visibility == View.VISIBLE)
             {
                 var emailMeaasgeData =  SMSNodeSecondAdapter!!.getItem(position)
                 emailMeaasgeData!!.isLastCheck = !emailMeaasgeData!!.isLastCheck;

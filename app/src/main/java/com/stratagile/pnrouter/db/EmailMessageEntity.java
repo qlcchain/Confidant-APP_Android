@@ -19,6 +19,40 @@ public class EmailMessageEntity implements Parcelable{
     private String menu;
     private String subject;
     private String from;
+
+    @Override
+    public String toString() {
+        return "EmailMessageEntity{" +
+                "id=" + id +
+                ", account='" + account + '\'' +
+                ", msgId='" + msgId + '\'' +
+                ", menu='" + menu + '\'' +
+                ", subject='" + subject + '\'' +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", cc='" + cc + '\'' +
+                ", bcc='" + bcc + '\'' +
+                ", date='" + date + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", isSeen=" + isSeen +
+                ", isStar=" + isStar +
+                ", priority='" + priority + '\'' +
+                ", isReplySign=" + isReplySign +
+                ", size=" + size +
+                ", isContainerAttachment=" + isContainerAttachment +
+                ", attachmentCount=" + attachmentCount +
+                ", content='" + content + '\'' +
+                ", contentText='" + contentText + '\'' +
+                ", originalText='" + originalText + '\'' +
+                ", aesKey='" + aesKey + '\'' +
+                ", messageTotalCount=" + messageTotalCount +
+                ", emailAttachPath='" + emailAttachPath + '\'' +
+                ", userId='" + userId + '\'' +
+                ", sortId=" + sortId +
+                ", originalBody='" + originalBody + '\'' +
+                '}';
+    }
+
     private String to;
     private String cc;//抄送
     private String bcc;//密送

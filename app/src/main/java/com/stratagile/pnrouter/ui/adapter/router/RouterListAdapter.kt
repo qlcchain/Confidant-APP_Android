@@ -1,6 +1,6 @@
 package com.stratagile.pnrouter.ui.adapter.router
 
-import androidx.core.view.isGone
+import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
@@ -36,7 +36,7 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
                 helper.itemView.alpha= 1.0f
             }
         } else {
-            helper.itemView.isGone = false
+            helper.itemView.visibility = View.VISIBLE
             helper.setGone(R.id.checkBox, false)
 
             if (helper.layoutPosition == selectedItem) {

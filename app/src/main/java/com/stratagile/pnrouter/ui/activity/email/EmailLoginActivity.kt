@@ -6,6 +6,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.View
@@ -35,6 +36,7 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginCompo
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
+import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import kotlinx.android.synthetic.main.email_login_activity.*
@@ -237,7 +239,46 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
 
         webView.setBackgroundColor(0); // 设置背景色
         webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
+//        webView.webViewClient = XWebViewClient()
+//        webView.loadUrl("http://www.baidu.com/")
         webView.loadUrl(url)
+//        var intent = Intent(this, WebViewActivity::class.java)
+//        intent.putExtra("url", "http://www.baidu.com/")
+//        intent.putExtra("title", "测试")
+//        startActivity(intent)
+    }
+
+    inner class XWebViewClient : WebViewClient() {
+
+        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+            KLog.i(url)
+            title.text = view.title
+            if (TextUtils.isEmpty(url)) {
+                return true
+            }
+
+            var uri: Uri? = null
+            try {
+                uri = Uri.parse(url)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            if (uri == null) {
+                return true
+            }
+
+            if (!URLUtil.isNetworkUrl(url)) {
+                return true
+            }
+
+
+            return super.shouldOverrideUrlLoading(view, url)
+        }
+
+        override fun onPageFinished(view: WebView, url: String) {
+            super.onPageFinished(view, url)
+        }
     }
 
     override fun setupActivityComponent() {

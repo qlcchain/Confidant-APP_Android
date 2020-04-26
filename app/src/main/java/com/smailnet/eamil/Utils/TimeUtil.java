@@ -18,7 +18,9 @@ package com.smailnet.eamil.Utils;
 import android.annotation.SuppressLint;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * 时间格式转换工具
@@ -58,5 +60,13 @@ public class TimeUtil {
 
         }
        return null;
+    }
+
+    /**
+     * @return
+     */
+    public static String getTime() {
+        SimpleDateFormat sdr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        return sdr.format(new Date(Calendar.getInstance().getTimeInMillis()));
     }
 }

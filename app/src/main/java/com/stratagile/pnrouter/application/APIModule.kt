@@ -1,8 +1,10 @@
 package com.stratagile.pnrouter.application
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.google.gson.Gson
 
 import com.stratagile.pnrouter.data.api.API
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
@@ -22,7 +24,9 @@ import javax.inject.Singleton
 
 import dagger.Module
 import dagger.Provides
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -37,13 +41,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 @Module
 class APIModule(private val application: Application) {
     val TAG = APIModule::class.java.simpleName
+    @SuppressLint("AllowAllHostnameVerifier")
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
         builder.addInterceptor(HttpInfoInterceptor())
+        builder.hostnameVerifier(AllowAllHostnameVerifier())
         builder.connectTimeout(API.CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(API.IO_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(RequestBodyInterceptor())
+        builder.addInterceptor(Interceptor {
+            val request = it.request()
+                    .newBuilder()
+                    .removeHeader("User-Agent")//移除旧的
+                    .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0")//添加真正的头部
+                    .build()
+            it.proceed(request)
+        })
         return builder.build()
     }
 
