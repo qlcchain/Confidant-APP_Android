@@ -21,7 +21,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.gmail.GmailRequestInitializer
 import com.google.api.services.gmail.GmailScopes
-import com.huawei.android.hms.agent.HMSAgent
+import com.huawei.hms.push.HmsMessaging
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
@@ -133,7 +133,6 @@ class AppConfig : MultiDexApplication() {
         UserProvider.init()
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
-            HMSAgent.init(this)
         }else{
             initMiPush()
         }

@@ -42,8 +42,7 @@ import com.floatball.FloatPermissionManager
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
-import com.huawei.android.hms.agent.HMSAgent
-import com.huawei.android.hms.agent.common.handler.ConnectHandler
+import com.huawei.hms.aaid.HmsInstanceId
 import com.huxq17.floatball.libarary.FloatBallManager
 import com.huxq17.floatball.libarary.floatball.FloatBallCfg
 import com.huxq17.floatball.libarary.menu.FloatMenuCfg
@@ -154,9 +153,8 @@ import kotlin.collections.ArrayList
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener, PNRouterServiceMessageReceiver.BakMailsNumCallback {
     override fun bakFileBack(jBakFileRsp: JBakFileRsp) {
 
-        when (jBakFileRsp.params.retCode )
-        {
-            0->{
+        when (jBakFileRsp.params.retCode) {
+            0 -> {
                 EventBus.getDefault().post(UpdateAlbumEncryptionItemEvent())
                 EventBus.getDefault().post(UpdateWXEncryptionItemEvent())
                 EventBus.getDefault().post(UpdateAlbumNodeSuccessEncryptionItemEvent())
@@ -165,33 +163,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     toast(R.string.success)
                 }
             }
-            1->{
+            1 -> {
                 runOnUiThread {
                     toast(R.string.Parameter_error)
                 }
             }
-            2->{
+            2 -> {
                 runOnUiThread {
                     toast(R.string.no_space)
                 }
             }
-            3->{
+            3 -> {
                 runOnUiThread {
                     toast(R.string.There_is_a_file_with_the_same_name)
                 }
             }
-            4->{
+            4 -> {
                 runOnUiThread {
                     toast(R.string.Destination_directory_error)
                 }
             }
-            else ->{
+            else -> {
                 runOnUiThread {
                     toast(R.string.Backup_failed)
                 }
             }
         }
     }
+
     override fun sysMsgPushRsp(jSysMsgPushRsp: JSysMsgPushRsp) {
 
     }
@@ -219,6 +218,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         var isGmailToken = false;
     }
+
     var REQUEST_MEDIA_PROJECTION = 1008
     private lateinit var standaloneCoroutine: Job
     var routerId = ""
@@ -2008,10 +2008,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
                 if (localFriendList.size > 0)
                     friendEntity = localFriendList[0]
-                if(pushMsgRsp.getParams().getNonce().equals("================================") && pushMsgRsp.getParams().getSign().equals("================================") )
-                {
+                if (pushMsgRsp.getParams().getNonce().equals("================================") && pushMsgRsp.getParams().getSign().equals("================================")) {
                     msgSouce = String(RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg()))
-                }else{
+                } else {
                     msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(), ConstantValue.libsodiumprivateMiKey!!, friendEntity.signPublicKey)
                 }
 
@@ -2680,12 +2679,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     private fun getToken() {
-        HMSAgent.Push.getToken {
-            KLog.i("华为推送 get token: end" + it)
-            LogUtil.addLog("华为推送 get token: end" + it)
-            //ConstantValue.mHuaWeiRegId = "" + it
 
-        }
     }
 
 
@@ -2991,6 +2985,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToMy() {
+        TestUtil.testRxJava()
         StatusBarCompat.cancelLightStatusBar(this)
         rl1.setBackgroundResource(R.color.mainColor)
         statusBar.setBackgroundColor(resources.getColor(R.color.mainColor))
@@ -3034,8 +3029,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
-    fun initFlatBall()
-    {
+    fun initFlatBall() {
         //1 初始化悬浮球配置，定义好悬浮球大小和icon的drawable
         val ballSize = DensityUtil.dip2px(this, 45f)
         val ballIcon = BackGroudSeletor.getdrawble("ic_floatball", this)
@@ -3135,6 +3129,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             return false
         }
     }
+
     private fun createImageReader() {
 
         mImageReader = ImageReader.newInstance(mScreenWidth, mScreenHeight, PixelFormat.RGBA_8888, 1)
@@ -3152,8 +3147,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //capture the screen
             startCapture()
         }, 30)*/
-        if(mFloatballManager != null)
-        {
+        if (mFloatballManager != null) {
             mFloatballManager!!.hide()
         }
         val handler1 = Handler()
@@ -3273,8 +3267,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 (application as AppConfig).setmScreenCaptureBitmap(bitmap)
                 Log.e("ryze", "获取图片成功")
-                if(mFloatballManager != null)
-                {
+                if (mFloatballManager != null) {
                     mFloatballManager!!.show()
                 }
                 toast(R.string.screenshots_success)
@@ -3299,6 +3292,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mVirtualDisplay!!.release()
         mVirtualDisplay = null
     }
+
     override fun initData() {
         /*var gps = LocationUtils.getGPSLocation(this);
         if (gps == null) {
@@ -3318,33 +3312,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             delay(10000)
         }
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-        if(!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals(""))
-        {
+        if (!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals("")) {
             SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
         var localEmailContactAcount = ""
         var localEmailContactAcountDelete = ""
-        for (item in localEmailContacts)
-        {
+        for (item in localEmailContacts) {
             var account = item.account.toLowerCase()
-            if(!localEmailContactAcount.contains(account))
-            {
-                localEmailContactAcount += account +","
-            }else{
-                localEmailContactAcountDelete += account +","
+            if (!localEmailContactAcount.contains(account)) {
+                localEmailContactAcount += account + ","
+            } else {
+                localEmailContactAcountDelete += account + ","
             }
         }
-        if(localEmailContactAcountDelete.length > 0)
-        {
-            var  localEmailContactAcountDeleteArr = localEmailContactAcountDelete.split(",")
-            for (item in localEmailContactAcountDeleteArr)
-            {
-                if(item!="")
-                {
+        if (localEmailContactAcountDelete.length > 0) {
+            var localEmailContactAcountDeleteArr = localEmailContactAcountDelete.split(",")
+            for (item in localEmailContactAcountDeleteArr) {
+                if (item != "") {
                     var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(item)).list()
-                    if(localEmailContacts != null && localEmailContacts.size >0)
-                    {
+                    if (localEmailContacts != null && localEmailContacts.size > 0) {
                         var localEmailContactsItem = localEmailContacts.get(0)
                         AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.delete(localEmailContactsItem)
                     }
@@ -3352,20 +3339,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         var emailConfigEntityChooseALL = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-        for (item in emailConfigEntityChooseALL)
-        {
+        for (item in emailConfigEntityChooseALL) {
             var account = item.account
             var pulicSignKey = ConstantValue.libsodiumpublicSignKey!!
             var accountBase64 = String(RxEncodeTool.base64Encode(account))
-            var saveEmailConf = SaveEmailConf(1,1,accountBase64 ,"", pulicSignKey)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,saveEmailConf))
+            var saveEmailConf = SaveEmailConf(1, 1, accountBase64, "", pulicSignKey)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, saveEmailConf))
         }
         if (VersionUtil.getDeviceBrand() == 3) {
-            HMSAgent.connect(this, ConnectHandler {
-                KLog.i("华为推送 HMS connect end: " + it)
-                LogUtil.addLog("华为推送 HMS connect end: " + it)
-            })
-            getToken()
+            HmsInstanceId.getInstance(this).getToken()
         }
         this_ = this
         var isStartWebsocket = false
@@ -3374,52 +3356,46 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 super.handleMessage(msg)
                 when (msg.what) {
                     MyAuthCallback.MSG_UPD_DATA -> {
-                        var obj:String = msg.obj.toString()
-                        KLog.i("调试mac "+obj)
-                        if(!obj.equals(""))
-                        {
+                        var obj: String = msg.obj.toString()
+                        KLog.i("调试mac " + obj)
+                        if (!obj.equals("")) {
                             var objArray = obj.split("##")
                             var index = 0;
-                            for(item in objArray)
-                            {
-                                if(!item.equals(""))
-                                {
+                            for (item in objArray) {
+                                if (!item.equals("")) {
                                     try {
-                                        var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                        var udpData = AESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
                                         var udpRouterArray = udpData.split(";")
 
-                                        if(udpRouterArray.size > 1)
-                                        {
-                                            println("调试mac :"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                        if (udpRouterArray.size > 1) {
+                                            println("调试mac :" + udpRouterArray[1] + " ip: " + udpRouterArray[0])
                                             //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                            if(scanType == 1)//不是admin二维码
+                                            if (scanType == 1)//不是admin二维码
                                             {
-                                                if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
-                                                {
+                                                if (!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1])) {
                                                     ConstantValue.currentRouterIp = udpRouterArray[0]
                                                     ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                                    ConstantValue.port= ":18006"
+                                                    ConstantValue.port = ":18006"
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                    ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
                                                     break;
-                                                }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
-                                                {
+                                                } else if (!routerId.equals("") && routerId.equals(udpRouterArray[1])) {
                                                     ConstantValue.currentRouterIp = udpRouterArray[0]
                                                     ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                                    ConstantValue.port= ":18006"
+                                                    ConstantValue.port = ":18006"
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = routerId
-                                                    ConstantValue.currentRouterSN =  userSn
+                                                    ConstantValue.currentRouterSN = userSn
                                                     break;
                                                 }
-                                            }else{
+                                            } else {
                                                 ConstantValue.curreantNetworkType = "WIFI"
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
                                                 ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                ConstantValue.port= ":18006"
+                                                ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                ConstantValue.port = ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterMac = RouterMacStr
                                                 break;
@@ -3427,29 +3403,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
                                         }
-                                    }catch (e:Exception)
-                                    {
+                                    } catch (e: Exception) {
                                         e.printStackTrace()
                                     }
 
                                 }
-                                index ++
+                                index++
 
                             }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
-                            {
+                            if (ConstantValue.currentRouterIp != null && !ConstantValue.currentRouterIp.equals("")) {
                                 ConstantValue.curreantNetworkType = "WIFI"
-                                if(isFromScan || isFromScanAdmim)
-                                {
-                                    if(ConstantValue.isHasWebsocketInit)
-                                    {
+                                if (isFromScan || isFromScanAdmim) {
+                                    if (ConstantValue.isHasWebsocketInit) {
                                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                    }else{
+                                    } else {
                                         ConstantValue.isHasWebsocketInit = true
                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                     }
                                     isStartWebsocket = true
-                                    KLog.i("调试mac "+ConstantValue.currentRouterIp+ConstantValue.port)
+                                    KLog.i("调试mac " + ConstantValue.currentRouterIp + ConstantValue.port)
                                     //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                 }
 
@@ -3540,16 +3512,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i(toAddUserId)
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
 
-            if(typeData.equals("type_0"))
-            {
+            if (typeData.equals("type_0")) {
                 if (toAddUserId!!.contains(selfUserId!!)) {
                     runOnUiThread {
                         toast(R.string.The_same_user)
                     }
                     return@Observer
                 }
-                if (!"".equals(toAddUserId))
-                {
+                if (!"".equals(toAddUserId)) {
                     var userEntity = UserEntity()
                     var intent = Intent(this, SendAddFriendActivity::class.java)
                     var toAddUserIdTemp = ""
@@ -3603,7 +3573,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     intent.putExtra("typeData", typeData!!)
                     startActivity(intent)
                 }
-            }else{
+            } else {
                 //type_5
                 if (toAddUserId!!.contains(selfUserId!!)) {
                     runOnUiThread {
@@ -3611,19 +3581,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                     return@Observer
                 }
-                if (!"".equals(toAddUserId))
-                {
+                if (!"".equals(toAddUserId)) {
                     var userEntity = UserEntity()
                     var intent = Intent(this, SendAddFriendActivity::class.java)
                     var toAddUserKey = ""
-                    var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                    var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",") + 1, toAddUserId!!.length)//前面6位为userSn
                     toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
-                    var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
-                    var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",") + 1, toAddUserKeyNoSn!!.length)//前面为userKey
+                    var FriendDevId = toAddUserKeyNoSnNoKey.substring(0, toAddUserKeyNoSnNoKey!!.indexOf(","))
 
-                    var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
-                    var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
-                    var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                    var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",") + 1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                    var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0, toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                    var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",") + 1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
                     var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
                     var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                     for (i in useEntityList) {
@@ -3684,8 +3653,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
         })
-        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
-        {
+        if (ConstantValue.waitAddFreind != null && ConstantValue.waitAddFreind != "") {
             doWaitAddFreind(ConstantValue.waitAddFreind)
             ConstantValue.waitAddFreind = "";
         }
@@ -3742,43 +3710,40 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
-            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
-            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+            menuArray = arrayListOf<String>(getString(R.string.New_Email), getString(R.string.Create_a_Group), getString(R.string.Add_Contacts), getString(R.string.Invite_Friends), getString(R.string.Add_Members))
+            iconArray = arrayListOf<String>("tabbar_email_selected", "add_contacts", "tabbar_circle_selected", "tabbar_circle_invite_friends", "tabbar_circle_add_members")
 
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             routerList.forEach {
                 if (it.lastCheck) {
                     routerEntityAddMembers = it
-                    if(ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntityAddMembers!!.userSn))
-                    {
+                    if (ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntityAddMembers!!.userSn)) {
                         //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
-                        if(AppConfig.instance.emailConfig().account != null)
-                        {
-                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
-                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
-                        }else{
-                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends),getString(R.string.Add_Members))
-                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends","tabbar_circle_add_members")
+                        if (AppConfig.instance.emailConfig().account != null) {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email), getString(R.string.Create_a_Group), getString(R.string.Add_Contacts), getString(R.string.Invite_Friends), getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("tabbar_email_selected", "add_contacts", "tabbar_circle_selected", "tabbar_circle_invite_friends", "tabbar_circle_add_members")
+                        } else {
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group), getString(R.string.Add_Contacts), getString(R.string.Invite_Friends), getString(R.string.Add_Members))
+                            iconArray = arrayListOf<String>("add_contacts", "tabbar_circle_selected", "tabbar_circle_invite_friends", "tabbar_circle_add_members")
                         }
 
-                    }else{
+                    } else {
                         //menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
                         //iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
-                        if(AppConfig.instance.emailConfig().account != null)
-                        {
-                            menuArray = arrayListOf<String>(getString(R.string.New_Email),getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
-                            iconArray = arrayListOf<String>("tabbar_email_selected","add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
-                        }else{
-                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group),getString(R.string.Add_Contacts),getString(R.string.Invite_Friends))
-                            iconArray = arrayListOf<String>("add_contacts","tabbar_circle_selected","tabbar_circle_invite_friends")
+                        if (AppConfig.instance.emailConfig().account != null) {
+                            menuArray = arrayListOf<String>(getString(R.string.New_Email), getString(R.string.Create_a_Group), getString(R.string.Add_Contacts), getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("tabbar_email_selected", "add_contacts", "tabbar_circle_selected", "tabbar_circle_invite_friends")
+                        } else {
+                            menuArray = arrayListOf<String>(getString(R.string.Create_a_Group), getString(R.string.Add_Contacts), getString(R.string.Invite_Friends))
+                            iconArray = arrayListOf<String>("add_contacts", "tabbar_circle_selected", "tabbar_circle_invite_friends")
                         }
 
                     }
                     return@forEach
                 }
             }
-            PopWindowUtil.showPopAddMenuWindow(this@MainActivity, ivNewGroup,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+            PopWindowUtil.showPopAddMenuWindow(this@MainActivity, ivNewGroup, menuArray, iconArray, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
                     var data = obj as FileOpreateType
@@ -3829,8 +3794,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         editBtn.setOnClickListener {
             startActivity(Intent(this, EmailEditActivity::class.java))
         }
-        if(!AppConfig.instance.sharedText.equals(""))
-        {
+        if (!AppConfig.instance.sharedText.equals("")) {
             val intent = Intent(AppConfig.instance, WexinChatActivity::class.java)
             startActivity(intent)
 
@@ -3848,19 +3812,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             override fun onDrawerOpened(arg0: View) {
-                if(AppConfig.instance.emailConfig().account != null)
-                {
+                if (AppConfig.instance.emailConfig().account != null) {
                     var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                     var bakMailsNum = BakMailsNum(accountBase64)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakMailsNum))
                 }
                 //Log.i("zhangshuli", "open")
             }
 
             override fun onDrawerClosed(arg0: View) {
                 var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                if(emailConfigEntityChoose.size > 0)
-                {
+                if (emailConfigEntityChoose.size > 0) {
                     var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
                     AppConfig.instance.emailConfig()
                             .setSmtpHost(emailConfigEntity.smtpHost)
@@ -3882,8 +3844,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 //Log.i("zhangshuli", "colse")
             }
         })
-        if(ConstantValue.chooseEmailMenu == 0)
-        {
+        if (ConstantValue.chooseEmailMenu == 0) {
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3923,7 +3884,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
             rootTitle.text = getString(R.string.Inbox)
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3963,12 +3924,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
 
-            EventBus.getDefault().post(ChangEmailMenu("Inbox",ConstantValue.currentEmailConfigEntity!!.inboxMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Inbox", ConstantValue.currentEmailConfigEntity!!.inboxMenu))
         }
         nodebackedup.setOnClickListener {
             rootTitle.text = getString(R.string.Node_back_up)
             ConstantValue.chooseEmailMenu = 1;
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -4007,12 +3968,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setTextColor(resources.getColor(R.color.colorAccent))
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
-            EventBus.getDefault().post(ChangEmailMenu("Nodebackedup",ConstantValue.currentEmailConfigEntity!!.nodeMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Nodebackedup", ConstantValue.currentEmailConfigEntity!!.nodeMenu))
         }
         starred.setOnClickListener {
             rootTitle.text = getString(R.string.Starred)
             ConstantValue.chooseEmailMenu = 2;
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -4052,12 +4013,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
 
-            EventBus.getDefault().post(ChangEmailMenu("Starred",ConstantValue.currentEmailConfigEntity!!.starMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Starred", ConstantValue.currentEmailConfigEntity!!.starMenu))
         }
         drafts.setOnClickListener {
             rootTitle.text = getString(R.string.Drafts)
             ConstantValue.chooseEmailMenu = 3;
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -4096,12 +4057,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setTextColor(resources.getColor(R.color.colorAccent))
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
-            EventBus.getDefault().post(ChangEmailMenu("Drafts",ConstantValue.currentEmailConfigEntity!!.drafMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Drafts", ConstantValue.currentEmailConfigEntity!!.drafMenu))
         }
         sent.setOnClickListener {
             rootTitle.text = getString(R.string.Sent)
             ConstantValue.chooseEmailMenu = 4;
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -4140,12 +4101,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setTextColor(resources.getColor(R.color.colorAccent))
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
-            EventBus.getDefault().post(ChangEmailMenu("Sent",ConstantValue.currentEmailConfigEntity!!.sendMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Sent", ConstantValue.currentEmailConfigEntity!!.sendMenu))
         }
         spam.setOnClickListener {
             rootTitle.text = getString(R.string.Spam)
             ConstantValue.chooseEmailMenu = 5;
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -4184,12 +4145,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setTextColor(resources.getColor(R.color.colorAccent))
             trash.setCountTextColor(resources.getColor(R.color.colorAccent))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted)
-            EventBus.getDefault().post(ChangEmailMenu("Spam",ConstantValue.currentEmailConfigEntity!!.garbageMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Spam", ConstantValue.currentEmailConfigEntity!!.garbageMenu))
         }
         trash.setOnClickListener {
             ConstantValue.chooseEmailMenu = 6;
             rootTitle.text = getString(R.string.Trash)
-            ConstantValue.chooseEmailMenuName =  rootTitle.text.toString()
+            ConstantValue.chooseEmailMenuName = rootTitle.text.toString()
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -4228,7 +4189,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             trash.setTextColor(resources.getColor(R.color.white))
             trash.setCountTextColor(resources.getColor(R.color.white))//colorAccent
             trash.setImageResource(R.mipmap.tabbar_deleted_selected)
-            EventBus.getDefault().post(ChangEmailMenu("Trash",ConstantValue.currentEmailConfigEntity!!.deleteMenu))
+            EventBus.getDefault().post(ChangEmailMenu("Trash", ConstantValue.currentEmailConfigEntity!!.deleteMenu))
         }
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
@@ -4326,8 +4287,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             ConstantValue.isInit = true
         }
-        if(!isAddEmail)
-        {
+        if (!isAddEmail) {
             conversationListFragment?.setConversationListItemClickListener(
                     EaseConversationListFragment.EaseConversationListItemClickListener
                     { userid, chatType ->
@@ -4352,7 +4312,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var userSn = SpUtil.getString(AppConfig.instance, ConstantValue.userSnSp, "")
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
-                        var sendData = BaseData(3,msgData, pushMsgRsp?.msgid)
+                        var sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
                         if (ConstantValue.encryptionType.equals("1")) {
                             sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
                         }
@@ -4375,11 +4335,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.getParams().getFrom())).list()
                             if (localFriendList.size > 0)
                                 friendEntity = localFriendList[0]
-                            if(pushMsgRsp.getParams().getNonce().equals("================================") && pushMsgRsp.getParams().getSign().equals("================================") )
-                            {
+                            if (pushMsgRsp.getParams().getNonce().equals("================================") && pushMsgRsp.getParams().getSign().equals("================================")) {
                                 msgSouce = String(RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg()))
-                            }else{
-                                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(),ConstantValue.libsodiumprivateMiKey!!,friendEntity.signPublicKey)
+                            } else {
+                                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign(), ConstantValue.libsodiumprivateMiKey!!, friendEntity.signPublicKey)
                             }
                         } else {
                             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
@@ -4416,17 +4375,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
                                 //conversation.insertMessage(message)
                             }
-                        }catch (e:Exception)
-                        {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
 
 
                         if (ConstantValue.isInit) {
-                            if(isAddEmail)
-                            {
+                            if (isAddEmail) {
                                 chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                            }else{
+                            } else {
                                 conversationListFragment?.refresh()
                             }
 
@@ -4443,10 +4400,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             override fun getItem(position: Int): Fragment {
                 when (position) {
                     0 -> {
-                        if(isAddEmail)
-                        {
+                        if (isAddEmail) {
                             return chatAndEmailFragment!!
-                        }else{
+                        } else {
                             return conversationListFragment!!
                         }
                     }
@@ -4522,8 +4478,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-        try
-        {
+        try {
             var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
             var fileMD5 = FileUtil.getFileMD5(File(filePath))
             if (fileMD5 == null) {
@@ -4542,21 +4497,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
-        if(!ConstantValue.shareFromLocalPath.equals(""))
-        {
+        if (!ConstantValue.shareFromLocalPath.equals("")) {
             var startIntent = Intent(this, FileSendShareActivity::class.java)
-            startIntent.putExtra("fileLocalPath",ConstantValue.shareFromLocalPath)
+            startIntent.putExtra("fileLocalPath", ConstantValue.shareFromLocalPath)
             startActivity(startIntent)
             ConstantValue.shareFromLocalPath = ""
         }
         initEvent()
     }
-    fun doWaitAddFreind(waitAddFreind:String)
-    {
+
+    fun doWaitAddFreind(waitAddFreind: String) {
 
         KLog.i("doWaitAddFreind")
         var userId = waitAddFreind!!.substring(0, waitAddFreind!!.indexOf(","))
@@ -4566,57 +4519,55 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             return
         }
         KLog.i("doWaitAddFreind2")
-        var emailId= ""
-        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId,emailId)
-        var sendData = BaseData(6,AddFriendsAutoReq);
+        var emailId = ""
+        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId, emailId)
+        var sendData = BaseData(6, AddFriendsAutoReq);
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }
-    fun onClickSendEmail()
-    {
+
+    fun onClickSendEmail() {
         var intent = Intent(this, EmailSendActivity::class.java)
-        intent.putExtra("flag",0)
-        intent.putExtra("menu","")
+        intent.putExtra("flag", 0)
+        intent.putExtra("menu", "")
         startActivity(intent)
     }
-    fun onClickInviteFriendEmail()
-    {
+
+    fun onClickInviteFriendEmail() {
         var intent = Intent(this, EmailSendActivity::class.java)
-        intent.putExtra("flag",100)
-        intent.putExtra("menu","")
+        intent.putExtra("flag", 100)
+        intent.putExtra("menu", "")
         startActivity(intent)
     }
-    fun onClickCreateGroup()
-    {
+
+    fun onClickCreateGroup() {
         var list = arrayListOf<GroupEntity>()
         startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
     }
-    fun onClickAddMembers()
-    {
+
+    fun onClickAddMembers() {
         var intent = Intent(this, RouterCreateUserActivity::class.java)
         intent.putExtra("routerUserEntity", routerEntityAddMembers!!)
         startActivity(intent)
     }
-    fun initLeftMenu(fragmentMenu:String,sort:Boolean,refresh:Boolean)
-    {
+
+    fun initLeftMenu(fragmentMenu: String, sort: Boolean, refresh: Boolean) {
 
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        if(emailConfigEntityChoose.size > 0)
-        {
+        if (emailConfigEntityChoose.size > 0) {
             editBtn.visibility = View.VISIBLE
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
-            {
+            if (emailConfigEntity.userId != null && emailConfigEntity.userId != "") {
                 AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
             }
             AppConfig.instance.emailConfig()
@@ -4634,61 +4585,52 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .setSmtpEncrypted(emailConfigEntity.smtpEncrypted)
             Inbox.setCount(emailConfigEntity.unReadCount)
             spam.setCount(emailConfigEntity.garbageUnReadCount)
-            if(AppConfig.instance.emailConfig().account != null)
-            {
+            if (AppConfig.instance.emailConfig().account != null) {
                 var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var bakMailsNum = BakMailsNum(accountBase64)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,bakMailsNum))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, bakMailsNum))
             }
             ConstantValue.currentEmailConfigEntity = emailConfigEntity;
-        }else{
+        } else {
             editBtn.visibility = View.GONE
             AppConfig.instance.initEmailConfig()
         }
-        if(fragmentMenu == "Circle")
-        {
+        if (fragmentMenu == "Circle") {
             recyclerViewleftParent.setHeight(0)
-        }else{
+        } else {
             var aa = recyclerViewleftParent.height
             var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
-            if(emailConfigEntityList.size == 0)
-            {
+            if (emailConfigEntityList.size == 0) {
                 recyclerViewleftParent.setHeight(0)
-            }else if(emailConfigEntityList.size == 1)
-            {
+            } else if (emailConfigEntityList.size == 1) {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x110).toInt())
-            }else if(emailConfigEntityList.size == 2){
+            } else if (emailConfigEntityList.size == 2) {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x220).toInt())
-            }else if(emailConfigEntityList.size == 3){
+            } else if (emailConfigEntityList.size == 3) {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x330).toInt())
-            }else if(emailConfigEntityList.size == 4){
+            } else if (emailConfigEntityList.size == 4) {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x440).toInt())
-            }else if(emailConfigEntityList.size == 5){
+            } else if (emailConfigEntityList.size == 5) {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x550).toInt())
-            }else{
+            } else {
                 recyclerViewleftParent.setHeight(resources.getDimension(R.dimen.x600).toInt())
             }
-            if(refresh)
-            {
+            if (refresh) {
                 var emailConfigEntityListNew = mutableListOf<EmailConfigEntity>()
-                if(sort)
-                {
-                    var emailConfigChoose:EmailConfigEntity? = null
-                    for(emailConfig in emailConfigEntityList)
-                    {
-                        if(!emailConfig.choose)
-                        {
+                if (sort) {
+                    var emailConfigChoose: EmailConfigEntity? = null
+                    for (emailConfig in emailConfigEntityList) {
+                        if (!emailConfig.choose) {
                             emailConfigEntityListNew.add(emailConfig)
-                        }else{
+                        } else {
                             emailConfigChoose = emailConfig
                         }
                     }
-                    if(emailConfigChoose != null)
-                    {
-                        emailConfigEntityListNew.add(0,emailConfigChoose!!)
+                    if (emailConfigChoose != null) {
+                        emailConfigEntityListNew.add(0, emailConfigChoose!!)
                     }
                     emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityListNew)
-                }else{
+                } else {
                     emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
                 }
                 emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
@@ -4702,24 +4644,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     /* var intent = Intent(activity!!, ConversationActivity::class.java)
                      intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
                      startActivity(intent)*/
-                    var dataList  = emaiConfigChooseAdapter!!.data
-                    for (item in dataList)
-                    {
+                    var dataList = emaiConfigChooseAdapter!!.data
+                    for (item in dataList) {
                         item.choose = false
                     }
                     var accountData = emaiConfigChooseAdapter!!.getItem(position)
                     var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
                     var hasVerify = false
-                    if(emailConfigEntityList.size > 0)
-                    {
+                    if (emailConfigEntityList.size > 0) {
                         var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
                         for (j in localemailConfigEntityList) {
                             j.choose = false
                             AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
                         }
                         var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
-                        if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
-                        {
+                        if (emailConfigEntity.userId != null && emailConfigEntity.userId != "") {
                             AppConfig.instance.credential!!.setSelectedAccountName(emailConfigEntity.account)
                             isGmailToken = false;
                         }
@@ -4745,8 +4684,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                         mDrawer.closeDrawer(GravityCompat.START)
                     }*/
-                    if(sort)
-                    {
+                    if (sort) {
                         recyclerViewleft!!.scrollToPosition(0)
                     }
                 }
@@ -4755,8 +4693,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
 
     }
-    fun initSwitchData()
-    {
+
+    fun initSwitchData() {
         var this_ = this
         var isStartWebsocket = false
         SpUtil.putBoolean(this, ConstantValue.isUnLock, true)
@@ -4854,22 +4792,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             runOnUiThread {
                 var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
                 controlleMessageUnReadCount(UnReadMessageCount)
-                if(isAddEmail)
-                {
+                if (isAddEmail) {
                     chatAndEmailFragment!!.getConversationListFragment()?.refresh()
-                }else{
+                } else {
                     conversationListFragment?.refresh()
                 }
 
             }
             ConstantValue.isRefeshed = true
         }
-        if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
-        {
+        if (ConstantValue.waitAddFreind != null && ConstantValue.waitAddFreind != "") {
             doWaitAddFreind(ConstantValue.waitAddFreind)
             ConstantValue.waitAddFreind = "";
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun addEmailEvent(AddEmailEvent: AddEmailEvent) {
         chatAndEmailFragment!!.setCurrentItem(1)
@@ -4877,12 +4814,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             mDrawer.openDrawer(GravityCompat.START)
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun fromChat(fromChat: FromChat) {
         alphaIndicator.setSelectItem(0)
         //viewPager.setCurrentItem(0, true)
         setToNews()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun changFragmentMenu(changFragmentMenu: ChangFragmentMenu) {
 
@@ -4891,12 +4830,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ConstantValue.chooseFragMentMenu = menu
         rootTitle.text = menu;
         mainTitle.text = menu;
-        if(menu== "Circle")
-        {
-            if(unread_count.text == "")
-            {
+        if (menu == "Circle") {
+            if (unread_count.text == "") {
                 unread_count.visibility = View.INVISIBLE
-            }else{
+            } else {
                 unread_count.visibility = View.VISIBLE
             }
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -4910,21 +4847,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             emailMenu.visibility = View.GONE
             newAccount.visibility = View.GONE
             newCricle.visibility = View.GONE
-        }else{
+        } else {
             unread_count.visibility = View.INVISIBLE
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
             initLeftSubMenuName()
         }
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-        if(emailConfigEntityChoose.size > 0) {
+        if (emailConfigEntityChoose.size > 0) {
             var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
-            if(emailConfigEntity.userId != null && emailConfigEntity.userId !="")
-            {
-                if(menu== "Email" &&  !isGmailToken)
-                {
+            if (emailConfigEntity.userId != null && emailConfigEntity.userId != "") {
+                if (menu == "Email" && !isGmailToken) {
                     isGmailToken = false;
-                    var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,"");
+                    var gmailService = GmailQuickstart.getGmailService(AppConfig.instance, "");
                     Islands.circularProgress(this)
                             .setCancelable(false)
                             .setMessage(getString(R.string.waiting))
@@ -4935,6 +4870,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             override fun googlePlayFailure(availabilityException: GooglePlayServicesAvailabilityIOException?) {
                                                 progressDialog.dismiss()
                                             }
+
                                             override fun authFailure(userRecoverableException: UserRecoverableAuthIOException?) {
                                                 progressDialog.dismiss()
                                                 this_!!.startActivityForResult(
@@ -4949,81 +4885,70 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             override fun gainFailure(errorMsg: String) {
                                                 progressDialog.dismiss()
                                             }
-                                        },gmailService,"me")
+                                        }, gmailService, "me")
                             }
                 }
             }
         }
 
-        initLeftMenu(menu,true,true)
+        initLeftMenu(menu, true, true)
     }
-    fun initLeftSubMenuName()
-    {
-        if(AppConfig.instance.emailConfig().account != null)
-        {
+
+    fun initLeftSubMenuName() {
+        if (AppConfig.instance.emailConfig().account != null) {
             rootName.visibility = View.VISIBLE
             rootName.text = AppConfig.instance.emailConfig().account
             emailMenu.visibility = View.VISIBLE
             editBtn.visibility = View.VISIBLE
-            if( ConstantValue.chooseFragMentMenu == "Circle")
-            {
+            if (ConstantValue.chooseFragMentMenu == "Circle") {
                 emailMenu.visibility = View.GONE
                 editBtn.visibility = View.GONE
             }
-            if(AppConfig.instance.emailConfig().emailType == "255" || AppConfig.instance.emailConfig().emailType == "6")
-            {
+            if (AppConfig.instance.emailConfig().emailType == "255" || AppConfig.instance.emailConfig().emailType == "6") {
                 drafts.visibility = View.GONE
                 sent.visibility = View.GONE
                 spam.visibility = View.GONE
                 trash.visibility = View.GONE
-            }else{
+            } else {
                 drafts.visibility = View.VISIBLE
                 sent.visibility = View.VISIBLE
                 spam.visibility = View.VISIBLE
                 trash.visibility = View.VISIBLE
             }
-            when(ConstantValue.chooseEmailMenu)
-            {
-                0->
-                {
+            when (ConstantValue.chooseEmailMenu) {
+                0 -> {
                     rootTitle.text = getString(R.string.Inbox)
                 }
-                1->
-                {
+                1 -> {
                     rootTitle.text = getString(R.string.Node_back_up)
                 }
-                2->
-                {
+                2 -> {
                     rootTitle.text = getString(R.string.Star)
                 }
-                3->
-                {
+                3 -> {
                     rootTitle.text = getString(R.string.Drafts)
                 }
-                4->
-                {
+                4 -> {
                     rootTitle.text = getString(R.string.Sent)
                 }
-                5->
-                {
+                5 -> {
                     rootTitle.text = getString(R.string.Spam)
                 }
-                6->
-                {
+                6 -> {
                     rootTitle.text = getString(R.string.Trash)
                 }
-                else ->
-                {
+                else -> {
 
                 }
             }
-        }else{
-            rootName.text  = ""
+        } else {
+            rootName.text = ""
             rootName.visibility = View.GONE
             emailMenu.visibility = View.GONE
             rootTitle.text = getString(R.string.AddEmail)
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {
         KLog.i("要进入验证页面")
@@ -5076,8 +5001,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     private fun initEvent() {
         emailLook.setOnClickListener(View.OnClickListener {
-            if(ConstantValue.chooseFragMentMenu== "Circle")
-            {
+            if (ConstantValue.chooseFragMentMenu == "Circle") {
                 return@OnClickListener
             }
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
@@ -5085,8 +5009,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         })
         rootTitleParent.setOnClickListener(View.OnClickListener {
-            if(ConstantValue.chooseFragMentMenu== "Circle")
-            {
+            if (ConstantValue.chooseFragMentMenu == "Circle") {
                 return@OnClickListener
             }
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
@@ -5136,6 +5059,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         })
     }
+
     override fun onBackPressed() {
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START)
@@ -5175,18 +5099,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     startActivity(intent)
                     return;
                 }
-                if(!result.contains("type_"))
-                {
+                if (!result.contains("type_")) {
                     if (NetUtils.isMacAddress(result)) {
                         SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                 .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                 .setConfirmClickListener {
                                     var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                                    var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                    var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                     if (ConstantValue.isWebsocketConnected) {
-                                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                     } else if (ConstantValue.isToxConnected) {
-                                        val baseData = BaseData(2,msgData)
+                                        val baseData = BaseData(2, msgData)
                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
@@ -5194,25 +5117,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     isScanSwitch = true
                                     scanType = 0;
                                     RouterMacStr = result
-                                    if(RouterMacStr != null && !RouterMacStr.equals(""))
-                                    {
-                                        if(AppConfig.instance.messageReceiver != null)
+                                    if (RouterMacStr != null && !RouterMacStr.equals("")) {
+                                        if (AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
-                                        if(WiFiUtil.isWifiConnect())
-                                        {
+                                        if (WiFiUtil.isWifiConnect()) {
                                             showProgressDialog("wait...")
-                                            ConstantValue.currentRouterMac  = ""
+                                            ConstantValue.currentRouterMac = ""
                                             isFromScanAdmim = true
-                                            var count =0;
+                                            var count = 0;
                                             KLog.i("测试计时器Mac" + count)
                                             Thread(Runnable() {
                                                 run() {
 
                                                     Thread.sleep(1500)
-                                                    while (true)
-                                                    {
-                                                        if(count >=3)
-                                                        {
+                                                    while (true) {
+                                                        if (count >= 3) {
                                                             /* if(ConstantValue.currentRouterMac.equals(""))
                                                              {
                                                                  runOnUiThread {
@@ -5225,11 +5144,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                              }
                                                              Thread.currentThread().interrupt(); //方法调用终止线程
                                                              break;*/
-                                                            if(!ConstantValue.currentRouterMac.equals(""))
-                                                            {
+                                                            if (!ConstantValue.currentRouterMac.equals("")) {
                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                 break;
-                                                            }else{
+                                                            } else {
                                                                 getMacFromRemote()
                                                                 break;
                                                             }
@@ -5238,11 +5156,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                             break;
                                                         }*/
-                                                        count ++;
-                                                        MobileSocketClient.getInstance().init(handler,this)
-                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                        count++;
+                                                        MobileSocketClient.getInstance().init(handler, this)
+                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr, "slph\$%*&^@-78231")
                                                         MobileSocketClient.getInstance().destroy()
-                                                        MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                                        MobileSocketClient.getInstance().send("MAC" + toMacMi)
                                                         MobileSocketClient.getInstance().receive()
                                                         KLog.i("测试计时器Mac" + count)
                                                         Thread.sleep(1000)
@@ -5251,7 +5169,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 }
                                             }).start()
 
-                                        }else{
+                                        } else {
                                             /*runOnUiThread {
                                                 closeProgressDialog()
                                                 gotoLogin()
@@ -5259,7 +5177,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             }*/
                                             getMacFromRemote()
                                         }
-                                    }else{
+                                    } else {
                                         runOnUiThread {
                                             closeProgressDialog()
                                             toast(R.string.code_error)
@@ -5281,30 +5199,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                     return;
                 }
-                var type = result.substring(0,6);
-                var data = result.substring(7,result.length);
-                var soureData:ByteArray =  ByteArray(0)
-                if(!type.equals("type_0"))
-                {
-                    soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                var type = result.substring(0, 6);
+                var data = result.substring(7, result.length);
+                var soureData: ByteArray = ByteArray(0)
+                if (!type.equals("type_0")) {
+                    soureData = AESCipher.aesDecryptByte(data, "welcometoqlc0101")
                 }
-                if(type.equals("type_0"))
-                {
+                if (type.equals("type_0")) {
                     viewModel.toAddUserId.value = result.substring(7, result.length)
                     typeData = "type_0"
-                }else if(type.equals("type_5"))
-                {
-                    soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                } else if (type.equals("type_5")) {
+                    soureData = AESCipher.aesDecryptByte(data, "welcometoqlc0101")
                     var dataStr = String(soureData);
                     viewModel.toAddUserId.value = dataStr
                     typeData = "type_5"
-                }
-                else if(type.equals("type_1"))
-                {
+                } else if (type.equals("type_1")) {
                     scanType = 1
-                    val keyId:ByteArray = ByteArray(6) //密钥ID
-                    val RouterId:ByteArray = ByteArray(76) //路由器id
-                    val UserSn:ByteArray = ByteArray(32)  //用户SN
+                    val keyId: ByteArray = ByteArray(6) //密钥ID
+                    val RouterId: ByteArray = ByteArray(76) //路由器id
+                    val UserSn: ByteArray = ByteArray(32)  //用户SN
                     System.arraycopy(soureData, 0, keyId, 0, 6)
                     System.arraycopy(soureData, 6, RouterId, 0, 76)
                     System.arraycopy(soureData, 82, UserSn, 0, 32)
@@ -5314,10 +5227,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     ConstantValue.scanRouterId = RouterIdStr
                     ConstantValue.scanRouterSN = UserSnStr
-                    if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
-                    {
-                        if(ConstantValue.currentRouterId.equals(RouterIdStr))
-                        {
+                    if (RouterIdStr != null && !RouterIdStr.equals("") && UserSnStr != null && !UserSnStr.equals("")) {
+                        if (ConstantValue.currentRouterId.equals(RouterIdStr)) {
                             toast(R.string.The_same_circle_without_switching)
                             return
                         }
@@ -5326,77 +5237,72 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                                        var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                        var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                         if (ConstantValue.isWebsocketConnected) {
-                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                         } else if (ConstantValue.isToxConnected) {
-                                            val baseData = BaseData(2,msgData)
+                                            val baseData = BaseData(2, msgData)
                                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                         ConstantValue.loginReq = null
                                         showProgressDialog("wait...")
                                         isScanSwitch = true
-                                        if(AppConfig.instance.messageReceiver != null)
+                                        if (AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
                                         ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
-                                        ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
-                                        ConstantValue.lastPort=  ConstantValue.port
-                                        ConstantValue.lastFilePort= ConstantValue.filePort
-                                        ConstantValue.lastRouterId =   ConstantValue.currentRouterId
-                                        ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+                                        ConstantValue.lastRouterIp = ConstantValue.currentRouterIp
+                                        ConstantValue.lastPort = ConstantValue.port
+                                        ConstantValue.lastFilePort = ConstantValue.filePort
+                                        ConstantValue.lastRouterId = ConstantValue.currentRouterId
+                                        ConstantValue.lastRouterSN = ConstantValue.currentRouterSN
 
                                         isFromScan = true
                                         ConstantValue.currentRouterIp = ""
-                                        if(WiFiUtil.isWifiConnect())
-                                        {
-                                            var count =0;
+                                        if (WiFiUtil.isWifiConnect()) {
+                                            var count = 0;
                                             KLog.i("测试计时器" + count)
                                             Thread(Runnable() {
                                                 run() {
                                                     Thread.sleep(1500)
-                                                    while (true)
-                                                    {
-                                                        if(count >=3)
-                                                        {
-                                                            if(!ConstantValue.currentRouterIp.equals(""))
-                                                            {
+                                                    while (true) {
+                                                        if (count >= 3) {
+                                                            if (!ConstantValue.currentRouterIp.equals("")) {
                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                 break;
-                                                            }else{
+                                                            } else {
 
-                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                    override fun onFailure( e :Exception) {
+                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                    override fun onFailure(e: Exception) {
                                                                         startToxAndRecovery()
                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                                     }
-                                                                    override fun  onResponse(json:String ) {
+
+                                                                    override fun onResponse(json: String) {
 
                                                                         val gson = GsonUtil.getIntGson()
                                                                         var httpData: HttpData? = null
                                                                         try {
                                                                             if (json != null) {
                                                                                 httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                                {
+                                                                                if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                     ConstantValue.curreantNetworkType = "WIFI"
                                                                                     ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                    ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                    if(ConstantValue.isHasWebsocketInit)
-                                                                                    {
+                                                                                    ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                    if (ConstantValue.isHasWebsocketInit) {
                                                                                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                    }else{
+                                                                                    } else {
                                                                                         ConstantValue.isHasWebsocketInit = true
                                                                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                     }
-                                                                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                                    KLog.i("没有初始化。。设置loginBackListener" + this_)
                                                                                     //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                                                                     Thread.currentThread().interrupt() //方法调用终止线程
-                                                                                }else{
+                                                                                } else {
                                                                                     startToxAndRecovery()
                                                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                                                 }
@@ -5412,11 +5318,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                             }
 
                                                         }
-                                                        count ++;
-                                                        MobileSocketClient.getInstance().init(handler,this)
-                                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                        count++;
+                                                        MobileSocketClient.getInstance().init(handler, this)
+                                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr, "slph\$%*&^@-78231")
                                                         MobileSocketClient.getInstance().destroy()
-                                                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                        MobileSocketClient.getInstance().send("QLC" + toxIdMi)
                                                         MobileSocketClient.getInstance().receive()
                                                         KLog.i("测试计时器" + count)
                                                         Thread.sleep(1000)
@@ -5424,40 +5330,38 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                                 }
                                             }).start()
-                                        }else{
+                                        } else {
                                             showProgressDialog("wait...")
                                             Thread(Runnable() {
                                                 run() {
-                                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                        override fun onFailure( e :Exception) {
+                                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                        override fun onFailure(e: Exception) {
                                                             startToxAndRecovery()
                                                         }
 
-                                                        override fun  onResponse(json:String ) {
+                                                        override fun onResponse(json: String) {
 
                                                             val gson = GsonUtil.getIntGson()
                                                             var httpData: HttpData? = null
                                                             try {
                                                                 if (json != null) {
-                                                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                    if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                    {
+                                                                    var httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                    if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                         ConstantValue.curreantNetworkType = "WIFI"
                                                                         ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                        ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                        ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                        ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                        ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                         ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                        ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                        if(ConstantValue.isHasWebsocketInit)
-                                                                        {
+                                                                        ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                        if (ConstantValue.isHasWebsocketInit) {
                                                                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                        }else{
+                                                                        } else {
                                                                             ConstantValue.isHasWebsocketInit = true
                                                                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                         }
-                                                                        KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                        KLog.i("没有初始化。。设置loginBackListener" + this_)
                                                                         //AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                                                    }else{
+                                                                    } else {
                                                                         startToxAndRecovery()
                                                                     }
 
@@ -5474,51 +5378,45 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .show()
                         }
 
-                    }else{
+                    } else {
                         runOnUiThread {
                             toast(R.string.code_error)
                         }
 
                     }
-                }else  if(type.equals("type_2"))
-                {
+                } else if (type.equals("type_2")) {
                     scanType = 0;
                     RouterMacStr = String(soureData)
-                    if(RouterMacStr != null && !RouterMacStr.equals(""))
-                    {
+                    if (RouterMacStr != null && !RouterMacStr.equals("")) {
                         runOnUiThread {
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                                        var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                        var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                         if (ConstantValue.isWebsocketConnected) {
-                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                         } else if (ConstantValue.isToxConnected) {
-                                            val baseData = BaseData(2,msgData)
+                                            val baseData = BaseData(2, msgData)
                                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                         isScanSwitch = true
                                         ConstantValue.loginReq = null
                                         showProgressDialog("wait...")
-                                        if(AppConfig.instance.messageReceiver != null)
+                                        if (AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
-                                        if(WiFiUtil.isWifiConnect())
-                                        {
-                                            ConstantValue.currentRouterMac  = ""
+                                        if (WiFiUtil.isWifiConnect()) {
+                                            ConstantValue.currentRouterMac = ""
                                             isFromScanAdmim = true
-                                            var count =0;
+                                            var count = 0;
                                             KLog.i("测试计时器Mac" + count)
                                             Thread(Runnable() {
                                                 run() {
                                                     Thread.sleep(1500)
-                                                    while (true)
-                                                    {
-                                                        if(count >=3)
-                                                        {
-                                                            if(ConstantValue.currentRouterMac.equals(""))
-                                                            {
+                                                    while (true) {
+                                                        if (count >= 3) {
+                                                            if (ConstantValue.currentRouterMac.equals("")) {
                                                                 runOnUiThread {
                                                                     closeProgressDialog()
                                                                     RouterMacStr = ""
@@ -5528,16 +5426,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                             }
                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                             break;
-                                                        }else if(!ConstantValue.currentRouterMac.equals(""))
-                                                        {
+                                                        } else if (!ConstantValue.currentRouterMac.equals("")) {
                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                             break;
                                                         }
-                                                        count ++;
-                                                        MobileSocketClient.getInstance().init(handler,this)
-                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                        count++;
+                                                        MobileSocketClient.getInstance().init(handler, this)
+                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr, "slph\$%*&^@-78231")
                                                         MobileSocketClient.getInstance().destroy()
-                                                        MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                                        MobileSocketClient.getInstance().send("MAC" + toMacMi)
                                                         MobileSocketClient.getInstance().receive()
                                                         KLog.i("测试计时器Mac" + count)
                                                         Thread.sleep(1000)
@@ -5546,7 +5443,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 }
                                             }).start()
 
-                                        }else{
+                                        } else {
                                             runOnUiThread {
                                                 closeProgressDialog()
                                                 toast(R.string.Please_connect_to_WiFi)
@@ -5556,54 +5453,52 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .show()
                         }
 
-                    }else{
+                    } else {
                         runOnUiThread {
                             closeProgressDialog()
                             toast(R.string.code_error)
                         }
                     }
-                }else if (type!!.contains("type_3"))
-                {
-                    var left = result.substring(7,result.length)
-                    var signprivatek = left.substring(0,left.indexOf(","))
-                    left = left.substring(signprivatek.length+1,left.length)
-                    var usersn = left.substring(0,left.indexOf(","))
-                    left = left.substring(usersn.length+1,left.length)
-                    var username = left.substring(0,left.length)
+                } else if (type!!.contains("type_3")) {
+                    var left = result.substring(7, result.length)
+                    var signprivatek = left.substring(0, left.indexOf(","))
+                    left = left.substring(signprivatek.length + 1, left.length)
+                    var usersn = left.substring(0, left.indexOf(","))
+                    left = left.substring(usersn.length + 1, left.length)
+                    var username = left.substring(0, left.length)
                     username = String(RxEncodeTool.base64Decode(username))
                     SpUtil.putString(this, ConstantValue.username, username)
                     var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
 
-                    if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
-                    {
+                    if (signprivatek.equals(ConstantValue.libsodiumprivateSignKey)) {
                         toast(R.string.Same_account_no_need_to_import)
                         return;
-                    }else{
+                    } else {
                         runOnUiThread {
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
                                     .setConfirmClickListener {
-                                        var type = result.substring(0,6);
-                                        var left = result.substring(7,result.length)
-                                        var signprivatek = left.substring(0,left.indexOf(","))
-                                        left = left.substring(signprivatek.length+1,left.length)
-                                        var usersn = left.substring(0,left.indexOf(","))
-                                        left = left.substring(usersn.length+1,left.length)
-                                        var username = left.substring(0,left.length)
+                                        var type = result.substring(0, 6);
+                                        var left = result.substring(7, result.length)
+                                        var signprivatek = left.substring(0, left.indexOf(","))
+                                        left = left.substring(signprivatek.length + 1, left.length)
+                                        var usersn = left.substring(0, left.indexOf(","))
+                                        left = left.substring(usersn.length + 1, left.length)
+                                        var username = left.substring(0, left.length)
                                         username = String(RxEncodeTool.base64Decode(username))
                                         val localSignArrayList: java.util.ArrayList<CryptoBoxKeypair>
                                         val localMiArrayList: java.util.ArrayList<CryptoBoxKeypair>
                                         val gson = Gson()
 
                                         var strSignPublicSouce = ByteArray(32)
-                                        var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                                        var signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
                                         System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
 
 
                                         var dst_public_SignKey = strSignPublicSouce
                                         var dst_private_Signkey = signprivatekByteArray
-                                        val strSignPrivate:String =  signprivatek
-                                        val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
+                                        val strSignPrivate: String = signprivatek
+                                        val strSignPublic = RxEncodeTool.base64Encode2String(strSignPublicSouce)
                                         ConstantValue.libsodiumprivateSignKey = strSignPrivate
                                         ConstantValue.libsodiumpublicSignKey = strSignPublic
                                         ConstantValue.localUserName = username
@@ -5617,16 +5512,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         SignData.publicKey = strSignPublic
                                         SignData.userName = username
                                         localSignArrayList.add(SignData)
-                                        FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+                                        FileUtil.saveKeyData(gson.toJson(localSignArrayList), "libsodiumdata_sign")
 
 
                                         var dst_public_MiKey = ByteArray(32)
                                         var dst_private_Mikey = ByteArray(32)
-                                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
-                                        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+                                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey, dst_public_SignKey)
+                                        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey, dst_private_Signkey)
 
-                                        val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
-                                        val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                                        val strMiPrivate: String = RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                                        val strMiPublic = RxEncodeTool.base64Encode2String(dst_public_MiKey)
                                         ConstantValue.libsodiumprivateMiKey = strMiPrivate
                                         ConstantValue.libsodiumpublicMiKey = strMiPublic
                                         ConstantValue.localUserName = username
@@ -5640,8 +5535,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         RSAData.publicKey = strMiPublic
                                         RSAData.userName = username
                                         localMiArrayList.add(RSAData)
-                                        FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
-                                        FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
+                                        FileUtil.saveKeyData(gson.toJson(localMiArrayList), "libsodiumdata_mi")
+                                        FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath + "/RouterList/routerData.json")
                                         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                         ConstantValue.loginReq = null
                                         AppConfig.instance.deleteEmailData()
@@ -5655,16 +5550,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
 
-                }else if(type.equals("type_4"))
-                {
+                } else if (type.equals("type_4")) {
                     var beginIndex = result.lastIndexOf(",")
-                    ConstantValue.waitAddFreind = result.substring(7,beginIndex);
-                    var data = result.substring(beginIndex+1,result.length);
-                    var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                    ConstantValue.waitAddFreind = result.substring(7, beginIndex);
+                    var data = result.substring(beginIndex + 1, result.length);
+                    var soureData: ByteArray = AESCipher.aesDecryptByte(data, "welcometoqlc0101")
                     scanType = 1
-                    val keyId:ByteArray = ByteArray(6) //密钥ID
-                    val RouterId:ByteArray = ByteArray(76) //路由器id
-                    val UserSn:ByteArray = ByteArray(32)  //用户SN
+                    val keyId: ByteArray = ByteArray(6) //密钥ID
+                    val RouterId: ByteArray = ByteArray(76) //路由器id
+                    val UserSn: ByteArray = ByteArray(32)  //用户SN
                     System.arraycopy(soureData, 0, keyId, 0, 6)
                     System.arraycopy(soureData, 6, RouterId, 0, 76)
                     System.arraycopy(soureData, 82, UserSn, 0, 32)
@@ -5674,12 +5568,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     ConstantValue.scanRouterId = RouterIdStr
                     ConstantValue.scanRouterSN = UserSnStr
-                    if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
-                    {
-                        if(ConstantValue.currentRouterId.equals(RouterIdStr))
-                        {
-                            if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
-                            {
+                    if (RouterIdStr != null && !RouterIdStr.equals("") && UserSnStr != null && !UserSnStr.equals("")) {
+                        if (ConstantValue.currentRouterId.equals(RouterIdStr)) {
+                            if (ConstantValue.waitAddFreind != null && ConstantValue.waitAddFreind != "") {
                                 doWaitAddFreind(ConstantValue.waitAddFreind)
                                 ConstantValue.waitAddFreind = "";
                             }
@@ -5691,77 +5582,72 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                                        var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                        var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                         if (ConstantValue.isWebsocketConnected) {
-                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                         } else if (ConstantValue.isToxConnected) {
-                                            val baseData = BaseData(2,msgData)
+                                            val baseData = BaseData(2, msgData)
                                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                         ConstantValue.loginReq = null
                                         showProgressDialog("wait...")
                                         isScanSwitch = true
-                                        if(AppConfig.instance.messageReceiver != null)
+                                        if (AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
                                         ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
-                                        ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
-                                        ConstantValue.lastPort=  ConstantValue.port
-                                        ConstantValue.lastFilePort= ConstantValue.filePort
-                                        ConstantValue.lastRouterId =   ConstantValue.currentRouterId
-                                        ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+                                        ConstantValue.lastRouterIp = ConstantValue.currentRouterIp
+                                        ConstantValue.lastPort = ConstantValue.port
+                                        ConstantValue.lastFilePort = ConstantValue.filePort
+                                        ConstantValue.lastRouterId = ConstantValue.currentRouterId
+                                        ConstantValue.lastRouterSN = ConstantValue.currentRouterSN
 
                                         isFromScan = true
                                         ConstantValue.currentRouterIp = ""
-                                        if(WiFiUtil.isWifiConnect())
-                                        {
-                                            var count =0;
+                                        if (WiFiUtil.isWifiConnect()) {
+                                            var count = 0;
                                             KLog.i("测试计时器" + count)
                                             Thread(Runnable() {
                                                 run() {
                                                     Thread.sleep(1500)
-                                                    while (true)
-                                                    {
-                                                        if(count >=3)
-                                                        {
-                                                            if(!ConstantValue.currentRouterIp.equals(""))
-                                                            {
+                                                    while (true) {
+                                                        if (count >= 3) {
+                                                            if (!ConstantValue.currentRouterIp.equals("")) {
                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                 break;
-                                                            }else{
+                                                            } else {
 
-                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                    override fun onFailure( e :Exception) {
+                                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                    override fun onFailure(e: Exception) {
                                                                         startToxAndRecovery()
                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                                     }
-                                                                    override fun  onResponse(json:String ) {
+
+                                                                    override fun onResponse(json: String) {
 
                                                                         val gson = GsonUtil.getIntGson()
                                                                         var httpData: HttpData? = null
                                                                         try {
                                                                             if (json != null) {
                                                                                 httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                                {
+                                                                                if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                     ConstantValue.curreantNetworkType = "WIFI"
                                                                                     ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                    ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                    ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                    ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                    ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                    if(ConstantValue.isHasWebsocketInit)
-                                                                                    {
+                                                                                    ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                    if (ConstantValue.isHasWebsocketInit) {
                                                                                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                    }else{
+                                                                                    } else {
                                                                                         ConstantValue.isHasWebsocketInit = true
                                                                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                     }
-                                                                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                                    KLog.i("没有初始化。。设置loginBackListener" + this_)
                                                                                     //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                                                                     Thread.currentThread().interrupt() //方法调用终止线程
-                                                                                }else{
+                                                                                } else {
                                                                                     startToxAndRecovery()
                                                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                                                 }
@@ -5777,11 +5663,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                             }
 
                                                         }
-                                                        count ++;
-                                                        MobileSocketClient.getInstance().init(handler,this)
-                                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                        count++;
+                                                        MobileSocketClient.getInstance().init(handler, this)
+                                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr, "slph\$%*&^@-78231")
                                                         MobileSocketClient.getInstance().destroy()
-                                                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                        MobileSocketClient.getInstance().send("QLC" + toxIdMi)
                                                         MobileSocketClient.getInstance().receive()
                                                         KLog.i("测试计时器" + count)
                                                         Thread.sleep(1000)
@@ -5789,40 +5675,38 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                                 }
                                             }).start()
-                                        }else{
+                                        } else {
                                             showProgressDialog("wait...")
                                             Thread(Runnable() {
                                                 run() {
-                                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                        override fun onFailure( e :Exception) {
+                                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                        override fun onFailure(e: Exception) {
                                                             startToxAndRecovery()
                                                         }
 
-                                                        override fun  onResponse(json:String ) {
+                                                        override fun onResponse(json: String) {
 
                                                             val gson = GsonUtil.getIntGson()
                                                             var httpData: HttpData? = null
                                                             try {
                                                                 if (json != null) {
-                                                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                    if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                    {
+                                                                    var httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                    if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                         ConstantValue.curreantNetworkType = "WIFI"
                                                                         ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                        ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                        ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                        ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                        ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                         ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                        ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                        if(ConstantValue.isHasWebsocketInit)
-                                                                        {
+                                                                        ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                        if (ConstantValue.isHasWebsocketInit) {
                                                                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                        }else{
+                                                                        } else {
                                                                             ConstantValue.isHasWebsocketInit = true
                                                                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                         }
-                                                                        KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                        KLog.i("没有初始化。。设置loginBackListener" + this_)
                                                                         //AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                                                    }else{
+                                                                    } else {
                                                                         startToxAndRecovery()
                                                                     }
 
@@ -5839,20 +5723,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .show()
                         }
 
-                    }else{
+                    } else {
                         runOnUiThread {
                             toast(R.string.code_error)
                         }
 
                     }
-                }else{
+                } else {
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.code_error)
                     }
                 }
-            }catch (e:Exception)
-            {
+            } catch (e: Exception) {
                 runOnUiThread {
                     closeProgressDialog()
                     toast(R.string.code_error)
@@ -5889,50 +5772,45 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     startActivity(intent)
                 }
             }
-        }else if (requestCode == add_activity && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == add_activity && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 var result = data!!.getStringExtra("result")
-                when(result)
-                {
-                    "0" ->
-                    {
+                when (result) {
+                    "0" -> {
                         onClickCreateGroup()
                     }
-                    "1" ->
-                    {
+                    "1" -> {
                         mPresenter.getScanPermission()
                     }
-                    "2" ->
-                    {
+                    "2" -> {
                         var intent = Intent(this, QRCodeActivity::class.java)
-                        intent.putExtra("flag",0)
+                        intent.putExtra("flag", 0)
                         startActivity(intent)
                     }
-                    "3" ->
-                    {
+                    "3" -> {
                         onClickSendEmail()
                     }
-                    "4" ->
-                    {
+                    "4" -> {
                         onClickInviteFriendEmail()
                     }
                 }
 
             }
-        }else if (requestCode == REQUEST_AUTHORIZATION) {
-            if(resultCode == Activity.RESULT_OK)//授权成功
+        } else if (requestCode == REQUEST_AUTHORIZATION) {
+            if (resultCode == Activity.RESULT_OK)//授权成功
             {
                 toast(R.string.Authorizedsuccess)
-            }else{//授权失败
+            } else {//授权失败
                 toast(R.string.Authorizedfail)
             }
-        }else if (requestCode == REQUEST_MEDIA_PROJECTION) {
+        } else if (requestCode == REQUEST_MEDIA_PROJECTION) {
             mResultData = data;
             /* FloatWindowsService.setResultData(data)
              startService(Intent(applicationContext, FloatWindowsService::class.java))*/
         }
 
     }
+
     private fun startToxAndRecovery() {
 
         ConstantValue.curreantNetworkType = "TOX"
@@ -5950,8 +5828,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
-            {
+            if (ConstantValue.isAntox) {
                 //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
@@ -5971,21 +5848,22 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
                 //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
             var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN, pulicMiKey)
             var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }
         }
     }
+
     private fun getContacts(): Map<String, EaseUser> {
         val contacts = HashMap<String, EaseUser>()
         val aa = arrayOf("aa", "cc", "ff", "gg", "kk", "ll", "bb", "jj", "oo", "zz", "mm")
@@ -6027,14 +5905,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        System.exit(0)
         return false
     }
-    fun gotoLogin()
-    {
+
+    fun gotoLogin() {
         closeProgressDialog()
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
         ConstantValue.isHasWebsocketInit = true
-        if(AppConfig.instance.messageReceiver != null)
+        if (AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.close()
         ConstantValue.loginOut = true
         ConstantValue.logining = false
@@ -6049,7 +5927,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 it.disconnect(true)
                 //ConstantValue.webSocketFileList.remove(it)
             }
-        }else{
+        } else {
             val intentTox = Intent(AppConfig.instance, KotlinToxService::class.java)
             AppConfig.instance.stopService(intentTox)
         }
@@ -6064,8 +5942,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         startActivity(intent)
         finish()
     }
-    fun gotoActivity(index:Int)
-    {
+
+    fun gotoActivity(index: Int) {
         runOnUiThread {
             closeProgressDialog()
         }
@@ -6084,21 +5962,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 it.disconnect(true)
                 //ConstantValue.webSocketFileList.remove(it)
             }
-        }else{
+        } else {
             val intentTox = Intent(AppConfig.instance, KotlinToxService::class.java)
             AppConfig.instance.stopService(intentTox)
         }
         resetUnCompleteFileRecode()
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-        when(index)
-        {
-            0->{
+        when (index) {
+            0 -> {
                 var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
                 intent.putExtra("flag", "logout")
                 startActivity(intent)
             }
-            1->
-            {
+            1 -> {
                 ConstantValue.loginOut = true
                 ConstantValue.logining = false
                 ConstantValue.isHeart = false
@@ -6110,6 +5986,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         finish()
     }
+
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -6122,16 +5999,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //goMain();
         }
     }
-    fun getMacFromRemote()
-    {
-        var RouterMacData = RouterMacStr.replace(":","")
-        var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
-        if(!BuildConfig.DEBUG)
-        {
-            httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+
+    fun getMacFromRemote() {
+        var RouterMacData = RouterMacStr.replace(":", "")
+        var httpUrlData = ConstantValue.httpMacUrl + "CheckByMac?mac="
+        if (!BuildConfig.DEBUG) {
+            httpUrlData = ConstantValue.httpMacUrl + "CheckByMac?mac="
         }
-        OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData,  object : OkHttpUtils.OkCallback {
-            override fun onFailure( e :Exception) {
+        OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData, object : OkHttpUtils.OkCallback {
+            override fun onFailure(e: Exception) {
                 runOnUiThread {
                     closeProgressDialog()
                     RouterMacStr = ""
@@ -6141,33 +6017,32 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 Thread.currentThread().interrupt(); //方法调用终止线程
             }
-            override fun  onResponse(json:String ) {
+
+            override fun onResponse(json: String) {
 
                 val gson = GsonUtil.getIntGson()
                 var httpDataMac: HttpData? = null
                 try {
                     if (json != null) {
                         httpDataMac = gson.fromJson<HttpData>(json, HttpData::class.java)
-                        if(httpDataMac != null  && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1)
-                        {
+                        if (httpDataMac != null && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1) {
                             ConstantValue.curreantNetworkType = "WIFI"
                             ConstantValue.currentRouterIp = httpDataMac.serverHost
-                            ConstantValue.port = ":"+httpDataMac.serverPort.toString()
-                            ConstantValue.filePort = ":"+(httpDataMac.serverPort +1).toString()
+                            ConstantValue.port = ":" + httpDataMac.serverPort.toString()
+                            ConstantValue.filePort = ":" + (httpDataMac.serverPort + 1).toString()
                             ConstantValue.currentRouterMac = RouterMacStr
                             /*ConstantValue.currentRouterId = ConstantValue.scanRouterId
                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN*/
-                            if(ConstantValue.isHasWebsocketInit)
-                            {
+                            if (ConstantValue.isHasWebsocketInit) {
                                 AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                            }else{
+                            } else {
                                 ConstantValue.isHasWebsocketInit = true
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                             }
                             //KLog.i("没有初始化。。设置loginBackListener"+this_)
                             //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                             Thread.currentThread().interrupt() //方法调用终止线程
-                        }else{
+                        } else {
                             runOnUiThread {
                                 closeProgressDialog()
                                 RouterMacStr = ""
@@ -6238,6 +6113,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         })
     }
+
     private fun addFloatMenuItem() {
         val personItem = object : MenuItem(BackGroudSeletor.getdrawble("levitation_desktop", this)) {
             override fun action() {
@@ -6277,9 +6153,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mediaProjectionManager.createScreenCaptureIntent(),
                 REQUEST_MEDIA_PROJECTION)
     }
+
     private fun setFloatballVisible(visible: Boolean) {
-        if(mFloatballManager != null)
-        {
+        if (mFloatballManager != null) {
             if (visible) {
                 mFloatballManager!!.show()
             } else {
@@ -6295,8 +6171,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if(mFloatballManager != null)
-        {
+        if (mFloatballManager != null) {
             mFloatballManager!!.show()
         }
         //mFloatballManager!!.onFloatBallClick()
@@ -6304,8 +6179,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if(mFloatballManager != null)
-        {
+        if (mFloatballManager != null) {
             mFloatballManager!!.hide()
         }
     }
@@ -6319,6 +6193,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         context.startActivity(intent)
     }
+
     /**
      * 跳转到桌面
      */

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class LogUtil {
     public static ArrayList<String> logList = new ArrayList<>();
     public static OnLogListener onLogListener;
-    public static boolean isShowLog = true;
+    public static boolean isShowLog = false;
     public static void addLog(String logInfo, String classInfo) {
         /*if (isShowLog) {
             if (onLogListener != null) {

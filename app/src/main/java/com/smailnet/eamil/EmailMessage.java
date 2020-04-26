@@ -45,10 +45,11 @@ public class EmailMessage {
     private Message message;
 
 
-    public EmailMessage()
-    {
+    public EmailMessage() {
 
     }
+
+
 
     public EmailMessage(Message message, String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content, String contentText) {
         this.message = message;

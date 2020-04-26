@@ -24,6 +24,7 @@ import com.google.api.services.gmail.model.Label;
 import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
+import com.smailnet.eamil.Callback.GetMessagesBack;
 import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.MailUtil;
@@ -37,6 +38,7 @@ import com.stratagile.pnrouter.utils.UIUtils;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 import com.google.api.services.gmail.model.Draft;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -57,6 +59,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -83,6 +86,14 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import qlc.utils.Base64.Base64;
 
 import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
@@ -155,15 +166,16 @@ class EmailCore {
     /**
      * 默认构造器
      */
-    EmailCore(){
+    EmailCore() {
 
     }
 
     /**
      * 在构造器中初始化Properties和Session
+     *
      * @param emailConfig
      */
-    EmailCore(EmailConfig emailConfig){
+    EmailCore(EmailConfig emailConfig) {
         this.smtpHost = emailConfig.getSmtpHost();
         this.popHost = emailConfig.getPopHost();
         this.imapHost = emailConfig.getImapHost();
@@ -185,8 +197,7 @@ class EmailCore {
             properties.put(MAIL_SMTP_POST, smtpPort);
             properties.put(MAIL_SMTP_HOST, smtpHost);
             properties.put(MAIL_SMTP_AUTH, "true");
-            if(smtpEncrypted != null && smtpEncrypted.equals("STARTTLS"))
-            {
+            if (smtpEncrypted != null && smtpEncrypted.equals("STARTTLS")) {
                 //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.smtp.starttls.enable", "true");
                /* properties.setProperty("mail.imaps.auth.plain.disable", "true");
@@ -196,11 +207,11 @@ class EmailCore {
                 sf.setTrustAllHosts(true);*/
                 // properties.put("mail.smtp.ssl.checkserveridentity", "false");
                 //properties.put("mail.smtp.ssl.socketFactory", sf);
-            }else if(smtpEncrypted != null && smtpEncrypted.equals("None")){
+            } else if (smtpEncrypted != null && smtpEncrypted.equals("None")) {
                 //properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
                 //properties.put("mail.smtp.starttls.enable", "false");
                 //properties.put("mail.smtp.ssl.enable", "true");
-            }else {
+            } else {
                 properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
                 //properties.put("mail.smtp.starttls.enable", "false");
                 //properties.put("mail.smtp.ssl.enable", "true");
@@ -215,8 +226,7 @@ class EmailCore {
             properties.put(MAIL_POP3_AUTH, "true");
         }
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
-            if(imapEncrypted != null && imapEncrypted.equals("STARTTLS"))
-            {
+            if (imapEncrypted != null && imapEncrypted.equals("STARTTLS")) {
                 //properties.put("mail.transport.protocol", "smtp");
                 properties.put("mail.imap.starttls.enable", "true");
                /* properties.setProperty("mail.imaps.auth.plain.disable", "true");
@@ -226,11 +236,11 @@ class EmailCore {
                 sf.setTrustAllHosts(true);*/
                 // properties.put("mail.smtp.ssl.checkserveridentity", "false");
                 //properties.put("mail.smtp.ssl.socketFactory", sf);
-            }else if(imapEncrypted != null && imapEncrypted.equals("None")){
+            } else if (imapEncrypted != null && imapEncrypted.equals("None")) {
                 //properties.put(MAIL_SMTP_SOCKETFACTORY_CLASS, sslSocketFactory);
                 //properties.put("mail.smtp.starttls.enable", "false");
                 //properties.put("mail.smtp.ssl.enable", "true");
-            }else {
+            } else {
                 properties.put(MAIL_IMAP_SOCKETFACTORY_CLASS, sslSocketFactory);
                 //properties.put("mail.smtp.starttls.enable", "false");
                 //properties.put("mail.smtp.ssl.enable", "true");
@@ -243,11 +253,11 @@ class EmailCore {
             properties.put(MAIL_MIME_BASE64_IGNOREERRORS, "true");
             properties.put(MAIL_IMAP_PARTISLFETCH, "false");
             properties.put(MAIL_IMAPS_PARTISLFETCH, "false");
-            properties.put(MAIL_IMAP_fetchsize,"1048576");
-            properties.put(MAIL_IMAPS_fetchsize,"1048576");
-            properties.put("mail.imap.connectionpoolsize","10");
-            properties.put("mail.imaps.connectionpoolsize","10");
-            properties.put("mail.imap.appendbuffersize",Integer.toString(POOL_TIMEOUT));
+            properties.put(MAIL_IMAP_fetchsize, "1048576");
+            properties.put(MAIL_IMAPS_fetchsize, "1048576");
+            properties.put("mail.imap.connectionpoolsize", "10");
+            properties.put("mail.imaps.connectionpoolsize", "10");
+            properties.put("mail.imap.appendbuffersize", Integer.toString(POOL_TIMEOUT));
 
         }
         properties.put("mail.smtp.ssl.trust", "*");
@@ -272,10 +282,9 @@ class EmailCore {
                 return new PasswordAuthentication(userName, password);
             }
         };
-        if(emailConfig.getEmailType() == "4")
-        {
-            session = Session.getDefaultInstance(properties,authenticator);
-        }else{
+        if (emailConfig.getEmailType() == "4") {
+            session = Session.getDefaultInstance(properties, authenticator);
+        } else {
             session = Session.getInstance(properties);
         }
         session.setDebug(BuildConfig.DEBUG);
@@ -283,6 +292,7 @@ class EmailCore {
 
     /**
      * 验证邮箱帐户和服务器配置信息
+     *
      * @throws MessagingException
      */
     public void authentication() throws Exception {
@@ -291,23 +301,24 @@ class EmailCore {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
 
         if (ConfigCheckUtil.getResult(smtpHost, smtpPort)) {
-            transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
+            transport.connect(smtpHost, Integer.parseInt(smtpPort), account, password);
         }
         /*if (ConfigCheckUtil.getResult(popHost, popPort)) {
             store.connect(popHost, account, password);
         }*/
         if (ConfigCheckUtil.getResult(imapHost, imapPort)) {
-            imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+            imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
         }
     }
 
     /**
      * 使用SMTP协议发送邮件
+     *
      * @throws MessagingException
      */
     public Message sendMail() throws MessagingException {
         Transport transport = session.getTransport(SMTP);
-        transport.connect(smtpHost,Integer.parseInt(smtpPort), account, password);
+        transport.connect(smtpHost, Integer.parseInt(smtpPort), account, password);
         transport.sendMessage(message, message.getAllRecipients());
        /* transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
         transport.sendMessage(message, message.getRecipients(Message.RecipientType.CC));
@@ -315,23 +326,24 @@ class EmailCore {
         transport.close();
         return message;
     }
+
     /**
      * 使用SMTP协议发送邮件
+     *
      * @throws MessagingException
      */
     public Message gmailSendMail(Gmail service, String userId) throws MessagingException {
-        try
-        {
-            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage)message);
+        try {
+            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage) message);
             messageGmail = service.users().messages().send(userId, messageGmail).execute();
             KLog.i("Message id: " + messageGmail.getId());
             KLog.i(messageGmail.toPrettyString());
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return message;
     }
+
     /**
      * Create a Message from an email
      *
@@ -349,8 +361,10 @@ class EmailCore {
         message.setRaw(encodedEmail);
         return message;
     }
+
     /**
      * 组装邮件的信息
+     *
      * @param nickname
      * @param to
      * @param cc
@@ -359,7 +373,7 @@ class EmailCore {
      * @param content
      * @throws MessagingException
      */
-    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content,String[] attach,String[] cidPath,String uuid,String[] cidList) throws MessagingException {
+    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content, String[] attach, String[] cidPath, String uuid, String[] cidList) throws MessagingException {
         Message message = new MimeMessage(session);
         message.addRecipients(Message.RecipientType.TO, to);
         if (cc != null) {
@@ -368,7 +382,7 @@ class EmailCore {
         if (bcc != null) {
             message.addRecipients(Message.RecipientType.BCC, bcc);
         }
-        String fromName = account.substring(0,account.indexOf("@"));
+        String fromName = account.substring(0, account.indexOf("@"));
         message.setFrom(new InternetAddress(fromName + "<" + account + ">"));
         String subjectNew = subject;
        /* try {
@@ -378,16 +392,15 @@ class EmailCore {
 
         }*/
         try {
-            subjectNew =MimeUtility.encodeText(subject);
-        }catch (Exception E)
-        {
+            subjectNew = MimeUtility.encodeText(subject);
+        } catch (Exception E) {
 
         }
         message.setSubject(subjectNew);
 
-        if (text != null){
+        if (text != null) {
             message.setText(text);
-        }else if (content != null){
+        } else if (content != null) {
             // message.setContent(content, "text/html");
         }
         //** 附件测试
@@ -399,59 +412,54 @@ class EmailCore {
         MimeBodyPart text_image = new MimeBodyPart();
 
         //正文（图片和文字部分）
-        MimeMultipart mm_text_image  = new MimeMultipart("related");
+        MimeMultipart mm_text_image = new MimeMultipart("related");
         //html代码部分
         MimeBodyPart htmlPart = new MimeBodyPart();
         //html代码
-        htmlPart.setContent(content,"text/html;charset=gb2312");
+        htmlPart.setContent(content, "text/html;charset=gb2312");
         //正文添加图片和html代码
         mm_text_image.addBodyPart(htmlPart);
 
-        if(cidPath.length > 0)
-        {
+        if (cidPath.length > 0) {
             //contentCid = createContent("", cidPath);
             int flag = 0;
-            for (String cidPathItem :cidPath)
-            {
-                if(!cidPathItem.equals(""))
-                {
+            for (String cidPathItem : cidPath) {
+                if (!cidPathItem.equals("")) {
                     //cid
                     MimeBodyPart imageCid = new MimeBodyPart();
                     //把文件，添加到附件1中
                     //数据源
                     File fileTxt = new File(cidPathItem);
-                    if(fileTxt.exists())
-                    {
+                    if (fileTxt.exists()) {
                         //把内容，附件1，附件2加入到 MINE消息体中
                         try {
                             //imageCid.attachFile(fileTxt);
                             DataSource ds1 = new FileDataSource(fileTxt);
                             //数据处理器
-                            DataHandler dh1 = new DataHandler(ds1 );
+                            DataHandler dh1 = new DataHandler(ds1);
                             //设置第一个附件的数据
                             imageCid.setDataHandler(dh1);
                             //设置第一个附件的文件名
                            /* String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
                             String cid = fileName.substring(0,fileName.lastIndexOf("."));*/
-                            String fileName  = cidList[flag];
-                            imageCid.setContentID(uuid+fileName);
+                            String fileName = cidList[flag];
+                            imageCid.setContentID(uuid + fileName);
                             //imageCid.setFileName(fileName);
                             //imageCid.setHeader("Content-Type", "image/*");
                             //imageCid.setDisposition(MimeBodyPart.INLINE);
                             //imageCid.setHeader("Content-ID","b1"+fileName+"");
                             /*imageCid.setHeader("Content-Type", "image/jpg");*/
                             imageCid.setDisposition(MimeBodyPart.INLINE);
-                            imageCid.setFileName(uuid+fileName);
+                            imageCid.setFileName(uuid + fileName);
                             mm_text_image.addBodyPart(imageCid);
                             //mm_text_image.setSubType("related");
-                        }catch (Exception e)
-                        {
+                        } catch (Exception e) {
 
                         }
 
                     }
                 }
-                flag ++;
+                flag++;
             }
         }
         //设置内容为正文
@@ -459,32 +467,28 @@ class EmailCore {
         mm.addBodyPart(text_image);
 
 
-        if(attach.length > 0)
-        {
-            for (String attachPath :attach)
-            {
+        if (attach.length > 0) {
+            for (String attachPath : attach) {
                 //附件
                 MimeBodyPart attch1 = new MimeBodyPart();
                 //把文件，添加到附件1中
                 //数据源
                 File fileTxt = new File(attachPath);
-                if(fileTxt.exists())
-                {
+                if (fileTxt.exists()) {
                     //把内容，附件1，附件2加入到 MINE消息体中
                     mm.addBodyPart(attch1);
                     String aa = "";
                     DataSource ds1 = new FileDataSource(fileTxt);
                     //数据处理器
-                    DataHandler dh1 = new DataHandler(ds1 );
+                    DataHandler dh1 = new DataHandler(ds1);
                     //设置第一个附件的数据
                     attch1.setDataHandler(dh1);
                     //设置第一个附件的文件名
-                    String fileName = attachPath.substring(attachPath.lastIndexOf("/") +1,attachPath.length());
+                    String fileName = attachPath.substring(attachPath.lastIndexOf("/") + 1, attachPath.length());
                     String fileNameNew = fileName;
                     try {
-                        fileNameNew =MimeUtility.encodeWord(fileNameNew);
-                    }catch (Exception E)
-                    {
+                        fileNameNew = MimeUtility.encodeWord(fileNameNew);
+                    } catch (Exception E) {
 
                     }
                     attch1.setFileName(fileNameNew);
@@ -499,6 +503,7 @@ class EmailCore {
         this.message = message;
         return this;
     }
+
     public static MimeBodyPart createContent(String body, String[] cidPath) {
 
         /* 创建代表组合MIME消息的MimeMultipart对象和该对象保存到的MimeBodyPart对象 */
@@ -507,33 +512,29 @@ class EmailCore {
         // 创建一个MimeMultipart对象
         MimeMultipart multipart = new MimeMultipart();
 
-        if(cidPath.length > 0)
-        {
-            for (String cidPathItem :cidPath)
-            {
+        if (cidPath.length > 0) {
+            for (String cidPathItem : cidPath) {
                 //附件
                 MimeBodyPart imageCid = new MimeBodyPart();
                 //把文件，添加到附件1中
                 //数据源
                 File fileTxt = new File(cidPathItem);
-                if(fileTxt.exists())
-                {
+                if (fileTxt.exists()) {
                     //把内容，附件1，附件2加入到 MINE消息体中
                     try {
                         //imageCid.attachFile(fileTxt);
                         DataSource ds1 = new FileDataSource(fileTxt);
                         //数据处理器
-                        DataHandler dh1 = new DataHandler(ds1 );
+                        DataHandler dh1 = new DataHandler(ds1);
                         //设置第一个附件的数据
                         imageCid.setDataHandler(dh1);
                         //设置第一个附件的文件名
-                        String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") +1,cidPathItem.length());
-                        String cid = fileName.substring(0,fileName.lastIndexOf("."));
+                        String fileName = cidPathItem.substring(cidPathItem.lastIndexOf("/") + 1, cidPathItem.length());
+                        String cid = fileName.substring(0, fileName.lastIndexOf("."));
                         imageCid.setContentID(fileName);
                         //imageCid.setDisposition(MimeBodyPart.INLINE);
                         multipart.addBodyPart(imageCid);
-                    }catch (Exception e)
-                    {
+                    } catch (Exception e) {
 
                     }
 
@@ -544,23 +545,26 @@ class EmailCore {
         // 将MimeMultipart对象保存到MimeBodyPart对象中
         try {
             content.setContent(multipart);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
 
 
         return content;
     }
+
     /**
      * 使用SMTP协议保存邮件
+     *
      * @throws MessagingException
      */
     public Message saveDrafts() throws MessagingException {
         return message;
     }
+
     /**
      * 使用POP3协议接收服务器上的邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -568,7 +572,7 @@ class EmailCore {
     public List<EmailMessage> popReceiveMail() throws MessagingException, IOException {
 
         Store store = session.getStore(POP3);
-        store.connect(popHost,Integer.parseInt(popPort), account, password);
+        store.connect(popHost, Integer.parseInt(popPort), account, password);
         Folder folder = store.getFolder("INBOX");//获取邮件服务器的收件箱
         folder.open(Folder.READ_ONLY);//以只读权限打开收件箱
         Folder defaultFolder = store.getDefaultFolder();
@@ -580,32 +584,32 @@ class EmailCore {
         Message messagesUnRead[] = folder.search(ft);
         List<Message> list = Arrays.asList(messagesAll);
         Collections.sort(list, comparator);
-        Message[] messagesAllNew = ( Message[])list.toArray();
+        Message[] messagesAllNew = (Message[]) list.toArray();
         Message[] messagesNew = new Message[1];
-        System.arraycopy(messagesAllNew,0,messagesNew,0,messagesNew.length);
+        System.arraycopy(messagesAllNew, 0, messagesNew, 0, messagesNew.length);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String subject, from, to, date, content,contentText;
+        String subject, from, to, date, content, contentText;
         PraseMimeMessage pmm = null;
-        for (Message message : messagesNew){
-            pmm = new PraseMimeMessage((MimeMessage)message);
+        for (Message message : messagesNew) {
+            pmm = new PraseMimeMessage((MimeMessage) message);
             subject = message.getSubject();
             from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
             date = TimeUtil.getDate(message.getSentDate());
-            StringBuffer contentTemp = new StringBuffer(30);
+            StringBuilder contentTemp = new StringBuilder(30);
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
             contentText = getHtmlText(contentTemp.toString());
-            EmailMessage emailMessage = new EmailMessage(message,"",subject, from, to,"","", date,true,false,"",true,0,true,2, content,contentText);
+            EmailMessage emailMessage = new EmailMessage(message, "", subject, from, to, "", "", date, true, false, "", true, 0, true, 2, content, contentText);
             emailMessageList.add(emailMessage);
-            Log.i("POP3", "邮件subject："+subject +"  时间："+date);
+            Log.i("POP3", "邮件subject：" + subject + "  时间：" + date);
             File file = Environment.getExternalStorageDirectory();
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.mkdirs();
             }
-            pmm.setAttachPath(file.toString()+"/");
+            pmm.setAttachPath(file.toString() + "/");
             try {
-                pmm.saveAttachMent((Part)message);
+                pmm.saveAttachMent((Part) message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -614,24 +618,24 @@ class EmailCore {
         store.close();
         return emailMessageList;
     }
+
     // 这里排序规则：按票数从高到低排，票数相同按年龄从低到高排
     Comparator<Message> comparator = new Comparator<Message>() {
         public int compare(Message o1, Message o2) {
             int result = 0;
-            try
-            {
-                result =  (int)(o2.getReceivedDate().getTime() - o1.getReceivedDate().getTime());
-            }
-            catch (Exception e)
-            {
+            try {
+                result = (int) (o2.getReceivedDate().getTime() - o1.getReceivedDate().getTime());
+            } catch (Exception e) {
 
             }
 
             return result;
         }
     };
+
     /**
      * 使用IMAP协议接收服务器上的邮件属性
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -641,7 +645,7 @@ class EmailCore {
         List<EmailCount> emailMessageList = new ArrayList<>();
         EmailCount emailData = new EmailCount();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
         Folder defaultFolder = imapStore.getDefaultFolder();
         Folder[] allFolder = defaultFolder.list();
         try {
@@ -649,12 +653,11 @@ class EmailCore {
             folder.open(Folder.READ_ONLY);
 
             int total = folder.getMessageCount();
-            if(total > 0)
-            {
+            if (total > 0) {
                 Message message = folder.getMessage(total);
                 emailData.setInboxMaxMessageId(folder.getUID(message));
                 emailData.setInboxMinMessageId(folder.getUID(message));
-            }else{
+            } else {
                 emailData.setInboxMaxMessageId(0);
                 emailData.setInboxMinMessageId(0);
             }
@@ -662,17 +665,15 @@ class EmailCore {
             int size = folder.getUnreadMessageCount();
             emailData.setUnReadCount(size);
 
-            if(!menuList.get(1).equals(""))
-            {
+            if (!menuList.get(1).equals("")) {
                 IMAPFolder folderDraf = (IMAPFolder) imapStore.getFolder(menuList.get(1));
                 folderDraf.open(Folder.READ_ONLY);
                 int totalDraf = folderDraf.getMessageCount();
-                if(totalDraf > 0)
-                {
+                if (totalDraf > 0) {
                     Message message = folderDraf.getMessage(totalDraf);
                     emailData.setDrafMaxMessageId(folderDraf.getUID(message));
                     emailData.setDrafMinMessageId(folderDraf.getUID(message));
-                }else{
+                } else {
                     emailData.setDrafMaxMessageId(0);
                     emailData.setDrafMinMessageId(0);
                 }
@@ -681,18 +682,16 @@ class EmailCore {
                 emailData.setDrafUnReadCount(sizeDraf);
                 folderDraf.close(false);
             }
-            if(!menuList.get(2).equals(""))
-            {
+            if (!menuList.get(2).equals("")) {
                 IMAPFolder folderSend = (IMAPFolder) imapStore.getFolder(menuList.get(2));
                 folderSend.open(Folder.READ_ONLY);
                 int totalSend = folderSend.getMessageCount();
 
-                if(totalSend > 0)
-                {
+                if (totalSend > 0) {
                     Message message = folderSend.getMessage(totalSend);
                     emailData.setSendMaxMessageId(folderSend.getUID(message));
                     emailData.setSendMinMessageId(folderSend.getUID(message));
-                }else{
+                } else {
                     emailData.setSendMaxMessageId(0);
                     emailData.setSendMinMessageId(0);
                 }
@@ -704,19 +703,16 @@ class EmailCore {
             }
 
 
-
-            if(!menuList.get(3).equals(""))
-            {
+            if (!menuList.get(3).equals("")) {
                 IMAPFolder folderGarbage = (IMAPFolder) imapStore.getFolder(menuList.get(3));
                 folderGarbage.open(Folder.READ_ONLY);
                 int totalGarbage = folderGarbage.getMessageCount();
 
-                if(totalGarbage > 0)
-                {
+                if (totalGarbage > 0) {
                     Message message = folderGarbage.getMessage(totalGarbage);
                     emailData.setGarbageMaxMessageId(folderGarbage.getUID(message));
                     emailData.setGarbageMinMessageId(folderGarbage.getUID(message));
-                }else{
+                } else {
                     emailData.setGarbageMaxMessageId(0);
                     emailData.setGarbageMinMessageId(0);
                 }
@@ -727,17 +723,15 @@ class EmailCore {
             }
 
 
-            if(!menuList.get(4).equals(""))
-            {
+            if (!menuList.get(4).equals("")) {
                 IMAPFolder folderDelete = (IMAPFolder) imapStore.getFolder(menuList.get(4));
                 folderDelete.open(Folder.READ_ONLY);
                 int totalDelete = folderDelete.getMessageCount();
-                if(totalDelete > 0)
-                {
+                if (totalDelete > 0) {
                     Message message = folderDelete.getMessage(totalDelete);
                     emailData.setDeleteMaxMessageId(folderDelete.getUID(message));
                     emailData.setDeleteMinMessageId(folderDelete.getUID(message));
-                }else{
+                } else {
                     emailData.setDeleteMaxMessageId(0);
                     emailData.setDeleteMinMessageId(0);
                 }
@@ -749,32 +743,31 @@ class EmailCore {
             folder.close(false);
 
 
-
-
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
 
-        }finally {
+        } finally {
             imapStore.close();
             emailMessageList.add(emailData);
             return emailMessageList;
         }
 
     }
+
     /**
      * 使用gmai API接收服务器上的邮件属性
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailCount> gmailReceiveMailCountAndMenu(final ArrayList<String> menuList,final Gmail gmailService ,final String userId) throws MessagingException, IOException {
+    public List<EmailCount> gmailReceiveMailCountAndMenu(final ArrayList<String> menuList, final Gmail gmailService, final String userId) throws MessagingException, IOException {
 
         List<EmailCount> emailMessageList = new ArrayList<>();
         EmailCount emailData = new EmailCount();
 
         try {
-            Label label = gmailService.users().labels().get(userId,menuList.get(0)).execute(); // have the lableName to execute together
+            Label label = gmailService.users().labels().get(userId, menuList.get(0)).execute(); // have the lableName to execute together
 
 
             int total = label.getThreadsTotal();
@@ -784,9 +777,8 @@ class EmailCore {
             int size = label.getThreadsUnread();
             emailData.setUnReadCount(size);
 
-            if(!menuList.get(1).equals(""))
-            {
-                Label labelDraf = gmailService.users().labels().get(userId,menuList.get(1)).execute(); // have the lableName to execute together
+            if (!menuList.get(1).equals("")) {
+                Label labelDraf = gmailService.users().labels().get(userId, menuList.get(1)).execute(); // have the lableName to execute together
                 int totalDraf = labelDraf.getThreadsTotal();
                 emailData.setDrafMaxMessageId(0);
                 emailData.setDrafMinMessageId(0);
@@ -794,9 +786,8 @@ class EmailCore {
                 int sizeDraf = labelDraf.getThreadsUnread();
                 emailData.setDrafUnReadCount(sizeDraf);
             }
-            if(!menuList.get(2).equals(""))
-            {
-                Label labelSend = gmailService.users().labels().get(userId,menuList.get(2)).execute(); // have the lableName to execute together
+            if (!menuList.get(2).equals("")) {
+                Label labelSend = gmailService.users().labels().get(userId, menuList.get(2)).execute(); // have the lableName to execute together
                 int totalSend = labelSend.getThreadsTotal();
 
                 emailData.setSendMaxMessageId(0);
@@ -809,10 +800,8 @@ class EmailCore {
             }
 
 
-
-            if(!menuList.get(3).equals(""))
-            {
-                Label labelGarbage = gmailService.users().labels().get(userId,menuList.get(3)).execute(); // have the lableName to execute together
+            if (!menuList.get(3).equals("")) {
+                Label labelGarbage = gmailService.users().labels().get(userId, menuList.get(3)).execute(); // have the lableName to execute together
 
                 int totalGarbage = labelGarbage.getThreadsTotal();
 
@@ -825,9 +814,8 @@ class EmailCore {
             }
 
 
-            if(!menuList.get(4).equals(""))
-            {
-                Label labelDelete = gmailService.users().labels().get(userId,menuList.get(4)).execute(); // have the lableName to execute together
+            if (!menuList.get(4).equals("")) {
+                Label labelDelete = gmailService.users().labels().get(userId, menuList.get(4)).execute(); // have the lableName to execute together
 
                 int totalDelete = labelDelete.getThreadsTotal();
                 emailData.setDeleteMaxMessageId(0);
@@ -837,102 +825,102 @@ class EmailCore {
                 emailData.setDeleteUnReadCount(sizeDelete);
 
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
 
-        }finally {
+        } finally {
             emailMessageList.add(emailData);
             return emailMessageList;
         }
 
     }
+
     /**
      * 使用gmai API接收服务器上的邮件属性
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailCount> gmailMailToken(final Gmail gmailService ,final String userId) throws  IOException {
+    public List<EmailCount> gmailMailToken(final Gmail gmailService, final String userId) throws IOException {
 
         List<EmailCount> emailMessageList = new ArrayList<>();
         ListLabelsResponse listResponse =
                 gmailService.users().labels().list(userId).execute(); // this way just execute and get the label list
         return emailMessageList;
     }
+
     /**
      * 使用IMAP协议接收服务器上的新邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> imapReceiveNewMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveNewMail(String menu, final int beginIndex, final int pageSize, final int lastTotalCount) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapStoreBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapStoreBegin:" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapStoreEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = null;
-        int totalSize =   folder.getMessageCount();
-        int newSize=  totalSize - lastTotalCount;
+        int totalSize = folder.getMessageCount();
+        int newSize = totalSize - lastTotalCount;
         boolean noMoreData = false;
-        if(newSize >=pageSize)
-        {
+        if (newSize >= pageSize) {
             noMoreData = false;
-            int startIndex = lastTotalCount+1;
-            int endIndex = lastTotalCount+pageSize;
-            KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-            messagesAll = folder.getMessages(startIndex,endIndex);
-        }else if(newSize >0){
+            int startIndex = lastTotalCount + 1;
+            int endIndex = lastTotalCount + pageSize;
+            KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+            messagesAll = folder.getMessages(startIndex, endIndex);
+        } else if (newSize > 0) {
             noMoreData = true;
-            int startIndex = lastTotalCount+1;
-            int endIndex = lastTotalCount+newSize;
-            KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-            if(startIndex== 0 || startIndex > endIndex)
-            {
+            int startIndex = lastTotalCount + 1;
+            int endIndex = lastTotalCount + newSize;
+            KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+            if (startIndex == 0 || startIndex > endIndex) {
                 messagesAll = new Message[]{};
-            }else{
-                messagesAll = folder.getMessages(startIndex,endIndex);
+            } else {
+                messagesAll = folder.getMessages(startIndex, endIndex);
             }
-        }else{
+        } else {
             noMoreData = true;
             messagesAll = new Message[]{};
         }
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
-        for (Message message : list){
-            uuid = folder.getUID(message) +"";
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
+        for (Message message : list) {
+            uuid = folder.getUID(message) + "";
             try {
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
 
                 }
 
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -944,44 +932,42 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage) message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
-                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     //getMailTextContent(message, contentTemp);
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
+                        getMailTextContent2(message, contentTemp, false);
                     content = contentTemp.toString();
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
 
               /*  if(!file.exists()){
                     file.mkdirs();
@@ -992,140 +978,131 @@ class EmailCore {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
         folder.close(false);
         imapStore.close();
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",totalSize);
-        messageMap.put("totalUnreadCount",totalUnreadCount);
-        messageMap.put("noMoreData",noMoreData);
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", totalSize);
+        messageMap.put("totalUnreadCount", totalUnreadCount);
+        messageMap.put("noMoreData", noMoreData);
 
         return messageMap;
     }
+
     /**
      * 使用IMAP协议接收服务器上的历史邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> imapReceiveMoreMail(String menu, final int beginIndex, final int pageSize,final int lastTotalCount) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveMoreMail(String menu, final int beginIndex, final int pageSize, final int lastTotalCount) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapStoreBeginHelp:" + menu + "##" + System.currentTimeMillis());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapStoreEnd:" + System.currentTimeMillis());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = null;
-        int totalSize =   folder.getMessageCount();
-        int newSize=  totalSize - lastTotalCount;
+        int totalSize = folder.getMessageCount();
+        int newSize = totalSize - lastTotalCount;
         int lastTotalCountTemp = lastTotalCount;
-        KLog.i("newSize_"+newSize+"lastTotalCount:"+lastTotalCount+"totalSize:"+totalSize);
-        if(newSize < 0)
-        {
+        KLog.i("newSize_" + newSize + "lastTotalCount:" + lastTotalCount + "totalSize:" + totalSize);
+        if (newSize < 0) {
             lastTotalCountTemp = totalSize;
         }
         boolean noMoreData = false;
-        if(false)
-        {
+        if (false) {
             noMoreData = true;
             messagesAll = new Message[]{};
-        }else {
-            if(totalSize > 0)
-            {
-                if(lastTotalCountTemp == 0)
-                {
-                    if(totalSize >= pageSize)
-                    {
+        } else {
+            if (totalSize > 0) {
+                if (lastTotalCountTemp == 0) {
+                    if (totalSize >= pageSize) {
                         noMoreData = false;
                         int startIndex = totalSize - pageSize;
-                        int endIndex = totalSize ;
-                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-                        messagesAll = folder.getMessages(startIndex,endIndex);
-                    }else{
+                        int endIndex = totalSize;
+                        KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+                        messagesAll = folder.getMessages(startIndex, endIndex);
+                    } else {
                         noMoreData = false;
                         int startIndex = 1;
-                        int endIndex = totalSize ;
-                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-                        messagesAll = folder.getMessages(startIndex,endIndex);
+                        int endIndex = totalSize;
+                        KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+                        messagesAll = folder.getMessages(startIndex, endIndex);
                     }
 
-                }else{
-                    if(lastTotalCountTemp - beginIndex >=pageSize)
-                    {
+                } else {
+                    if (lastTotalCountTemp - beginIndex >= pageSize) {
                         noMoreData = false;
-                        int startIndex = totalSize -(pageSize -1) -beginIndex - newSize;
+                        int startIndex = totalSize - (pageSize - 1) - beginIndex - newSize;
                         int endIndex = totalSize - beginIndex - newSize;
-                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-                        messagesAll = folder.getMessages(startIndex,endIndex);
-                    }else{
+                        KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+                        messagesAll = folder.getMessages(startIndex, endIndex);
+                    } else {
                         noMoreData = true;
                         int addSize = lastTotalCountTemp - beginIndex;
-                        int startIndex = totalSize -(addSize -1) -beginIndex - newSize;
+                        int startIndex = totalSize - (addSize - 1) - beginIndex - newSize;
                         int endIndex = totalSize - beginIndex - newSize;
-                        KLog.i(startIndex+"###"+endIndex +"###"+noMoreData);
-                        if(startIndex== 0 || startIndex > endIndex)
-                        {
+                        KLog.i(startIndex + "###" + endIndex + "###" + noMoreData);
+                        if (startIndex == 0 || startIndex > endIndex) {
                             messagesAll = new Message[]{};
-                        }else{
-                            messagesAll = folder.getMessages(startIndex,endIndex);
+                        } else {
+                            messagesAll = folder.getMessages(startIndex, endIndex);
                         }
 
                     }
                 }
-            }else{
+            } else {
                 noMoreData = true;
                 messagesAll = new Message[]{};
             }
         }
 
 
-
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        for (Message message : list){
+        for (Message message : list) {
             try {
-                uuid = folder.getUID(message) +"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                uuid = folder.getUID(message) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                if ("".equals(from)) {
                     from = this.account;
                 }
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -1137,54 +1114,51 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage) message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + hasAttachment + ":" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
-                    StringBuffer contentTemp2 = new StringBuffer(30);
+                        getMailTextContent2(message, contentTemp, false);
+                    StringBuilder contentTemp2 = new StringBuilder(30);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
 
               /*  if(!file.exists()){
                     file.mkdirs();
@@ -1195,34 +1169,34 @@ class EmailCore {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 errorMsg += e.getMessage();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
         folder.close(false);
         imapStore.close();
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",totalSize);
-        messageMap.put("totalUnreadCount",totalUnreadCount);
-        messageMap.put("noMoreData",noMoreData);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", totalSize);
+        messageMap.put("totalUnreadCount", totalUnreadCount);
+        messageMap.put("noMoreData", noMoreData);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
 
     /**
      * 使用gmail API接收服务器上的新邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> gmailReceiveNewMail(Gmail gmailService,String userId,String menu, final String pageToken, final long pageSize,final String firstMessageId) throws MessagingException, IOException {
+    public HashMap<String, Object> gmailReceiveNewMail(Gmail gmailService, String userId, String menu, final String pageToken, final long pageSize, final String firstMessageId) throws MessagingException, IOException {
 
 
         List<String> selectedMesLable = new ArrayList<String>();
@@ -1233,27 +1207,24 @@ class EmailCore {
         while (listMesResponse.getMessages() != null) {
             //messagesGmail.addAll(listMesResponse.getMessages());
             boolean isStop = false;
-            for(com.google.api.services.gmail.model.Message messageTemp : listMesResponse.getMessages())
-            {
-                KLog.i("getThreadId:"+ messageTemp.getThreadId() +"--old:"+firstMessageId);
-                if(messageTemp.getThreadId().equals(firstMessageId))
-                {
+            for (com.google.api.services.gmail.model.Message messageTemp : listMesResponse.getMessages()) {
+                KLog.i("getThreadId:" + messageTemp.getThreadId() + "--old:" + firstMessageId);
+                if (messageTemp.getThreadId().equals(firstMessageId)) {
                     isStop = true;
                     break;
-                }else{
+                } else {
                     messagesGmail.add(messageTemp);
                 }
             }
-            if(!isStop)
-            {
+            if (!isStop) {
                 if (listMesResponse.getNextPageToken() != null) {
                     pageTokenTemp = listMesResponse.getNextPageToken();
                     listMesResponse = gmailService.users().messages().list(userId).setLabelIds(selectedMesLable).setMaxResults(pageSize)
                             .setPageToken(pageTokenTemp).execute();
-                }else{
+                } else {
                     break;
                 }
-            }else{
+            } else {
                 break;
             }
 
@@ -1272,51 +1243,49 @@ class EmailCore {
             Session session = Session.getDefaultInstance(props, null);
 
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
-            messageMapId.put(email.getMessageID(),messageData.getId());
+            messageMapId.put(email.getMessageID(), messageData.getId());
             messagesAll[i] = email;
             i++;
         }
 
 
         HashMap<String, Object> messageMap = new HashMap<>();
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        for (Message message : list){
+        for (Message message : list) {
             try {
-                String messageId = ((MimeMessage)message).getMessageID();
-                uuid = messageMapId.get(messageId)+"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                String messageId = ((MimeMessage) message).getMessageID();
+                uuid = messageMapId.get(messageId) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                if ("".equals(from)) {
                     from = this.account;
                 }
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -1328,54 +1297,51 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage) message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + hasAttachment + ":" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
-                    StringBuffer contentTemp2 = new StringBuffer(30);
+                        getMailTextContent2(message, contentTemp, false);
+                    StringBuilder contentTemp2 = new StringBuilder(30);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
 
               /*  if(!file.exists()){
                     file.mkdirs();
@@ -1386,32 +1352,33 @@ class EmailCore {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 errorMsg += e.getMessage();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",0);//totalSize
-        messageMap.put("totalUnreadCount",0);//totalUnreadCount
-        messageMap.put("pageToken",pageTokenTemp);//gmail下拉翻页参数
-        messageMap.put("noMoreData",true);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", 0);//totalSize
+        messageMap.put("totalUnreadCount", 0);//totalUnreadCount
+        messageMap.put("pageToken", pageTokenTemp);//gmail下拉翻页参数
+        messageMap.put("noMoreData", true);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
+
     /**
      * 使用gmail API接收服务器上的历史邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> gmailReceiveMoreMail(Gmail gmailService,String userId,String menu, final String pageToken, final long pageSize,final int lastTotalCount) throws MessagingException, IOException {
+    public HashMap<String, Object> gmailReceiveMoreMail(Gmail gmailService, String userId, String menu, final String pageToken, final long pageSize, final int lastTotalCount) throws MessagingException, IOException {
 
 
         List<String> selectedMesLable = new ArrayList<String>();
@@ -1442,51 +1409,49 @@ class EmailCore {
             Session session = Session.getDefaultInstance(props, null);
 
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
-            messageMapId.put(email.getMessageID(),messageData.getId());
+            messageMapId.put(email.getMessageID(), messageData.getId());
             messagesAll[i] = email;
             i++;
         }
 
 
         HashMap<String, Object> messageMap = new HashMap<>();
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + System.currentTimeMillis());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        for (Message message : list){
+        for (Message message : list) {
             try {
-                String messageId = ((MimeMessage)message).getMessageID();
-                uuid = messageMapId.get(messageId)+"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                String messageId = ((MimeMessage) message).getMessageID();
+                uuid = messageMapId.get(messageId) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                if ("".equals(from)) {
                     from = this.account;
                 }
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -1498,54 +1463,51 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage) message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject5:"+hasAttachment+":"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + hasAttachment + ":" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
-                    StringBuffer contentTemp2 = new StringBuffer(30);
+                        getMailTextContent2(message, contentTemp, false);
+                    StringBuilder contentTemp2 = new StringBuilder(30);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
 
               /*  if(!file.exists()){
                     file.mkdirs();
@@ -1556,52 +1518,51 @@ class EmailCore {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 errorMsg += e.getMessage();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",0);//totalSize
-        messageMap.put("totalUnreadCount",0);//totalUnreadCount
-        messageMap.put("pageToken",pageTokenTemp);//gmail下拉翻页参数
-        messageMap.put("noMoreData",true);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", 0);//totalSize
+        messageMap.put("totalUnreadCount", 0);//totalUnreadCount
+        messageMap.put("pageToken", pageTokenTemp);//gmail下拉翻页参数
+        messageMap.put("noMoreData", true);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
+
     /**
      * 使用IMAP协议接收服务器上的历史邮件
      * 拉新的邮件，要优化拉所有的邮件，在这里下手。
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> imapReceiveNewMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveNewMailByUUID(String menu, final long minUIID, final int pageSize, final long maxUUID) throws MessagingException, IOException {
         //LogUtil.addLogEmail("2_minUUID:"+minUIID+"  &&&  maxUUID:"+maxUUID+"  &&&  pageSize:"+pageSize,"EmailCore");
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapStoreBeginHelp:" + menu + "##" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapStoreEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = new Message[]{};
-        int totalSize =   folder.getMessageCount();
+        int totalSize = folder.getMessageCount();
         Message messageMax = null;
-        if(totalSize > 0)
-        {
+        if (totalSize > 0) {
             messageMax = folder.getMessage(totalSize);
         }
         long fromMaxUUID = 0L;
-        if(messageMax != null)
-        {
+        if (messageMax != null) {
             fromMaxUUID = folder.getUID(messageMax);
         }
         boolean noMoreData = false;
@@ -1610,80 +1571,71 @@ class EmailCore {
         int pageFlag = 1;
         int k = 0;
         //LogUtil.addLogEmail("3_fromMaxUUID:"+fromMaxUUID+"  &&&  maxUUID:"+maxUUID+"  &&&  totalSize:"+totalSize,"EmailCore");
-        if(fromMaxUUID >0 && maxUUID < fromMaxUUID)
-        {
+        if (fromMaxUUID > 0 && maxUUID < fromMaxUUID) {
             noMoreData = false;
             int pageSizeTemp = pageSize;
             Boolean noDataLoad = false;
-            while (k < pageSize && !noDataLoad)
-            {
-                pageSizeTemp = pageSize + (pageFlag -1) * 2;
+            while (k < pageSize && !noDataLoad) {
+                pageSizeTemp = pageSize + (pageFlag - 1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
                 //LogUtil.addLogEmail("4_pageSizeTemp:"+pageSizeTemp,"EmailCore");
-                for(int i = 0 ; i < pageSizeTemp ;i++)
-                {
-                    long index = maxUUID + i + 1 ;
-                    if(index > fromMaxUUID)
-                    {
+                for (int i = 0; i < pageSizeTemp; i++) {
+                    long index = maxUUID + i + 1;
+                    if (index > fromMaxUUID) {
                         noDataLoad = true;
                         break;
                     }
                     uuidList[i] = index;
-                    len  ++;
-                    lengFlag ++;
+                    len++;
+                    lengFlag++;
                 }
                 long[] uuidListNew = new long[lengFlag];
-                for(int i = 0 ; i< lengFlag ;i++)
-                {
+                for (int i = 0; i < lengFlag; i++) {
                     uuidListNew[i] = uuidList[i];
                 }
-                pageFlag ++;
+                pageFlag++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
 
-                 k = 0;
-                for (Message message : messagesAll)
-                {
-                    if(message != null)
-                    {
-                        k ++;
+                k = 0;
+                for (Message message : messagesAll) {
+                    if (message != null) {
+                        k++;
                     }
-                    if(k >= pageSize)
-                    {
+                    if (k >= pageSize) {
                         noDataLoad = true;
                         break;
                     }
                 }
             }
-        }else{
+        } else {
             noMoreData = true;
             messagesAll = new Message[]{};
         }
 
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         //LogUtil.addLogEmail("5_list size:"+list.size(),"EmailCore");
         Collections.reverse(list);
         //LogUtil.addLogEmail("5_list reverse:","EmailCore");
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
         //LogUtil.addLogEmail("6_list size:"+list.size(),"EmailCore");
-        for (Message message : list){
-            if(message == null)
-            {
+        for (Message message : list) {
+            if (message == null) {
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_message == null:","EmailCore");
                 index++;
                 continue;
             }
             try {
-                uuid = folder.getUID(message) +"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                uuid = folder.getUID(message) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
                   /*  if(BuildConfig.DEBUG)
@@ -1693,100 +1645,91 @@ class EmailCore {
                             message = null;
                         }
                     }*/
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_errorMsg:"+errorMsg,"EmailCore");
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                if ("".equals(from)) {
                     from = this.account;
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_from:"+from,"EmailCore");
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc,"EmailCore");
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
-                isReplySign = isReplySign((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
+                isReplySign = isReplySign((MimeMessage) message);
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_isSeen:"+isSeen+"_isStar:"+isStar+"_isReplySign:"+isReplySign,"EmailCore");
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
                 ////LogUtil.addLogEmail("7_"+index+"_"+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
-                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
+                        getMailTextContent2(message, contentTemp, false);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                String _content= "";
-                if(!content.equals(""))
-                {
-                    if(content.length() >10)
-                    {
-                        _content = content.substring(0,10);
-                    }else{
+                String _content = "";
+                if (!content.equals("")) {
+                    if (content.length() > 10) {
+                        _content = content.substring(0, 10);
+                    } else {
                         _content = content;
                     }
 
                 }
-                String _contentText= "";
-                if(!contentText.equals(""))
-                {
+                String _contentText = "";
+                if (!contentText.equals("")) {
 
-                    if(contentText.length() >10)
-                    {
-                        _contentText = contentText.substring(0,10);
-                    }else{
+                    if (contentText.length() > 10) {
+                        _contentText = contentText.substring(0, 10);
+                    } else {
                         _contentText = contentText;
                     }
                 }
                 //LogUtil.addLogEmail("7_"+index+"_"+"_subject:"+subject+"_from:"+from+"_to:"+to+"_cc:"+cc+"_bcc:"+bcc+"_content:"+_content+"_content:"+_content+"_contentText:"+_contentText+"_hasAttachment:"+hasAttachment+"_errorMsg:"+errorMsg,"EmailCore");
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                KLog.i("邮件subject：" + subject + "  时间：" + date);
 
               /*  if(!file.exists()){
                     file.mkdirs();
@@ -1797,90 +1740,88 @@ class EmailCore {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
-                errorMsg+=e.getMessage();
+                errorMsg += e.getMessage();
                 //LogUtil.addLogEmail("8_"+index+"_"+"_errorMsg:"+errorMsg,"EmailCore");
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
         folder.close(false);
         imapStore.close();
         //LogUtil.addLogEmail("9_"+index+"_"+"_emailMessageList size:"+emailMessageList.size(),"EmailCore");
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",totalSize);
-        messageMap.put("minUIID",minUIID);
-        messageMap.put("maxUUID",maxUUID +len);
-        messageMap.put("totalUnreadCount",totalUnreadCount);
-        messageMap.put("noMoreData",noMoreData);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", totalSize);
+        messageMap.put("minUIID", minUIID);
+        messageMap.put("maxUUID", maxUUID + len);
+        messageMap.put("totalUnreadCount", totalUnreadCount);
+        messageMap.put("noMoreData", noMoreData);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
+
     /**
      * 使用IMAP协议接收服务器上的历史邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> imapReceiveOneMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveOneMailByUUID(String menu, final long minUIID, final int pageSize, final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapStoreBeginHelp:" + menu + "##" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapStoreEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         long[] uuidListNew = new long[1];
         uuidListNew[0] = minUIID;
         Message[] messagesAll = folder.getMessagesByUID(uuidListNew);
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        for (Message message : list){
-            if(message == null)
-            {
+        for (Message message : list) {
+            if (message == null) {
                 index++;
                 continue;
             }
             try {
-                uuid = folder.getUID(message) +"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                uuid = folder.getUID(message) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                    subject = getSubject((MimeMessage) message);
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom((MimeMessage) message);
+                if ("".equals(from)) {
                     from = this.account;
                 }
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress((MimeMessage) message, Message.RecipientType.TO);
+                cc = getReceiveAddress((MimeMessage) message, Message.RecipientType.CC);
+                bcc = getReceiveAddress((MimeMessage) message, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
                 date = TimeUtil.getDate(message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen((MimeMessage) message);
+                isStar = isStar((MimeMessage) message);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -1892,106 +1833,102 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage) message);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment((MimeMessage) message);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
+                        getMailTextContent2(message, contentTemp, false);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
-            }catch (Exception e)
-            {
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
+            } catch (Exception e) {
                 e.printStackTrace();
-                errorMsg+=e.getMessage();
+                errorMsg += e.getMessage();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
         folder.close(false);
         imapStore.close();
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",1);
-        messageMap.put("minUIID",minUIID);
-        messageMap.put("maxUUID",maxUUID);
-        messageMap.put("totalUnreadCount",totalUnreadCount);
-        messageMap.put("noMoreData",true);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", 1);
+        messageMap.put("minUIID", minUIID);
+        messageMap.put("maxUUID", maxUUID);
+        messageMap.put("totalUnreadCount", totalUnreadCount);
+        messageMap.put("noMoreData", true);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
+
     /**
      * 使用IMAP协议接收服务器上的历史邮件
+     * 使用rxjava修改之前的版本
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public HashMap<String, Object> imapReceiveMoreMailByUUID(String menu, final long minUIID, final int pageSize,final long maxUUID) throws MessagingException, IOException {
+    public HashMap<String, Object> imapReceiveMoreMailByUUIDOrgin(String menu, final long minUIID, final int pageSize, final long maxUUID) throws MessagingException, IOException {
         HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapStoreBeginHelp:"+menu+"##"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapStoreBeginHelp:" + menu + "##" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapStoreEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
         int totalUnreadCount = folder.getUnreadMessageCount();
         Message[] messagesAll = new Message[]{};
-        int totalSize =   folder.getMessageCount();
+        int totalSize = folder.getMessageCount();
         Message messageMin = null;
         Long minUUIDTemp = minUIID;
-        if(totalSize > 0)
-        {
+        if (totalSize > 0) {
             messageMin = folder.getMessage(1);
             Message messageMax = folder.getMessage(totalSize);
-            if(minUUIDTemp == 0L)
-            {
-                minUUIDTemp = folder.getUID(messageMax) +1;
+            if (minUUIDTemp == 0L) {
+                minUUIDTemp = folder.getUID(messageMax) + 1;
             }
         }
         long endMinUUID = -1L;
-        if(messageMin != null)
-        {
+        if (messageMin != null) {
             endMinUUID = folder.getUID(messageMin);
         }
         boolean noMoreData = false;
@@ -1999,96 +1936,87 @@ class EmailCore {
         int lengFlag = 0;
         int pageFlag = 1;
         int k = 0;
-        if(endMinUUID >=0 && minUUIDTemp > endMinUUID)
-        {
+        if (endMinUUID >= 0 && minUUIDTemp > endMinUUID) {
             noMoreData = false;
             int pageSizeTemp = pageSize;
             Boolean noDataLoad = false;
-            while (k < pageSize && !noDataLoad)
-            {
-                pageSizeTemp = pageSize + (pageFlag -1) * 2;
+            while (k < pageSize && !noDataLoad) {
+                pageSizeTemp = pageSize + (pageFlag - 1) * 2;
                 long[] uuidList = new long[pageSizeTemp];
                 lengFlag = 0;
-                for(int i = 0 ; i < pageSizeTemp ;i++)
-                {
-                    long index = minUUIDTemp - i - 1 ;
-                    if(index < endMinUUID)
-                    {
+                for (int i = 0; i < pageSizeTemp; i++) {
+                    long index = minUUIDTemp - i - 1;
+                    if (index < endMinUUID) {
                         noDataLoad = true;
                         break;
                     }
                     uuidList[i] = index;
-                    len  ++;
-                    lengFlag ++;
+                    len++;
+                    lengFlag++;
                 }
                 long[] uuidListNew = new long[lengFlag];
-                for(int i = 0 ; i< lengFlag ;i++)
-                {
+                for (int i = 0; i < lengFlag; i++) {
                     uuidListNew[i] = uuidList[i];
                 }
-                pageFlag ++;
+                pageFlag++;
                 messagesAll = folder.getMessagesByUID(uuidListNew);
                 k = 0;
-                for (Message message : messagesAll)
-                {
-                    if(message != null)
-                    {
-                        k ++;
+                for (Message message : messagesAll) {
+                    if (message != null) {
+                        k++;
                     }
-                    if(k >= pageSize)
-                    {
+                    if (k >= pageSize) {
                         noDataLoad = true;
                         break;
                     }
                 }
             }
-        }else{
+        } else {
             noMoreData = true;
             messagesAll = new Message[]{};
         }
 
-        List<Message> list  = Arrays.asList(messagesAll);
+        List<Message> list = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String uuid, subject, from, to,cc,bcc, date, content, contentText,priority;
-        Boolean  isSeen,isStar,isReplySign,isContainerAttachment;
+        String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+        Boolean isSeen, isStar, isReplySign, isContainerAttachment;
         int attachmentCount;
         int index = 0;
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "开始:" + TimeUtil.getTime());
         long beginTime = System.currentTimeMillis();
         String errorMsg = "";
-        for (Message message : list){
-            if(message == null)
-            {
+        KLog.i("要拉的邮件数量为：" + list.size());
+        for (Message message : list) {
+            if (message == null) {
                 index++;
                 continue;
             }
             try {
-                uuid = folder.getUID(message) +"";
-                KLog.i(index+"_"+"getSubject0:"+System.currentTimeMillis()+"##uuid:"+uuid);
+                MimeMessage message1 = (MimeMessage) message;
+                uuid = folder.getUID(message) + "";
+                KLog.i(index + "_" + "getSubject0:" + TimeUtil.getTime() + "##uuid:" + uuid);
                 subject = "";
                 try {
-                    subject = getSubject((MimeMessage)message);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                    subject = getSubject(message1);
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject1:"+System.currentTimeMillis());
-                from = getFrom((MimeMessage)message);
-                if("".equals(from))
-                {
+                KLog.i(index + "_" + "getSubject1:" + TimeUtil.getTime());
+                from = getFrom(message1);
+                if ("".equals(from)) {
                     from = this.account;
                 }
-                KLog.i(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
-                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
-                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
-                KLog.i(index+"_"+"getSubject3:"+System.currentTimeMillis());
-                date = TimeUtil.getDate(message.getSentDate() == null? message.getReceivedDate() : message.getSentDate());
-                KLog.i(index+"_"+"getSubject4:"+System.currentTimeMillis());
-                isSeen = isSeen((MimeMessage)message);
-                isStar = isStar((MimeMessage)message);
+                KLog.i(index + "_" + "getSubject2:" + TimeUtil.getTime());
+                to = getReceiveAddress(message1, Message.RecipientType.TO);
+                cc = getReceiveAddress(message1, Message.RecipientType.CC);
+                bcc = getReceiveAddress(message1, Message.RecipientType.BCC);
+                KLog.i(index + "_" + "getSubject3:" + TimeUtil.getTime());
+                date = TimeUtil.getDate(message1.getSentDate() == null ? message.getReceivedDate() : message.getSentDate());
+                KLog.i(index + "_" + "getSubject4:" + TimeUtil.getTime());
+                isSeen = isSeen(message1);
+                isStar = isStar(message1);
                 //设置标记
                 /*if(!isSeen)
                 {
@@ -2100,119 +2028,360 @@ class EmailCore {
                     }
 
                 }*/
-                isReplySign = isReplySign((MimeMessage)message);
+                isReplySign = isReplySign(message1);
 
                 List<MailAttachment> mailAttachments = new ArrayList<>();
                 boolean hasAttachment = false;
                 try {
-                    hasAttachment = MailUtil.hasAttachment((MimeMessage)message);
+                    hasAttachment = MailUtil.hasAttachment(message1);
                     //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject5:" + TimeUtil.getTime());
                 attachmentCount = mailAttachments.size();
                 isContainerAttachment = hasAttachment;
-                StringBuffer contentTemp = new StringBuffer(30);
+                StringBuilder contentTemp = new StringBuilder(30);
                 content = "";
                 contentText = "";
                 try {
                     String contentType = message.getContentType();
-                    LogUtil.addLogEmail("Email_content:"+contentType.toLowerCase(),"EmailCore");
-                    if(pageSize == 1)
-                    {
+                    LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
+                    if (pageSize == 1) {
                         /*String toFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() +"/emailData.email";
                         Message data = (Message)FileUtil.readFile2Obj(toFilePath);
                         FileUtil.saveObj2File(message,toFilePath);*/
                     }
                     if (contentType.toLowerCase().startsWith("text/plain")) {
-                        getMailTextContent2(message, contentTemp,true);
+                        getMailTextContent2(message, contentTemp, true);
                     } else
-                        getMailTextContent2(message,contentTemp, false);
+                        getMailTextContent2(message, contentTemp, false);
                     content = contentTemp.toString();
-                    if(content.contains("<body>"))
-                    {
-                        int beginFlag = content.indexOf("<body>")+6;
-                        int endFlag =  content.indexOf("</body>");
-                        content = content.substring(beginFlag,endFlag);
+                    if (content.contains("<body>")) {
+                        int beginFlag = content.indexOf("<body>") + 6;
+                        int endFlag = content.indexOf("</body>");
+                        content = content.substring(beginFlag, endFlag);
                         String regFormat = "\\t|\r|\n";
-                        content = content.replaceAll(regFormat,"");
+                        content = content.replaceAll(regFormat, "");
                         String regFormat2 = "&#43;";
-                        content = content.replaceAll(regFormat2,"+");
+                        content = content.replaceAll(regFormat2, "+");
                     }
                     contentText = getHtmlText(contentTemp.toString());
-                }catch (Exception e)
-                {
-                    errorMsg+=e.getMessage();
+                } catch (Exception e) {
+                    errorMsg += e.getMessage();
                 }
-                KLog.i(index+"_"+"getSubject6:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(message,uuid,subject, from, to,cc,bcc, date,isSeen,isStar,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                KLog.i(index + "_" + "getSubject6:" + TimeUtil.getTime());
+                EmailMessage emailMessage = new EmailMessage(message, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message.getSize(), isContainerAttachment, attachmentCount, content, contentText);
                 emailMessage.setMailAttachmentList(mailAttachments);
-                KLog.i(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                KLog.i(index + "_" + "getSubject7:" + TimeUtil.getTime());
                 emailMessageList.add(emailMessage);
-                KLog.i(index+"_"+"getSubject8:"+System.currentTimeMillis());
-                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
-            }catch (Exception e)
-            {
+                KLog.i(index + "_" + "getSubject8:" + TimeUtil.getTime());
+                Log.i("IMAP", "邮件subject：" + subject + "  时间：" + date);
+            } catch (Exception e) {
                 e.printStackTrace();
-                errorMsg+=e.getMessage();
+                errorMsg += e.getMessage();
             }
 
-            index ++;
+            index++;
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
-        KLog.i("time_"+"cost:"+(System.currentTimeMillis() -beginTime));
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
+        KLog.i("time_" + "cost:" + (System.currentTimeMillis() - beginTime));
         folder.close(false);
         imapStore.close();
-        messageMap.put("emailMessageList",emailMessageList);
-        messageMap.put("totalCount",totalSize);
-        messageMap.put("minUIID",minUUIDTemp);
-        messageMap.put("maxUUID",maxUUID +len);
-        messageMap.put("totalUnreadCount",totalUnreadCount);
-        messageMap.put("noMoreData",noMoreData);
-        messageMap.put("errorMsg",errorMsg);
-        messageMap.put("menu",menu);
+        messageMap.put("emailMessageList", emailMessageList);
+        messageMap.put("totalCount", totalSize);
+        messageMap.put("minUIID", minUUIDTemp);
+        messageMap.put("maxUUID", maxUUID + len);
+        messageMap.put("totalUnreadCount", totalUnreadCount);
+        messageMap.put("noMoreData", noMoreData);
+        messageMap.put("errorMsg", errorMsg);
+        messageMap.put("menu", menu);
         return messageMap;
     }
+
     /**
-     * 使用IMAP协议接收服务器上的邮件附件
+     * 使用IMAP协议接收服务器上的历史邮件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailAttch(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
+    public void imapReceiveMoreMailByUUID(String menu, final long minUIID, final int pageSize, final long maxUUID, GetMessagesBack getMessagesBack) throws MessagingException, IOException {
+        HashMap<String, Object> messageMap = new HashMap<>();
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        KLog.i("解析邮件" + "imapStoreBeginHelp:" + menu + "##" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("解析邮件" + "imapStoreEnd:" + TimeUtil.getTime());
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
+        folder.open(Folder.READ_ONLY);
+        int totalUnreadCount = folder.getUnreadMessageCount();
+        Message[] messagesAll = new Message[]{};
+        int totalSize = folder.getMessageCount();
+        Message messageMin = null;
+        Long minUUIDTemp = minUIID;
+        if (totalSize > 0) {
+            messageMin = folder.getMessage(1);
+            Message messageMax = folder.getMessage(totalSize);
+            if (minUUIDTemp == 0L) {
+                minUUIDTemp = folder.getUID(messageMax) + 1;
+            }
+        }
+        long endMinUUID = -1L;
+        if (messageMin != null) {
+            endMinUUID = folder.getUID(messageMin);
+        }
+        boolean noMoreData = false;
+        int len = 0;
+        int lengFlag = 0;
+        int pageFlag = 1;
+        int k = 0;
+        if (endMinUUID >= 0 && minUUIDTemp > endMinUUID) {
+            noMoreData = false;
+            int pageSizeTemp = pageSize;
+            Boolean noDataLoad = false;
+            while (k < pageSize && !noDataLoad) {
+                pageSizeTemp = pageSize + (pageFlag - 1) * 2;
+                long[] uuidList = new long[pageSizeTemp];
+                lengFlag = 0;
+                for (int i = 0; i < pageSizeTemp; i++) {
+                    long index = minUUIDTemp - i - 1;
+                    if (index < endMinUUID) {
+                        noDataLoad = true;
+                        break;
+                    }
+                    uuidList[i] = index;
+                    len++;
+                    lengFlag++;
+                }
+                long[] uuidListNew = new long[lengFlag];
+                for (int i = 0; i < lengFlag; i++) {
+                    uuidListNew[i] = uuidList[i];
+                }
+                pageFlag++;
+                messagesAll = folder.getMessagesByUID(uuidListNew);
+                k = 0;
+                for (Message message : messagesAll) {
+                    if (message != null) {
+                        k++;
+                    }
+                    if (k >= pageSize) {
+                        noDataLoad = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            noMoreData = true;
+            messagesAll = new Message[]{};
+        }
+
+        List<Message> list = Arrays.asList(messagesAll);
+        Collections.reverse(list);
+        ArrayList<Message> listTemp = new ArrayList<Message>();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) != null) {
+                listTemp.add(list.get(i));
+            }
+        }
+        list = listTemp;
+
+        List<EmailMessage> emailMessageList = new ArrayList<>();
+        int index = 0;
+        PraseMimeMessage pmm = null;
+        KLog.i("解析邮件" + "开始:");
+        long beginTime = System.currentTimeMillis();
+        KLog.i("解析邮件 要拉的邮件数量为：" + list.size());
+
+        final boolean noMoreData1 = noMoreData;
+        final Long minUUIDTemp1 = minUUIDTemp;
+        final int len1 = len;
+
+        Observable
+                .fromIterable(list)
+                .flatMap(new Function<Message, ObservableSource<EmailMessage>>() {
+            @Override
+            public ObservableSource<EmailMessage> apply(Message message) {
+                return Observable
+                        .just(message)
+                        .observeOn(Schedulers.io())
+                        .map(new Function<Message, EmailMessage>() {
+                    @Override
+                    public EmailMessage apply(Message message) {
+                        try{
+                            KLog.i("解析邮件：" + Thread.currentThread().getName());
+                            String uuid, subject, from, to, cc, bcc, date, content, contentText, priority;
+                            Boolean isSeen, isStar, isReplySign, isContainerAttachment;
+                            String errorMsg = "";
+                            int attachmentCount;
+
+                            MimeMessage message1 = (MimeMessage) message;
+                            uuid = folder.getUID(message1) + "";
+                            KLog.i(uuid+ "_getSubject0:");
+                            subject = "";
+                            try {
+                                subject = getSubject(message1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                errorMsg += e.getMessage();
+                            }
+                            KLog.i(uuid + "_" + "getSubject1:");
+                            from = getFrom(message1);
+                            if ("".equals(from)) {
+                                from = account;
+                            }
+                            KLog.i(uuid + "_" + "getSubject2:");
+                            to = getReceiveAddress(message1, Message.RecipientType.TO);
+                            cc = getReceiveAddress(message1, Message.RecipientType.CC);
+                            bcc = getReceiveAddress(message1, Message.RecipientType.BCC);
+                            KLog.i(uuid + "_" + "getSubject3:");
+                            date = TimeUtil.getDate(message1.getSentDate() == null ? message1.getReceivedDate() : message1.getSentDate());
+                            KLog.i(uuid + "_" + "getSubject4:");
+                            isSeen = isSeen(message1);
+                            isStar = isStar(message1);
+
+                            isReplySign = isReplySign(message1);
+
+                            List<MailAttachment> mailAttachments = new ArrayList<>();
+                            boolean hasAttachment = false;
+                            try {
+                                hasAttachment = MailUtil.hasAttachment(message1);
+                                //MailUtil.getAttachment(message, mailAttachments,uuid,this.account);
+                            } catch (Exception e) {
+                                errorMsg += e.getMessage();
+                            }
+                            KLog.i(uuid + "_" + "getSubject5:");
+                            attachmentCount = mailAttachments.size();
+                            isContainerAttachment = hasAttachment;
+                            StringBuilder contentTemp = new StringBuilder(30);
+                            content = "";
+                            contentText = "";
+                            KLog.i(uuid + "_" + "getSubject5.1:");
+                            try {
+                                String contentType = message1.getContentType();
+                                KLog.i(uuid + "_" + "getSubject5.2:");
+                                LogUtil.addLogEmail("Email_content:" + contentType.toLowerCase(), "EmailCore");
+                                if (pageSize == 1) {
+                        /*String toFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() +"/emailData.email";
+                        Message data = (Message)FileUtil.readFile2Obj(toFilePath);
+                        FileUtil.saveObj2File(message,toFilePath);*/
+                                }
+                                if (contentType.toLowerCase().startsWith("text/plain")) {
+                                    getMailTextContent2(message1, contentTemp, true);
+                                } else {
+                                    getMailTextContent2(message1, contentTemp, false);
+                                }
+                                KLog.i(uuid + "_" + "getSubject5.3:");
+                                content = contentTemp.toString();
+                                if (content.contains("<body>")) {
+                                    KLog.i(uuid + "_" + "getSubject5.4:");
+                                    int beginFlag = content.indexOf("<body>") + 6;
+                                    int endFlag = content.indexOf("</body>");
+                                    content = content.substring(beginFlag, endFlag);
+                                    String regFormat = "\\t|\r|\n";
+                                    content = content.replaceAll(regFormat, "");
+                                    String regFormat2 = "&#43;";
+                                    content = content.replaceAll(regFormat2, "+");
+                                }
+                                KLog.i(uuid + "_" + "getSubject5.5:");
+                                contentText = getHtmlText(contentTemp.toString());
+                            } catch (Exception e) {
+                                errorMsg += e.getMessage();
+                            }
+                            KLog.i(uuid + "_" + "getSubject6:");
+                            EmailMessage emailMessage = new EmailMessage(message1, uuid, subject, from, to, cc, bcc, date, isSeen, isStar, "", isReplySign, message1.getSize(), isContainerAttachment, attachmentCount, content, contentText);
+                            emailMessage.setMailAttachmentList(mailAttachments);
+                            KLog.i(uuid + "_" + "getSubject7:");
+                            KLog.i("解析邮件：" + Thread.currentThread().getName());
+                            return emailMessage;
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return new EmailMessage();
+                        }
+                    }
+                })
+                        .onErrorReturnItem(new EmailMessage());
+            }
+        })
+                .onErrorReturnItem(new EmailMessage())
+                .toList()
+                .toObservable()
+                .subscribe(new Consumer<List<EmailMessage>>() {
+                    @Override
+                    public void accept(List<EmailMessage> strings) {
+
+                        KLog.i("解析邮件" + "end:" + TimeUtil.getTime());
+                        KLog.i("解析邮件：" + strings.size());
+                        KLog.i("解析邮件" + "cost:" + (System.currentTimeMillis() - beginTime));
+                        try {
+                            folder.close(false);
+                        } catch (MessagingException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            imapStore.close();
+                        } catch (MessagingException e) {
+                            e.printStackTrace();
+                        }
+                        ListIterator iterable = strings.listIterator();
+                        while (iterable.hasNext()) {
+                            if (((EmailMessage) iterable.next()).getId() == null) {
+                                iterable.remove();
+                            }
+                        }
+                        messageMap.put("emailMessageList", strings);
+                        messageMap.put("totalCount", totalSize);
+                        messageMap.put("minUIID", minUUIDTemp1);
+                        messageMap.put("maxUUID", maxUUID + len1);
+                        messageMap.put("totalUnreadCount", totalUnreadCount);
+                        messageMap.put("noMoreData", noMoreData1);
+                        messageMap.put("errorMsg", "");
+                        messageMap.put("menu", menu);
+                        getMessagesBack.onBack(messageMap);
+                    }
+
+                });
+
+    }
+
+    /**
+     * 使用IMAP协议接收服务器上的邮件附件
+     *
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<MailAttachment> imapDownloadMailAttch(String menu, String uid, String path, String aesKey) throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        KLog.i("time_" + "imapReceiveMailAttchBegin:" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapReceiveMailAttchEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
-        Message message= folder.getMessageByUID(Long.valueOf(uid));
+        Message message = folder.getMessageByUID(Long.valueOf(uid));
         //设置标记
         /*message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
             //pmm = new PraseMimeMessage((MimeMessage)message);
-            MailUtil.getAttachment(message, mailAttachments,uid,this.account);
+            MailUtil.getAttachment(message, mailAttachments, uid, this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_" + "begin:" + TimeUtil.getTime());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
+            MailUtil.saveFile(mailAttachments, path, aesKey, menu);
+            KLog.i("saveFile_" + "cost:" + (System.currentTimeMillis() - aa));
            /* try {
                 pmm.saveAttachMent((Part)message);
             } catch (Exception e) {
                 e.printStackTrace();
             }*/
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
         folder.close(false);
         imapStore.close();
         return mailAttachments;
@@ -2220,13 +2389,14 @@ class EmailCore {
 
     /**
      * 使用IMAP协议接收服务器上的邮件附件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> gmailDownloadMailAttch(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
+    public List<MailAttachment> gmailDownloadMailAttch(String menu, String uid, String path, String aesKey, Gmail gmailService, String userId) throws MessagingException, IOException {
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
             com.google.api.services.gmail.model.Message messageData = gmailService.users().messages().get(userId, uid).setFormat("raw").execute();
@@ -2239,64 +2409,66 @@ class EmailCore {
 
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
 
-            MailUtil.getAttachment(email, mailAttachments,uid,this.account);
+            MailUtil.getAttachment(email, mailAttachments, uid, this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_" + "begin:" + TimeUtil.getTime());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
-        }catch (Exception e)
-        {
+            MailUtil.saveFile(mailAttachments, path, aesKey, menu);
+            KLog.i("saveFile_" + "cost:" + (System.currentTimeMillis() - aa));
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
         return mailAttachments;
     }
+
     /**
      * 使用IMAP协议接收服务器上的邮件cid资源
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> imapDownloadMailCid(String menu,String uid,String path,String aesKey) throws MessagingException, IOException {
+    public List<MailAttachment> imapDownloadMailCid(String menu, String uid, String path, String aesKey) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        KLog.i("time_"+"imapReceiveMailAttchBegin:"+System.currentTimeMillis());
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        KLog.i("time_"+"imapReceiveMailAttchEnd:"+System.currentTimeMillis());
+        KLog.i("time_" + "imapReceiveMailAttchBegin:" + TimeUtil.getTime());
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        KLog.i("time_" + "imapReceiveMailAttchEnd:" + TimeUtil.getTime());
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_WRITE);
-        Message message= folder.getMessageByUID(Long.valueOf(uid));
+        Message message = folder.getMessageByUID(Long.valueOf(uid));
         //设置标记
         /*message.setFlag(Flags.Flag.SEEN,true);
         message.saveChanges();*/
         PraseMimeMessage pmm = null;
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
-            pmm = new PraseMimeMessage((MimeMessage)message);
-            MailUtil.getCid(message, mailAttachments,uid,this.account);
+            pmm = new PraseMimeMessage((MimeMessage) message);
+            MailUtil.getCid(message, mailAttachments, uid, this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_" + "begin:" + TimeUtil.getTime());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
-        }catch (Exception e)
-        {
+            MailUtil.saveFile(mailAttachments, path, aesKey, menu);
+            KLog.i("saveFile_" + "cost:" + (System.currentTimeMillis() - aa));
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
         folder.close(false);
         imapStore.close();
         return mailAttachments;
     }
+
     /**
      * 使用IMAP协议接收服务器上的邮件cid资源
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<MailAttachment> gmailDownloadMailCid(String menu,String uid,String path,String aesKey,Gmail gmailService,String userId) throws MessagingException, IOException {
-        KLog.i("time_"+"begin:"+System.currentTimeMillis());
+    public List<MailAttachment> gmailDownloadMailCid(String menu, String uid, String path, String aesKey, Gmail gmailService, String userId) throws MessagingException, IOException {
+        KLog.i("time_" + "begin:" + TimeUtil.getTime());
         List<MailAttachment> mailAttachments = new ArrayList<>();
         try {
 
@@ -2310,83 +2482,82 @@ class EmailCore {
 
             MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
 
-            MailUtil.getCid(email, mailAttachments,uid,this.account);
+            MailUtil.getCid(email, mailAttachments, uid, this.account);
             //pmm.setAttachPath(file.toString()+"/");
-            KLog.i("saveFile_"+"begin:"+System.currentTimeMillis());
+            KLog.i("saveFile_" + "begin:" + TimeUtil.getTime());
             long aa = System.currentTimeMillis();
-            MailUtil.saveFile(mailAttachments,path,aesKey,menu);
-            KLog.i("saveFile_"+"cost:"+(System.currentTimeMillis()- aa));
-        }catch (Exception e)
-        {
+            MailUtil.saveFile(mailAttachments, path, aesKey, menu);
+            KLog.i("saveFile_" + "cost:" + (System.currentTimeMillis() - aa));
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        KLog.i("time_"+"end:"+System.currentTimeMillis());
+        KLog.i("time_" + "end:" + TimeUtil.getTime());
         return mailAttachments;
     }
+
     /**
      * 使用IMAP协议接收服务器上的邮件附件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean imapMarkMail(String menu,String uid,int flag,boolean value,String toMenu) throws MessagingException, IOException {
+    public boolean imapMarkMail(String menu, String uid, int flag, boolean value, String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
-        if(menu.equals("star"))
-        {
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
+        if (menu.equals("star")) {
             menu = "INBOX";
         }
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         IMAPFolder folderTo = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
-            Message message= folder.getMessageByUID(Long.valueOf(uid));
+            Message message = folder.getMessageByUID(Long.valueOf(uid));
             //设置标记
-            switch (flag)
-            {
+            switch (flag) {
                 case 1:
-                    message.setFlag(Flags.Flag.ANSWERED,value);
+                    message.setFlag(Flags.Flag.ANSWERED, value);
                     break;
                 case 2:
-                    if(folderTo!=null){
+                    if (folderTo != null) {
                         folderTo.open(Folder.READ_WRITE);
                         folder.copyMessages(new Message[]{message}, folderTo);
                     }
-                    message.setFlag(Flags.Flag.DELETED,value);
+                    message.setFlag(Flags.Flag.DELETED, value);
                     break;
                 case 4:
-                    message.setFlag(Flags.Flag.DRAFT,value);
+                    message.setFlag(Flags.Flag.DRAFT, value);
                     break;
                 case 8:
-                    message.setFlag(Flags.Flag.FLAGGED,value);
+                    message.setFlag(Flags.Flag.FLAGGED, value);
                     break;
                 case 16:
-                    message.setFlag(Flags.Flag.RECENT,value);
+                    message.setFlag(Flags.Flag.RECENT, value);
                     break;
                 case 32:
-                    message.setFlag(Flags.Flag.SEEN,value);
+                    message.setFlag(Flags.Flag.SEEN, value);
                     break;
             }
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(folder!=null && folder.isOpen()){
+        } finally {
+            if (folder != null && folder.isOpen()) {
                 folder.close(false);
             }
-            if(folderTo!=null && folderTo.isOpen()){
+            if (folderTo != null && folderTo.isOpen()) {
                 folderTo.close(true);
             }
             imapStore.close();
 
 
-
         }
         return false;
     }
+
     /**
      * 使用gmail API标记已读未读
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -2401,118 +2572,118 @@ class EmailCore {
             KLog.i("Message id: " + message.getId());
             KLog.i(message.toPrettyString());
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
         }
         return false;
     }
+
     /**
      * 使用IMAP协议接收服务器上的邮件附件
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean gmailDeleteMail(Gmail gmailService,String userId,String threadId,Boolean delete) throws MessagingException, IOException {
+    public boolean gmailDeleteMail(Gmail gmailService, String userId, String threadId, Boolean delete) throws MessagingException, IOException {
         try {
-            if(delete)
-            {
+            if (delete) {
                 //彻底删除
                 gmailService.users().threads().delete(userId, threadId).execute();
-            }else{
+            } else {
                 //移动到“已删除”
                 gmailService.users().messages().trash(userId, threadId).execute();
             }
             KLog.i("Thread with id: " + threadId + " deleted successfully.");
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
         }
         return false;
     }
+
     /**
      * 使用IMAP协议保存已发送或者草稿箱
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean imapSaveMail(Message message, String toMenu,String flag) throws MessagingException, IOException {
+    public boolean imapSaveMail(Message message, String toMenu, String flag) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
-            if(flag.equals("draf"))
-            {
-                message.setFlag(Flags.Flag.DRAFT,true);
-                message.setFlag(Flags.Flag.SEEN,true);
+            if (flag.equals("draf")) {
+                message.setFlag(Flags.Flag.DRAFT, true);
+                message.setFlag(Flags.Flag.SEEN, true);
             }
-            folder.appendMessages(new Message[] { message });
+            folder.appendMessages(new Message[]{message});
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(folder!=null && folder.isOpen()){
+        } finally {
+            if (folder != null && folder.isOpen()) {
                 folder.close(false);
             }
             imapStore.close();
         }
         return false;
     }
+
     /**
      * 使用gmail API保存已发送或者草稿箱
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean gmailSaveMail(Message message,Gmail service, String userId) throws MessagingException, IOException {
-        try
-        {
-            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage)message);
+    public boolean gmailSaveMail(Message message, Gmail service, String userId) throws MessagingException, IOException {
+        try {
+            com.google.api.services.gmail.model.Message messageGmail = createMessageWithEmail((MimeMessage) message);
             Draft draft = new Draft();
             draft.setMessage(messageGmail);
             draft = service.users().drafts().create(userId, draft).execute();
             KLog.i("draft id: " + draft.getId());
             KLog.i(draft.toPrettyString());
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
     /**
      * 使用IMAP协议保存已发送或者草稿箱
+     *
      * @return
      * @throws MessagingException
      * @throws IOException
      */
     public boolean imapDeleteDrsftsMail(String uid, String toMenu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-        imapStore.connect(imapHost,Integer.parseInt(imapPort), account, password);
+        imapStore.connect(imapHost, Integer.parseInt(imapPort), account, password);
         IMAPFolder folder = (IMAPFolder) imapStore.getFolder(toMenu);
         folder.open(Folder.READ_WRITE);
         try {
-            Message message= folder.getMessageByUID(Long.valueOf(uid));
-            message.setFlag(Flags.Flag.DELETED,true);
+            Message message = folder.getMessageByUID(Long.valueOf(uid));
+            message.setFlag(Flags.Flag.DELETED, true);
             return true;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(folder!=null && folder.isOpen()){
+        } finally {
+            if (folder != null && folder.isOpen()) {
                 folder.close(false);
             }
             imapStore.close();
         }
         return false;
     }
+
     /**
-     *
      * @param host
      * @throws UnknownHostException
      */
@@ -2520,14 +2691,16 @@ class EmailCore {
         InetAddress inetAddress = InetAddress.getByName(host);
         byte[] bytes = inetAddress.getAddress();
         StringBuilder query = new StringBuilder(BLACK_HOLE);
-        for (byte octet : bytes){
-            int unsignedByte = (octet < 0)? octet + 256 : octet;
+        for (byte octet : bytes) {
+            int unsignedByte = (octet < 0) ? octet + 256 : octet;
             query.insert(0, unsignedByte + ".");
         }
         InetAddress.getByName(query.toString());
     }
+
     /**
      * 获得邮件主题
+     *
      * @param msg 邮件内容
      * @return 解码后的邮件主题
      */
@@ -2535,11 +2708,12 @@ class EmailCore {
         /*String subjectStr = getUTF8(msg.getSubject());
         String subjectStr2 = getUTF82(msg.getSubject());
         String subject = MimeUtility.unfold(msg.getSubject());*/
-        String  aa = msg.getHeader("subject")[0];
+        String aa = msg.getHeader("subject")[0];
         String bb = MimeUtility.decodeText(aa);
         String cc = MimeUtility.decodeText(msg.getSubject());
         return bb;
     }
+
     public static String decodeMime(String text) {
         if (text == null)
             return null;
@@ -2604,6 +2778,7 @@ class EmailCore {
             sb.append(part);
         return sb.toString();
     }
+
     private static class MimeTextPart {
         String charset;
         String encoding;
@@ -2633,8 +2808,10 @@ class EmailCore {
             }
         }
     }
+
     /**
      * 获得邮件发件人
+     *
      * @param msg 邮件内容
      * @return 姓名 <Email地址>
      * @throws MessagingException
@@ -2662,13 +2839,14 @@ class EmailCore {
      * <p>Message.RecipientType.TO  收件人</p>
      * <p>Message.RecipientType.CC  抄送</p>
      * <p>Message.RecipientType.BCC 密送</p>
-     * @param msg 邮件内容
+     *
+     * @param msg  邮件内容
      * @param type 收件人类型
      * @return 收件人1 <邮件地址1>, 收件人2 <邮件地址2>, ...
      * @throws MessagingException
      */
     public static String getReceiveAddress(MimeMessage msg, Message.RecipientType type) throws MessagingException {
-        StringBuffer receiveAddress = new StringBuffer();
+        StringBuilder receiveAddress = new StringBuilder();
         Address[] addresss = null;
         if (type == null) {
             addresss = msg.getAllRecipients();
@@ -2679,17 +2857,18 @@ class EmailCore {
         if (addresss == null || addresss.length < 1)
             return "";
         for (Address address : addresss) {
-            InternetAddress internetAddress = (InternetAddress)address;
+            InternetAddress internetAddress = (InternetAddress) address;
             receiveAddress.append(internetAddress.toUnicodeString()).append(",");
         }
 
-        receiveAddress.deleteCharAt(receiveAddress.length()-1); //删除最后一个逗号
+        receiveAddress.deleteCharAt(receiveAddress.length() - 1); //删除最后一个逗号
 
         return receiveAddress.toString();
     }
 
     /**
      * 获得邮件发送时间
+     *
      * @param msg 邮件内容
      * @return yyyy年mm月dd日 星期X HH:mm
      * @throws MessagingException
@@ -2707,12 +2886,13 @@ class EmailCore {
 
     /**
      * 判断邮件中是否包含附件
+     *
      * @param part 邮件内容
      * @return 邮件中存在附件返回true，不存在返回false
      * @throws MessagingException
      * @throws IOException
      */
-    public static boolean isContainAttachment(Part part,int count) throws MessagingException, IOException {
+    public static boolean isContainAttachment(Part part, int count) throws MessagingException, IOException {
         boolean flag = false;
         if (part.isMimeType("multipart/*")) {
             MimeMultipart multipart = (MimeMultipart) part.getContent();
@@ -2722,73 +2902,78 @@ class EmailCore {
                 String disp = bodyPart.getDisposition();
                 if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT))) {
                     flag = true;
-                    count ++;
+                    count++;
                 } else if (bodyPart.isMimeType("multipart/*")) {
-                    flag = isContainAttachment(bodyPart,count);
-                    if(flag)
-                    {
-                        count ++;
+                    flag = isContainAttachment(bodyPart, count);
+                    if (flag) {
+                        count++;
                     }
                 } else {
                     String contentType = bodyPart.getContentType();
                     if (contentType.indexOf("application") != -1) {
                         flag = true;
-                        count ++;
+                        count++;
                     }
 
                     if (contentType.indexOf("name") != -1) {
                         flag = true;
-                        count ++;
+                        count++;
                     }
                 }
 
                 //if (flag) break;
             }
         } else if (part.isMimeType("message/rfc822")) {
-            flag = isContainAttachment((Part)part.getContent(),count);
+            flag = isContainAttachment((Part) part.getContent(), count);
         }
         return flag;
     }
 
     /**
      * 判断邮件是否已读
+     *
      * @param msg 邮件内容
-     * @return 如果邮件已读返回true,否则返回false
+     * @return 如果邮件已读返回true, 否则返回false
      * @throws MessagingException
      */
     public static boolean isSeen(MimeMessage msg) throws MessagingException {
         return msg.getFlags().contains(Flags.Flag.SEEN);
     }
+
     /**
      * 判断邮件是否星标
+     *
      * @param msg 邮件内容
-     * @return 如果邮件已读返回true,否则返回false
+     * @return 如果邮件已读返回true, 否则返回false
      * @throws MessagingException
      */
     public static boolean isStar(MimeMessage msg) throws MessagingException {
         return msg.getFlags().contains(Flags.Flag.FLAGGED);
     }
+
     /**
      * ---判断此邮件是否已读，如果未读返回返回false,反之返回true---
      */
-    public boolean isNew(MimeMessage msg)throws MessagingException{
+    public boolean isNew(MimeMessage msg) throws MessagingException {
         boolean isnew = false;
         Flags flags = msg.getFlags();
-        Flags.Flag []flag = flags.getSystemFlags();
-        KLog.i("flags's length: "+flag.length);
-        for(int i=0;i<flag.length;i++){
-            if(flag[i] == Flags.Flag.SEEN){
-                isnew=true;
+        Flags.Flag[] flag = flags.getSystemFlags();
+        KLog.i("flags's length: " + flag.length);
+        for (int i = 0; i < flag.length; i++) {
+            if (flag[i] == Flags.Flag.SEEN) {
+                isnew = true;
                 KLog.i("seen Message.......");
                 break;
             }
         }
         return isnew;
     }
+
     /**
      * 判断邮件是否需要阅读回执
+     *
      * @param msg 邮件内容
-     * @return 需要回执返回true,否则返回false
+     * @return 需要回执返回true, 否则返回false
      * @throws MessagingException
      */
     public static boolean isReplySign(MimeMessage msg) throws MessagingException {
@@ -2801,6 +2986,7 @@ class EmailCore {
 
     /**
      * 获得邮件的优先级
+     *
      * @param msg 邮件内容
      * @return 1(High):紧急  3:普通(Normal)  5:低(Low)
      * @throws MessagingException
@@ -2822,76 +3008,79 @@ class EmailCore {
 
     /**
      * 获得邮件文本内容
-     * @param part 邮件体
+     *
+     * @param part    邮件体
      * @param content 存储邮件文本内容的字符串
      * @throws MessagingException
      * @throws IOException
      */
-    public static void getMailTextContent(Part part, StringBuffer content) throws MessagingException, IOException {
+    public static void getMailTextContent(Part part, StringBuilder content) throws MessagingException, IOException {
         //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
         boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
         if (part.isMimeType("text/*") && !isContainTextAttach) {
             content.append(part.getContent().toString());
         } else if (part.isMimeType("message/rfc822")) {
-            getMailTextContent((Part)part.getContent(),content);
+            getMailTextContent((Part) part.getContent(), content);
         } else if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();
             int partCount = multipart.getCount();
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
-                getMailTextContent(bodyPart,content);
+                getMailTextContent(bodyPart, content);
             }
         }
     }
-    public static void getMailTextContent2(Part part, StringBuffer content, boolean plainFlag) throws MessagingException, IOException {
+
+    public static void getMailTextContent2(Part part, StringBuilder content, boolean plainFlag) throws MessagingException, IOException {
         //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
         //LogUtil.addLogEmail("Email_getMailTextContent:"+contentType.toLowerCase(),"EmailCore");
         boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
-        LogUtil.addLogEmail("Email_isContainTextAttach:"+isContainTextAttach +"##plainFlag:"+plainFlag,"EmailCore");
+        LogUtil.addLogEmail("Email_isContainTextAttach:" + isContainTextAttach + "##plainFlag:" + plainFlag, "EmailCore");
         if (part.isMimeType("text/plain") && !isContainTextAttach && plainFlag) {
-            LogUtil.addLogEmail("Email_text/plain:"+part.getContent().toString(),"EmailCore");
+            LogUtil.addLogEmail("Email_text/plain:" + part.getContent().toString(), "EmailCore");
             String decodeTxt = MimeUtility.decodeText(part.getContent().toString());
             content.append(decodeTxt);
-            LogUtil.addLogEmail("Email_text/plain_decode:"+decodeTxt,"EmailCore");
-        } else if(part.isMimeType("text/html") && !isContainTextAttach && !plainFlag){
-            LogUtil.addLogEmail("Email_text/html:"+part.getContent().toString(),"EmailCore");
+            LogUtil.addLogEmail("Email_text/plain_decode:" + decodeTxt, "EmailCore");
+        } else if (part.isMimeType("text/html") && !isContainTextAttach && !plainFlag) {
+            LogUtil.addLogEmail("Email_text/html:" + part.getContent().toString(), "EmailCore");
             content.append(part.getContent().toString());
             plainFlag = false;
         } else if (part.isMimeType("message/rfc822")) {
-            LogUtil.addLogEmail("Email_message/rfc822:"+content.toString(),"EmailCore");
-            getMailTextContent2((Part)part.getContent(),content,plainFlag);
+            LogUtil.addLogEmail("Email_message/rfc822:" + content.toString(), "EmailCore");
+            getMailTextContent2((Part) part.getContent(), content, plainFlag);
         } else if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();
             int partCount = multipart.getCount();
-            LogUtil.addLogEmail("Email_multipart/*:"+content.toString()+"##partCount:"+partCount,"EmailCore");
+            LogUtil.addLogEmail("Email_multipart/*:" + content.toString() + "##partCount:" + partCount, "EmailCore");
             for (int i = 0; i < partCount; i++) {
                 BodyPart bodyPart = multipart.getBodyPart(i);
-                LogUtil.addLogEmail("Email_multipart/*_for:"+content.toString()+"##partCount:"+partCount,"EmailCore");
-                getMailTextContent2(bodyPart,content,plainFlag);
+                LogUtil.addLogEmail("Email_multipart/*_for:" + content.toString() + "##partCount:" + partCount, "EmailCore");
+                getMailTextContent2(bodyPart, content, plainFlag);
             }
         }
-        LogUtil.addLogEmail("Email_over:"+content.toString(),"EmailCore");
+        LogUtil.addLogEmail("Email_over:" + content.toString(), "EmailCore");
     }
-    public static String getHtmlText(String htmlStr)
-    {
-        if(htmlStr.contains("/head>"))
-        {
+
+    public static String getHtmlText(String htmlStr) {
+        if (htmlStr.contains("/head>")) {
             int begin = htmlStr.indexOf("/head>") + 6;
-            htmlStr = htmlStr.substring(begin,htmlStr.length());
+            htmlStr = htmlStr.substring(begin, htmlStr.length());
         }
         String regFormat = "\\t|\r|\n";
         String regTag = "<[^>]*>";
-        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;"," ").replaceAll("&quot;","");
+        String text = htmlStr.replaceAll(regFormat, "").replaceAll(regTag, "").replaceAll("&nbsp;", " ").replaceAll("&quot;", "");
         return text;
     }
+
     /**
      * 获得邮件文本内容
-     * @param part 邮件体
+     *
+     * @param part    邮件体
      * @param content 存储邮件文本内容的字符串
      * @throws MessagingException
      * @throws IOException
      */
-    public static void getOnlyMailTextContent(Part part, StringBuffer content) throws MessagingException, IOException {
+    public static void getOnlyMailTextContent(Part part, StringBuilder content) throws MessagingException, IOException {
         //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
         if (part.isMimeType("text/*")) {
             content.append(part.getContent().toString());
@@ -2899,10 +3088,12 @@ class EmailCore {
             content.append("");
         }
     }
+
     /**
      * 保存附件
-     * @param part 邮件中多个组合体中的其中一个组合体
-     * @param destDir  附件保存目录
+     *
+     * @param part    邮件中多个组合体中的其中一个组合体
+     * @param destDir 附件保存目录
      * @throws UnsupportedEncodingException
      * @throws MessagingException
      * @throws FileNotFoundException
@@ -2923,7 +3114,7 @@ class EmailCore {
                     InputStream is = bodyPart.getInputStream();
                     saveFile(is, destDir, decodeText(bodyPart.getFileName()));
                 } else if (bodyPart.isMimeType("multipart/*")) {
-                    saveAttachment(bodyPart,destDir);
+                    saveAttachment(bodyPart, destDir);
                 } else {
                     String contentType = bodyPart.getContentType();
                     if (contentType.indexOf("name") != -1 || contentType.indexOf("application") != -1) {
@@ -2932,15 +3123,16 @@ class EmailCore {
                 }
             }
         } else if (part.isMimeType("message/rfc822")) {
-            saveAttachment((Part) part.getContent(),destDir);
+            saveAttachment((Part) part.getContent(), destDir);
         }
     }
 
     /**
      * 读取输入流中的数据保存至指定目录
-     * @param is 输入流
+     *
+     * @param is       输入流
      * @param fileName 文件名
-     * @param destDir 文件存储目录
+     * @param destDir  文件存储目录
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -2960,6 +3152,7 @@ class EmailCore {
 
     /**
      * 文本解码
+     *
      * @param encodeText 解码MimeUtility.encodeText(String text)方法编码后的文本
      * @return 解码后的文本
      * @throws UnsupportedEncodingException
@@ -2971,26 +3164,24 @@ class EmailCore {
             return MimeUtility.decodeText(encodeText);
         }
     }
-    public static String getUTF8(String source)
-    {
+
+    public static String getUTF8(String source) {
         String newStr = source;
         try {
             newStr = new String(source.getBytes("UTF-8"), "ISO-8859-1");
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
-        return  newStr;
+        return newStr;
     }
-    public static String getUTF82(String source)
-    {
+
+    public static String getUTF82(String source) {
         String newStr = source;
         try {
             newStr = new String(source.getBytes("ISO-8859-1"), "UTF-8");
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
-        return  newStr;
+        return newStr;
     }
 }

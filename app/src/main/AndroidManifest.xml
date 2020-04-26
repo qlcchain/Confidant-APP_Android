@@ -41,7 +41,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
-    <uses-permission android:name="com.huawei.perission.sec.MDM" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
@@ -62,8 +61,6 @@
     <!--这里com.xiaomi.mipushdemo改成app的包名-->
 
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-
-    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" />
 
     <application
         android:name=".application.AppConfig"
@@ -541,6 +538,13 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="360" />
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="650" />
+
         <service android:name=".data.service.MessageRetrievalService" />
         <service android:name=".data.service.FileTransformService" />
         <service
@@ -644,45 +648,7 @@
             </intent-filter>
         </receiver>
         <!--集成华为推送-->
-        <!-- value的值“xxx”用实际申请的应用ID替换，来源于开发者联盟网站应用的服务详情。-->
-        <meta-data
-            android:name="com.huawei.hms.client.appid"
-            android:value="appid=100667397"></meta-data>
-        <!--“xxx”用实际的类名替换, ${PACKAGE_NAME} 要替换上您应用的包名-->
-        <receiver android:name=".reciver.HuaweiPushReceiver"
-            android:permission="com.stratagile.pnrouter.permission.PROCESS_PUSH_MSG">
-            <intent-filter>
-                <!-- 必须,用于接收token -->
-                <action android:name="com.huawei.android.push.intent.REGISTRATION" />
-                <!-- 必须, 用于接收透传消息 -->
-                <action android:name="com.huawei.android.push.intent.RECEIVE" />
-                <!-- 必须, 用于接收通知栏消息点击事件 此事件不需要开发者处理，只需注册就可以-->
-                <action android:name="com.huawei.intent.action.PUSH_DELAY_NOTIFY"/>
-            </intent-filter>
-        </receiver>
 
-        <activity
-            android:name="com.huawei.hms.activity.BridgeActivity"
-            android:configChanges="orientation|locale|screenSize|layoutDirection|fontScale"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent" >
-            <meta-data
-                android:name="hwc-theme"
-                android:value="androidhwext:style/Theme.Emui.Translucent" />
-        </activity>
-        <activity
-            android:name="com.huawei.android.hms.agent.common.HMSAgentActivity"
-            android:configChanges="orientation|locale|screenSize|layoutDirection|fontScale"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent" >
-            <meta-data
-                android:name="hwc-theme"
-                android:value="androidhwext:style/Theme.Emui.Translucent" />
-        </activity>
         <activity android:name=".ui.activity.group.GroupInfoActivity" android:screenOrientation="portrait" />
         <activity android:name=".ui.activity.group.RemoveGroupDetailMemberActivity" android:screenOrientation="portrait" />
         <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" android:screenOrientation="portrait" />
@@ -791,6 +757,17 @@
         <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <meta-data android:name="JPUSH_APPKEY" android:value="590fe4b2a75e8f169cab50fd" /> <!--  </>值来自开发者平台取得的AppKey-->
+        <meta-data
+            android:name="push_kit_auto_init_enabled"
+            android:value="true" />
+
+        <service
+            android:name="com.stratagile.pnrouter.data.service.MyPushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

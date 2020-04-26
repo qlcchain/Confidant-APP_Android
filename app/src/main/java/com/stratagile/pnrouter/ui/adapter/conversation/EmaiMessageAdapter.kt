@@ -110,9 +110,9 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
                 endIndex = originalTextCunNew.length
             }
             originalTextCunNew =  originalTextCunNew.substring(0,endIndex)*/
-            message.setText(originalTextCun)
+            message.setText(originalTextCun.trim())
         }else{
-            message.setText(item.contentText)
+            message.setText(item.contentText.trim())
         }
         var time = helper.getView<TextView>(R.id.time)
         time.setText( DateUtil.getTimestampString(DateUtil.getDate(item.date), AppConfig.instance))

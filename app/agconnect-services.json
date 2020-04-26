@@ -1,0 +1,27 @@
+{
+	"agcgw":{
+		"backurl":"connect-drcn.dbankcloud.cn",
+		"url":"connect-drcn.hispace.hicloud.com"
+	},
+	"client":{
+		"cp_id":"890086000102253610",
+		"product_id":"7519896637536742059",
+		"client_id":"339501127634519232",
+		"client_secret":"89ABF6B6B75CE455A56F6A10236D973B4223B9E60749B8EE4A5D60E4DB23E524",
+		"app_id":"102030623",
+		"package_name":"com.stratagile.pnrouter",
+		"api_key":"CV67VsQx6L6EwvSKBD/Q+/Xi/SRHXhV5tpZA5AejGpnidyk/Y0wwywZBX/H6SEurVOo6tDifzU0RfDQ1bmT2En3aSPzh"
+	},
+	"service":{
+		"analytics":{
+			"collector_url":"datacollector-drcn.dt.hicloud.com,datacollector-drcn.dt.dbankcloud.cn",
+			"resource_id":"p1",
+			"channel_id":""
+		},
+		"ml":{
+			"mlservice_url":"ml-api-drcn.ai.dbankcloud.com,ml-api-drcn.ai.dbankcloud.cn"
+		}
+	},
+	"region":"CN",
+	"configuration_version":"1.0"
+}
