@@ -46,6 +46,32 @@ public class UserEntity implements Parcelable{
     private int friendStatus;
     //是否为我加对方
     private boolean addFromMe;
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", index='" + index + '\'' +
+                ", routerUserId='" + routerUserId + '\'' +
+                ", signPublicKey='" + signPublicKey + '\'' +
+                ", RouteId='" + RouteId + '\'' +
+                ", RouteName='" + RouteName + '\'' +
+                ", routerAlias='" + routerAlias + '\'' +
+                ", miPublicKey='" + miPublicKey + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", nickSouceName='" + nickSouceName + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", noteName='" + noteName + '\'' +
+                ", friendStatus=" + friendStatus +
+                ", addFromMe=" + addFromMe +
+                ", timestamp=" + timestamp +
+                ", validationInfo='" + validationInfo + '\'' +
+                ", Mails='" + Mails + '\'' +
+                '}';
+    }
+
     //第一次通信的时间戳
     private long timestamp;
 

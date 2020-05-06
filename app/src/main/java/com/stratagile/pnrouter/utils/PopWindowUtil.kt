@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.entity.file.Arrange
 import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.telegram.BottomSheet
 import com.stratagile.pnrouter.ui.adapter.file.SelectPictureAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
@@ -39,8 +40,8 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.ease_chat_menu_item.view.*
 import kotlinx.android.synthetic.main.email_send_edit.*
 import kotlinx.android.synthetic.main.emailpassword_bar.*
-
-import java.util.ArrayList
+import java.util.*
+import kotlin.collections.HashMap
 
 
 /**
@@ -328,17 +329,24 @@ object PopWindowUtil {
     fun showPopMenuWindow(activity: Activity, showView: View,menuList: ArrayList<String>,iconList: ArrayList<String>, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
-//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
-        val translate = TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
-        )
-        translate.duration = 200
-        contentView.animation = translate
+        val bt_cancal = maskView.findViewById<View>(R.id.bt_cancal)
+        val builder = BottomSheet.Builder(activity)
+        builder.setApplyTopPadding(false)
+
+        builder.setCustomView(maskView)
+        builder.create().setOnDismissListener {
+            onRouterSelectListener.onSelect(-1, FileOpreateType("", ""))
+        }
+
+//        val translate = TranslateAnimation(
+//                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+//                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+//        )
+//        translate.duration = 200
+//        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
-        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
-        ll_file.visibility = View.GONE
+//        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
+//        ll_file.visibility = View.GONE
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
         var list = arrayListOf<FileOpreateType>();
@@ -352,25 +360,33 @@ object PopWindowUtil {
         val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            CustomPopWindow.onBackPressed()
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
-        }
-        maskView.setOnSystemUiVisibilityChangeListener {
-            KLog.i("改变了。。。")
-        }
-        //对具体的view的事件的处理
-        maskView.setOnClickListener {
-            CustomPopWindow.onBackPressed()
+            builder.create().dismiss()
         }
 
-        CustomPopWindow.PopupWindowBuilder(activity)
-                .setView(maskView)
-                .setClippingEnable(false)
-                .setContenView(contentView)
-                .setFocusable(false)
-                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
-                .create()
-                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+
+        bt_cancal.setOnClickListener {
+            builder.create().dismiss()
+        }
+        builder.create().show()
+
+
+//        maskView.setOnSystemUiVisibilityChangeListener {
+//            KLog.i("改变了。。。")
+//        }
+//        //对具体的view的事件的处理
+//        maskView.setOnClickListener {
+//            CustomPopWindow.onBackPressed()
+//        }
+//
+//        CustomPopWindow.PopupWindowBuilder(activity)
+//                .setView(maskView)
+//                .setClippingEnable(false)
+//                .setContenView(contentView)
+//                .setFocusable(false)
+//                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+//                .create()
+//                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
     /**
      * @param activity 上下文

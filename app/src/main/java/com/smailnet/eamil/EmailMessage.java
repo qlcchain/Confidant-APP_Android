@@ -49,7 +49,16 @@ public class EmailMessage {
 
     }
 
-
+    public EmailMessage(String id, String subject, String from, String to, String cc, String bcc, String date, Message message) {
+        this.id = id;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.date = date;
+        this.message = message;
+    }
 
     public EmailMessage(Message message, String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen, boolean isStar, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content, String contentText) {
         this.message = message;

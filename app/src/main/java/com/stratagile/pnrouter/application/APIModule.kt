@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.data.api.HttpInfoInterceptor
 import com.stratagile.pnrouter.data.api.RequestBodyInterceptor
 import com.stratagile.pnrouter.data.qualifier.Remote
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.socks.library.KLog
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -90,29 +91,29 @@ class APIModule(private val application: Application) {
     open class PipeConnectivityListener : ConnectivityListener {
 
         override fun onConnected() {
-            Log.i("APIModule", "onConnected()")
+            KLog.i("onConnected()")
             ConstantValue.isWebsocketConnected = true
             EventBus.getDefault().post(ConnectStatus(0))
         }
 
         override fun onConnecting() {
-            Log.i("APIModule", "onConnecting()")
+            KLog.i("onConnecting()")
             ConstantValue.isWebsocketConnected = false
             EventBus.getDefault().post(ConnectStatus(1))
         }
 
         override fun onDisconnected() {
             ConstantValue.isWebsocketConnected = false
-            Log.w("APIModule", "onDisconnected()")
+            KLog.i("onDisconnected()")
             EventBus.getDefault().post(ConnectStatus(2))
         }
         override fun onConnectFail() {
             ConstantValue.isWebsocketConnected = false
-            Log.w("APIModule", "onConnectFail()")
+            KLog.i("onConnectFail()")
             EventBus.getDefault().post(ConnectStatus(3))
         }
         override fun onAuthenticationFailure() {
-            Log.w("APIModule", "onAuthenticationFailure()")
+            KLog.i("onAuthenticationFailure()")
 //            TextSecurePreferences.setUnauthorizedReceived(application, true)
             EventBus.getDefault().post(ReminderUpdateEvent())
         }

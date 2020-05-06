@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
 import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
@@ -173,7 +174,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 needUpdate.add(myRouter);
             }
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
-            LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
@@ -183,6 +183,18 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             newRouterEntity.adminName = loginRsp.params!!.adminName
             newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
+            LocalRouterUtils.updateList(needUpdate)
+            var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+            var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+            autoLoginEntity.userId = loginRsp.params!!.userId
+            autoLoginEntity.userNickName = loginRsp.params!!.nickName
+            autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+            autoLoginEntity.routerId = loginRsp.params!!.routerid
+            autoLoginEntity.routerSn = ConstantValue.currentRouterSN
+            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+
+            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, newRouterEntity.userSn)
+
             ConstantValue.isCurrentRouterAdmin =  loginRsp.params!!.userSn.indexOf("01") == 0
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -1049,7 +1061,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 }
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
-                            }else{
+                            }else
+                            {
                                 // 通过http看是否有远程的路由器可以登录
                                 KLog.i("通过http看是否有远程的路由器可以登录")
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {

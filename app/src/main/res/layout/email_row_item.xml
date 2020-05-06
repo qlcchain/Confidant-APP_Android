@@ -44,7 +44,7 @@
         android:ellipsize="end"
         android:layout_above="@+id/subject"
         android:maxEms="14"
-        android:text="novaaaaaaaa"
+        android:text="-/-"
         android:layout_toRightOf="@id/avatar_container"
         android:textColor="@color/emailtextColor"
         android:textSize="15sp" />
@@ -57,7 +57,7 @@
         android:ellipsize="end"
         android:layout_centerVertical="true"
         android:maxEms="14"
-        android:text="novaaaaaaaa"
+        android:text="-/-"
         android:layout_toRightOf="@id/avatar_container"
         android:textColor="@color/emailtextColor"
         android:textSize="13sp" />
@@ -165,7 +165,7 @@
         android:layout_toRightOf="@id/avatar_container"
         android:layout_marginLeft="12dp"
         android:layout_below="@+id/subject"
-        android:text="dfdfdffwefwefweefwfewfwefwefwefewfwefwe fwefwe "
+        android:text="-/-"
         android:ellipsize="end"
         android:layout_marginTop="@dimen/x4"
         android:singleLine="true"

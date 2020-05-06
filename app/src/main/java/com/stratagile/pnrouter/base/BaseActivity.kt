@@ -45,6 +45,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
     var mainColor = R.color.white
+    var statusBarColor = R.color.white
     lateinit var progressDialog: RxDialogLoading
     lateinit var title: TextView
     val point = Point()
@@ -208,7 +209,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         if (isEditActivity) {
             relativeLayout_root.layoutParams = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(42f, this))
             view.visibility = View.GONE
-            StatusBarUtil.setColor(this, resources.getColor(R.color.white), 0)
+            StatusBarUtil.setColor(this, resources.getColor(statusBarColor), 0)
         }
     }
 

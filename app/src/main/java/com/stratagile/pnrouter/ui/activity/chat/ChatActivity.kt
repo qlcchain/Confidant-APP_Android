@@ -84,8 +84,7 @@ import kotlin.collections.ArrayList
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener, SimpleFragmentAdapter.OnPictureLongClick {
 
 
-
-    override fun onLongClick(path: String?,mContext:Activity,viewShow: View) {
+    override fun onLongClick(path: String?, mContext: Activity, viewShow: View) {
         isAddMenu = 0;
         hasQRCode = "";
         image = viewShow;
@@ -95,16 +94,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         list.add("Save Image")
         if (hasQRCode != null && hasQRCode != "") {
             list.add("Scan QR Code in Image")
-        }else{
+        } else {
             Thread(Runnable {
-                if(hasQRCode == null || hasQRCode.equals(""))
-                {
+                if (hasQRCode == null || hasQRCode.equals("")) {
                     EventBus.getDefault().post(AddMenu())
                 }
             }).start()
         }
-        PopWindowUtil.showSelecMenuPopWindow(mContext, image!!, list, object : PopWindowUtil.OnSelectListener
-        {
+        PopWindowUtil.showSelecMenuPopWindow(mContext, image!!, list, object : PopWindowUtil.OnSelectListener {
             override fun onSelect(position: Int, obj: Any) {
 
                 val choose = obj.toString()
@@ -129,15 +126,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         }
                         EventBus.getDefault().post(SaveMsgEvent("", result))
                     }
-                    "Scan QR Code in Image" ->
-                    {
+                    "Scan QR Code in Image" -> {
                         var result = hasQRCode
-                        var type = result!!.substring(0,6);
-                        var data = result!!.substring(7,result!!.length);
-                        var soureData:ByteArray =  ByteArray(0)
-                        if(!type.equals("type_0"))
-                        {
-                            soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                        var type = result!!.substring(0, 6);
+                        var data = result!!.substring(7, result!!.length);
+                        var soureData: ByteArray = ByteArray(0)
+                        if (!type.equals("type_0")) {
+                            soureData = AESCipher.aesDecryptByte(data, "welcometoqlc0101")
                         }
                         if (hasQRCode!!.indexOf("http://") > -1 || hasQRCode!!.indexOf("https://") > -1) {
                             /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
@@ -149,7 +144,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             val url = Uri.parse(hasQRCode)
                             intent.data = url
                             startActivity(intent)
-                        } else if (!result!!.contains("type_")){
+                        } else if (!result!!.contains("type_")) {
                             if (NetUtils.isMacAddress(result)) {
                                 runOnUiThread {
                                     SweetAlertDialog(imageActivity, SweetAlertDialog.BUTTON_NEUTRAL)
@@ -157,11 +152,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                             .setConfirmClickListener {
                                                 imageActivity!!.finish()
                                                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                                var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                                 if (ConstantValue.isWebsocketConnected) {
-                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                                 } else if (ConstantValue.isToxConnected) {
-                                                    val baseData = BaseData(2,msgData)
+                                                    val baseData = BaseData(2, msgData)
                                                     val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                 }
@@ -169,41 +164,36 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                 isScanSwitch = true
                                                 scanType = 0;
                                                 RouterMacStr = result
-                                                if(RouterMacStr != null && !RouterMacStr.equals(""))
-                                                {
-                                                    if(AppConfig.instance.messageReceiver != null)
+                                                if (RouterMacStr != null && !RouterMacStr.equals("")) {
+                                                    if (AppConfig.instance.messageReceiver != null)
                                                         AppConfig.instance.messageReceiver!!.close()
-                                                    if(WiFiUtil.isWifiConnect())
-                                                    {
+                                                    if (WiFiUtil.isWifiConnect()) {
                                                         showProgressDialog("wait...")
-                                                        ConstantValue.currentRouterMac  = ""
+                                                        ConstantValue.currentRouterMac = ""
                                                         isFromScanAdmim = true
-                                                        var count =0;
+                                                        var count = 0;
                                                         KLog.i("测试计时器Mac" + count)
                                                         Thread(Runnable() {
                                                             run() {
                                                                 Thread.sleep(1500)
-                                                                while (true)
-                                                                {
-                                                                    if(count >=3)
-                                                                    {
-                                                                       /* if(ConstantValue.currentRouterMac.equals(""))
-                                                                        {
-                                                                            runOnUiThread {
-                                                                                closeProgressDialog()
-                                                                                RouterMacStr = ""
-                                                                                isFromScanAdmim = false
-                                                                                gotoLogin()
-                                                                                toast(R.string.Unable_to_connect_to_router)
-                                                                            }
-                                                                        }
-                                                                        Thread.currentThread().interrupt(); //方法调用终止线程
-                                                                        break;*/
-                                                                        if(!ConstantValue.currentRouterMac.equals(""))
-                                                                        {
+                                                                while (true) {
+                                                                    if (count >= 3) {
+                                                                        /* if(ConstantValue.currentRouterMac.equals(""))
+                                                                         {
+                                                                             runOnUiThread {
+                                                                                 closeProgressDialog()
+                                                                                 RouterMacStr = ""
+                                                                                 isFromScanAdmim = false
+                                                                                 gotoLogin()
+                                                                                 toast(R.string.Unable_to_connect_to_router)
+                                                                             }
+                                                                         }
+                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                         break;*/
+                                                                        if (!ConstantValue.currentRouterMac.equals("")) {
                                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                                             break;
-                                                                        }else{
+                                                                        } else {
                                                                             getMacFromRemote()
                                                                             break;
                                                                         }
@@ -213,16 +203,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                                         break;
                                                                     }*/
-                                                                    count ++;
-                                                                    MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                    var macAddress  = ""
+                                                                    count++;
+                                                                    MobileSocketClient.getInstance().init(handler, AppConfig.instance)
+                                                                    var macAddress = ""
                                                                     for (i in 0..5) {
                                                                         macAddress = macAddress + RouterMacStr.substring(i * 2, (i + 1) * 2) + ":"
                                                                     }
                                                                     macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
-                                                                    var toMacMi = AESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
+                                                                    var toMacMi = AESCipher.aesEncryptString(macAddress, "slph\$%*&^@-78231")
                                                                     MobileSocketClient.getInstance().destroy()
-                                                                    MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                                                    MobileSocketClient.getInstance().send("MAC" + toMacMi)
                                                                     MobileSocketClient.getInstance().receive()
                                                                     KLog.i("测试计时器Mac" + count)
                                                                     Thread.sleep(1000)
@@ -231,7 +221,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                             }
                                                         }).start()
 
-                                                    }else{
+                                                    } else {
                                                         /*runOnUiThread {
                                                             closeProgressDialog()
                                                             gotoLogin()
@@ -239,7 +229,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                         }*/
                                                         getMacFromRemote()
                                                     }
-                                                }else{
+                                                } else {
                                                     runOnUiThread {
                                                         closeProgressDialog()
                                                         toast(R.string.code_error)
@@ -261,8 +251,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             }
 
                             return;
-                        }
-                        else if (hasQRCode!!.contains("type_0")) {
+                        } else if (hasQRCode!!.contains("type_0")) {
                             val toAddUserId = hasQRCode!!.substring(7, hasQRCode!!.length)
                             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                             if (toAddUserId.contains(selfUserId!!)) {
@@ -328,7 +317,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             }
                         } else if (hasQRCode!!.contains("type_5")) {
                             var toAddUserId = hasQRCode!!.substring(7, hasQRCode!!.length)
-                            toAddUserId = String(AESCipher.aesDecryptByte(toAddUserId,"welcometoqlc0101"))
+                            toAddUserId = String(AESCipher.aesDecryptByte(toAddUserId, "welcometoqlc0101"))
                             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                             if (toAddUserId.contains(selfUserId!!)) {
                                 runOnUiThread {
@@ -339,19 +328,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 }
                                 return
                             }
-                            if (!"".equals(toAddUserId))
-                            {
+                            if (!"".equals(toAddUserId)) {
                                 var userEntity = UserEntity()
                                 var intent = Intent(AppConfig.instance, SendAddFriendActivity::class.java)
                                 var toAddUserKey = ""
-                                var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",")+1, toAddUserId!!.length)//前面6位为userSn
+                                var toAddUserKeyNoSn = toAddUserId!!.substring(toAddUserId.indexOf(",") + 1, toAddUserId!!.length)//前面6位为userSn
                                 toAddUserKey = toAddUserKeyNoSn!!.substring(0, toAddUserKeyNoSn!!.indexOf(","))
-                                var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",")+1, toAddUserKeyNoSn!!.length)//前面为userKey
-                                var FriendDevId = toAddUserKeyNoSnNoKey.substring(0,toAddUserKeyNoSnNoKey!!.indexOf(","))
+                                var toAddUserKeyNoSnNoKey = toAddUserKeyNoSn!!.substring(toAddUserKeyNoSn.indexOf(",") + 1, toAddUserKeyNoSn!!.length)//前面为userKey
+                                var FriendDevId = toAddUserKeyNoSnNoKey.substring(0, toAddUserKeyNoSnNoKey!!.indexOf(","))
 
-                                var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",")+1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
-                                var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0,toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
-                                var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",")+1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
+                                var toAddUserKeyNoSnNoKeyNoFid = toAddUserKeyNoSnNoKey!!.substring(toAddUserKeyNoSnNoKey.indexOf(",") + 1, toAddUserKeyNoSnNoKey!!.length)//前面为userName
+                                var nickName = toAddUserKeyNoSnNoKeyNoFid.substring(0, toAddUserKeyNoSnNoKeyNoFid!!.indexOf(","))
+                                var toAddUserKeyNoSnNoKeyNoFidNoName = toAddUserKeyNoSnNoKeyNoFid!!.substring(toAddUserKeyNoSnNoKeyNoFid.indexOf(",") + 1, toAddUserKeyNoSnNoKeyNoFid!!.length)//前面为userName
                                 var toAddUserIdTemp = toAddUserKeyNoSnNoKeyNoFidNoName
                                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                                 for (i in useEntityList) {
@@ -401,12 +389,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 intent.putExtra("typeData", "type_5")
                                 startActivity(intent)
                             }
-                        }else if (hasQRCode!!.contains("type_1")) {
+                        } else if (hasQRCode!!.contains("type_1")) {
 
                             scanType = 1
-                            val keyId:ByteArray = ByteArray(6) //密钥ID
-                            val RouterId:ByteArray = ByteArray(76) //路由器id
-                            val UserSn:ByteArray = ByteArray(32)  //用户SN
+                            val keyId: ByteArray = ByteArray(6) //密钥ID
+                            val RouterId: ByteArray = ByteArray(76) //路由器id
+                            val UserSn: ByteArray = ByteArray(32)  //用户SN
                             System.arraycopy(soureData, 0, keyId, 0, 6)
                             System.arraycopy(soureData, 6, RouterId, 0, 76)
                             System.arraycopy(soureData, 82, UserSn, 0, 32)
@@ -416,10 +404,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                             ConstantValue.scanRouterId = RouterIdStr
                             ConstantValue.scanRouterSN = UserSnStr
-                            if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
-                            {
-                                if(ConstantValue.currentRouterId.equals(RouterIdStr))
-                                {
+                            if (RouterIdStr != null && !RouterIdStr.equals("") && UserSnStr != null && !UserSnStr.equals("")) {
+                                if (ConstantValue.currentRouterId.equals(RouterIdStr)) {
                                     runOnUiThread {
                                         toast(R.string.The_same_circle_without_switching)
                                     }
@@ -433,77 +419,72 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                 imageActivity!!.finish()
                                                 showProgressDialog("wait...")
                                                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                                var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                                 if (ConstantValue.isWebsocketConnected) {
-                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                                 } else if (ConstantValue.isToxConnected) {
-                                                    val baseData = BaseData(2,msgData)
+                                                    val baseData = BaseData(2, msgData)
                                                     val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                 }
                                                 ConstantValue.loginReq = null
                                                 isScanSwitch = true
-                                                if(AppConfig.instance.messageReceiver != null)
+                                                if (AppConfig.instance.messageReceiver != null)
                                                     AppConfig.instance.messageReceiver!!.close()
                                                 ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
-                                                ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
-                                                ConstantValue.lastPort=  ConstantValue.port
-                                                ConstantValue.lastFilePort= ConstantValue.filePort
-                                                ConstantValue.lastRouterId =   ConstantValue.currentRouterId
-                                                ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+                                                ConstantValue.lastRouterIp = ConstantValue.currentRouterIp
+                                                ConstantValue.lastPort = ConstantValue.port
+                                                ConstantValue.lastFilePort = ConstantValue.filePort
+                                                ConstantValue.lastRouterId = ConstantValue.currentRouterId
+                                                ConstantValue.lastRouterSN = ConstantValue.currentRouterSN
 
                                                 isFromScan = true
                                                 ConstantValue.currentRouterIp = ""
-                                                if(WiFiUtil.isWifiConnect())
-                                                {
+                                                if (WiFiUtil.isWifiConnect()) {
                                                     showProgressDialog("wait...")
-                                                    var count =0;
+                                                    var count = 0;
                                                     KLog.i("测试计时器" + count)
                                                     Thread(Runnable() {
                                                         run() {
                                                             Thread.sleep(1500)
-                                                            while (true)
-                                                            {
-                                                                if(count >=3)
-                                                                {
-                                                                    if(!ConstantValue.currentRouterIp.equals(""))
-                                                                    {
+                                                            while (true) {
+                                                                if (count >= 3) {
+                                                                    if (!ConstantValue.currentRouterIp.equals("")) {
                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                                         break;
-                                                                    }else{
+                                                                    } else {
 
-                                                                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                            override fun onFailure( e :Exception) {
+                                                                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                            override fun onFailure(e: Exception) {
                                                                                 startToxAndRecovery()
                                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                             }
-                                                                            override fun  onResponse(json:String ) {
+
+                                                                            override fun onResponse(json: String) {
 
                                                                                 val gson = GsonUtil.getIntGson()
                                                                                 var httpData: HttpData? = null
                                                                                 try {
                                                                                     if (json != null) {
                                                                                         httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                        if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                                        {
+                                                                                        if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                             ConstantValue.curreantNetworkType = "WIFI"
                                                                                             ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                            ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                            ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                            ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                            ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                            if(ConstantValue.isHasWebsocketInit)
-                                                                                            {
+                                                                                            ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                            if (ConstantValue.isHasWebsocketInit) {
                                                                                                 AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                            }else{
+                                                                                            } else {
                                                                                                 ConstantValue.isHasWebsocketInit = true
                                                                                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                             }
                                                                                             //KLog.i("没有初始化。。设置loginBackListener"+_this)
                                                                                             //AppConfig.instance.messageReceiver!!.loginBackListener = _this
                                                                                             Thread.currentThread().interrupt() //方法调用终止线程
-                                                                                        }else{
+                                                                                        } else {
                                                                                             startToxAndRecovery()
                                                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                                                         }
@@ -519,11 +500,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                     }
 
                                                                 }
-                                                                count ++;
-                                                                MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                count++;
+                                                                MobileSocketClient.getInstance().init(handler, AppConfig.instance)
+                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr, "slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
-                                                                MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                                MobileSocketClient.getInstance().send("QLC" + toxIdMi)
                                                                 MobileSocketClient.getInstance().receive()
                                                                 KLog.i("测试计时器" + count)
                                                                 Thread.sleep(1000)
@@ -531,40 +512,38 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                                                         }
                                                     }).start()
-                                                }else{
+                                                } else {
                                                     showProgressDialog("wait...")
                                                     Thread(Runnable() {
                                                         run() {
-                                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                override fun onFailure( e :Exception) {
+                                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                override fun onFailure(e: Exception) {
                                                                     startToxAndRecovery()
                                                                 }
 
-                                                                override fun  onResponse(json:String ) {
+                                                                override fun onResponse(json: String) {
 
                                                                     val gson = GsonUtil.getIntGson()
                                                                     var httpData: HttpData? = null
                                                                     try {
                                                                         if (json != null) {
-                                                                            var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                            {
+                                                                            var httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                            if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                 ConstantValue.curreantNetworkType = "WIFI"
                                                                                 ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                if(ConstantValue.isHasWebsocketInit)
-                                                                                {
+                                                                                ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                if (ConstantValue.isHasWebsocketInit) {
                                                                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                }else{
+                                                                                } else {
                                                                                     ConstantValue.isHasWebsocketInit = true
                                                                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                 }
                                                                                 //KLog.i("没有初始化。。设置loginBackListener"+_this)
                                                                                 //AppConfig.instance.messageReceiver!!.loginBackListener = _this
-                                                                            }else{
+                                                                            } else {
                                                                                 startToxAndRecovery()
                                                                             }
 
@@ -582,16 +561,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 }
 
 
-                            }else{
+                            } else {
                                 runOnUiThread {
                                     toast(R.string.code_error)
                                 }
                             }
-                        }else if (hasQRCode!!.contains("type_2")) {
+                        } else if (hasQRCode!!.contains("type_2")) {
                             scanType = 0;
                             RouterMacStr = String(soureData)
-                            if(RouterMacStr != null && !RouterMacStr.equals(""))
-                            {
+                            if (RouterMacStr != null && !RouterMacStr.equals("")) {
                                 runOnUiThread {
                                     SweetAlertDialog(imageActivity, SweetAlertDialog.BUTTON_NEUTRAL)
                                             .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
@@ -599,34 +577,30 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                 imageActivity!!.finish()
                                                 showProgressDialog("wait...")
                                                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                                var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                                 if (ConstantValue.isWebsocketConnected) {
-                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                                 } else if (ConstantValue.isToxConnected) {
-                                                    val baseData = BaseData(2,msgData)
+                                                    val baseData = BaseData(2, msgData)
                                                     val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                 }
                                                 ConstantValue.loginReq = null
                                                 isScanSwitch = true
-                                                if(AppConfig.instance.messageReceiver != null)
+                                                if (AppConfig.instance.messageReceiver != null)
                                                     AppConfig.instance.messageReceiver!!.close()
-                                                if(WiFiUtil.isWifiConnect())
-                                                {
+                                                if (WiFiUtil.isWifiConnect()) {
                                                     showProgressDialog("wait...")
-                                                    ConstantValue.currentRouterMac  = ""
+                                                    ConstantValue.currentRouterMac = ""
                                                     isFromScanAdmim = true
-                                                    var count =0;
+                                                    var count = 0;
                                                     KLog.i("测试计时器Mac" + count)
                                                     Thread(Runnable() {
                                                         run() {
                                                             Thread.sleep(1500)
-                                                            while (true)
-                                                            {
-                                                                if(count >=3)
-                                                                {
-                                                                    if(ConstantValue.currentRouterMac.equals(""))
-                                                                    {
+                                                            while (true) {
+                                                                if (count >= 3) {
+                                                                    if (ConstantValue.currentRouterMac.equals("")) {
                                                                         runOnUiThread {
                                                                             closeProgressDialog()
                                                                             RouterMacStr = ""
@@ -636,16 +610,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                     }
                                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                                     break;
-                                                                }else if(!ConstantValue.currentRouterMac.equals(""))
-                                                                {
+                                                                } else if (!ConstantValue.currentRouterMac.equals("")) {
                                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                                     break;
                                                                 }
-                                                                count ++;
-                                                                MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                                count++;
+                                                                MobileSocketClient.getInstance().init(handler, AppConfig.instance)
+                                                                var toMacMi = AESCipher.aesEncryptString(RouterMacStr, "slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
-                                                                MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                                                MobileSocketClient.getInstance().send("MAC" + toMacMi)
                                                                 MobileSocketClient.getInstance().receive()
                                                                 KLog.i("测试计时器Mac" + count)
                                                                 Thread.sleep(1000)
@@ -654,7 +627,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                         }
                                                     }).start()
 
-                                                }else{
+                                                } else {
                                                     runOnUiThread {
                                                         closeProgressDialog()
                                                         toast(R.string.Please_connect_to_WiFi)
@@ -665,57 +638,54 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 }
 
 
-                            }else{
+                            } else {
                                 runOnUiThread {
                                     closeProgressDialog()
                                     toast(R.string.code_error)
                                 }
                             }
-                        }else if (hasQRCode!!.contains("type_3"))
-                        {
-                            try
-                            {
-                                var left = result.substring(7,result.length)
-                                var signprivatek = left.substring(0,left.indexOf(","))
-                                left = left.substring(signprivatek.length+1,left.length)
-                                var usersn = left.substring(0,left.indexOf(","))
-                                left = left.substring(usersn.length+1,left.length)
-                                var username = left.substring(0,left.length)
+                        } else if (hasQRCode!!.contains("type_3")) {
+                            try {
+                                var left = result.substring(7, result.length)
+                                var signprivatek = left.substring(0, left.indexOf(","))
+                                left = left.substring(signprivatek.length + 1, left.length)
+                                var usersn = left.substring(0, left.indexOf(","))
+                                left = left.substring(usersn.length + 1, left.length)
+                                var username = left.substring(0, left.length)
                                 username = String(RxEncodeTool.base64Decode(username))
                                 SpUtil.putString(AppConfig.instance, ConstantValue.username, username)
                                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
 
-                                if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
-                                {
+                                if (signprivatek.equals(ConstantValue.libsodiumprivateSignKey)) {
                                     toast(R.string.Same_account_no_need_to_import)
                                     return;
-                                }else{
+                                } else {
                                     runOnUiThread {
                                         SweetAlertDialog(imageActivity, SweetAlertDialog.BUTTON_NEUTRAL)
                                                 .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
                                                 .setConfirmClickListener {
                                                     imageActivity!!.finish()
-                                                    var type = result.substring(0,6);
-                                                    var left = result.substring(7,result.length)
-                                                    var signprivatek = left.substring(0,left.indexOf(","))
-                                                    left = left.substring(signprivatek.length+1,left.length)
-                                                    var usersn = left.substring(0,left.indexOf(","))
-                                                    left = left.substring(usersn.length+1,left.length)
-                                                    var username = left.substring(0,left.length)
+                                                    var type = result.substring(0, 6);
+                                                    var left = result.substring(7, result.length)
+                                                    var signprivatek = left.substring(0, left.indexOf(","))
+                                                    left = left.substring(signprivatek.length + 1, left.length)
+                                                    var usersn = left.substring(0, left.indexOf(","))
+                                                    left = left.substring(usersn.length + 1, left.length)
+                                                    var username = left.substring(0, left.length)
                                                     username = String(RxEncodeTool.base64Decode(username))
                                                     val localSignArrayList: java.util.ArrayList<CryptoBoxKeypair>
                                                     val localMiArrayList: java.util.ArrayList<CryptoBoxKeypair>
                                                     val gson = Gson()
 
                                                     var strSignPublicSouce = ByteArray(32)
-                                                    var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                                                    var signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
                                                     System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
 
 
                                                     var dst_public_SignKey = strSignPublicSouce
                                                     var dst_private_Signkey = signprivatekByteArray
-                                                    val strSignPrivate:String =  signprivatek
-                                                    val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
+                                                    val strSignPrivate: String = signprivatek
+                                                    val strSignPublic = RxEncodeTool.base64Encode2String(strSignPublicSouce)
                                                     ConstantValue.libsodiumprivateSignKey = strSignPrivate
                                                     ConstantValue.libsodiumpublicSignKey = strSignPublic
                                                     ConstantValue.localUserName = username
@@ -729,16 +699,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                     SignData.publicKey = strSignPublic
                                                     SignData.userName = username
                                                     localSignArrayList.add(SignData)
-                                                    FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+                                                    FileUtil.saveKeyData(gson.toJson(localSignArrayList), "libsodiumdata_sign")
 
 
                                                     var dst_public_MiKey = ByteArray(32)
                                                     var dst_private_Mikey = ByteArray(32)
-                                                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
-                                                    var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+                                                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey, dst_public_SignKey)
+                                                    var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey, dst_private_Signkey)
 
-                                                    val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
-                                                    val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                                                    val strMiPrivate: String = RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                                                    val strMiPublic = RxEncodeTool.base64Encode2String(dst_public_MiKey)
                                                     ConstantValue.libsodiumprivateMiKey = strMiPrivate
                                                     ConstantValue.libsodiumpublicMiKey = strMiPublic
                                                     ConstantValue.localUserName = username
@@ -752,8 +722,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                     RSAData.publicKey = strMiPublic
                                                     RSAData.userName = username
                                                     localMiArrayList.add(RSAData)
-                                                    FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
-                                                    FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
+                                                    FileUtil.saveKeyData(gson.toJson(localMiArrayList), "libsodiumdata_mi")
+                                                    FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath + "/RouterList/routerData.json")
                                                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                                     ConstantValue.loginReq = null
                                                     AppConfig.instance.deleteEmailData()
@@ -766,8 +736,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                 .show()
                                     }
                                 }
-                            }catch (e:Exception)
-                            {
+                            } catch (e: Exception) {
                                 runOnUiThread {
                                     closeProgressDialog()
                                     toast(R.string.code_error)
@@ -775,15 +744,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 e.printStackTrace();
                             }
 
-                        }else if (hasQRCode!!.contains("type_4")) {
+                        } else if (hasQRCode!!.contains("type_4")) {
                             var beginIndex = result.lastIndexOf(",")
-                            ConstantValue.waitAddFreind = result.substring(7,beginIndex);
-                            var data = result.substring(beginIndex+1,result.length);
-                            var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                            ConstantValue.waitAddFreind = result.substring(7, beginIndex);
+                            var data = result.substring(beginIndex + 1, result.length);
+                            var soureData: ByteArray = AESCipher.aesDecryptByte(data, "welcometoqlc0101")
                             scanType = 1
-                            val keyId:ByteArray = ByteArray(6) //密钥ID
-                            val RouterId:ByteArray = ByteArray(76) //路由器id
-                            val UserSn:ByteArray = ByteArray(32)  //用户SN
+                            val keyId: ByteArray = ByteArray(6) //密钥ID
+                            val RouterId: ByteArray = ByteArray(76) //路由器id
+                            val UserSn: ByteArray = ByteArray(32)  //用户SN
                             System.arraycopy(soureData, 0, keyId, 0, 6)
                             System.arraycopy(soureData, 6, RouterId, 0, 76)
                             System.arraycopy(soureData, 82, UserSn, 0, 32)
@@ -793,12 +762,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                             ConstantValue.scanRouterId = RouterIdStr
                             ConstantValue.scanRouterSN = UserSnStr
-                            if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
-                            {
-                                if(ConstantValue.currentRouterId.equals(RouterIdStr))
-                                {
-                                    if( ConstantValue.waitAddFreind!= null &&  ConstantValue.waitAddFreind!="")
-                                    {
+                            if (RouterIdStr != null && !RouterIdStr.equals("") && UserSnStr != null && !UserSnStr.equals("")) {
+                                if (ConstantValue.currentRouterId.equals(RouterIdStr)) {
+                                    if (ConstantValue.waitAddFreind != null && ConstantValue.waitAddFreind != "") {
                                         doWaitAddFreind(ConstantValue.waitAddFreind)
                                         ConstantValue.waitAddFreind = "";
                                     }
@@ -815,77 +781,72 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                 imageActivity!!.finish()
                                                 showProgressDialog("wait...")
                                                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                                var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                                var msgData = LogOutReq(ConstantValue.currentRouterId, selfUserId!!, ConstantValue.currentRouterSN)
                                                 if (ConstantValue.isWebsocketConnected) {
-                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
                                                 } else if (ConstantValue.isToxConnected) {
-                                                    val baseData = BaseData(2,msgData)
+                                                    val baseData = BaseData(2, msgData)
                                                     val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                 }
                                                 ConstantValue.loginReq = null
                                                 isScanSwitch = true
-                                                if(AppConfig.instance.messageReceiver != null)
+                                                if (AppConfig.instance.messageReceiver != null)
                                                     AppConfig.instance.messageReceiver!!.close()
                                                 ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
-                                                ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
-                                                ConstantValue.lastPort=  ConstantValue.port
-                                                ConstantValue.lastFilePort= ConstantValue.filePort
-                                                ConstantValue.lastRouterId =   ConstantValue.currentRouterId
-                                                ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+                                                ConstantValue.lastRouterIp = ConstantValue.currentRouterIp
+                                                ConstantValue.lastPort = ConstantValue.port
+                                                ConstantValue.lastFilePort = ConstantValue.filePort
+                                                ConstantValue.lastRouterId = ConstantValue.currentRouterId
+                                                ConstantValue.lastRouterSN = ConstantValue.currentRouterSN
 
                                                 isFromScan = true
                                                 ConstantValue.currentRouterIp = ""
-                                                if(WiFiUtil.isWifiConnect())
-                                                {
+                                                if (WiFiUtil.isWifiConnect()) {
                                                     showProgressDialog("wait...")
-                                                    var count =0;
+                                                    var count = 0;
                                                     KLog.i("测试计时器" + count)
                                                     Thread(Runnable() {
                                                         run() {
                                                             Thread.sleep(1500)
-                                                            while (true)
-                                                            {
-                                                                if(count >=3)
-                                                                {
-                                                                    if(!ConstantValue.currentRouterIp.equals(""))
-                                                                    {
+                                                            while (true) {
+                                                                if (count >= 3) {
+                                                                    if (!ConstantValue.currentRouterIp.equals("")) {
                                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                                         break;
-                                                                    }else{
+                                                                    } else {
 
-                                                                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                            override fun onFailure( e :Exception) {
+                                                                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                            override fun onFailure(e: Exception) {
                                                                                 startToxAndRecovery()
                                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                             }
-                                                                            override fun  onResponse(json:String ) {
+
+                                                                            override fun onResponse(json: String) {
 
                                                                                 val gson = GsonUtil.getIntGson()
                                                                                 var httpData: HttpData? = null
                                                                                 try {
                                                                                     if (json != null) {
                                                                                         httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                        if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                                        {
+                                                                                        if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                             ConstantValue.curreantNetworkType = "WIFI"
                                                                                             ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                            ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                            ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                            ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                            ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                            if(ConstantValue.isHasWebsocketInit)
-                                                                                            {
+                                                                                            ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                            if (ConstantValue.isHasWebsocketInit) {
                                                                                                 AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                            }else{
+                                                                                            } else {
                                                                                                 ConstantValue.isHasWebsocketInit = true
                                                                                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                             }
                                                                                             //KLog.i("没有初始化。。设置loginBackListener"+_this)
                                                                                             //AppConfig.instance.messageReceiver!!.loginBackListener = _this
                                                                                             Thread.currentThread().interrupt() //方法调用终止线程
-                                                                                        }else{
+                                                                                        } else {
                                                                                             startToxAndRecovery()
                                                                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                                                                         }
@@ -901,11 +862,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                                                     }
 
                                                                 }
-                                                                count ++;
-                                                                MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                                                count++;
+                                                                MobileSocketClient.getInstance().init(handler, AppConfig.instance)
+                                                                var toxIdMi = AESCipher.aesEncryptString(RouterIdStr, "slph\$%*&^@-78231")
                                                                 MobileSocketClient.getInstance().destroy()
-                                                                MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                                                MobileSocketClient.getInstance().send("QLC" + toxIdMi)
                                                                 MobileSocketClient.getInstance().receive()
                                                                 KLog.i("测试计时器" + count)
                                                                 Thread.sleep(1000)
@@ -913,40 +874,38 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                                                         }
                                                     }).start()
-                                                }else{
+                                                } else {
                                                     showProgressDialog("wait...")
                                                     Thread(Runnable() {
                                                         run() {
-                                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                                override fun onFailure( e :Exception) {
+                                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr, object : OkHttpUtils.OkCallback {
+                                                                override fun onFailure(e: Exception) {
                                                                     startToxAndRecovery()
                                                                 }
 
-                                                                override fun  onResponse(json:String ) {
+                                                                override fun onResponse(json: String) {
 
                                                                     val gson = GsonUtil.getIntGson()
                                                                     var httpData: HttpData? = null
                                                                     try {
                                                                         if (json != null) {
-                                                                            var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                            if(httpData != null  && httpData!!.retCode == 0 && httpData!!.connStatus == 1)
-                                                                            {
+                                                                            var httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                            if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
                                                                                 ConstantValue.curreantNetworkType = "WIFI"
                                                                                 ConstantValue.currentRouterIp = httpData!!.serverHost
-                                                                                ConstantValue.port = ":"+httpData!!.serverPort.toString()
-                                                                                ConstantValue.filePort = ":"+(httpData!!.serverPort +1).toString()
+                                                                                ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                                                ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
                                                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                                if(ConstantValue.isHasWebsocketInit)
-                                                                                {
+                                                                                ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                                                                if (ConstantValue.isHasWebsocketInit) {
                                                                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                }else{
+                                                                                } else {
                                                                                     ConstantValue.isHasWebsocketInit = true
                                                                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                                 }
                                                                                 //KLog.i("没有初始化。。设置loginBackListener"+_this)
                                                                                 //AppConfig.instance.messageReceiver!!.loginBackListener = _this
-                                                                            }else{
+                                                                            } else {
                                                                                 startToxAndRecovery()
                                                                             }
 
@@ -964,12 +923,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 }
 
 
-                            }else{
+                            } else {
                                 runOnUiThread {
                                     toast(R.string.code_error)
                                 }
                             }
-                        }else{
+                        } else {
                             runOnUiThread {
                                 closeProgressDialog()
                                 toast(R.string.code_error)
@@ -990,8 +949,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     private var bitmap: Bitmap? = null
     private var isDownloaded: Boolean = false
     private var hasQRCode: String? = ""
-    private lateinit var standaloneCoroutine : Job
-    var image:View? = null
+    private lateinit var standaloneCoroutine: Job
+    var image: View? = null
     var routerId = ""
     var userSn = ""
     var userId = ""
@@ -1006,7 +965,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     var add_activity = 6
     var isSendRegId = true
     var newRouterEntity = RouterEntity()
-    private var loginGoMain:Boolean = false
+    private var loginGoMain: Boolean = false
     var loginBack = false
     var isFromScan = false
     var isFromScanAdmim = false
@@ -1024,20 +983,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     var islogining = false
     var isloginOutTime = false
     var scanType = 0 // 0 admin   1 其他
-    var adminUserSn:String?  = null
+    var adminUserSn: String? = null
     var hasFinger = false
-    var name:Long  = 0;
+    var name: Long = 0;
     var activityFlag = ""
-    var imageActivity:Activity? = null;
+    var imageActivity: Activity? = null;
     var _this = this
     var isStartWebsocket = false
     override fun registerBack(registerRsp: JRegisterRsp) {
-        if(image == null)
-        {
+        if (image == null) {
             return;
         }
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
             runOnUiThread {
                 closeProgressDialog()
             }
@@ -1097,7 +1054,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             newRouterEntity.adminId = registerRsp.params!!.adminId
             newRouterEntity.adminName = registerRsp.params!!.adminName
             newRouterEntity.adminKey = registerRsp.params!!.adminKey
-            var localData: java.util.ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+            var localData: java.util.ArrayList<MyRouter> = LocalRouterUtils.localAssetsList
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -1105,32 +1062,29 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             LocalRouterUtils.insertLocalAssets(myRouter)
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             var sign = ByteArray(32)
-            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
             System.arraycopy(time, 0, sign, 0, time.size)
             var dst_signed_msg = ByteArray(96)
             var signed_msg_len = IntArray(1)
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
             var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-            val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+            val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
+            var login = LoginReq_V4(registerRsp.params.routeId, registerRsp.params.userSn, registerRsp.params.userId, signBase64, registerRsp.params.dataFileVersion, NickName)
             islogining = true
             ConstantValue.loginReq = login
-            if(ConstantValue.isWebsocketConnected)
-            {
+            if (ConstantValue.isWebsocketConnected) {
 
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
-            }
-            else if(ConstantValue.isToxConnected)
-            {
-                var baseData = BaseData(4,login)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(4, login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
                 }
             }
@@ -1142,12 +1096,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 //            KLog.i("过滤掉userid错误的请求")
 //            return
 //        }
-        if(image == null)
-        {
+        if (image == null) {
             return;
         }
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
             runOnUiThread {
                 closeProgressDialog()
             }
@@ -1158,8 +1110,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
         KLog.i(loginRsp.toString())
-        LogUtil.addLog("loginBack:"+loginRsp.params.retCode,"LoginActivityActivity")
-        if(standaloneCoroutine != null)
+        LogUtil.addLog("loginBack:" + loginRsp.params.retCode, "LoginActivityActivity")
+        if (standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 1) {
@@ -1167,38 +1119,32 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     toast(R.string.need_Verification)
                     closeProgressDialog()
                 }
-            }
-            else if (loginRsp.params.retCode == 2) {
+            } else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
                     toast(R.string.rid_error)
                     closeProgressDialog()
                 }
-            }
-            else if (loginRsp.params.retCode == 3) {
+            } else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
                     toast(R.string.uid_error)
                     closeProgressDialog()
                 }
-            }
-            else if (loginRsp.params.retCode == 4) {
+            } else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
                     toast(R.string.Validation_failed)
                     closeProgressDialog()
                 }
-            }
-            else if (loginRsp.params.retCode == 5) {
+            } else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
                     toast(R.string.Verification_code_error)
                     closeProgressDialog()
                 }
-            }
-            else if (loginRsp.params.retCode == 7) {
+            } else if (loginRsp.params.retCode == 7) {
                 runOnUiThread {
                     toast(R.string.The_account_has_expired)
                     closeProgressDialog()
                 }
-            }
-            else{
+            } else {
                 runOnUiThread {
                     toast(R.string.other_error)
                     closeProgressDialog()
@@ -1217,14 +1163,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
-            LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            LogUtil.addLog("loginBack:" + "begin", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userId, "userid")
             //FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
-            LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
-            LogUtil.addLog("loginBack:"+"b","LoginActivityActivity")
-            FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
-            LogUtil.addLog("loginBack:"+"c","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "a", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userSn, "usersn")
+            LogUtil.addLog("loginBack:" + "b", "LoginActivityActivity")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerid, "routerid")
+            LogUtil.addLog("loginBack:" + "c", "LoginActivityActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
@@ -1237,7 +1183,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
-            if(loginRsp.params.nickName != null)
+            if (loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
@@ -1255,11 +1201,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     break
                 }
             }
-            LogUtil.addLog("loginBack:"+"d","LoginActivityActivity")
-            var needUpdate : java.util.ArrayList<MyRouter> = java.util.ArrayList();
+            LogUtil.addLog("loginBack:" + "d", "LoginActivityActivity")
+            var needUpdate: java.util.ArrayList<MyRouter> = java.util.ArrayList();
             routerList.forEach {
                 it.lastCheck = false
-                var myRouter:MyRouter = MyRouter();
+                var myRouter: MyRouter = MyRouter();
                 myRouter.setType(0)
                 myRouter.setRouterEntity(it)
                 needUpdate.add(myRouter);
@@ -1270,12 +1216,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             newRouterEntity.dataFileVersion = 0
-            newRouterEntity.dataFilePay =  ""
+            newRouterEntity.dataFilePay = ""
             newRouterEntity.adminId = loginRsp.params!!.adminId
             newRouterEntity.adminName = loginRsp.params!!.adminName
             newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
-            ConstantValue.isCurrentRouterAdmin =  loginRsp.params!!.userSn.indexOf("01") == 0
+            ConstantValue.isCurrentRouterAdmin = loginRsp.params!!.userSn.indexOf("01") == 0
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -1283,7 +1229,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-            LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "e", "LoginActivityActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -1293,31 +1239,29 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 closeProgressDialog()
                 KLog.i("333")
             }
-            LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "f", "LoginActivityActivity")
             loginOk = true
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
             ConstantValue.isHeart = true
             resetUnCompleteFileRecode()
-            if(loginGoMain)
+            if (loginGoMain)
                 return
             isScanSwitch = false
             ConstantValue.isInit = false
             AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             startActivity(Intent(this, MainActivity::class.java))
-            loginGoMain  = true
-            LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
+            loginGoMain = true
+            LogUtil.addLog("loginBack:" + "g", "LoginActivityActivity")
             finish()
         }
     }
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
-        if(image == null)
-        {
+        if (image == null) {
             return;
         }
-        if(!isScanSwitch)
-        {
+        if (!isScanSwitch) {
             runOnUiThread {
                 closeProgressDialog()
             }
@@ -1329,7 +1273,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         ConstantValue.unSendMessageFriendId.remove("recovery")
         ConstantValue.unSendMessageSendCount.remove("recovery")
         when (recoveryRsp.params.retCode) {
-            0 ->{
+            0 -> {
                 ConstantValue.lastNetworkType = "";
                 /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
@@ -1368,27 +1312,24 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
                 }*/
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
                 //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-                var login = LoginReq_V4(  recoveryRsp.params.routeId,recoveryRsp.params.userSn, recoveryRsp.params.userId,signBase64, recoveryRsp.params.dataFileVersion,NickName)
+                var login = LoginReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, recoveryRsp.params.userId, signBase64, recoveryRsp.params.dataFileVersion, NickName)
                 islogining = true
                 ConstantValue.loginReq = login
-                if(ConstantValue.isWebsocketConnected)
-                {
+                if (ConstantValue.isWebsocketConnected) {
 
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
-                }
-                else if(ConstantValue.isToxConnected)
-                {
-                    var baseData = BaseData(4,login)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, login)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                 }
@@ -1401,31 +1342,28 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     showProgressDialog("waiting...")
                 }
 
-                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                var regeister = RegeisterReq_V4( recoveryRsp.params.routeId,recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                if(ConstantValue.isWebsocketConnected)
-                {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
-                }
-                else if(ConstantValue.isToxConnected)
-                {
-                    var baseData = BaseData(4,regeister)
+                var regeister = RegeisterReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64, pulicMiKey, NickName)
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, regeister))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, regeister)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         //var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
                         //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
                 }
@@ -1437,7 +1375,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
 
             }
-            3-> {
+            3 -> {
                 ConstantValue.lastNetworkType = "";
                 /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
@@ -1471,42 +1409,39 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }else{*/
-                    /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
-                      var intent = Intent(this, RegisterActivity::class.java)
-                      intent.putExtra("flag", 1)
-                      startActivity(intent)*/
-                    runOnUiThread {
-                        showProgressDialog("waiting...")
-                    }
+                /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
+                  var intent = Intent(this, RegisterActivity::class.java)
+                  intent.putExtra("flag", 1)
+                  startActivity(intent)*/
+                runOnUiThread {
+                    showProgressDialog("waiting...")
+                }
 
-                    val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
-                    var sign = ByteArray(32)
-                    var time = (System.currentTimeMillis() /1000).toString().toByteArray()
-                    System.arraycopy(time, 0, sign, 0, time.size)
-                    var dst_signed_msg = ByteArray(96)
-                    var signed_msg_len = IntArray(1)
-                    var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                    var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
-                    var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-                    //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                    var regeister = RegeisterReq_V4( recoveryRsp.params.routeId,recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                    if(ConstantValue.isWebsocketConnected)
-                    {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                val NickName = RxEncodeTool.base64Encode2String(ConstantValue.localUserName!!.toByteArray())
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                var regeister = RegeisterReq_V4(recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64, pulicMiKey, NickName)
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, regeister))
+                } else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(4, regeister)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        //var friendKey: FriendKey = FriendKey( recoveryRsp.params.routeId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
-                    else if(ConstantValue.isToxConnected)
-                    {
-                        var baseData = BaseData(4,regeister)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                            //var friendKey: FriendKey = FriendKey( recoveryRsp.params.routeId.substring(0, 64))
-                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }else{
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson,  recoveryRsp.params.routeId.substring(0, 64))
-                        }
-                    }
+                }
                 //}
 
             }
@@ -1538,18 +1473,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
-        if(jUpdateAvatarRsp.params.retCode == 0)
-        {
+        if (jUpdateAvatarRsp.params.retCode == 0) {
 
             var filePath = jUpdateAvatarRsp.params.fileName
-            var fileBase58Name = filePath.substring(8,filePath.length)
+            var fileBase58Name = filePath.substring(8, filePath.length)
             var fileName = String(Base58.decode(fileBase58Name));
             val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
-            var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
-            var msgId = Calendar.getInstance().timeInMillis /1000
-            FileDownloadUtils.doDownLoadWork(filledUri,"", fileSavePath, this, msgId.toInt(), handlerDown, "","0")
+            var fileSavePath = PathUtils.getInstance().filePath.toString() + "/"
+            var msgId = Calendar.getInstance().timeInMillis / 1000
+            FileDownloadUtils.doDownLoadWork(filledUri, "", fileSavePath, this, msgId.toInt(), handlerDown, "", "0")
         }
     }
+
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -1562,6 +1497,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             //goMain();
         }
     }
+
     override fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp) {
         chatFragment?.setFriendStatus(jQueryFriendRsp.params.retCode)
     }
@@ -1571,8 +1507,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
-        if(jJToxPullFileRsp.params.retCode != 0)
-        {
+        if (jJToxPullFileRsp.params.retCode != 0) {
             toast(R.string.acceptanceerror)
         }
     }
@@ -1586,16 +1521,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = ReadMsgPushReq(0, "", userId!!)
-        var msgId:String = ""
+        var msgId: String = ""
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jReadMsgPushRsp.msgid))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData,jReadMsgPushRsp.msgid)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData, jReadMsgPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2, msgData, jReadMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -1623,88 +1558,90 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         getSupportSoftInputHeight()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onReplyMsgEvent(replyMsgEvent: ReplyMsgEvent) {
-        var msgId=  replyMsgEvent.msgId
+        var msgId = replyMsgEvent.msgId
         var content = replyMsgEvent.content
-        var userId=  replyMsgEvent.userId
+        var userId = replyMsgEvent.userId
         val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list()
         if (userList.size > 0) {
             val user = userList[0]
             var username = String(RxEncodeTool.base64Decode(user.getNickName()))
-            content = username +":" + content;
+            content = username + ":" + content;
         }
-        chatFragment?.inputReplyMsg(msgId,content)
+        chatFragment?.inputReplyMsg(msgId, content)
         //chatFragment?.inputAtUsername(userId,true)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
-        var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var fileNumber = toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key
-        chatFragment?.onToxFileSendFinished(fileNumber,key)
+        chatFragment?.onToxFileSendFinished(fileNumber, key)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun OnToxChatReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxChatReceiveFileNoticeEvent) {
-        var fileNumber=  toxReceiveFileNoticeEvent.fileNumber
+        var fileNumber = toxReceiveFileNoticeEvent.fileNumber
         var key = toxReceiveFileNoticeEvent.key
         var fileName = toxReceiveFileNoticeEvent.filename
-        chatFragment?.onAgreeReceivwFileStart(fileNumber,key,fileName)
+        chatFragment?.onAgreeReceivwFileStart(fileNumber, key, fileName)
 
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxChatReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxChatReceiveFileFinishedEvent) {
-        var fileNumber=  toxReceiveFileFinishedEvent.fileNumber
+        var fileNumber = toxReceiveFileFinishedEvent.fileNumber
         var key = toxReceiveFileFinishedEvent.key
-        var fileNameSouce =  chatFragment?.getToxReceiveFileName(fileNumber,key)
+        var fileNameSouce = chatFragment?.getToxReceiveFileName(fileNumber, key)
         var fileNameList = fileNameSouce!!.split(":")
         var fileMiName = fileNameList[1]
         var jPushFileMsgRsp = receiveToxFileDataMap.get(fileMiName)
-        if(jPushFileMsgRsp != null)
-        {
-            var fileName:String = jPushFileMsgRsp!!.params.fileName;
+        if (jPushFileMsgRsp != null) {
+            var fileName: String = jPushFileMsgRsp!!.params.fileName;
             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + fileName
             val files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileName
             var aesKey = ""
-            if(ConstantValue.encryptionType.equals("1"))
-            {
-                aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.dstKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
-            }else{
+            if (ConstantValue.encryptionType.equals("1")) {
+                aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.dstKey, ConstantValue.libsodiumpublicMiKey!!, ConstantValue.libsodiumprivateMiKey!!)
+            } else {
                 aesKey = RxEncodeTool.getAESKey(jPushFileMsgRsp!!.params.dstKey)
             }
 
-            var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dir,aesKey)
-            if(code == 1)
-            {
+            var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dir, aesKey)
+            if (code == 1) {
                 var fromId = jPushFileMsgRsp!!.params.fromId;
                 var toId = jPushFileMsgRsp!!.params.toId
                 var FileType = jPushFileMsgRsp!!.params.fileType
                 var timeStamp = (System.currentTimeMillis() / 1000).toInt()
-                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType, "",timeStamp)
+                chatFragment?.receiveFileMessage(fileName, jPushFileMsgRsp.params.msgId.toString(), fromId, toId, FileType, "", timeStamp)
                 receiveFileDataMap.remove(fileMiName)
             }
-        }else{
+        } else {
             chatFragment?.onToxReceiveFileFinished(fileMiName)
         }
 
     }
-    override fun queryFriend(FriendId :String) {
+
+    override fun queryFriend(FriendId: String) {
 
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = QueryFriendReq(userId!!, FriendId)
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2, msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }
+
     /**
      * 获取软件盘的高度
      * @return
@@ -1765,16 +1702,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
 
-        var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
+        var msgData = DelMsgRsp(0, "", delMsgPushRsp.params.friendId)
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData, delMsgPushRsp.msgid))
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgData,delMsgPushRsp.msgid)
+            var baseData = BaseData(msgData, delMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -1782,6 +1719,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             chatFragment?.delFreindMsg(delMsgPushRsp)
         }
     }
+
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -1804,35 +1742,33 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         } else {
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userSn + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
         }
-        var msgDataPushFileRsp = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
-        var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
-        var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)
+        var msgDataPushFileRsp = PushFileRespone(0, jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, jPushFileMsgRsp.params.msgId)
+        var msgId: String = jPushFileMsgRsp?.params.msgId.toString()
+        var readMsgReq = ReadMsgReq(userId!!, jPushFileMsgRsp.params.fromId, msgId)
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5,msgDataPushFileRsp,jPushFileMsgRsp.msgid))
-            if(!msgId.equals(""))
-            {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5, msgDataPushFileRsp, jPushFileMsgRsp.msgid))
+            if (!msgId.equals("")) {
                 if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, readMsgReq))
                 }
             }
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(5,msgDataPushFileRsp,jPushFileMsgRsp.msgid)
+            var baseData = BaseData(5, msgDataPushFileRsp, jPushFileMsgRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
             if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                var baseData2 = BaseData(2,readMsgReq)
+                var baseData2 = BaseData(2, readMsgReq)
                 var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
-                if(!msgId.equals(""))
-                {
+                if (!msgId.equals("")) {
                     if (ConstantValue.isAntox) {
                         //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson2, ToxMessageType.NORMAL)
-                    }else{
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson2, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
@@ -1840,23 +1776,23 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         }
         if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            var filledUri = "https://" + ConstantValue.currentRouterIp + port+jPushFileMsgRsp.params.filePath
+            var filledUri = "https://" + ConstantValue.currentRouterIp + port + jPushFileMsgRsp.params.filePath
             var fileName = jPushFileMsgRsp.params.fileName;
-            var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+            var files_dir = PathUtils.getInstance().filePath.toString() + "/"
             if (ConstantValue.isWebsocketConnected) {
-                receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(fileName.toByteArray()), files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey,"0")
-            }else{
+                receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(), jPushFileMsgRsp)
+                FileDownloadUtils.doDownLoadWork(filledUri, Base58.encode(fileName.toByteArray()), files_dir, this, jPushFileMsgRsp.params.msgId, handler, jPushFileMsgRsp.params.dstKey, "0")
+            } else {
 
-                var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
-                receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
-                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
+                var base58Name = Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
+                receiveToxFileDataMap.put(base58Name, jPushFileMsgRsp)
+                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, base58Name, jPushFileMsgRsp.params.msgId, 2, 1)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
@@ -1868,69 +1804,65 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             chatFragment?.delMyMsgOnSuccess(delMsgRsp.params.msgId.toString())
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
         chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun saveMsgEvent(saveMsgEvent: SaveMsgEvent) {
-        if(saveMsgEvent.result == 1)
-        {
+        if (saveMsgEvent.result == 1) {
             runOnUiThread {
                 toast(R.string.success)
             }
 
         }
     }
+
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
 
         var messageList: List<Message> = ArrayList<Message>()
-        if(pushMsgRsp.params.payload != null)
-        {
+        if (pushMsgRsp.params.payload != null) {
             messageList = pushMsgRsp.params.payload
         }
-        KLog.i("insertMessage:ChatActivity"+chatFragment)
+        KLog.i("insertMessage:ChatActivity" + chatFragment)
         val size = messageList.size
-        var msgIdStr:String = "";
-        for (mesage in messageList)
-        {
-            if(mesage.sender == 1)//对方发的消息
+        var msgIdStr: String = "";
+        for (mesage in messageList) {
+            if (mesage.sender == 1)//对方发的消息
             {
-                if(mesage.status == 0 || mesage.status == 1)//未读
+                if (mesage.status == 0 || mesage.status == 1)//未读
                 {
                     msgIdStr += (mesage.msgId.toString() + ",")
                 }
             }
 
         }
-        if(!msgIdStr.equals(""))
-        {
+        if (!msgIdStr.equals("")) {
             val userId = SpUtil.getString(this, ConstantValue.userId, "")
-            var readMsgReq  =  ReadMsgReq(userId!!,pushMsgRsp.params.friendId,msgIdStr)
+            var readMsgReq = ReadMsgReq(userId!!, pushMsgRsp.params.friendId, msgIdStr)
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
-            }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(2,readMsgReq)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, readMsgReq))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(2, readMsgReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
         }
-        if(pushMsgRsp.params.srcMsgId == 0)
-        {
-            chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
-        }else{
-            if(messageList.size > 0)
-            {
+        if (pushMsgRsp.params.srcMsgId == 0) {
+            chatFragment?.refreshData(messageList, pushMsgRsp.params.userId, pushMsgRsp.params.friendId)
+        } else {
+            if (messageList.size > 0) {
                 var message = messageList.get(0)
-                if(message!= null )
-                {
-                    chatFragment?.upateAssocIdMessage(message,pushMsgRsp.params.srcMsgId,pushMsgRsp.params.friendId)
+                if (message != null) {
+                    chatFragment?.upateAssocIdMessage(message, pushMsgRsp.params.srcMsgId, pushMsgRsp.params.friendId)
                 }
             }
 
@@ -1941,42 +1873,39 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
 
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-        var msgId:String = pushMsgRsp?.params.msgId.toString()
-        var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
-        var sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
+        var msgId: String = pushMsgRsp?.params.msgId.toString()
+        var readMsgReq = ReadMsgReq(userId, pushMsgRsp.params.fromId, msgId)
+        var sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
+        if (ConstantValue.encryptionType.equals("1")) {
+            sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            if(!msgId.equals(""))
-            {
+            if (!msgId.equals("")) {
                 if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, readMsgReq))
                 }
             }
 
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
             if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                var baseData2 = BaseData(2,readMsgReq)
+                var baseData2 = BaseData(2, readMsgReq)
                 var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
                 //var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                if(!msgId.equals(""))
-                {
+                if (!msgId.equals("")) {
                     if (ConstantValue.isAntox) {
                         //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
@@ -1984,99 +1913,95 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         }
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            if(ConstantValue.encryptionType.equals("1"))
-            {
+            if (ConstantValue.encryptionType.equals("1")) {
                 chatFragment?.receiveTxtMessageV3(pushMsgRsp)
-            }else{
+            } else {
                 chatFragment?.receiveTxtMessage(pushMsgRsp)
             }
 
         }
     }
 
-    override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
+    override fun sendMsg(FromId: String, ToId: String, FriendPublicKey: String, Msg: String) {
         try {
             var len = Msg.toCharArray()
-            if(len.size >ConstantValue.sendMaxSize)
-            {
+            if (len.size > ConstantValue.sendMaxSize) {
                 toast(R.string.nomorecharacters)
                 return
             }
-            var aesKey =  RxEncryptTool.generateAESKey()
-            LogUtil.addLog("sendMsg aesKey:",aesKey)
+            var aesKey = RxEncryptTool.generateAESKey()
+            LogUtil.addLog("sendMsg aesKey:", aesKey)
             var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-            LogUtil.addLog("sendMsg myKey:",ConstantValue.publicRAS)
+            LogUtil.addLog("sendMsg myKey:", ConstantValue.publicRAS)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)
-            LogUtil.addLog("sendMsg friendKey:",FriendPublicKey)
-            var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
-            LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
-            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
-            LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())
-            var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
-            LogUtil.addLog("sendMsg miMsg:",miMsg)
-            var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
+            LogUtil.addLog("sendMsg friendKey:", FriendPublicKey)
+            var SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+            LogUtil.addLog("sendMsg SrcKey:", SrcKey.toString())
+            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+            LogUtil.addLog("sendMsg DstKey:", SrcKey.toString())
+            var miMsg = AESCipher.aesEncryptString(Msg, aesKey)
+            LogUtil.addLog("sendMsg miMsg:", miMsg)
+            var msgData = SendMsgReq(FromId!!, ToId!!, miMsg, String(SrcKey), String(DstKey))
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-            }else if (ConstantValue.isToxConnected) {
+            } else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             chatFragment?.deleteMessage()
-            LogUtil.addLog("sendMsg 错误:",e.toString())
+            LogUtil.addLog("sendMsg 错误:", e.toString())
             toast(R.string.Encryptionerror)
         }
     }
-    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String,AssocId:String):String {
+
+    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey: String, Msg: String, AssocId: String): String {
         var msgId = 0
         try {
-            if(FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals(""))
-            {
+            if (FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals("")) {
                 toast(R.string.Empty_with_parameters)
                 return msgId.toString()
             }
             var len = Msg.toCharArray()
-            if(len.size >ConstantValue.sendMaxSize)
-            {
+            if (len.size > ConstantValue.sendMaxSize) {
                 toast(R.string.nomorecharacters)
                 return msgId.toString()
             }
 
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
-            LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic,ConstantValue.libsodiumprivateSignKey!!,ConstantValue.libsodiumprivateTemKey!!,ConstantValue.libsodiumpublicTemKey!!,ConstantValue.libsodiumpublicMiKey!!)
-            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!,AssocId)
+            LogUtil.addLog("sendMsg2 friendKey:", FriendMiPublicKey)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg, friendMiPublic, ConstantValue.libsodiumprivateSignKey!!, ConstantValue.libsodiumprivateTemKey!!, ConstantValue.libsodiumpublicTemKey!!, ConstantValue.libsodiumpublicMiKey!!)
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!, msgMap.get("signBase64")!!, msgMap.get("NonceBase64")!!, msgMap.get("dst_shared_key_Mi_My64")!!, AssocId)
 
-            var baseData = BaseData(3,msgData)
+            var baseData = BaseData(3, msgData)
             msgId = baseData.msgid!!
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {
                 AppConfig.instance.getPNRouterServiceMessageSender().sendChatMsg(baseData)
 
-            }else if (ConstantValue.isToxConnected) {
+            } else if (ConstantValue.isToxConnected) {
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
             return msgId.toString()
-        }catch (e:Exception)
-        {
-            LogUtil.addLog("sendMsg2 错误:",e.toString())
+        } catch (e: Exception) {
+            LogUtil.addLog("sendMsg2 错误:", e.toString())
             toast(R.string.Encryptionerror)
             chatFragment?.removeLastMessage()
         }
         return msgId.toString()
     }
+
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
         chatFragment?.upateMessage(sendMsgRsp)
         //todo
@@ -2085,7 +2010,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         isEditActivity = true
-        KLog.i("insertMessage:ChatActivity_onCreate"+chatFragment)
+        KLog.i("insertMessage:ChatActivity_onCreate" + chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
@@ -2098,10 +2023,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         window.navigationBarColor = resources.getColor(R.color.color_f6f6f6)
         //禁止截屏
         var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
-        if(screenshotsSettingFlag.equals("1"))
-        {
+        if (screenshotsSettingFlag.equals("1")) {
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }else{
+        } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         activityInstance = this
@@ -2120,41 +2044,38 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun initData() {
         try {
-            if(AppConfig.instance.messageReceiver != null)
+            if (AppConfig.instance.messageReceiver != null)
                 AppConfig.instance.messageReceiver!!.chatCallBack = this
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
 
         }
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10,0)
-        var sendData = BaseData(5,pullMsgList)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(5,pullMsgList)
+        var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10, 0)
+        var sendData = BaseData(5, pullMsgList)
+        if (ConstantValue.encryptionType.equals("1")) {
+            sendData = BaseData(5, pullMsgList)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
         EventBus.getDefault().register(this)
 
-        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData!!.signPublicKey))
-        var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
+        var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData!!.signPublicKey))
+        var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
-        if(fileMD5 == null)
-        {
+        if (fileMD5 == null) {
             fileMD5 = ""
         }
         val updateAvatarReq = UpdateAvatarReq(userId!!, UserDataManger.curreantfriendUserData!!.userId, fileMD5)
@@ -2208,6 +2129,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 .isDragFrame(false)
                 .setPictureLongClick(this)
     }
+
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
@@ -2220,15 +2142,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
             }
             2 -> {
-                if(isCanShotNetCoonect)
-                {
+                if (isCanShotNetCoonect) {
                     //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }
             3 -> {
-                if(isCanShotNetCoonect)
-                {
+                if (isCanShotNetCoonect) {
                     //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
@@ -2245,8 +2165,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             activityInstance = null
             EventBus.getDefault().unregister(this)
             super.onDestroy()
-        }catch (e :Exception)
-        {
+        } catch (e: Exception) {
 
         }
     }
@@ -2300,73 +2219,66 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
                 0x55 -> {
                     try {
-                        var data:Bundle = msg.data;
+                        var data: Bundle = msg.data;
                         var msgId = data.getInt("msgID")
-                        var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
-                        var fileName:String = jPushFileMsgRsp.params.fileName;
+                        var jPushFileMsgRsp: JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
+                        var fileName: String = jPushFileMsgRsp.params.fileName;
                         var fromId = jPushFileMsgRsp.params.fromId;
                         var toId = jPushFileMsgRsp.params.toId
                         var FileType = jPushFileMsgRsp.params.fileType
                         var timeStamp = (System.currentTimeMillis() / 1000).toInt()
                         if (jPushFileMsgRsp.params.fileInfo != null) {
-                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, jPushFileMsgRsp.params.fileInfo,timeStamp)
+                            chatFragment?.receiveFileMessage(fileName, msgId.toString(), fromId, toId, FileType, jPushFileMsgRsp.params.fileInfo, timeStamp)
                         } else {
-                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, "",timeStamp)
+                            chatFragment?.receiveFileMessage(fileName, msgId.toString(), fromId, toId, FileType, "", timeStamp)
                         }
                         receiveFileDataMap.remove(msgId.toString())
-                    }catch (e:Exception)
-                    {
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
 
                 }
                 MyAuthCallback.MSG_UPD_DATA -> {
                     KLog.i("收到了组播的回复了 ")
-                    var obj:String = msg.obj.toString()
-                    if(!obj.equals(""))
-                    {
+                    var obj: String = msg.obj.toString()
+                    if (!obj.equals("")) {
                         var objArray = obj.split("##")
                         var index = 0;
-                        for(item in objArray)
-                        {
-                            if(!item.equals(""))
-                            {
+                        for (item in objArray) {
+                            if (!item.equals("")) {
                                 try {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpData = AESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
                                     var udpRouterArray = udpData.split(";")
 
-                                    if(udpRouterArray.size > 1)
-                                    {
-                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                    if (udpRouterArray.size > 1) {
+                                        println("ipdizhi:" + udpRouterArray[1] + " ip: " + udpRouterArray[0])
                                         //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if(scanType == 1)//不是admin二维码
+                                        if (scanType == 1)//不是admin二维码
                                         {
-                                            if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
-                                            {
+                                            if (!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1])) {
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
                                                 ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                                ConstantValue.port= ":18006"
+                                                ConstantValue.port = ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
                                                 break;
-                                            }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
-                                            {
+                                            } else if (!routerId.equals("") && routerId.equals(udpRouterArray[1])) {
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
                                                 ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                                ConstantValue.port= ":18006"
+                                                ConstantValue.port = ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterId = routerId
-                                                ConstantValue.currentRouterSN =  userSn
+                                                ConstantValue.currentRouterSN = userSn
                                                 break;
                                             }
-                                        }else{
+                                        } else {
                                             ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                            ConstantValue.port= ":18006"
+                                            ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+                                            ConstantValue.port = ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterMac = RouterMacStr
                                             break;
@@ -2374,29 +2286,25 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
 
                                     }
-                                }catch (e:Exception)
-                                {
+                                } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
 
                             }
-                            index ++
+                            index++
 
                         }
-                        if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
-                        {
+                        if (ConstantValue.currentRouterIp != null && !ConstantValue.currentRouterIp.equals("")) {
                             ConstantValue.curreantNetworkType = "WIFI"
-                            if(isFromScan || isFromScanAdmim)
-                            {
-                                if(ConstantValue.isHasWebsocketInit)
-                                {
+                            if (isFromScan || isFromScanAdmim) {
+                                if (ConstantValue.isHasWebsocketInit) {
                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                }else{
+                                } else {
                                     ConstantValue.isHasWebsocketInit = true
                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 }
                                 isStartWebsocket = true
-                                KLog.i("没有初始化。。设置loginBackListener"+_this)
+                                KLog.i("没有初始化。。设置loginBackListener" + _this)
                                 //AppConfig.instance.messageReceiver!!.loginBackListener = _this
                             }
 
@@ -2412,8 +2320,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun addMenu(addMenu: AddMenu) {
         Thread(Runnable {
-            if(image != null)
-            {
+            if (image != null) {
                 try {
                     val obmp = ((image!! as ImageView).getDrawable() as BitmapDrawable).bitmap
                     val list = java.util.ArrayList<String>()
@@ -2425,20 +2332,17 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             PopWindowUtil.showSelecMenuPopWindowNotice(list);
                         }
                         isAddMenu = 0;
-                    }else{
-                        if(isAddMenu < 1)
-                        {
+                    } else {
+                        if (isAddMenu < 1) {
                             EventBus.getDefault().post(AddMenu())
-                            isAddMenu ++;
+                            isAddMenu++;
                         }
                     }
-                }catch (e:Exception)
-                {
-                  e.printStackTrace()
-                    if(isAddMenu < 1)
-                    {
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    if (isAddMenu < 1) {
                         EventBus.getDefault().post(AddMenu())
-                        isAddMenu ++;
+                        isAddMenu++;
                     }
                 }
             }
@@ -2446,6 +2350,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         }).start()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         KLog.i("websocket状态MainActivity:" + connectStatus.status)
@@ -2455,11 +2360,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         when (connectStatus.status) {
             0 -> {
-                if(standaloneCoroutine != null)
+                if (standaloneCoroutine != null)
                     standaloneCoroutine.cancel()
                 ConstantValue.isHasWebsocketInit = true
-                if(isFromScanAdmim)
-                {
+                if (isFromScanAdmim) {
                     runOnUiThread {
                         closeProgressDialog()
                     }
@@ -2472,20 +2376,17 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
                     isFromScanAdmim = false
 //                    finish()
-                }
-                else if(isFromScan)
-                {
+                } else if (isFromScan) {
                     runOnUiThread {
                         closeProgressDialog()
                         showProgressDialog("wait...")
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
+                    var recovery = RecoveryReq(ConstantValue.currentRouterId, ConstantValue.currentRouterSN, pulicMiKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, recovery))
                     isFromScan = false
-                }else{
-                    if(isClickLogin)
-                    {
+                } else {
+                    if (isClickLogin) {
                         KLog.i("开始用websocket登录路由器")
                         loginBack = false
                         runOnUiThread {
@@ -2506,20 +2407,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                         var sign = ByteArray(32)
-                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                         System.arraycopy(time, 0, sign, 0, time.size)
                         var dst_signed_msg = ByteArray(96)
                         var signed_msg_len = IntArray(1)
-                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        KLog.i("没有初始化。。登录接口设置loginBackListener"+"##" +AppConfig.instance.name +"##"+this.name+"##"+AppConfig.instance.messageReceiver)
+                        KLog.i("没有初始化。。登录接口设置loginBackListener" + "##" + AppConfig.instance.name + "##" + this.name + "##" + AppConfig.instance.messageReceiver)
                         //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                         ConstantValue.loginReq = login
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
                     }
 
                 }
@@ -2541,8 +2442,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
     }
 
-    fun doWaitAddFreind(waitAddFreind:String)
-    {
+    fun doWaitAddFreind(waitAddFreind: String) {
 
         KLog.i("doWaitAddFreind")
         var userId = waitAddFreind!!.substring(0, waitAddFreind!!.indexOf(","))
@@ -2552,18 +2452,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             return
         }
         KLog.i("doWaitAddFreind2")
-        var emailId= ""
-        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId,emailId)
-        var sendData = BaseData(6,AddFriendsAutoReq);
+        var emailId = ""
+        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, userId, emailId)
+        var sendData = BaseData(6, AddFriendsAutoReq);
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -2571,45 +2471,40 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
-        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+        LogUtil.addLog("Tox发送消息：" + toxSendInfoEvent.info)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
 
-        if(toxFriendStatusEvent.status == 1)
-        {
+        if (toxFriendStatusEvent.status == 1) {
 
             ConstantValue.freindStatus = 1
-            if(!threadInit)
-            {
+            if (!threadInit) {
                 Thread(Runnable() {
                     run() {
 
-                        while (true)
-                        {
-                            if(ConstantValue.unSendMessage.size >0)
-                            {
-                                for (key in ConstantValue.unSendMessage.keys)
-                                {
+                        while (true) {
+                            if (ConstantValue.unSendMessage.size > 0) {
+                                for (key in ConstantValue.unSendMessage.keys) {
                                     var sendData = ConstantValue.unSendMessage.get(key)
                                     var friendId = ConstantValue.unSendMessageFriendId.get(key)
-                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
-                                    if(sendCount < 5)
-                                    {
+                                    var sendCount: Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if (sendCount < 5) {
                                         if (ConstantValue.isAntox) {
                                             //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
                                             //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
-                                        }else{
+                                        } else {
                                             ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
                                         }
-                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
-                                    }else{
+                                        ConstantValue.unSendMessageSendCount.put(key, sendCount++)
+                                    } else {
                                         closeProgressDialog()
                                         break
                                     }
                                 }
 
-                            }else{
+                            } else {
                                 closeProgressDialog()
                                 break
                             }
@@ -2622,10 +2517,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
 
 
-            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
-        }else{
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:", "LoginActivityActivity")
+        } else {
             ConstantValue.freindStatus = 0;
-            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:", "LoginActivityActivity")
         }
 
     }
@@ -2634,11 +2529,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     fun onStopTox(stopTox: StopTox) {
         try {
             //MessageHelper.clearAllMessage()
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         KLog.i("tox状态MainActivity:" + toxStatusEvent.status)
@@ -2649,7 +2544,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         when (toxStatusEvent.status) {
             0 -> {
                 KLog.i("P2P连接成功")
-                LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
+                LogUtil.addLog("P2P连接成功:", "LoginActivityActivity")
                 runOnUiThread {
                     KLog.i("444")
                     closeProgressDialog()
@@ -2657,22 +2552,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
                 ConstantValue.isToxConnected = true
 
-                if(ConstantValue.curreantNetworkType.equals("TOX"))
-                {
+                if (ConstantValue.curreantNetworkType.equals("TOX")) {
                     ConstantValue.isHasWebsocketInit = true
                     AppConfig.instance.getPNRouterServiceMessageReceiver()
                     KLog.i("没有初始化。。设置loginBackListener")
                     //AppConfig.instance.messageReceiver!!.loginBackListener = this
                 }
-                if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
+                if (stopTox || ConstantValue.curreantNetworkType.equals("WIFI"))
                     return
-                if(isFromScan)
-                {
+                if (isFromScan) {
 
                     if (ConstantValue.isAntox) {
                         //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-                    }else{
-                        ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
+                    } else {
+                        ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
                     }
                     standaloneCoroutine = launch(CommonPool) {
                         delay(60000)
@@ -2687,15 +2580,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                     runOnUiThread {
                         var tips = getString(R.string.login_)
-                        if(ConstantValue.freindStatus == 1)
-                        {
+                        if (ConstantValue.freindStatus == 1) {
                             tips = "wait..."
-                        }else{
+                        } else {
                             tips = "circle connecting..."
                         }
                         showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
+                                if (standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
                                 gotoLogin()
@@ -2704,23 +2596,22 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         })
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
-                    var baseData = BaseData(4,recovery)
+                    var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN, pulicMiKey)
+                    var baseData = BaseData(4, recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
-                    ConstantValue.unSendMessage.put("recovery",baseDataJson)
-                    ConstantValue.unSendMessageFriendId.put("recovery",ConstantValue.scanRouterId.substring(0, 64))
-                    ConstantValue.unSendMessageSendCount.put("recovery",0)
+                    ConstantValue.unSendMessage.put("recovery", baseDataJson)
+                    ConstantValue.unSendMessageFriendId.put("recovery", ConstantValue.scanRouterId.substring(0, 64))
+                    ConstantValue.unSendMessageSendCount.put("recovery", 0)
                     //ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                     isFromScan = false
-                }else{
+                } else {
                     if (ConstantValue.isAntox) {
                         //InterfaceScaleUtil.addFriend(routerId,this)
-                    }else{
+                    } else {
                         ToxCoreJni.getInstance().addFriend(routerId)
                     }
-                    if(isClickLogin)
-                    {
+                    if (isClickLogin) {
                         //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                         loginBack = false
 
@@ -2737,15 +2628,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         }
                         runOnUiThread {
                             var tips = getString(R.string.login_)
-                            if(ConstantValue.freindStatus == 1)
-                            {
+                            if (ConstantValue.freindStatus == 1) {
                                 tips = getString(R.string.login_)
-                            }else{
+                            } else {
                                 tips = "Circle connecting..."
                             }
                             showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                    if(standaloneCoroutine != null)
+                                    if (standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
                                     EventBus.getDefault().post(StopTox())
                                     gotoLogin()
@@ -2754,22 +2644,22 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                             })
                         }
                         var sign = ByteArray(32)
-                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                         System.arraycopy(time, 0, sign, 0, time.size)
                         var dst_signed_msg = ByteArray(96)
                         var signed_msg_len = IntArray(1)
-                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                         ConstantValue.loginReq = login
-                        var baseData = BaseData(4,login)
+                        var baseData = BaseData(4, login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        ConstantValue.unSendMessage.put("login",baseDataJson)
-                        ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
-                        ConstantValue.unSendMessageSendCount.put("login",0)
+                        ConstantValue.unSendMessage.put("login", baseDataJson)
+                        ConstantValue.unSendMessageFriendId.put("login", routerId.substring(0, 64))
+                        ConstantValue.unSendMessageSendCount.put("login", 0)
                         //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                         ////MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
@@ -2778,22 +2668,23 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
             1 -> {
-                LogUtil.addLog("P2P连接中Reconnecting:","LoginActivityActivity")
+                LogUtil.addLog("P2P连接中Reconnecting:", "LoginActivityActivity")
             }
         }
     }
+
     fun initSwitchData() {
 
 
     }
-    fun gotoLogin()
-    {
+
+    fun gotoLogin() {
         closeProgressDialog()
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
         ConstantValue.isHasWebsocketInit = true
-        if(AppConfig.instance.messageReceiver != null)
+        if (AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.close()
 
         ConstantValue.loginOut = true
@@ -2809,7 +2700,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 it.disconnect(true)
                 //ConstantValue.webSocketFileList.remove(it)
             }
-        }else{
+        } else {
             val intentTox = Intent(AppConfig.instance, KotlinToxService::class.java)
             AppConfig.instance.stopService(intentTox)
         }
@@ -2824,12 +2715,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         startActivity(intent)
         finish()
     }
-    private fun startTox(startToxFlag:Boolean)
-    {
+
+    private fun startTox(startToxFlag: Boolean) {
         ConstantValue.curreantNetworkType = "TOX"
         stopTox = false
-        if(!ConstantValue.isToxConnected && startToxFlag)
-        {
+        if (!ConstantValue.isToxConnected && startToxFlag) {
             runOnUiThread {
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -2839,67 +2729,63 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     } else false
                 })
             }
-            LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+            LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
-            {
+            if (ConstantValue.isAntox) {
                 //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
-        }else{
+        } else {
             runOnUiThread {
                 KLog.i("666")
                 closeProgressDialog()
             }
         }
     }
-    private fun startLogin()
-    {
+
+    private fun startLogin() {
 
         isloginOutTime = false
         isStartLogin = true
-        if(!ConstantValue.lastNetworkType.equals(""))
-        {
+        if (!ConstantValue.lastNetworkType.equals("")) {
             isFromScan = false
             ConstantValue.curreantNetworkType = ConstantValue.lastNetworkType
             ConstantValue.currentRouterIp = ConstantValue.lastRouterIp
             ConstantValue.port = ConstantValue.lastPort
             ConstantValue.filePort = ConstantValue.lastFilePort
             ConstantValue.currentRouterId = ConstantValue.lastRouterId
-            ConstantValue.currentRouterSN =  ConstantValue.lastRouterSN
-            ConstantValue.lastRouterId=""
-            ConstantValue.lastPort=""
-            ConstantValue.lastFilePort=""
-            ConstantValue.lastRouterId=""
-            ConstantValue.lastRouterSN=""
-            ConstantValue.lastNetworkType =""
+            ConstantValue.currentRouterSN = ConstantValue.lastRouterSN
+            ConstantValue.lastRouterId = ""
+            ConstantValue.lastPort = ""
+            ConstantValue.lastFilePort = ""
+            ConstantValue.lastRouterId = ""
+            ConstantValue.lastRouterSN = ""
+            ConstantValue.lastNetworkType = ""
         }
         /* if (loginKey.text.toString().equals("")) {
              toast(getString(R.string.please_type_your_password))
              return
          }*/
-        if( ConstantValue.curreantNetworkType.equals("TOX"))
-        {
+        if (ConstantValue.curreantNetworkType.equals("TOX")) {
 
-            if(ConstantValue.isToxConnected)
-            {
+            if (ConstantValue.isToxConnected) {
                 isToxLoginOverTime = true
                 //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                 ConstantValue.loginReq = login
-                var baseData = BaseData(4,login)
+                var baseData = BaseData(4, login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 KLog.i("没有初始化。。设置loginBackListener")
                 //AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -2916,15 +2802,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
                 runOnUiThread {
                     var tips = getString(R.string.login_)
-                    if(ConstantValue.freindStatus == 1)
-                    {
+                    if (ConstantValue.freindStatus == 1) {
                         tips = getString(R.string.login_)
-                    }else{
+                    } else {
                         tips = "Circle connecting..."
                     }
                     showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            if(standaloneCoroutine != null)
+                            if (standaloneCoroutine != null)
                                 standaloneCoroutine.cancel()
                             EventBus.getDefault().post(StopTox())
                             gotoLogin()
@@ -2935,10 +2820,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 if (ConstantValue.isAntox) {
                     //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
                     //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
                 }
-            }else{
+            } else {
 //                    if (!ConstantValue.isToxConnected) {
 //                        loadLibrary()
 //                    }
@@ -2955,29 +2840,26 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         } else false
                     })
                 }
-                LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+                LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
 
-                if(ConstantValue.isAntox)
-                {
-                   /* var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)*/
-                }else{
+                if (ConstantValue.isAntox) {
+                    /* var intent = Intent(AppConfig.instance, ToxService::class.java)
+                     startService(intent)*/
+                } else {
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                     startService(intent)
                 }
 
             }
 
-        }else{
+        } else {
             isClickLogin = true
-            if(!ConstantValue.isWebsocketConnected)
-            {
+            if (!ConstantValue.isWebsocketConnected) {
                 if (intent.hasExtra("flag")) {
-                    if(ConstantValue.isHasWebsocketInit)
-                    {
+                    if (ConstantValue.isHasWebsocketInit) {
                         KLog.i("已经初始化了，走重连逻辑")
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                    }else{
+                    } else {
                         KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
@@ -2989,7 +2871,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
+                                if (AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
                                 gotoLogin()
@@ -2998,27 +2880,26 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     }
                 } else {
                     KLog.i("走不带flag")
-                    if(ConstantValue.isHasWebsocketInit)
-                    {
+                    if (ConstantValue.isHasWebsocketInit) {
                         KLog.i("已经初始化了，走重连逻辑")
-                        KLog.i("已经初始化了。。走重连逻辑" +this+ "##" +AppConfig.instance.messageReceiver)
+                        KLog.i("已经初始化了。。走重连逻辑" + this + "##" + AppConfig.instance.messageReceiver)
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
-                    }else{
+                    } else {
                         KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
-                        KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.messageReceiver)
+                        KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.messageReceiver)
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
-                    KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.name)
                     //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener +"##" +AppConfig.instance.name)
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener + "##" + AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" + AppConfig.instance.name)
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
+                                if (AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
                                 gotoLogin()
@@ -3026,19 +2907,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }
-            }else{
+            } else {
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
                 System.arraycopy(time, 0, sign, 0, time.size)
                 var dst_signed_msg = ByteArray(96)
                 var signed_msg_len = IntArray(1)
-                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
                     delay(10000)
@@ -3056,13 +2937,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
                 KLog.i("没有初始化。。设置loginBackListener")
                 //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
             }
         }
 
     }
-    fun gotoActivity(index:Int)
-    {
+
+    fun gotoActivity(index: Int) {
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
@@ -3078,21 +2959,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 it.disconnect(true)
                 //ConstantValue.webSocketFileList.remove(it)
             }
-        }else{
+        } else {
             val intentTox = Intent(AppConfig.instance, KotlinToxService::class.java)
             AppConfig.instance.stopService(intentTox)
         }
         resetUnCompleteFileRecode()
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-        when(index)
-        {
-            0->{
+        when (index) {
+            0 -> {
                 var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
                 intent.putExtra("flag", "logout")
                 startActivity(intent)
             }
-            1->
-            {
+            1 -> {
                 ConstantValue.loginOut = true
                 ConstantValue.logining = false
                 ConstantValue.isHeart = false
@@ -3104,6 +2983,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         finish()
     }
+
     fun resetUnCompleteFileRecode() {
         var localFilesList = LocalFileUtils.localFilesList
         for (myFie in localFilesList) {
@@ -3119,6 +2999,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }
     }
+
     private fun startToxAndRecovery() {
 
         ConstantValue.curreantNetworkType = "TOX"
@@ -3135,8 +3016,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
             LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
-            {
+            if (ConstantValue.isAntox) {
                 //intent = Intent(AppConfig.instance, ToxService::class.java)
             }
             startService(intent)
@@ -3155,31 +3035,30 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             //AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
                 //InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
             var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN, pulicMiKey)
             var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }
         }
     }
-    fun getMacFromRemote()
-    {
-        var RouterMacData = RouterMacStr.replace(":","")
-        var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
-        if(!BuildConfig.DEBUG)
-        {
-            httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+
+    fun getMacFromRemote() {
+        var RouterMacData = RouterMacStr.replace(":", "")
+        var httpUrlData = ConstantValue.httpMacUrl + "CheckByMac?mac="
+        if (!BuildConfig.DEBUG) {
+            httpUrlData = ConstantValue.httpMacUrl + "CheckByMac?mac="
         }
-        OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData,  object : OkHttpUtils.OkCallback {
-            override fun onFailure( e :Exception) {
+        OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData, object : OkHttpUtils.OkCallback {
+            override fun onFailure(e: Exception) {
                 runOnUiThread {
                     closeProgressDialog()
                     RouterMacStr = ""
@@ -3189,33 +3068,32 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
                 Thread.currentThread().interrupt(); //方法调用终止线程
             }
-            override fun  onResponse(json:String ) {
+
+            override fun onResponse(json: String) {
 
                 val gson = GsonUtil.getIntGson()
                 var httpDataMac: HttpData? = null
                 try {
                     if (json != null) {
                         httpDataMac = gson.fromJson<HttpData>(json, HttpData::class.java)
-                        if(httpDataMac != null  && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1)
-                        {
+                        if (httpDataMac != null && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1) {
                             ConstantValue.curreantNetworkType = "WIFI"
                             ConstantValue.currentRouterIp = httpDataMac.serverHost
-                            ConstantValue.port = ":"+httpDataMac.serverPort.toString()
-                            ConstantValue.filePort = ":"+(httpDataMac.serverPort +1).toString()
+                            ConstantValue.port = ":" + httpDataMac.serverPort.toString()
+                            ConstantValue.filePort = ":" + (httpDataMac.serverPort + 1).toString()
                             ConstantValue.currentRouterMac = RouterMacStr
                             /*ConstantValue.currentRouterId = ConstantValue.scanRouterId
                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN*/
-                            if(ConstantValue.isHasWebsocketInit)
-                            {
+                            if (ConstantValue.isHasWebsocketInit) {
                                 AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                            }else{
+                            } else {
                                 ConstantValue.isHasWebsocketInit = true
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                             }
                             //KLog.i("没有初始化。。设置loginBackListener"+this_)
                             //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                             Thread.currentThread().interrupt() //方法调用终止线程
-                        }else{
+                        } else {
                             runOnUiThread {
                                 closeProgressDialog()
                                 RouterMacStr = ""

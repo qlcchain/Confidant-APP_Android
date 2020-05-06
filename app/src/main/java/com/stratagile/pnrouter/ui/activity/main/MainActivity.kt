@@ -43,6 +43,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlaySe
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.gson.Gson
 import com.huawei.hms.aaid.HmsInstanceId
+import com.huawei.hms.common.internal.HmsClient
 import com.huxq17.floatball.libarary.FloatBallManager
 import com.huxq17.floatball.libarary.floatball.FloatBallCfg
 import com.huxq17.floatball.libarary.menu.FloatMenuCfg
@@ -126,6 +127,7 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.mipush.sdk.MiPushClient
 import kotlinx.android.synthetic.main.activity_file_manager.*
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_menu.*
 import kotlinx.android.synthetic.main.layout_add.*
@@ -291,6 +293,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var mScreenDensity: Int = 0
     private var typeData = ""
 
+
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (!isScanSwitch) {
 
@@ -391,22 +394,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun loginBack(loginRsp: JLoginRsp) {
+        KLog.i("登录返回了")
 //        if (!loginRsp.params.userId.equals(userId)) {
 //            KLog.i("过滤掉userid错误的请求")
 //            return
 //        }
-        if (!isScanSwitch) {
-            return;
-        }
+        loginBack = true
         runOnUiThread {
             closeProgressDialog()
         }
         islogining = false
+//        if (!isScanSwitch) {
+//            return;
+//        }
+
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
         KLog.i(loginRsp.toString())
-        LogUtil.addLog("loginBack:" + loginRsp.params.retCode, "LoginActivityActivity")
+        LogUtil.addLog("loginBack:" + loginRsp.params.retCode, "MainActivity")
         if (standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
@@ -462,17 +468,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 gotoLogin()
             }
         } else {
+            KLog.i("登录成功")
+            var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+            var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+            autoLoginEntity.userId = loginRsp.params!!.userId
+            autoLoginEntity.userNickName = loginRsp.params!!.nickName
+            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
             islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
-            LogUtil.addLog("loginBack:" + "begin", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "begin", "MainActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userId, "userid")
             //FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
-            LogUtil.addLog("loginBack:" + "a", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "a", "MainActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn, "usersn")
-            LogUtil.addLog("loginBack:" + "b", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "b", "MainActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid, "routerid")
-            LogUtil.addLog("loginBack:" + "c", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "c", "MainActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
@@ -494,6 +506,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
             UserDataManger.myUserData = myUserData
+
             var contains = false
             for (i in routerList) {
                 if (i.userSn.equals(loginRsp.params!!.userSn)) {
@@ -503,7 +516,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     break
                 }
             }
-            LogUtil.addLog("loginBack:" + "d", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "d", "MainActivity")
             var needUpdate: java.util.ArrayList<MyRouter> = java.util.ArrayList();
             routerList.forEach {
                 it.lastCheck = false
@@ -528,20 +541,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
             } else {
-
+                newRouterEntity.id = null
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-            LogUtil.addLog("loginBack:" + "e", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "e", "MainActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
             myRouter.setRouterEntity(newRouterEntity)
             LocalRouterUtils.insertLocalAssets(myRouter)
-            runOnUiThread {
-                closeProgressDialog()
-                KLog.i("333")
+//            runOnUiThread {
+//                closeProgressDialog()
+//                KLog.i("333")
+//            }
+            if (viewPager.currentItem == 0) {
+                EventBus.getDefault().post(ChangFragmentMenu("Circle"))
+            } else {
+                EventBus.getDefault().post(ChangFragmentMenu("Email"))
             }
-            LogUtil.addLog("loginBack:" + "f", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "f", "MainActivity")
             loginOk = true
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
@@ -553,7 +571,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /*startActivity(Intent(this, MainActivity::class.java))
             loginGoMain  = true*/
             initSwitchData()
-            LogUtil.addLog("loginBack:" + "g", "LoginActivityActivity")
+            LogUtil.addLog("loginBack:" + "g", "MainActivity")
             //finish()
         }
     }
@@ -780,7 +798,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     } else false
                 })
             }
-            LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
+            LogUtil.addLog("P2P启动连接:", "MainActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if (ConstantValue.isAntox) {
                 //intent = Intent(AppConfig.instance, ToxService::class.java)
@@ -813,185 +831,66 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             ConstantValue.lastRouterSN = ""
             ConstantValue.lastNetworkType = ""
         }
-        /* if (loginKey.text.toString().equals("")) {
-             toast(getString(R.string.please_type_your_password))
-             return
-         }*/
-        if (ConstantValue.curreantNetworkType.equals("TOX")) {
 
-            if (ConstantValue.isToxConnected) {
-                isToxLoginOverTime = true
-                //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
-
-                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
-                System.arraycopy(time, 0, sign, 0, time.size)
-                var dst_signed_msg = ByteArray(96)
-                var signed_msg_len = IntArray(1)
-                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
-                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
-                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
-                ConstantValue.loginReq = login
-                var baseData = BaseData(4, login)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                KLog.i("没有初始化。。设置loginBackListener")
-                //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                standaloneCoroutine = launch(CommonPool) {
-                    delay(60000)
-                    if (!loginBack) {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            isloginOutTime = true
-                            toast("login time out")
-                            gotoLogin()
-                        }
-                    }
-                }
-                runOnUiThread {
-                    var tips = getString(R.string.login_)
-                    if (ConstantValue.freindStatus == 1) {
-                        tips = getString(R.string.login_)
-                    } else {
-                        tips = "Circle connecting..."
-                    }
-                    showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            if (standaloneCoroutine != null)
-                                standaloneCoroutine.cancel()
-                            EventBus.getDefault().post(StopTox())
-                            gotoLogin()
-                            false
-                        } else false
-                    })
-                }
-                if (ConstantValue.isAntox) {
-                    //var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                    //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                } else {
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                }
+        if (!ConstantValue.isWebsocketConnected) {
+            if (ConstantValue.isHasWebsocketInit) {
+                KLog.i("已经初始化了，走重连逻辑")
+                KLog.i("已经初始化了。。走重连逻辑" + this + "##" + AppConfig.instance.messageReceiver)
+                AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
             } else {
-//                    if (!ConstantValue.isToxConnected) {
-//                        loadLibrary()
-//                    }
-                isToxLoginOverTime = true
-                isClickLogin = true
-                stopTox = false
-                ConstantValue.curreantNetworkType = "TOX"
-                runOnUiThread {
-                    showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            stopTox = true
-                            gotoLogin()
-                            false
-                        } else false
-                    })
-                }
-                LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
-
-                if (ConstantValue.isAntox) {
-                    /* var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    startService(intent)*/
-                } else {
-                    var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-                    startService(intent)
-                }
-
+                KLog.i("没有初始化。。")
+                ConstantValue.isHasWebsocketInit = true
+                KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.messageReceiver)
+                AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
             }
-
+            KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.name)
+            //AppConfig.instance.messageReceiver!!.loginBackListener = this
+            KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener + "##" + AppConfig.instance.name)
+            KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" + AppConfig.instance.name)
+            standaloneCoroutine = launch(CommonPool) {
+                delay(6000)
+                runOnUiThread {
+                    closeProgressDialog()
+                    if (!ConstantValue.isWebsocketConnected) {
+//                            if (AppConfig.instance.messageReceiver != null)
+//                                AppConfig.instance.messageReceiver!!.close()
+                        toast("Server connection timeout")
+//                            gotoLogin()
+                    }
+                }
+            }
         } else {
-            isClickLogin = true
-            if (!ConstantValue.isWebsocketConnected) {
-                if (intent.hasExtra("flag")) {
-                    if (ConstantValue.isHasWebsocketInit) {
-                        KLog.i("已经初始化了，走重连逻辑")
-                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                    } else {
-                        KLog.i("没有初始化。。")
-                        ConstantValue.isHasWebsocketInit = true
-                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                    }
-                    KLog.i("没有初始化。。设置loginBackListener")
-                    //AppConfig.instance.getPNRouterServiceMessageReceiver().loginBackListener = this
-                    standaloneCoroutine = launch(CommonPool) {
-                        delay(6000)
-                        runOnUiThread {
-                            closeProgressDialog()
-                            if (!ConstantValue.isWebsocketConnected) {
-                                if (AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout")
-                                gotoLogin()
-                            }
-                        }
-                    }
-                } else {
-                    KLog.i("走不带flag")
-                    if (ConstantValue.isHasWebsocketInit) {
-                        KLog.i("已经初始化了，走重连逻辑")
-                        KLog.i("已经初始化了。。走重连逻辑" + this + "##" + AppConfig.instance.messageReceiver)
-                        AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
-                    } else {
-                        KLog.i("没有初始化。。")
-                        ConstantValue.isHasWebsocketInit = true
-                        KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.messageReceiver)
-                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                    }
-                    KLog.i("没有初始化。。设置loginBackListener前" + this + "##" + AppConfig.instance.name)
-                    //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener + "##" + AppConfig.instance.name)
-                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" + AppConfig.instance.name)
-                    standaloneCoroutine = launch(CommonPool) {
-                        delay(6000)
-                        runOnUiThread {
-                            closeProgressDialog()
-                            if (!ConstantValue.isWebsocketConnected) {
-                                if (AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout")
-                                gotoLogin()
-                            }
-                        }
+            //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+            //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+            var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
+            ConstantValue.loginReq = login
+            standaloneCoroutine = launch(CommonPool) {
+                delay(10000)
+                if (!loginBack) {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        isloginOutTime = true
+                        toast("login time out")
+                        gotoLogin()
                     }
                 }
-            } else {
-                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var sign = ByteArray(32)
-                var time = (System.currentTimeMillis() / 1000).toString().toByteArray()
-                System.arraycopy(time, 0, sign, 0, time.size)
-                var dst_signed_msg = ByteArray(96)
-                var signed_msg_len = IntArray(1)
-                var mySignPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                var crypto_sign = Sodium.crypto_sign(dst_signed_msg, signed_msg_len, sign, sign.size, mySignPrivate)
-                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
-                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId, userSn, userId, signBase64, dataFileVersion, NickName)
-                ConstantValue.loginReq = login
-                standaloneCoroutine = launch(CommonPool) {
-                    delay(10000)
-                    if (!loginBack) {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            isloginOutTime = true
-                            toast("login time out")
-                            gotoLogin()
-                        }
-                    }
-                }
-                runOnUiThread {
-                    showProgressDialog(getString(R.string.login_))
-                }
-                KLog.i("没有初始化。。设置loginBackListener")
-                //AppConfig.instance.messageReceiver!!.loginBackListener = this
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
             }
+            runOnUiThread {
+                showProgressDialog(getString(R.string.login_))
+            }
+            KLog.i("没有初始化。。设置loginBackListener")
+            //AppConfig.instance.messageReceiver!!.loginBackListener = this
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, login))
         }
-
     }
 
     override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
@@ -2349,6 +2248,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
         }
+
+        when (connectStatus.status) {
+            0 -> {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.GONE
+            }
+            1 -> {
+
+            }
+            2 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.VISIBLE
+            }
+            3 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.VISIBLE
+            }
+        }
+
         when (connectStatus.status) {
             0 -> {
                 if (standaloneCoroutine != null)
@@ -2394,14 +2312,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     if (isClickLogin) {
                         KLog.i("开始用websocket登录路由器")
                         loginBack = false
-                        runOnUiThread {
-                            showProgressDialog(getString(R.string.login_))
-                        }
+//                        runOnUiThread {
+//                            showProgressDialog(getString(R.string.login_))
+//                        }
                         standaloneCoroutine = launch(CommonPool) {
-                            delay(10000)
+                            delay(20000)
                             if (!loginBack) {
                                 runOnUiThread {
-                                    closeProgressDialog()
+//                                    closeProgressDialog()
                                     isloginOutTime = true
                                     toast("login time out")
                                     gotoLogin()
@@ -2521,10 +2439,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
 
-            LogUtil.addLog("P2P检测路由好友上线，可以发消息:", "LoginActivityActivity")
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:", "MainActivity")
         } else {
             ConstantValue.freindStatus = 0;
-            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:", "LoginActivityActivity")
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:", "MainActivity")
         }
 
     }
@@ -2549,7 +2467,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             0 -> {
                 reConnect.visibility = View.GONE
                 KLog.i("P2P连接成功")
-                LogUtil.addLog("P2P连接成功:", "LoginActivityActivity")
+                LogUtil.addLog("P2P连接成功:", "MainActivity")
                 runOnUiThread {
                     KLog.i("444")
                     closeProgressDialog()
@@ -2673,7 +2591,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
             1 -> {
-                LogUtil.addLog("P2P连接中Reconnecting:", "LoginActivityActivity")
+                LogUtil.addLog("P2P连接中Reconnecting:", "MainActivity")
             }
         }
     }
@@ -2850,63 +2768,63 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun connectStatusChange(statusChange: ConnectStatus) {
-        when (statusChange.status) {
-            0 -> {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.GONE
-            }
-            1 -> {
-
-            }
-            2 -> {
-                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.VISIBLE
-            }
-            3 -> {
-                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.VISIBLE
-            }
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    fun connectStatusChange(statusChange: ConnectStatus) {
+//        when (statusChange.status) {
+//            0 -> {
+//                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                reConnect.visibility = View.GONE
+//            }
+//            1 -> {
+//
+//            }
+//            2 -> {
+//                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                reConnect.visibility = View.VISIBLE
+//            }
+//            3 -> {
+//                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                reConnect.visibility = View.VISIBLE
+//            }
+//        }
+//    }
 
     private var isCanShotNetCoonect = true
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
-        when (statusChange.status) {
-            0 -> {
-                if (!isScanSwitch) {
-                    closeProgressDialog()
-                }
-
-                isCanShotNetCoonect = true
-            }
-            1 -> {
-
-            }
-            2 -> {
-                if (isCanShotNetCoonect) {
-                    if (!ConstantValue.loginOut) {
-                        if (!isScanSwitch) {
-                            closeProgressDialog()
-                        }
-                        //showProgressDialog(getString(R.string.network_reconnecting))
-                    }
-                    isCanShotNetCoonect = false
-                }
-            }
-            3 -> {
-                if (isCanShotNetCoonect) {
-                    if (!isScanSwitch) {
-                        closeProgressDialog()
-                    }
-                    //showProgressDialog(getString(R.string.network_reconnecting))
-                    isCanShotNetCoonect = false
-                }
-            }
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+//        when (statusChange.status) {
+//            0 -> {
+//                if (!isScanSwitch) {
+//                    closeProgressDialog()
+//                }
+//
+//                isCanShotNetCoonect = true
+//            }
+//            1 -> {
+//
+//            }
+//            2 -> {
+//                if (isCanShotNetCoonect) {
+//                    if (!ConstantValue.loginOut) {
+//                        if (!isScanSwitch) {
+//                            closeProgressDialog()
+//                        }
+//                        //showProgressDialog(getString(R.string.network_reconnecting))
+//                    }
+//                    isCanShotNetCoonect = false
+//                }
+//            }
+//            3 -> {
+//                if (isCanShotNetCoonect) {
+//                    if (!isScanSwitch) {
+//                        closeProgressDialog()
+//                    }
+//                    //showProgressDialog(getString(R.string.network_reconnecting))
+//                    isCanShotNetCoonect = false
+//                }
+//            }
+//        }
+//    }
 
     override fun onDestroy() {
 //        reRegesterMiPush()
@@ -2985,7 +2903,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToMy() {
-        TestUtil.testRxJava()
+//        KLog.i("删除3893")
+//        var list = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+//        KLog.i("重置数据库")
+//        list.sortByDescending { it.msgId }
+//        list.forEachIndexed { index, emailMessageEntity ->
+//            if (index <= 30)
+//            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao!!.delete(emailMessageEntity)
+//        }
         StatusBarCompat.cancelLightStatusBar(this)
         rl1.setBackgroundResource(R.color.mainColor)
         statusBar.setBackgroundColor(resources.getColor(R.color.mainColor))
@@ -3293,27 +3218,308 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mVirtualDisplay = null
     }
 
-    override fun initData() {
-        /*var gps = LocationUtils.getGPSLocation(this);
-        if (gps == null) {
-            //设置定位监听，因为GPS定位，第一次进来可能获取不到，通过设置监听，可以在有效的时间范围内获取定位信息
-            LocationUtils.addLocationListener(this@MainActivity, LocationManager.GPS_PROVIDER, object :LocationUtils.ILocationListener {
-                override fun onSuccessLocation(location: Location)
-                {
-                    if (location != null) {
-                       Log.i("gpsData","gps onSuccessLocation location:  lat==" + location.getLatitude() + "     lng==" + location.getLongitude())
-                    } else {
 
+    var countTime = 1;
+    private fun getServer(routerId: String, userSn: String, startToxFlag: Boolean, autoLogin: Boolean) {
+        ConstantValue.currentRouterIp = ""
+        islogining = false
+        isScanSwitch = true
+        runOnUiThread {
+            KLog.i("777")
+            closeProgressDialog()
+            showProgressNoCanelDialog("Connecting...")
+        }
+        if (WiFiUtil.isWifiConnect()) {
+            var count = 0;
+            KLog.i("测试计时器" + count)
+            Thread(Runnable() {
+                run() {
+
+                    while (true) {
+                        KLog.i("currentRouterIp== " + ConstantValue.currentRouterIp)
+                        if (count >= countTime) {
+                            //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
+                            if (!ConstantValue.currentRouterIp.equals("")) {
+                                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
+                                KLog.i("走本地：" + ConstantValue.currentRouterIp)
+                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                    runOnUiThread {
+                                        startLogin()
+                                    }
+
+                                }
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                break;
+                            } else {
+                                // 通过http看是否有远程的路由器可以登录
+                                KLog.i("通过http看是否有远程的路由器可以登录")
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId, object : OkHttpUtils.OkCallback {
+                                    override fun onFailure(e: Exception) {
+                                        startTox(startToxFlag)
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+
+                                    override fun onResponse(json: String) {
+
+                                        val gson = GsonUtil.getIntGson()
+                                        var httpData: HttpData? = null
+                                        try {
+                                            if (json != null) {
+                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                KLog.i("http的返回为：" + httpData!!.toString())
+                                                if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
+                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                    ConstantValue.currentRouterIp = httpData!!.serverHost
+                                                    ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                                    ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
+                                                    ConstantValue.currentRouterId = routerId
+                                                    ConstantValue.currentRouterSN = userSn
+                                                    ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
+
+                                                    var autoLoginEntity = AutoLoginEntity()
+                                                    autoLoginEntity.port = ":" + httpData!!.serverPort.toString()
+                                                    autoLoginEntity.filePort = ":" + (httpData!!.serverPort + 1).toString()
+                                                    autoLoginEntity.loginType = 1
+                                                    autoLoginEntity.routerIp = httpData!!.serverHost
+                                                    autoLoginEntity.routerId = routerId
+                                                    autoLoginEntity.routerSn = userSn
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+                                                    KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp + ConstantValue.port)
+                                                    var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+//                                                    if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                                        runOnUiThread {
+                                                            startLogin()
+                                                        }
+
+//                                                    }
+                                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                                } else {
+                                                    //没有远程，开启tox
+                                                    KLog.i("没有远程，开启tox")
+
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                }
+
+                                            }
+                                        } catch (e: Exception) {
+                                            startTox(startToxFlag)
+                                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                            if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                                runOnUiThread {
+                                                    startLogin()
+                                                }
+
+                                            }
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                        }
+                                    }
+                                })
+                                break
+                            }
+
+                        }
+                        // 走广播，本地的路由器
+                        count++;
+                        MobileSocketClient.getInstance().init(handler, this)
+                        var toxIdMi = AESCipher.aesEncryptString(routerId, "slph\$%*&^@-78231")
+                        MobileSocketClient.getInstance().destroy()
+                        MobileSocketClient.getInstance().send("QLC" + toxIdMi)
+                        MobileSocketClient.getInstance().receive()
+                        KLog.i("测试计时器" + count)
+                        Thread.sleep(1000)
                     }
+
                 }
-            });
-        }*/
+            }).start()
+        } else {
+
+            Thread(Runnable() {
+                run() {
+
+                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId, object : OkHttpUtils.OkCallback {
+                        override fun onFailure(e: Exception) {
+                            startTox(startToxFlag)
+                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                            if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                runOnUiThread {
+                                    startLogin()
+                                }
+
+                            }
+                            Thread.currentThread().interrupt(); //方法调用终止线程
+                        }
+
+                        override fun onResponse(json: String) {
+
+                            val gson = GsonUtil.getIntGson()
+                            var httpData: HttpData? = null
+                            try {
+                                if (json != null) {
+                                    var httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                    if (httpData != null && httpData!!.retCode == 0 && httpData!!.connStatus == 1) {
+                                        ConstantValue.curreantNetworkType = "WIFI"
+                                        ConstantValue.currentRouterIp = httpData!!.serverHost
+                                        ConstantValue.port = ":" + httpData!!.serverPort.toString()
+                                        ConstantValue.filePort = ":" + (httpData!!.serverPort + 1).toString()
+                                        ConstantValue.currentRouterId = routerId
+                                        ConstantValue.currentRouterSN = userSn
+                                        ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
+                                        KLog.i("走远程：" + ConstantValue.currentRouterIp + ConstantValue.port)
+
+                                        var autoLoginEntity = AutoLoginEntity()
+                                        autoLoginEntity.port = ":" + httpData!!.serverPort.toString()
+                                        autoLoginEntity.filePort = ":" + (httpData!!.serverPort + 1).toString()
+                                        autoLoginEntity.loginType = 1
+                                        autoLoginEntity.routerIp = httpData!!.serverHost
+                                        autoLoginEntity.routerId = routerId
+                                        autoLoginEntity.routerSn = userSn
+                                        FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+                                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                                        runOnUiThread {
+                                            KLog.i("555")
+//                                            standaloneCoroutine.cancel()
+//                                            closeProgressDialog()
+                                        }
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
+                                        Thread.currentThread().interrupt() //方法调用终止线程
+                                    } else {
+                                        startTox(startToxFlag)
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+
+                                }
+                            } catch (e: Exception) {
+                                startTox(startToxFlag)
+                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
+                                    runOnUiThread {
+                                        startLogin()
+                                    }
+
+                                }
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                            }
+                        }
+                    })
+                }
+            }).start()
+
+        }
+    }
+
+    override fun initData() {
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
-        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-        if (!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals("")) {
-            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
+//        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+//        if (!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals("")) {
+//            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
+//        }
+        if (intent.hasExtra("autoLogin")) {
+            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+
+            try {
+                AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
+                AppConfig.instance.messageReceiver!!.bakMailsNumCallback = this
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            routerList.forEach {
+                if (adminUserSn != null && !adminUserSn.equals("")) {
+                    val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                    if (it.userSn.equals(adminUserSn)) {
+                        routerId = it.routerId
+                        userSn = it.userSn
+                        userId = it.userId
+                        username = name!!
+                        if (it.dataFileVersion == null) {
+                            dataFileVersion = 0
+                        } else {
+                            dataFileVersion = it.dataFileVersion
+                        }
+                    }
+                } else {
+                    var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+                    val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                    if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no")) {
+                        if (it.userSn.equals(autoLoginRouterSn)) {
+                            routerId = it.routerId
+                            userSn = it.userSn
+                            userId = it.userId
+                            username = it.username
+                            if (it.dataFileVersion == null) {
+                                dataFileVersion = 0
+                            } else {
+                                dataFileVersion = it.dataFileVersion
+                            }
+                        }
+                    } else {
+                        if (it.lastCheck) {
+                            routerId = it.routerId
+                            userSn = it.userSn
+                            userId = it.userId
+                            username = name!!
+                            if (it.dataFileVersion == null) {
+                                dataFileVersion = 0
+                            } else {
+                                dataFileVersion = it.dataFileVersion
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            isClickLogin = true
+//            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
+            var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+            var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+            if ("".equals(autoLoginEntityStr)) {
+                getServer(autoLoginEntity.routerId, userSn, true, true)
+            } else {
+                ConstantValue.curreantNetworkType = if (autoLoginEntity.loginType == 1) {"WIFI"} else {""}
+                ConstantValue.currentRouterIp = autoLoginEntity.routerIp
+                ConstantValue.port = autoLoginEntity.port
+                ConstantValue.filePort = autoLoginEntity.filePort
+                ConstantValue.currentRouterId = autoLoginEntity.routerId
+                if (autoLoginEntity.localCurrentRouterIp != null) {
+                    ConstantValue.localCurrentRouterIp = autoLoginEntity.localCurrentRouterIp
+                }
+                ConstantValue.currentRouterSN = autoLoginEntity.routerSn
+                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
+
+                var userEntity = UserEntity()
+                userEntity.userId = autoLoginEntity.userId
+                userEntity.nickName = autoLoginEntity.userNickName
+                UserDataManger.myUserData = userEntity
+                startLogin()
+            }
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
         var localEmailContactAcount = ""
@@ -3464,6 +3670,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         map.put("token", ConstantValue.mHuaWeiRegId)
                     } else {
                         map.put("regid", ConstantValue.mRegId)
+                        map.put("token", ConstantValue.mJiGuangRegId)
                     }
                     map.put("topicid", "")
                     var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
@@ -5064,9 +5271,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            if (!CustomPopWindow.onBackPressed()) {
+                moveTaskToBack(true)
+            }
         }
-        moveTaskToBack(true)
     }
 
     override fun getScanPermissionSuccess() {
@@ -5213,6 +5421,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var dataStr = String(soureData);
                     viewModel.toAddUserId.value = dataStr
                     typeData = "type_5"
+                    //type_1,圈子码
                 } else if (type.equals("type_1")) {
                     scanType = 1
                     val keyId: ByteArray = ByteArray(6) //密钥ID
@@ -5384,6 +5593,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
 
                     }
+                    //type_2 mac码，初始化圈子，作为管理员
                 } else if (type.equals("type_2")) {
                     scanType = 0;
                     RouterMacStr = String(soureData)
@@ -5874,16 +6084,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         return contacts
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (!CustomPopWindow.onBackPressed()) {
-                moveTaskToBack(true)
-//\                exitToast()
-            }
-        }
-        return false
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            if (!CustomPopWindow.onBackPressed()) {
+//                moveTaskToBack(true)
+////\                exitToast()
+//            }
+//        }
+//        return false
+//    }
 
 
     fun exitToast(): Boolean {
@@ -5907,6 +6117,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun gotoLogin() {
+        KLog.i("跳转到登录...")
         closeProgressDialog()
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")

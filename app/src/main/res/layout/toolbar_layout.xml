@@ -24,9 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/x110"
             app:navigationIcon="@mipmap/arrow_exit_h"
-            android:titleTextColor="@color/white"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:navigationIcon="@mipmap/arrow_exit_h"
+            android:titleTextColor="@color/white">
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/title"

@@ -4,9 +4,11 @@ import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.net.Uri
+import android.os.Handler
 import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
@@ -21,6 +23,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.gmail.GmailRequestInitializer
 import com.google.api.services.gmail.GmailScopes
+import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.push.HmsMessaging
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
@@ -44,6 +47,7 @@ import com.stratagile.pnrouter.entity.JGroupMsgPushRsp
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
+import com.stratagile.pnrouter.telegram.AndroidUtilities
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
@@ -51,6 +55,7 @@ import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.MiPushClient
 import org.greenrobot.eventbus.EventBus
 import java.util.*
+import kotlin.concurrent.thread
 
 /**
  * 作者：Android on 2017/8/1
@@ -74,7 +79,7 @@ class AppConfig : MultiDexApplication() {
     var sharedTextContent:String? = ""
     var imageUris:ArrayList<Uri>? = null
     var onToxMessageReceiveListener: WebSocketConnection.OnMessageReceiveListener? = null
-
+    
     var messageReceiver: PNRouterServiceMessageReceiver? = null
 
     var messageSender: PNRouterServiceMessageSender? = null
@@ -83,6 +88,9 @@ class AppConfig : MultiDexApplication() {
     var messageToxReceiver: ToxMessageReceiver? = null
 
     var mDaoMaster: DaoMaster? = null
+
+    lateinit var applicationHandler: Handler
+
 
     val point = Point()
 
@@ -129,14 +137,19 @@ class AppConfig : MultiDexApplication() {
         setDatabase()
         MessageProvider.getInstance()
         KLog.init(BuildConfig.LOG_DEBUG)
+        applicationHandler = Handler(mainLooper)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
+            thread {
+                HmsInstanceId.getInstance(this).deleteToken("102030623", "HCM")
+                HmsInstanceId.getInstance(this).getToken("102030623", "HCM")
+            }
         }else{
             initMiPush()
         }
-        loadLibrary()
+//        loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {
@@ -144,7 +157,7 @@ class AppConfig : MultiDexApplication() {
         }*/
         JPushInterface.setDebugMode(BuildConfig.DEBUG)    // 设置开启日志,发布时请关闭日志
         JPushInterface.init(this)            // 初始化 JPush
-
+        AndroidUtilities.checkDisplaySize(this, null)
         /* var intent =  Intent(this, MyService::class.java)
          var sender= PendingIntent.getService(this, 0, intent, 0);
          var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
@@ -157,6 +170,18 @@ class AppConfig : MultiDexApplication() {
     fun getMessageReceiverInstance(): PNRouterServiceMessageReceiver? {
 
         return messageReceiver
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        KLog.i("设置屏幕")
+        try {
+            //            LocaleController.getInstance().onDeviceConfigurationChange(newConfig);
+            AndroidUtilities.checkDisplaySize(applicationContext, newConfig)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     fun getmScreenCaptureBitmap(): Bitmap {
@@ -212,15 +237,15 @@ class AppConfig : MultiDexApplication() {
     fun getPNRouterServiceMessageSender(): PNRouterServiceMessageSender {
         KLog.i("超时调试：getPNRouterServiceMessageSender"+messageSender)
         if (messageSender == null) {
-            messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+            messageSender = PNRouterServiceMessageSender(Optional.fromNullable(getPNRouterServiceMessageReceiver().createMessagePipe()), Optional.of(SecurityEventListener(this)))
         }else{
-            messageSender!!.setPipe(Optional.fromNullable(MessageRetrievalService.getPipe()))
+            messageSender!!.setPipe(Optional.fromNullable(getPNRouterServiceMessageReceiver().createMessagePipe()))
         }
         return messageSender!!
     }
 
     fun getPNRouterServiceMessageSender(reStart: Boolean): PNRouterServiceMessageSender {
-        messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+        messageSender = PNRouterServiceMessageSender(Optional.fromNullable(getPNRouterServiceMessageReceiver().createMessagePipe()), Optional.of(SecurityEventListener(this)))
         return messageSender!!
     }
 
@@ -406,14 +431,14 @@ class AppConfig : MultiDexApplication() {
         }
     }
 
-    fun loadLibrary() {
-        try {
-            KLog.i("load tox库")
-            System.loadLibrary("tox")
-        } catch (exception: java.lang.Exception) {
-            exception.printStackTrace()
-        }
-    }
+//    fun loadLibrary() {
+//        try {
+//            KLog.i("load tox库")
+//            System.loadLibrary("tox")
+//        } catch (exception: java.lang.Exception) {
+//            exception.printStackTrace()
+//        }
+//    }
 
     /**
      * 获取emailConfig

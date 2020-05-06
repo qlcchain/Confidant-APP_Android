@@ -1,4 +1,5 @@
 /*apply from :'config.gradle'*/
+//./gradlew app:dependencies
 apply plugin: 'com.android.application'
 
 apply plugin: 'org.greenrobot.greendao'
@@ -34,8 +35,8 @@ android {
         applicationId "com.stratagile.pnrouter"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode getSelfDefinedVersion("code")
-        versionName "1.3.4"
+        versionCode getSelfDefinedVersion("code") + 1
+        versionName "1.3.5"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -114,8 +115,9 @@ android {
     }
     signingConfigs {
         release {
+            storeFile file(rootProject.getRootDir().getAbsolutePath() + "/qlink.jks");
+
             //签名文件路径，我是放到项目中了
-            storeFile file { "../qlink.jks" }
             //签名密码
             storePassword "qlinkdapp"
             //别名
@@ -135,6 +137,7 @@ android {
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -347,6 +350,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-analytics:16.0.4'
     implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     implementation 'com.huawei.hms:push:4.0.3.301'
 
