@@ -139,6 +139,8 @@ object ConstantValue {
     var isNewUser = false
     var isGooglePlayServicesAvailable = true; //是否支持googleypaly
     var waitAddFreind = "";
+
+    var firstOpenApp = "firstOpenApp"
     //1：qq企业邮箱
     //2：qq邮箱
     //3：163邮箱

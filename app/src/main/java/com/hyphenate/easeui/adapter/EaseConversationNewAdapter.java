@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
@@ -39,6 +41,7 @@ import com.stratagile.pnrouter.view.ImageButtonWithText;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.jar.Attributes;
 
 
 /**
@@ -124,9 +127,11 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             List<UserEntity> localFriendList = null;
             if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
                 localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                KLog.i("对话：拿to");
                 if (localFriendList.size() > 0)
                     friendUser = localFriendList.get(0);
             } else {
+                KLog.i("对话：拿from");
                 localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
                 if (localFriendList.size() > 0)
                     friendUser = localFriendList.get(0);
@@ -184,6 +189,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             String fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(friendUser.getSignPublicKey())) + ".jpg";
             holder.avatar.setImageFile(fileBase58Name);
             holder.name.setText(usernameSouce);
+            KLog.i("对话：" + usernameSouce);
             if (friendUser.getRouterAlias() == null || "".equals(friendUser.getRouterAlias())) {
                 if (!"".equals(new String(RxEncodeTool.base64Decode(friendUser.getRouteName())))) {
                     holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -153,6 +154,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         KLog.i("setUpView");
         conversationList.clear();
         conversationList.addAll(loadLocalConversationList());
+        KLog.i("用户名字为数量：" + conversationList.size());
         conversationListView.init(conversationList, new EaseConversationList.EaseConversationListHelper() {
             @Override
             public String onSetItemSecondaryText(UnReadEMMessage lastMessage) {
@@ -419,6 +421,9 @@ public class EaseConversationListFragment extends EaseBaseFragment {
      */
     protected List<UnReadEMMessage> loadLocalConversationList() {
         // get all conversations
+        if (UserDataManger.myUserData == null) {
+            return new ArrayList<UnReadEMMessage>();
+        }
         List<UnReadEMMessage> list = new ArrayList<UnReadEMMessage>();
         try {
             Map<String, UnReadEMMessage> conversations = new HashMap<>();
@@ -603,6 +608,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
             for (Pair<Long, UnReadEMMessage> sortItem : sortList) {
                 list.add(sortItem.second);
+                KLog.i("对话: " + sortItem.second.getEmMessage().toString());
             }
 
         } catch (Exception e) {

@@ -26,6 +26,7 @@ import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetGmailReceiveCallback;
 import com.smailnet.eamil.Callback.GetMessagesBack;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
+import com.smailnet.eamil.Callback.GetReceiveCallback1;
 import com.smailnet.eamil.Callback.GmailAuthCallback;
 import com.smailnet.eamil.Callback.MarkCallback;
 
@@ -115,26 +116,46 @@ public class EmailReceiveClient {
      * 使用imap协议接收新邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveNewAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final long beginIndex, final int pageSize,final long lastTotalCount){
+    public void imapReceiveNewAsyn(final Activity activity, final GetReceiveCallback1 getReceiveCallback, final String menu, final long beginIndex, final int pageSize,final long lastTotalCount){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final HashMap<String, Object> messageMap = Operator.Core(emailConfig).imapReceiveNewMailByUUID(menu,beginIndex,pageSize,lastTotalCount);
-                    final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
-                   /* messageMap.put("totalCount",totalSize);
-                    messageMap.put("totalUnreadCount",totalUnreadCount);*/
-                    final int totalCount = (int)messageMap.get("totalCount");
-                    final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
-                    final long minUIIDNew = (long)messageMap.get("minUIID");
-                    final long maxUUIDNew = (long)messageMap.get("maxUUID");
-                    final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
-                    final String errorMsg = (String)messageMap.get("errorMsg");
-                    final String menuFlag = (String)messageMap.get("menu");
-                    activity.runOnUiThread(new Runnable() {
+                    Operator.Core(emailConfig).imapReceiveNewMailByUUID(menu, beginIndex, pageSize, lastTotalCount, new GetMessagesBack() {
                         @Override
-                        public void run() {
-                            getReceiveCallback.gainSuccess(messageList, totalCount,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                        public void onBack(HashMap<String, Object> messageMap) {
+                            final List<EmailMessage> messageList1 = (List<EmailMessage>)messageMap.get("emailMessageList");
+                            final int totalCount = (int)messageMap.get("totalCount");
+                            final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                            final long minUIIDNew = (long)messageMap.get("minUIID");
+                            final long maxUUIDNew = (long)messageMap.get("maxUUID");
+                            final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                            final String errorMsg = (String)messageMap.get("errorMsg");
+                            final String menuFlag = (String)messageMap.get("menu");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getReceiveCallback.gainSuccess(messageList1, totalCount,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onPreBack(HashMap<String, Object> messageMap) {
+                            final List<EmailMessage> messageList1 = (List<EmailMessage>)messageMap.get("emailMessageList");
+                            final int totalCount = (int)messageMap.get("totalCount");
+                            final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                            final long minUIIDNew = (long)messageMap.get("minUIID");
+                            final long maxUUIDNew = (long)messageMap.get("maxUUID");
+                            final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                            final String errorMsg = (String)messageMap.get("errorMsg");
+                            final String menuFlag = (String)messageMap.get("menu");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getReceiveCallback.gainPreSuccess(messageList1, totalCount,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                                }
+                            });
                         }
                     });
                 } catch (final MessagingException e) {
@@ -373,7 +394,7 @@ public class EmailReceiveClient {
      * 使用imap协议接收历史邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveMoreAsynByUUID(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final long minUUID, final int pageSize,final long maxUUID){
+    public void imapReceiveMoreAsynByUUID(final Activity activity, final GetReceiveCallback1 getReceiveCallback, final String menu, final long minUUID, final int pageSize, final long maxUUID){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -397,6 +418,26 @@ public class EmailReceiveClient {
                                 @Override
                                 public void run() {
                                     getReceiveCallback.gainSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onPreBack(HashMap<String, Object> messageList1) {
+                            final HashMap<String, Object> messageMap = messageList1;
+
+                            final List<EmailMessage> messageList = (List<EmailMessage>)messageMap.get("emailMessageList");
+                            final int totalCount = (int)messageMap.get("totalCount");
+                            final int totalUnreadCount = (int)messageMap.get("totalUnreadCount");
+                            final long minUIIDNew = (long)messageMap.get("minUIID");
+                            final long maxUUIDNew = (long)messageMap.get("maxUUID");
+                            final Boolean noMoreData = (Boolean)messageMap.get("noMoreData");
+                            final String errorMsg = (String)messageMap.get("errorMsg");
+                            final String menuFlag = (String)messageMap.get("menu");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getReceiveCallback.gainPreSuccess(messageList, minUIIDNew,maxUUIDNew,noMoreData,errorMsg,menuFlag);
                                 }
                             });
                         }

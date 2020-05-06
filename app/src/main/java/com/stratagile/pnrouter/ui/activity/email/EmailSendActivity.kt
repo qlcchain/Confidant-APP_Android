@@ -96,10 +96,9 @@ import kotlin.concurrent.thread
  * @date 2019/07/25 11:21:29
  */
 
-class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback{
+class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback {
     override fun addFriendsAuto(jAddFriendsAutoRsp: JAddFriendsAutoRsp) {
-        if(jAddFriendsAutoRsp.params.retCode == 0)
-        {
+        if (jAddFriendsAutoRsp.params.retCode == 0) {
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var pullFriend = PullFriendReq_V4(selfUserId!!)
             var sendData = BaseData(pullFriend)
@@ -162,7 +161,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     /********************变量 */
     //折叠视图的宽高
     private var mFoldedViewMeasureHeight: Int = 0
-    var emaiAttachAdapter : EmaiAttachAdapter? = null
+    var emaiAttachAdapter: EmaiAttachAdapter? = null
     protected var cameraFile: File? = null
     protected var videoFile: File? = null
     protected val REQUEST_CODE_MAP = 1
@@ -186,7 +185,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var contactMapList = HashMap<String, String>()
     internal var previewImages: MutableList<LocalMedia> = java.util.ArrayList()
     var replayAll = true
-    var attachListEntityNode =  arrayListOf<EmailAttachEntity>()
+    var attachListEntityNode = arrayListOf<EmailAttachEntity>()
     var dataTips = arrayListOf<String>()
     var addressBase64 = ""
     var userPassWord = ""
@@ -194,78 +193,70 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     var galleryPath = ""
 
     private val users = arrayListOf(
-            User("1", "激浊扬清",""),
-            User("15", "必须要\\n\n，不然不够长",""))
+            User("1", "激浊扬清", ""),
+            User("15", "必须要\\n\n，不然不够长", ""))
     var flag = 0;
     var foward = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
     var oldAdress = ""
     var attach = 0;
-    var menu:String= "INBOX"
-    var attachListEntity =  arrayListOf<EmailAttachEntity>()
+    var menu: String = "INBOX"
+    var attachListEntity = arrayListOf<EmailAttachEntity>()
     var isSendCheck = false
     var positionIndex = 0;
     var toAdressEditLastContent = ""
     var ccAdressEditLastContent = ""
     var bccAdressEditLastContent = ""
     var InviteURLText = ""
-    var routerEntity:RouterEntity? = null
+    var routerEntity: RouterEntity? = null
 
     override fun checkmailUkey(jCheckmailUkeyRsp: JCheckmailUkeyRsp) {
-        if(isSendCheck)
-        {
+        if (isSendCheck) {
             runOnUiThread {
                 closeProgressDialog()
             }
         }
-        if(jCheckmailUkeyRsp.params.retCode == 0)
-        {
+        if (jCheckmailUkeyRsp.params.retCode == 0) {
             var data = jCheckmailUkeyRsp.params.payload
             needSize = data.size;
-            for (item in data)
-            {
-                if(item.pubKey !="")
-                {
+            for (item in data) {
+                if (item.pubKey != "") {
                     var value = item.pubKey;
                     val dst_public_MiKey_Friend = ByteArray(32)
                     val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
                     if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
-                        contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                        contactMapList.put(item.user, RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                     }
-                }else{
+                } else {
                     var aa = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().list()
                     var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.Mails.`in`(item.user)).list()
-                    if (localFriendList.size > 0)
-                    {
+                    if (localFriendList.size > 0) {
                         var it = localFriendList.get(0)
                         var value = it.signPublicKey;
                         val dst_public_MiKey_Friend = ByteArray(32)
                         val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(value))
                         if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
-                            contactMapList.put(item.user,RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
+                            contactMapList.put(item.user, RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend))
                         }
                     }
 
                 }
 
             }
-            if(isSendCheck)
-            {
+            if (isSendCheck) {
                 sendEmail(true);
             }
             runOnUiThread {
-                if(contactMapList.size == needSize && InviteURLText == "")
-                {
+                if (contactMapList.size == needSize && InviteURLText == "") {
                     lockTips.visibility = View.VISIBLE
-                }else{
+                } else {
                     lockTips.visibility = View.GONE
                 }
             }
-        }else{
+        } else {
             needSize = 0;
             contactMapList = HashMap<String, String>()
-            if(isSendCheck)
-            {
+            if (isSendCheck) {
                 sendEmail(true);
             }
             runOnUiThread {
@@ -276,26 +267,24 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
-//        isEditActivity = true
+        isEditActivity = true
+        statusBarColor = R.color.headmainColor
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
         setContentView(R.layout.email_send_edit)
 
-        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        statusBar.setLayoutParams(llp2)
-//        StatusBarCompat.setStatusBarColor(this, resources.getColor(R.color.headmainColor))
-//        StatusBarCompat.changeToLightStatusBar(this)
-//        window.navigationBarColor = resources.getColor(R.color.white)
+//        val llp2 = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+//        statusBar.setLayoutParams(llp2)
     }
+
     override fun initData() {
         InviteURLText = ""
         addressBase64 = ""
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = this
         var emailContactsList = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.notEq("")).orderDesc(EmailContactsEntityDao.Properties.CreateTime).list()
-        for (item in emailContactsList)
-        {
+        for (item in emailContactsList) {
             dataTips.add(item.account)
         }
         var adapter = ArrayAdapter<String>(this@EmailSendActivity, android.R.layout.simple_dropdown_item_1line, dataTips)
@@ -310,14 +299,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         bccAdressEdit!!.setAdapter(adapterbcc)
         bccAdressEdit!!.setTokenizer(SemicolonTokenizer(';'))
         emailMeaasgeInfoData = intent.getParcelableExtra("emailMeaasgeInfoData")
-        flag = intent.getIntExtra("flag",0)
-        foward = intent.getIntExtra("foward",0)
-        attach = intent.getIntExtra("attach",0)
+        flag = intent.getIntExtra("flag", 0)
+        foward = intent.getIntExtra("foward", 0)
+        attach = intent.getIntExtra("attach", 0)
         menu = intent.getStringExtra("menu")
-        positionIndex = intent.getIntExtra("positionIndex",0)
-        if(intent.hasExtra("attachListEntityNode"))
-        {
-            attachListEntityNode =  intent.getParcelableArrayListExtra("attachListEntityNode")
+        positionIndex = intent.getIntExtra("positionIndex", 0)
+        if (intent.hasExtra("attachListEntityNode")) {
+            attachListEntityNode = intent.getParcelableArrayListExtra("attachListEntityNode")
         }
         initUI()
         initClickListener()
@@ -343,26 +331,23 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         list_itease_layout_info.visibility = View.GONE
         sentTitle.visibility = View.VISIBLE
         re_main_editor.visibility = View.VISIBLE
-        if(flag == 1)
-        {
+        if (flag == 1) {
             initBaseUI(emailMeaasgeInfoData!!)
             oldtitle.visibility = View.VISIBLE
             sentTitle.visibility = View.GONE
             list_itease_layout_info.visibility = View.VISIBLE
-            if(foward == 1)
-            {
+            if (foward == 1) {
                 list_itease_layout_info.visibility = View.GONE
                 sentTitle.visibility = View.VISIBLE
             }
 
-        }else if(flag == 100)
-        {
+        } else if (flag == 100) {
 
             addKeyImgParent.visibility = View.GONE
             attachList.visibility = View.GONE
             re_main_editor.visibility = View.GONE
             var myAccount = ConstantValue.currentEmailConfigEntity!!.account
-            subject.setText(getString(R.string.You_got_an_email_from_your_friend) +" "+myAccount) //"You got an email from your friend xxxx@gmail.com"
+            subject.setText(getString(R.string.You_got_an_email_from_your_friend) + " " + myAccount) //"You got an email from your friend xxxx@gmail.com"
             val lp = LinearLayout.LayoutParams(webViewParent.getLayoutParams())
             lp.setMargins(0, 0, 0, 0)
             webViewParent.setLayoutParams(lp);
@@ -370,25 +355,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId)).list()
 
-            if(routerList .size  > 0) {
+            if (routerList.size > 0) {
                 routerEntity = routerList[0]
             }
             tvRouterName.text = "【" + routerEntity!!.routerName + "】"
-            adminName.text = getString(R.string.Circle_Owner)+ String(RxEncodeTool.base64Decode(routerEntity!!.adminName))
+            adminName.text = getString(R.string.Circle_Owner) + String(RxEncodeTool.base64Decode(routerEntity!!.adminName))
             ivAvatar2.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-            var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+            var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
             ivAvatar2.setImageFile(fileBase58Name)
             var userId = FileUtil.getLocalUserData("userid")
             var nickName = SpUtil.getString(this, ConstantValue.username, "")
             val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-            var codeStr = "type_4,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!
+            var codeStr = "type_4," + userId + "," + selfNickNameBase64 + "," + ConstantValue.libsodiumpublicSignKey!!
             var routerCodeData: RouterCodeData = RouterCodeData();
             routerCodeData.id = "010001".toByteArray()
-            routerCodeData.routerId =  ConstantValue.currentRouterId.toByteArray()
-            routerCodeData.userSn =  ConstantValue.currentRouterSN.toByteArray()
+            routerCodeData.routerId = ConstantValue.currentRouterId.toByteArray()
+            routerCodeData.userSn = ConstantValue.currentRouterSN.toByteArray()
             var routerCodeDataByte = routerCodeData.toByteArray();
-            var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
-            codeStr += ","+base64Str;
+            var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte, "welcometoqlc0101".toByteArray())
+            codeStr += "," + base64Str;
 
             Thread(Runnable() {
                 run() {
@@ -396,8 +381,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     runOnUiThread {
                         cardView2.visibility = View.VISIBLE
                     }
-                    var bitMapAvatar =  getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
-                    var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(codeStr, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitMapAvatar)
+                    var bitMapAvatar = getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+                    var bitmap: Bitmap = QRCodeEncoder.syncEncodeQRCode(codeStr, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitMapAvatar)
                     runOnUiThread {
                         ivQrCode2.setImageBitmap(bitmap)
                     }
@@ -405,30 +390,26 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     saveQrCodeToPhone()
                 }
             }).start()
-        }else if(flag == 255)
-        {
+        } else if (flag == 255) {
             var emailAdress = intent.getStringExtra("emailAdress")
             var fromAdressList = emailAdress.split(",")
-            for (item in fromAdressList)
-            {
+            for (item in fromAdressList) {
                 var myAccount = AppConfig.instance.emailConfig().account
                 var toAdress = getEditText(toAdressEdit)
-                if(item != "" && !item.contains(myAccount) && !toAdress.contains(item))
-                {
+                if (item != "" && !item.contains(myAccount) && !toAdress.contains(item)) {
                     var fromNameTemp = ""
                     var fromAdressTemp = ""
-                    if(item.indexOf("<") >=0)
-                    {
-                        fromNameTemp = item.substring(0,item.indexOf("<"))
-                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                    }else{
-                        fromNameTemp = item.substring(0,item.indexOf("@"))
-                        fromAdressTemp = item.substring(0,item.length)
+                    if (item.indexOf("<") >= 0) {
+                        fromNameTemp = item.substring(0, item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                    } else {
+                        fromNameTemp = item.substring(0, item.indexOf("@"))
+                        fromAdressTemp = item.substring(0, item.length)
                     }
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -445,33 +426,30 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             var aa = "";
         }
         toAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
+            override fun onFocusChange(v: View, hasFocus: Boolean) {
+                if (hasFocus) {
 
-                }else{
+                } else {
                     allSpan(toAdressEdit)
                     sendCheck(false)
                 }
             }
         });
         ccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
+            override fun onFocusChange(v: View, hasFocus: Boolean) {
+                if (hasFocus) {
 
-                }else{
+                } else {
                     allSpan(ccAdressEdit)
                     sendCheck(false)
                 }
             }
         });
         bccAdressEdit.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
+            override fun onFocusChange(v: View, hasFocus: Boolean) {
+                if (hasFocus) {
 
-                }else{
+                } else {
                     allSpan(bccAdressEdit)
                     sendCheck(false)
                     bccAdressEditLastContent = bccAdressEdit.text.toString()
@@ -505,13 +483,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             override fun afterTextChanged(s: Editable) {
                 var content = s.toString()
-                if(content.length > 0)
-                {
-                    var endStr = content.substring(content.length -1,content.length)
+                if (content.length > 0) {
+                    var endStr = content.substring(content.length - 1, content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
-                    {
-                        toAdressEdit.text.replace(content.length -1,content.length,";")
+                    if (endStr == "，" || endStr == "；" || endStr == "。" || endStr == "," || endStr == "?" || endStr == "？") {
+                        toAdressEdit.text.replace(content.length - 1, content.length, ";")
                     }
                 }
 
@@ -531,13 +507,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             override fun afterTextChanged(s: Editable) {
                 var content = s.toString()
-                if(content.length > 0)
-                {
-                    var endStr = content.substring(content.length -1,content.length)
+                if (content.length > 0) {
+                    var endStr = content.substring(content.length - 1, content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
-                    {
-                        ccAdressEdit.text.replace(content.length -1,content.length,";")
+                    if (endStr == "，" || endStr == "；" || endStr == "。" || endStr == "," || endStr == "?" || endStr == "？") {
+                        ccAdressEdit.text.replace(content.length - 1, content.length, ";")
                     }
                 }
                 var lineCount = ccAdressEdit.lineCount
@@ -556,62 +530,31 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
             override fun afterTextChanged(s: Editable) {
                 var content = s.toString()
-                if(content.length > 0)
-                {
-                    var endStr = content.substring(content.length -1,content.length)
+                if (content.length > 0) {
+                    var endStr = content.substring(content.length - 1, content.length)
                     var result = StringUitl.checkBiaoD(endStr)
-                    if(endStr == "，" ||endStr == "；" || endStr == "。" || endStr == "," || endStr == "?"|| endStr == "？")
-                    {
-                        bccAdressEdit.text.replace(content.length -1,content.length,";")
+                    if (endStr == "，" || endStr == "；" || endStr == "。" || endStr == "," || endStr == "?" || endStr == "？") {
+                        bccAdressEdit.text.replace(content.length - 1, content.length, ";")
                     }
                 }
                 var lineCount = bccAdressEdit.lineCount
                 bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             }
         })
-        /*toAddress.setOnClickListener(this)
-        toAddress.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-             KLog.i("key" + "keyCode:" + keyCode + " action:" + event.action)
-
-             // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
-             if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
-                 if (event.action == KeyEvent.ACTION_DOWN) {
-                     ctrlPress = true
-                 } else if (event.action == KeyEvent.ACTION_UP) {
-                     ctrlPress = false
-                 }
-             }
-             onKeyDel = true
-             if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                      ATEmailEditText.KeyDownHelper(toAddress.getText())
-                  } else false
-         })
-        toAddress.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
-            EMLog.d("key", "keyCode:" + event.keyCode + " action" + event.action + " ctrl:" + ctrlPress)
-            if (actionId == EditorInfo.IME_ACTION_SEND || event.keyCode == KeyEvent.KEYCODE_ENTER &&
-                    event.action == KeyEvent.ACTION_DOWN &&
-                    ctrlPress == true) {
-                val s = toAddress.getText().toString().trim({ it <= ' ' })
-                toAddress.setText("")
-                //listener.onSendBtnClicked(s, "")
-                true
-            } else {
-                false
-            }
-        })*/
         initAttachUI()
     }
+
     //生成圆角图片
     fun getRoundedCornerBitmap(bitmap: Bitmap): Bitmap {
         var offWidth = 0
         val roundPx = resources.getDimension(R.dimen.x10)
         val widht = resources.getDimension(R.dimen.x20).toInt()
-        val output = Bitmap.createBitmap(bitmap.width +offWidth, bitmap.height+ offWidth, Bitmap.Config.ARGB_8888)
+        val output = Bitmap.createBitmap(bitmap.width + offWidth, bitmap.height + offWidth, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
 
         val paint = Paint()
-        val rect = Rect(0, 0, bitmap.width+offWidth, bitmap.height+offWidth)
-        val rect1 = Rect(widht / 4, widht / 4, bitmap.width + widht / 4+offWidth, bitmap.height + widht / 4+offWidth)
+        val rect = Rect(0, 0, bitmap.width + offWidth, bitmap.height + offWidth)
+        val rect1 = Rect(widht / 4, widht / 4, bitmap.width + widht / 4 + offWidth, bitmap.height + widht / 4 + offWidth)
         val rectF = RectF(rect)
         val rectF1 = RectF(rect1)
 
@@ -627,6 +570,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         return output
     }
+
     fun saveQrCodeToPhone() {
         thread {
 
@@ -662,38 +606,35 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
     }
-    private fun allSpan(editText: EditText)
-    {
+
+    private fun allSpan(editText: EditText) {
 
         var textStrList = editText.text.split(";")
         var i = 0
-        for(str in textStrList)
-        {
-            if(str != "")
-            {
+        for (str in textStrList) {
+            if (str != "") {
                 var beginIndex = i
-                var endIndex = i+str.length
+                var endIndex = i + str.length
                 val spans = editText!!.getText()!!.getSpans(beginIndex, endIndex, User::class.java)
-                if(spans.size == 0)
-                {
+                if (spans.size == 0) {
                     var addUser = User(str, str, str)
                     /* editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
                      (editText.text as SpannableStringBuilder).append(",")*/
                     /*(editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
                             .append(" ")*/
-                    editText.text.replace(beginIndex,endIndex,methodContext.newSpannable(addUser))
+                    editText.text.replace(beginIndex, endIndex, methodContext.newSpannable(addUser))
                     /*editText.text.replace(beginIndex,endIndex,"")
                     (editText.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(addUser))
                             .append(" ")*/
                 }
             }
-            i += str.length+1
+            i += str.length + 1
         }
     }
-    fun initWebviewUI()
-    {
+
+    fun initWebviewUI() {
         webView.webChromeClient = object : WebChromeClient() {
             override fun onReceivedTitle(view: WebView, title1: String?) {
                 super.onReceivedTitle(view, title1)
@@ -714,7 +655,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
-        webView.webViewClient = object  : WebViewClient() {
+        webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 //view.loadUrl(url)
                 val intent = Intent()
@@ -748,271 +689,267 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
         var myAccount = ConstantValue.currentEmailConfigEntity!!.account
-        InviteURLText = "<div id=\'box\'>"+
-                "<style type=\'text/css\'>"+
-                "* {"+
-                "padding: 0;"+
-                "border: 0;"+
-                "outline: 0;"+
-                "margin: 0;"+
-                "}"+
-                "a {"+
-                "text-decoration: none;"+
-                "background-color: transparent"+
-                "}"+
-                "a:hover,"+
-                "a:active {"+
-                "outline-width: 0;"+
-                "text-decoration: none"+
-                "}"+
-                "#box{"+
-                "margin: 0 auto;"+
-                "box-sizing: border-box;"+
-                "max-width: 720px;"+
-                "}"+
-                "#box section {"+
-                "padding: 16px;"+
-                "}"+
-                "#box header .Star {"+
-                "float: right;"+
-                "}"+
-                ".userHead {"+
-                "display: flex;"+
-                "width: 100%;"+
-                "box-sizing: border-box;"+
-                "border-bottom: 1px solid #e6e6e6;"+
-                "}"+
-                ".userHeadA {"+
-                "width: 44px;"+
-                "height: 44px;"+
-                "padding: 16px 0;"+
-                "}"+
-                ".userHeadB {"+
-                "width: 240px;"+
-                "height: 44px;"+
-                "padding: 16px 0;"+
-                "outline: 0px solid #ccc;"+
-                "}"+
-                ".userHeadC {"+
-                "flex: 1;"+
-                "text-align: right;"+
-                "height: 44px;"+
-                "padding: 18px 0;"+
-                "outline: 0px solid #ccc;"+
-                "}"+
-                ".userHeadAimg {"+
-                "width: 44px;"+
-                "height: 44px;"+
-                "border-radius: 22px;"+
-                "}"+
-                ".userHeadBdate {"+
-                "color: #ccc;"+
-                "margin-left: 8px;"+
-                "}"+
-                ".rowDiv {"+
-                "padding: 20px 0;"+
-                "}"+
-                "button {"+
-                "background: rgba(102, 70, 247, 1);"+
-                "border-radius: 7px;"+
-                "color: #fff;"+
-                "}"+
-                ".rowDiv3Btn {"+
-                "padding: 12px 34px;"+
-                "background: rgba(102, 70, 247, 1);"+
-                "border-radius: 7px;"+
-                "color: #fff;"+
-                "}"+
-                ".rowDiv h3 {"+
-                "font-size: 16px;"+
-                "line-height: 16px;"+
-                "}"+
-                "#box p {"+
-                "line-height: 20px;"+
-                "font-size: 12px;"+
-                "}"+
-                "#box h3 {"+
-                "line-height: 40px;"+
-                "}"+
-                ".qrcodeDIV {"+
-                "width: 120px;"+
-                "margin: 0 30px;"+
-                "}"+
-                ".qrcodeDIV img {"+
-                "width: 120px;"+
-                "}"+
-                ".btn {"+
-                "width: 120px;"+
-                "height: 22px;"+
-                "display: block;"+
-                "}"+
-                ".btn img {"+
-                "width: 100%;"+
-                "height: 100%;"+
-                "}"+
-                ".h3logo {"+
-                "position: relative;"+
-                "top: 5px;"+
-                "width: 24px;"+
-                "margin-right: 5px;"+
-                "}"+
-                ".includePng {"+
-                "float: right;"+
-                "width: 110px;"+
-                "position: relative;"+
-                "top: -24px;"+
-                "}"+
-                ".rowDivBtn {"+
-                "display: flex;"+
-                "width: 100%;"+
-                "justify-content: space-between;"+
-                "}"+
-                ".rowDivBtn div {"+
-                "width: 158px;"+
-                "height: 42px;"+
-                "margin:5px;"+
-                "}"+
-                ".rowDivBtn .rowDivBtnAddlong {"+
-                "width: 179px;"+
-                "}"+
-                ".rowDivBtn img {"+
-                "width: 100%;"+
-                "}"+
-                ".jusCenter {"+
-                "display: flex;"+
-                "justify-content: center;"+
-                "align-items: center;"+
-                "}"+
-                ".rowDivFooter {"+
-                "background: #292B33;"+
-                "color: #fff;"+
-                "text-align: center;"+
-                "}"+
-                "#box .rowDivFooter p {"+
-                "line-height: 30px;"+
-                "}"+
-                ".rowDivFooter i {"+
-                "outline: 0px solid red;"+
-                "font-style: normal;"+
-                "overflow: hidden;"+
-                "height: 9px;"+
-                "width: 15px;"+
-                "display: inline-block;"+
-                "line-height: 15px;"+
-                "position: relative;"+
-                "top: -6px;"+
-                "color: #6646F7;"+
-                "}"+
-                ".rowDivFooter i:last-child {"+
-                "top: 0px;"+
-                "height: 7px;"+
-                "line-height: 0px;"+
-                "top: 2px;"+
-                "}"+
-                ".rowDivSave {"+
-                "text-align: center;"+
-                "border-bottom: 1px solid #E6E6E6;"+
-                "padding: 0 0 30px 0;"+
-                "}"+
-                "@media only screen and (min-width: 992px) {"+
-                "#box{"+
-                "width:706px;"+
-                "}"+
-                "}"+
-                "@media only screen and (min-width: 1200px) {"+
-                "#box{"+
-                "width:680px;"+
-                "background: white;"+
-                "}"+
-                "}"+
-                "</style>"+
-                "<section>"+
-                "<div class=\'rowDiv\'>"+
-                "<h3>Dear,<br/> Greetings "+myAccount+"</h3>"+
-                "<p>This invitation was sent to you from your friend using Confidant, which is the platform for secure"+
-                "&nbsp;encrypted Email and message communication. </p>"+
-                "<p>You are invited to join him/her to stay in touch in a private and secure manner.</p>"+
-                "<br/>"+
-                "<p style=\'font-size: 14px;\'>To instantly access Confidant full services</p>"+
-                "</div>"+
-                "<div class=\'rowDiv\' style=\'padding: 5px 0;\'>"+
-                "<p style=\'color: #757380;\'>1. Download the app via </p>"+
-                "</div>"+
-                "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>"+
-                "<div class=\'qrcodeDIV\'>"+
-                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>"+
-                "<a href=\'https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&ls=1\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>"+
-                "</div>"+
-                "<div class=\'qrcodeDIV\'>"+
-                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>"+
-                "<a href=\'https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>"+
-                "</div>"+
-                "</div>"+
-                "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>"+
-                "<div class=\'rowDiv\'>"+
-                "<p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your friend.</p>"+
-                "<p style=\'color: #757380;\'>Stay safe and secured!</p>"+
-                "</div>"+
-                "<div class=\'rowDiv\'>"+
-                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\' />"+
-                "</div>"+
-                "<div class=\'rowDiv\'>"+
-                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\' />"+
-                "</div>"+
-                "</section>"+
+        InviteURLText = "<div id=\'box\'>" +
+                "<style type=\'text/css\'>" +
+                "* {" +
+                "padding: 0;" +
+                "border: 0;" +
+                "outline: 0;" +
+                "margin: 0;" +
+                "}" +
+                "a {" +
+                "text-decoration: none;" +
+                "background-color: transparent" +
+                "}" +
+                "a:hover," +
+                "a:active {" +
+                "outline-width: 0;" +
+                "text-decoration: none" +
+                "}" +
+                "#box{" +
+                "margin: 0 auto;" +
+                "box-sizing: border-box;" +
+                "max-width: 720px;" +
+                "}" +
+                "#box section {" +
+                "padding: 16px;" +
+                "}" +
+                "#box header .Star {" +
+                "float: right;" +
+                "}" +
+                ".userHead {" +
+                "display: flex;" +
+                "width: 100%;" +
+                "box-sizing: border-box;" +
+                "border-bottom: 1px solid #e6e6e6;" +
+                "}" +
+                ".userHeadA {" +
+                "width: 44px;" +
+                "height: 44px;" +
+                "padding: 16px 0;" +
+                "}" +
+                ".userHeadB {" +
+                "width: 240px;" +
+                "height: 44px;" +
+                "padding: 16px 0;" +
+                "outline: 0px solid #ccc;" +
+                "}" +
+                ".userHeadC {" +
+                "flex: 1;" +
+                "text-align: right;" +
+                "height: 44px;" +
+                "padding: 18px 0;" +
+                "outline: 0px solid #ccc;" +
+                "}" +
+                ".userHeadAimg {" +
+                "width: 44px;" +
+                "height: 44px;" +
+                "border-radius: 22px;" +
+                "}" +
+                ".userHeadBdate {" +
+                "color: #ccc;" +
+                "margin-left: 8px;" +
+                "}" +
+                ".rowDiv {" +
+                "padding: 20px 0;" +
+                "}" +
+                "button {" +
+                "background: rgba(102, 70, 247, 1);" +
+                "border-radius: 7px;" +
+                "color: #fff;" +
+                "}" +
+                ".rowDiv3Btn {" +
+                "padding: 12px 34px;" +
+                "background: rgba(102, 70, 247, 1);" +
+                "border-radius: 7px;" +
+                "color: #fff;" +
+                "}" +
+                ".rowDiv h3 {" +
+                "font-size: 16px;" +
+                "line-height: 16px;" +
+                "}" +
+                "#box p {" +
+                "line-height: 20px;" +
+                "font-size: 12px;" +
+                "}" +
+                "#box h3 {" +
+                "line-height: 40px;" +
+                "}" +
+                ".qrcodeDIV {" +
+                "width: 120px;" +
+                "margin: 0 30px;" +
+                "}" +
+                ".qrcodeDIV img {" +
+                "width: 120px;" +
+                "}" +
+                ".btn {" +
+                "width: 120px;" +
+                "height: 22px;" +
+                "display: block;" +
+                "}" +
+                ".btn img {" +
+                "width: 100%;" +
+                "height: 100%;" +
+                "}" +
+                ".h3logo {" +
+                "position: relative;" +
+                "top: 5px;" +
+                "width: 24px;" +
+                "margin-right: 5px;" +
+                "}" +
+                ".includePng {" +
+                "float: right;" +
+                "width: 110px;" +
+                "position: relative;" +
+                "top: -24px;" +
+                "}" +
+                ".rowDivBtn {" +
+                "display: flex;" +
+                "width: 100%;" +
+                "justify-content: space-between;" +
+                "}" +
+                ".rowDivBtn div {" +
+                "width: 158px;" +
+                "height: 42px;" +
+                "margin:5px;" +
+                "}" +
+                ".rowDivBtn .rowDivBtnAddlong {" +
+                "width: 179px;" +
+                "}" +
+                ".rowDivBtn img {" +
+                "width: 100%;" +
+                "}" +
+                ".jusCenter {" +
+                "display: flex;" +
+                "justify-content: center;" +
+                "align-items: center;" +
+                "}" +
+                ".rowDivFooter {" +
+                "background: #292B33;" +
+                "color: #fff;" +
+                "text-align: center;" +
+                "}" +
+                "#box .rowDivFooter p {" +
+                "line-height: 30px;" +
+                "}" +
+                ".rowDivFooter i {" +
+                "outline: 0px solid red;" +
+                "font-style: normal;" +
+                "overflow: hidden;" +
+                "height: 9px;" +
+                "width: 15px;" +
+                "display: inline-block;" +
+                "line-height: 15px;" +
+                "position: relative;" +
+                "top: -6px;" +
+                "color: #6646F7;" +
+                "}" +
+                ".rowDivFooter i:last-child {" +
+                "top: 0px;" +
+                "height: 7px;" +
+                "line-height: 0px;" +
+                "top: 2px;" +
+                "}" +
+                ".rowDivSave {" +
+                "text-align: center;" +
+                "border-bottom: 1px solid #E6E6E6;" +
+                "padding: 0 0 30px 0;" +
+                "}" +
+                "@media only screen and (min-width: 992px) {" +
+                "#box{" +
+                "width:706px;" +
+                "}" +
+                "}" +
+                "@media only screen and (min-width: 1200px) {" +
+                "#box{" +
+                "width:680px;" +
+                "background: white;" +
+                "}" +
+                "}" +
+                "</style>" +
+                "<section>" +
+                "<div class=\'rowDiv\'>" +
+                "<h3>Dear,<br/> Greetings " + myAccount + "</h3>" +
+                "<p>This invitation was sent to you from your friend using Confidant, which is the platform for secure" +
+                "&nbsp;encrypted Email and message communication. </p>" +
+                "<p>You are invited to join him/her to stay in touch in a private and secure manner.</p>" +
+                "<br/>" +
+                "<p style=\'font-size: 14px;\'>To instantly access Confidant full services</p>" +
+                "</div>" +
+                "<div class=\'rowDiv\' style=\'padding: 5px 0;\'>" +
+                "<p style=\'color: #757380;\'>1. Download the app via </p>" +
+                "</div>" +
+                "<div class=\'rowDiv jusCenter\' style=\'text-align: center;padding: 0\'>" +
+                "<div class=\'qrcodeDIV\'>" +
+                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_app_qr.png\'>" +
+                "<a href=\'https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&ls=1\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_ios.png\'></a>" +
+                "</div>" +
+                "<div class=\'qrcodeDIV\'>" +
+                "<img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google_qr.png\'>" +
+                "<a href=\'https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\'><img src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_google.png\'></a>" +
+                "</div>" +
+                "</div>" +
+                "<div class=\'rowDiv\'><p style=\'color: #757380;border-bottom: 1px solid #e6e6e6;padding: 10px 0px 30px 0px;\'>2.Scan your friend\'s QR code in the attachment to start chatting</p></div>" +
+                "<div class=\'rowDiv\'>" +
+                "<p style=\'color: #757380;\'>Once done, we highly encourage you to send back a thank you message to your friend.</p>" +
+                "<p style=\'color: #757380;\'>Stay safe and secured!</p>" +
+                "</div>" +
+                "<div class=\'rowDiv\'>" +
+                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/tie_se.png\' />" +
+                "</div>" +
+                "<div class=\'rowDiv\'>" +
+                "<img style=\'width: 100%;\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/logo_we.png\' />" +
+                "</div>" +
+                "</section>" +
                 "</div>";
         try {
-            webView.loadDataWithBaseURL(null,InviteURLText,"text/html","utf-8",null);
-        }catch (e:Exception)
-        {
+            webView.loadDataWithBaseURL(null, InviteURLText, "text/html", "utf-8", null);
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-    fun initBaseUI(emailMessageEntity:EmailMessageEntity)
-    {
+
+    /**
+     *
+     * 这里设置接收邮件的对象
+     */
+    fun initBaseUI(emailMessageEntity: EmailMessageEntity) {
         var fromName = ""
         var fromAdress = ""
-        if(emailMessageEntity!!.from.indexOf("<") >=0)
-        {
-            fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
-            fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
-        }else{
-            fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("@"))
-            fromAdress = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.length)
+        if (emailMessageEntity!!.from.indexOf("<") >= 0) {
+            fromName = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.indexOf("<"))
+            fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<") + 1, emailMessageEntity!!.from.length - 1)
+        } else {
+            fromName = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.indexOf("@"))
+            fromAdress = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.length)
         }
         var subjectText = emailMessageEntity.subject
-        if(foward == 0)
-        {
-            if(emailMessageEntity!!.from.indexOf("<") >=0)
-            {
-                fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("<"))
-                fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<")+1,emailMessageEntity!!.from.length-1)
-            }else{
-                fromName = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.indexOf("@"))
-                fromAdress = emailMessageEntity!!.from.substring(0,emailMessageEntity!!.from.length)
+        if (foward == 0) {
+            if (emailMessageEntity!!.from.indexOf("<") >= 0) {
+                fromName = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.indexOf("<"))
+                fromAdress = emailMessageEntity!!.from.substring(emailMessageEntity!!.from.indexOf("<") + 1, emailMessageEntity!!.from.length - 1)
+            } else {
+                fromName = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.indexOf("@"))
+                fromAdress = emailMessageEntity!!.from.substring(0, emailMessageEntity!!.from.length)
             }
-        }else if(foward == 3)
-        {
-            if(emailMessageEntity!!.to.indexOf("<") >=0)
-            {
-                fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("<"))
-                fromAdress = emailMessageEntity!!.to.substring(emailMessageEntity!!.to.indexOf("<")+1,emailMessageEntity!!.to.length-1)
-            }else{
-                fromName = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.indexOf("@"))
-                fromAdress = emailMessageEntity!!.to.substring(0,emailMessageEntity!!.to.length)
+        } else if (foward == 3) {
+            if (emailMessageEntity!!.to.indexOf("<") >= 0) {
+                fromName = emailMessageEntity!!.to.substring(0, emailMessageEntity!!.to.indexOf("<"))
+                fromAdress = emailMessageEntity!!.to.substring(emailMessageEntity!!.to.indexOf("<") + 1, emailMessageEntity!!.to.length - 1)
+            } else {
+                fromName = emailMessageEntity!!.to.substring(0, emailMessageEntity!!.to.indexOf("@"))
+                fromAdress = emailMessageEntity!!.to.substring(0, emailMessageEntity!!.to.length)
             }
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(fromAdress)).list()
-        if(localEmailContacts.size != 0)
-        {
+        if (localEmailContacts.size != 0) {
             var localEmailContactsItem = localEmailContacts.get(0)
             fromName = localEmailContactsItem.name
         }
-        fromName = fromName.replace("\"","")
-        fromName = fromName.replace("\"","")
+        fromName = fromName.replace("\"", "")
+        fromName = fromName.replace("\"", "")
 
-        if(emailMessageEntity!!.to.contains(","))
-        {
+        if (emailMessageEntity!!.to.contains(",")) {
 
             //title_info.setText(fromName.trim()+"...")
             /* if(fromAdress.indexOf(",") > -1)
@@ -1022,73 +959,89 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                  draft_info.setText(fromAdress.trim()+"...")
              }*/
 
-        }else{
+        } else {
             //title_info.setText(fromName.trim())
             //draft_info.setText(fromAdress.trim())
         }
         var myAccount = AppConfig.instance.emailConfig().account
-        var myname = myAccount.substring(0,myAccount.indexOf("@"))
-        if(AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "")
-        {
+        var myname = myAccount.substring(0, myAccount.indexOf("@"))
+        if (AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "") {
             myname = AppConfig.instance.emailConfig().name
         }
         title_info.setText(myname)
         draft_info.setText(myAccount)
         avatar_info.setText(myname.trim())
-        //val result = toAddress.addSpan(fromName, fromAdress)
         var aa = "";
-        if(foward == 0)
-        {
+        if (foward == 0) {
             var fromAdressList = emailMessageEntity!!.from.split(",")
-            for (item in fromAdressList)
-            {
-                if(item != "")
-                {
+            for (item in fromAdressList) {
+                if (item != "") {
                     var fromNameTemp = ""
                     var fromAdressTemp = ""
-                    if(item.indexOf("<") >=0)
-                    {
-                        fromNameTemp = item.substring(0,item.indexOf("<"))
-                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                    }else{
-                        fromNameTemp = item.substring(0,item.indexOf("@"))
-                        fromAdressTemp = item.substring(0,item.length)
+                    if (item.indexOf("<") >= 0) {
+                        fromNameTemp = item.substring(0, item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                    } else {
+                        fromNameTemp = item.substring(0, item.indexOf("@"))
+                        fromAdressTemp = item.substring(0, item.length)
                     }
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
-                   /* (toAdressEdit.text as SpannableStringBuilder)
-                            .append(methodContext.newSpannable(user))
-                            .append(";")*/
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
+                    /* (toAdressEdit.text as SpannableStringBuilder)
+                             .append(methodContext.newSpannable(user))
+                             .append(";")*/
                 }
             }
             toAdressEdit.post(Runnable {
                 var lineCount = toAdressEdit.lineCount
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
-            if(replayAll)
-            {
+            if (replayAll) {
+                //回复收件人
                 var fromAdressList = emailMessageEntity!!.to.split(",")
-                for (item in fromAdressList)
-                {
+
+
+                //回复发件人
+                var toAddressList = emailMessageEntity!!.from.split(",")[0]
+
+                var fromNameTemp = ""
+                var fromAdressTemp = ""
+                if (toAddressList.indexOf("<") >= 0) {
+                    fromNameTemp = toAddressList.substring(0, toAddressList.indexOf("<"))
+                    fromAdressTemp = toAddressList.substring(toAddressList.indexOf("<") + 1, toAddressList.length - 1)
+                } else {
+                    fromNameTemp = toAddressList.substring(0, toAddressList.indexOf("@"))
+                    fromAdressTemp = toAddressList.substring(0, toAddressList.length)
+                }
+                fromNameTemp = fromNameTemp.replace("\"", "")
+                fromNameTemp = fromNameTemp.replace("\"", "")
+                fromNameTemp = fromNameTemp.replace("\"", "")
+                if (StringUitl.isEmail(fromAdressTemp)) {
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
+                    (toAdressEdit.text as SpannableStringBuilder)
+                            .append(methodContext.newSpannable(user))
+                            .append(";")
+                }
+
+                for (item in fromAdressList) {
                     var toAdress = getEditText(toAdressEdit)
-                    if(item != "" && !item.contains(myAccount) && !toAdress.contains(item))
-                    {
+                    if (item != "" && !item.contains(myAccount) && !toAdress.contains(item)) {
                         var fromNameTemp = ""
                         var fromAdressTemp = ""
-                        if(item.indexOf("<") >=0)
-                        {
-                            fromNameTemp = item.substring(0,item.indexOf("<"))
-                            fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                        }else{
-                            fromNameTemp = item.substring(0,item.indexOf("@"))
-                            fromAdressTemp = item.substring(0,item.length)
+                        if (item.indexOf("<") >= 0) {
+                            fromNameTemp = item.substring(0, item.indexOf("<"))
+                            fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                        } else {
+                            fromNameTemp = item.substring(0, item.indexOf("@"))
+                            fromAdressTemp = item.substring(0, item.length)
                         }
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+//                        StringUitl.isEmail(temp)
+                        var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                         (toAdressEdit.text as SpannableStringBuilder)
                                 .append(methodContext.newSpannable(user))
                                 .append(";")
@@ -1099,10 +1052,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
                 })
                 var fromAdressListCC = emailMessageEntity!!.cc.split(",")
-                for (item in fromAdressListCC)
-                {
-                    if(item != "" && !item.contains(myAccount))
-                    {
+                for (item in fromAdressListCC) {
+                    if (item != "" && !item.contains(myAccount)) {
                         var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
                         drawable.setBounds(0, 0, 48, 48);
                         showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
@@ -1110,18 +1061,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         bccParent.visibility = View.VISIBLE
                         var fromNameTemp = ""
                         var fromAdressTemp = ""
-                        if(item.indexOf("<") >=0)
-                        {
-                            fromNameTemp = item.substring(0,item.indexOf("<"))
-                            fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                        }else{
-                            fromNameTemp = item.substring(0,item.indexOf("@"))
-                            fromAdressTemp = item.substring(0,item.length)
+                        if (item.indexOf("<") >= 0) {
+                            fromNameTemp = item.substring(0, item.indexOf("<"))
+                            fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                        } else {
+                            fromNameTemp = item.substring(0, item.indexOf("@"))
+                            fromAdressTemp = item.substring(0, item.length)
                         }
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        fromNameTemp= fromNameTemp.replace("\"","")
-                        var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+                        fromNameTemp = fromNameTemp.replace("\"", "")
+                        var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                         (ccAdressEdit.text as SpannableStringBuilder)
                                 .append(methodContext.newSpannable(user))
                                 .append(";")
@@ -1134,27 +1084,23 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
-        if(foward == 3)
-        {
+        if (foward == 3) {
             var fromAdressList = emailMessageEntity!!.to.split(",")
-            for (item in fromAdressList)
-            {
-                if(item != "")
-                {
+            for (item in fromAdressList) {
+                if (item != "") {
                     var fromNameTemp = ""
                     var fromAdressTemp = ""
-                    if(item.indexOf("<") >=0)
-                    {
-                        fromNameTemp = item.substring(0,item.indexOf("<"))
-                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                    }else{
-                        fromNameTemp = item.substring(0,item.indexOf("@"))
-                        fromAdressTemp = item.substring(0,item.length)
+                    if (item.indexOf("<") >= 0) {
+                        fromNameTemp = item.substring(0, item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                    } else {
+                        fromNameTemp = item.substring(0, item.indexOf("@"))
+                        fromAdressTemp = item.substring(0, item.length)
                     }
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                     (toAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -1165,10 +1111,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
             var fromAdressListCC = emailMessageEntity!!.cc.split(",")
-            for (item in fromAdressListCC)
-            {
-                if(item != "")
-                {
+            for (item in fromAdressListCC) {
+                if (item != "") {
                     var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
                     drawable.setBounds(0, 0, 48, 48);
                     showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
@@ -1176,18 +1120,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     bccParent.visibility = View.VISIBLE
                     var fromNameTemp = ""
                     var fromAdressTemp = ""
-                    if(item.indexOf("<") >=0)
-                    {
-                        fromNameTemp = item.substring(0,item.indexOf("<"))
-                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                    }else{
-                        fromNameTemp = item.substring(0,item.indexOf("@"))
-                        fromAdressTemp = item.substring(0,item.length)
+                    if (item.indexOf("<") >= 0) {
+                        fromNameTemp = item.substring(0, item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                    } else {
+                        fromNameTemp = item.substring(0, item.indexOf("@"))
+                        fromAdressTemp = item.substring(0, item.length)
                     }
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                     (ccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -1198,10 +1141,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 ccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
             var fromAdressListBCC = emailMessageEntity!!.bcc.split(",")
-            for (item in fromAdressListBCC)
-            {
-                if(item != "")
-                {
+            for (item in fromAdressListBCC) {
+                if (item != "") {
                     var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
                     drawable.setBounds(0, 0, 48, 48);
                     showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
@@ -1209,18 +1150,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     bccParent.visibility = View.VISIBLE
                     var fromNameTemp = ""
                     var fromAdressTemp = ""
-                    if(item.indexOf("<") >=0)
-                    {
-                        fromNameTemp = item.substring(0,item.indexOf("<"))
-                        fromAdressTemp = item.substring(item.indexOf("<")+1,item.length-1)
-                    }else{
-                        fromNameTemp = item.substring(0,item.indexOf("@"))
-                        fromAdressTemp = item.substring(0,item.length)
+                    if (item.indexOf("<") >= 0) {
+                        fromNameTemp = item.substring(0, item.indexOf("<"))
+                        fromAdressTemp = item.substring(item.indexOf("<") + 1, item.length - 1)
+                    } else {
+                        fromNameTemp = item.substring(0, item.indexOf("@"))
+                        fromAdressTemp = item.substring(0, item.length)
                     }
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    fromNameTemp= fromNameTemp.replace("\"","")
-                    var user = User(fromAdressTemp,fromNameTemp,fromNameTemp)
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    fromNameTemp = fromNameTemp.replace("\"", "")
+                    var user = User(fromAdressTemp, fromNameTemp, fromNameTemp)
                     (bccAdressEdit.text as SpannableStringBuilder)
                             .append(methodContext.newSpannable(user))
                             .append(";")
@@ -1231,12 +1171,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 bccAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
             })
         }
-        if(subjectText != null)
-        {
-            if(foward == 0)
-            {
-                subject.setText(getString(R.string.Reply)+":"+subjectText)
-            }else{
+        if (subjectText != null) {
+            if (foward == 0) {
+                subject.setText(getString(R.string.Reply) + ":" + subjectText)
+            } else {
                 subject.setText(subjectText)
             }
             subject.post(Runnable {
@@ -1250,35 +1188,18 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         val spans = toAdressEdit!!.getText()!!.getSpans(selectionStart, selectionEnd, User::class.java)
         var dd = ""
 
-        /*var backspaceListener: TInputConnection.BackspaceListener = TInputConnection.BackspaceListener {
-            val editable = toAddress.getText()
-
-            if (editable!!.length == 0) {
-                return@BackspaceListener false
-            }
-            if (!onKeyDel) {
-                ATEmailEditText.KeyDownHelper(toAddress!!.getText())
-            }
-            onKeyDel = false
-            false
-        }
-        toAddress.setBackSpaceLisetener(backspaceListener)*/
-        var URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.content+"</body></html>";
-        if(emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText != "")
-        {
-            URLText = "<html><body style ='font-size:16px;'>"+emailMessageEntity!!.originalText+"</body></html>";
+        var URLText = "<html><body style ='font-size:16px;'>" + emailMessageEntity!!.content + "</body></html>";
+        if (emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText != "") {
+            URLText = "<html><body style ='font-size:16px;'>" + emailMessageEntity!!.originalText + "</body></html>";
         }
         var needOp = false
-        if( emailMessageEntity !!.content != null && emailMessageEntity!!.content.contains("<img"))
-        {
+        if (emailMessageEntity!!.content != null && emailMessageEntity!!.content.contains("<img")) {
             needOp = true
         }
-        if(emailMessageEntity!!.originalText!= null && emailMessageEntity!!.originalText.contains("<img"))
-        {
+        if (emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText.contains("<img")) {
             needOp = true;
         }
-        if(needOp)
-        {
+        if (needOp) {
             val webSettings = webView.getSettings()
             if (Build.VERSION.SDK_INT >= 19) {
                 webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
@@ -1335,7 +1256,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
-        webView.webViewClient = object  : WebViewClient() {
+        webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 //view.loadUrl(url)
                 val intent = Intent()
@@ -1369,20 +1290,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
 
-        if(foward == 3)
-        {
-            if(emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText!= "")
-            {
+        if (foward == 3) {
+            if (emailMessageEntity!!.originalText != null && emailMessageEntity!!.originalText != "") {
                 re_main_editor.setHtml(emailMessageEntity!!.originalText)
-            }else{
+            } else {
                 re_main_editor.setHtml(emailMessageEntity!!.content)
             }
 
-        }else{
+        } else {
             try {
-                webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-            }catch (e:Exception)
-            {
+                webView.loadDataWithBaseURL(null, URLText, "text/html", "utf-8", null);
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
@@ -1390,47 +1308,38 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
     }
 
-    private fun initAttachUI()
-    {
-        attachListEntity =  arrayListOf<EmailAttachEntity>()
+    private fun initAttachUI() {
+        attachListEntity = arrayListOf<EmailAttachEntity>()
         var attachCount = false
-        if(emailMeaasgeInfoData != null)
-        {
+        if (emailMeaasgeInfoData != null) {
             attachCount = emailMeaasgeInfoData!!.isContainerAttachment()
         }
-        if(attachCount)
-        {
+        if (attachCount) {
             val save_dir = PathUtils.getInstance().filePath.toString() + "/"
             var addMenu = false
-            var  attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-            if(attachListData.size == 0)
-            {
+            var attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId)).list()
+            if (attachListData.size == 0) {
                 addMenu = true
-                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
             }
-            if(attachListEntityNode == null || attachListEntityNode.size == 0)
-            {
+            if (attachListEntityNode == null || attachListEntityNode.size == 0) {
                 var isDownload = true
-                if(attachListData.size > 0)
-                {
-                    var listAccath:ArrayList<MailAttachment>  = ArrayList<MailAttachment>()
+                if (attachListData.size > 0) {
+                    var listAccath: ArrayList<MailAttachment> = ArrayList<MailAttachment>()
                     var i = 0;
-                    for (attach in attachListData)
-                    {
-                        var file = File(save_dir+attach.account+"_"+attach.msgId+"_"+attach.name)
-                        if(addMenu)
-                        {
-                            file = File(save_dir+attach.account+"_"+emailMeaasgeInfoData!!.menu+"_"+attach.msgId+"_"+attach.name)
+                    for (attach in attachListData) {
+                        var file = File(save_dir + attach.account + "_" + attach.msgId + "_" + attach.name)
+                        if (addMenu) {
+                            file = File(save_dir + attach.account + "_" + emailMeaasgeInfoData!!.menu + "_" + attach.msgId + "_" + attach.name)
                         }
-                        if(!file.exists())
-                        {
+                        if (!file.exists()) {
                             isDownload = false
                         }
-                        attach.localPath = save_dir+attach.account+"_"+attach.msgId+"_"+attach.name
+                        attach.localPath = save_dir + attach.account + "_" + attach.msgId + "_" + attach.name
                         AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
-                        var fileName =  attach.name
-                        if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                        var fileName = attach.name
+                        if (fileName.contains("jpg") || fileName.contains("JPG") || fileName.contains("png")) {
                             val localMedia = LocalMedia()
                             localMedia.isCompressed = false
                             localMedia.duration = 0
@@ -1452,16 +1361,14 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
                     }
 
-                }else{
+                } else {
                     isDownload = false
                 }
 
-                if(!isDownload)
-                {
+                if (!isDownload) {
                     showProgressDialog(getString(R.string.Attachmentdownloading))
                     val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
-                    if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
-                    {
+                    if (ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "") {
                         emailReceiveClient
                                 .imapDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
                                     override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
@@ -1470,29 +1377,26 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         runOnUiThread {
 
                                             var iFlag = 0;
-                                            for (attachItem in messageList)
-                                            {
-                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
-                                                if(attachListTemp.size == 0)
-                                                {
-                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                            for (attachItem in messageList) {
+                                                var attachListTemp = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId), EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if (attachListTemp.size == 0) {
+                                                    attachListTemp = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
                                                 }
-                                                if(attachListTemp == null || attachListTemp.size == 0)
-                                                {
+                                                if (attachListTemp == null || attachListTemp.size == 0) {
                                                     var eamilAttach = EmailAttachEntity()
                                                     eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
+                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId
                                                     eamilAttach.name = attachItem.name
                                                     eamilAttach.data = attachItem.byt
                                                     eamilAttach.hasData = true
                                                     eamilAttach.isCanDelete = false
-                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    var savePath = save_dir + eamilAttach.account + "_" + eamilAttach.msgId + "_" + eamilAttach.name
                                                     eamilAttach.localPath = savePath
                                                     AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
 
-                                                    var fileName =  eamilAttach.name
-                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    var fileName = eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG") || fileName.contains("png")) {
                                                         val localMedia = LocalMedia()
                                                         localMedia.isCompressed = false
                                                         localMedia.duration = 0
@@ -1514,14 +1418,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                                 }
                                             }
 
-                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-                                            if(attachListData.size == 0)
-                                            {
-                                                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                            attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId)).list()
+                                            if (attachListData.size == 0) {
+                                                attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
                                             }
-                                            for (item in attachListData)
-                                            {
+                                            for (item in attachListData) {
                                                 item.isHasData = true
                                                 item.isCanDelete = true
                                             }
@@ -1529,14 +1431,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                             updataAttachUI()
                                         }
                                     }
+
                                     override fun gainFailure(errorMsg: String) {
                                         //tipDialog.dismiss()
                                         closeProgressDialog()
                                         Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                                     }
-                                },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey)
-                    }else{
-                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                                }, menu, emailMeaasgeInfoData!!.msgId, save_dir, emailMeaasgeInfoData!!.aesKey)
+                    } else {
+                        var gmailService = GmailQuickstart.getGmailService(AppConfig.instance, ConstantValue.currentEmailConfigEntity!!.account);
                         emailReceiveClient
                                 .gmailDownloadEmailAttach(this@EmailSendActivity, object : GetAttachCallback {
                                     override fun gainSuccess(messageList: List<MailAttachment>, count: Int) {
@@ -1545,29 +1448,26 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         runOnUiThread {
 
                                             var iFlag = 0;
-                                            for (attachItem in messageList)
-                                            {
-                                                var attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId),EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
-                                                if(attachListTemp.size == 0)
-                                                {
-                                                    attachListTemp =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                            for (attachItem in messageList) {
+                                                var attachListTemp = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId), EmailAttachEntityDao.Properties.Name.eq(attachItem.name)).list()
+                                                if (attachListTemp.size == 0) {
+                                                    attachListTemp = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
                                                 }
-                                                if(attachListTemp == null || attachListTemp.size == 0)
-                                                {
+                                                if (attachListTemp == null || attachListTemp.size == 0) {
                                                     var eamilAttach = EmailAttachEntity()
                                                     eamilAttach.account = AppConfig.instance.emailConfig().account
-                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId
+                                                    eamilAttach.msgId = emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId
                                                     eamilAttach.name = attachItem.name
                                                     eamilAttach.data = attachItem.byt
                                                     eamilAttach.hasData = true
                                                     eamilAttach.isCanDelete = false
-                                                    var savePath = save_dir+eamilAttach.account+"_"+eamilAttach.msgId+"_"+eamilAttach.name
+                                                    var savePath = save_dir + eamilAttach.account + "_" + eamilAttach.msgId + "_" + eamilAttach.name
                                                     eamilAttach.localPath = savePath
                                                     AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
 
-                                                    var fileName =  eamilAttach.name
-                                                    if (fileName.contains("jpg") || fileName.contains("JPG")  || fileName.contains("png")) {
+                                                    var fileName = eamilAttach.name
+                                                    if (fileName.contains("jpg") || fileName.contains("JPG") || fileName.contains("png")) {
                                                         val localMedia = LocalMedia()
                                                         localMedia.isCompressed = false
                                                         localMedia.duration = 0
@@ -1589,14 +1489,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                                 }
                                             }
 
-                                            attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-                                            if(attachListData.size == 0)
-                                            {
-                                                attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                                            attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId)).list()
+                                            if (attachListData.size == 0) {
+                                                attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
                                             }
-                                            for (item in attachListData)
-                                            {
+                                            for (item in attachListData) {
                                                 item.isHasData = true
                                                 item.isCanDelete = true
                                             }
@@ -1604,33 +1502,30 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                             updataAttachUI()
                                         }
                                     }
+
                                     override fun gainFailure(errorMsg: String) {
                                         //tipDialog.dismiss()
                                         closeProgressDialog()
                                         Toast.makeText(this@EmailSendActivity, getString(R.string.Attachment_download_failed), Toast.LENGTH_SHORT).show()
                                     }
-                                },menu,emailMeaasgeInfoData!!.msgId,save_dir,emailMeaasgeInfoData!!.aesKey,gmailService,"me")
+                                }, menu, emailMeaasgeInfoData!!.msgId, save_dir, emailMeaasgeInfoData!!.aesKey, gmailService, "me")
                     }
 
-                }else{
-                    attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-                    if(attachListData.size == 0)
-                    {
-                        attachListData =  AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+                } else {
+                    attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId)).list()
+                    if (attachListData.size == 0) {
+                        attachListData = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
 
                     }
-                    for (item in attachListData)
-                    {
+                    for (item in attachListData) {
                         item.isHasData = true
                         item.isCanDelete = true
                     }
                     attachListEntity.addAll(attachListData)
                     updataAttachUI()
                 }
-            }
-            else{
-                for (item in attachListEntityNode)
-                {
+            } else {
+                for (item in attachListEntityNode) {
                     item.isHasData = true
                     item.isCanDelete = true
                 }
@@ -1638,12 +1533,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 updataAttachUI()
             }
 
-        }else{
+        } else {
             updataAttachUI()
         }
     }
-    fun updataAttachUI()
-    {
+
+    fun updataAttachUI() {
 
         var emailAttachEntity = EmailAttachEntity()
         emailAttachEntity.isHasData = false
@@ -1667,12 +1562,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 R.id.deleteBtn -> {
                     emaiAttachAdapter!!.remove(position)
                     emaiAttachAdapter!!.notifyDataSetChanged();
-                    if( emaiAttachAdapter!!.itemCount > 1)
-                    {
+                    if (emaiAttachAdapter!!.itemCount > 1) {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
-                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
                         addSubject.visibility = View.GONE
-                    }else{
+                    } else {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.GONE
@@ -1680,9 +1574,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 }
                 R.id.iv_add -> {
                     hideSoftKeyboard()
-                    var menuArray = arrayListOf<String>(getString(R.string.attach_picture),getString(R.string.attach_take_pic),getString(R.string.attach_video),getString(R.string.attach_file))
-                    var iconArray = arrayListOf<String>("sheet_album","sheet_camera","sheet_video","sheet_file")
-                    PopWindowUtil.showPopAttachMenuWindow(this@EmailSendActivity, itemParent,menuArray,iconArray, object : PopWindowUtil.OnSelectListener {
+                    var menuArray = arrayListOf<String>(getString(R.string.attach_picture), getString(R.string.attach_take_pic), getString(R.string.attach_video), getString(R.string.attach_file))
+                    var iconArray = arrayListOf<String>("sheet_album", "sheet_camera", "sheet_video", "sheet_file")
+                    PopWindowUtil.showPopAttachMenuWindow(this@EmailSendActivity, itemParent, menuArray, iconArray, object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
                             when (position) {
@@ -1720,8 +1614,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
     }
-    fun showImagList(showIndex:Int)
-    {
+
+    fun showImagList(showIndex: Int) {
         val selectedImages = java.util.ArrayList<LocalMedia>()
         val previewImages = ImagesObservable.getInstance().readLocalMedias("chat")
         if (previewImages != null && previewImages.size > 0) {
@@ -1736,118 +1630,101 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             startActivity(intentPicturePreviewActivity)
         }
     }
-    private fun sendCheck(flag:Boolean)
-    {
+
+    private fun sendCheck(flag: Boolean) {
         contactMapList = HashMap<String, String>()
         isSendCheck = flag
         var toAdress = getEditText(toAdressEdit)
-        toAdress = toAdress.replace(",,","")
+        toAdress = toAdress.replace(",,", "")
         var toAdressArr = toAdress.split(",");
         var num = 0
-        if(flag== true && toAdress== "")
-        {
+        if (flag == true && toAdress == "") {
             toast(R.string.The_recipient_cant_be_empty)
             return
         }
         var subjectStr = subject.getText().toString()
-        if(flag== true && subjectStr== "")
-        {
+        if (flag == true && subjectStr == "") {
             toast(R.string.The_subject_cant_be_empty)
             return
         }
         var toAdressBase64 = ""
-        for (item in toAdressArr)
-        {
-            if(item != "")
-            {
+        for (item in toAdressArr) {
+            if (item != "") {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
                 var isEmail = StringUitl.isEmail(temp)
-                if(!isEmail)
-                {
-                    toast(temp +" "+ getString(R.string.Some_addresses_are_illegal))
+                if (!isEmail) {
+                    toast(temp + " " + getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
-                num ++;
-                toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+                num++;
+                toAdressBase64 += RxEncodeTool.base64Encode2String(temp.toByteArray()) + ","
             }
         }
-        if(toAdressBase64.length >0)
-        {
-            toAdressBase64 = toAdressBase64.substring(0,toAdressBase64.length -1)
+        if (toAdressBase64.length > 0) {
+            toAdressBase64 = toAdressBase64.substring(0, toAdressBase64.length - 1)
         }
 
         var toAdressBase64CC = ""
         var ccAdress = getEditText(ccAdressEdit)
-        ccAdress = ccAdress.replace(",,","")
+        ccAdress = ccAdress.replace(",,", "")
         var ccAdressArr = ccAdress.split(",");
-        for (item in ccAdressArr)
-        {
-            if(item != "")
-            {
+        for (item in ccAdressArr) {
+            if (item != "") {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
                 var isEmail = StringUitl.isEmail(temp)
-                if(!isEmail)
-                {
-                    toast(temp +" " + getString(R.string.Some_addresses_are_illegal))
+                if (!isEmail) {
+                    toast(temp + " " + getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
-                num ++;
-                toAdressBase64CC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+                num++;
+                toAdressBase64CC += RxEncodeTool.base64Encode2String(temp.toByteArray()) + ","
             }
         }
-        if(toAdressBase64CC.length >0)
-        {
-            toAdressBase64CC = toAdressBase64CC.substring(0,toAdressBase64CC.length -1)
+        if (toAdressBase64CC.length > 0) {
+            toAdressBase64CC = toAdressBase64CC.substring(0, toAdressBase64CC.length - 1)
         }
         var toAdressBase64BCC = ""
         var bccAdress = getEditText(bccAdressEdit)
-        bccAdress.replace(",,","")
+        bccAdress.replace(",,", "")
         var bccAdressArr = bccAdress.split(",");
-        for (item in bccAdressArr)
-        {
-            if(item != "")
-            {
+        for (item in bccAdressArr) {
+            if (item != "") {
                 var temp = item.trim()
                 temp = temp.toLowerCase()
                 var isEmail = StringUitl.isEmail(temp)
-                if(!isEmail)
-                {
+                if (!isEmail) {
                     toast(temp + getString(R.string.Some_addresses_are_illegal))
                     return;
                 }
-                num ++;
-                toAdressBase64BCC += RxEncodeTool.base64Encode2String(temp.toByteArray()) +","
+                num++;
+                toAdressBase64BCC += RxEncodeTool.base64Encode2String(temp.toByteArray()) + ","
             }
         }
-        if(toAdressBase64BCC.length >0)
-        {
-            toAdressBase64BCC = toAdressBase64BCC.substring(0,toAdressBase64BCC.length -1)
+        if (toAdressBase64BCC.length > 0) {
+            toAdressBase64BCC = toAdressBase64BCC.substring(0, toAdressBase64BCC.length - 1)
         }
         addressBase64 = toAdressBase64
-        if(toAdressBase64CC != "")
-        {
-            addressBase64 += ","+toAdressBase64CC
+        if (toAdressBase64CC != "") {
+            addressBase64 += "," + toAdressBase64CC
         }
-        if(toAdressBase64BCC != "")
-        {
-            addressBase64 += ","+toAdressBase64BCC
+        if (toAdressBase64BCC != "") {
+            addressBase64 += "," + toAdressBase64BCC
         }
-        if(addressBase64 == "")
-        {
+        if (addressBase64 == "") {
             lockTips.visibility = View.GONE
             return
         }
-        if(isSendCheck)
-        {
+        if (isSendCheck) {
             runOnUiThread {
                 showProgressDialog(getString(R.string.waiting))
             }
         }
-        var checkmailUkey = CheckmailUkey(num,1,addressBase64)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6,checkmailUkey))
+        var checkmailUkey = CheckmailUkey(num, 1, addressBase64)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, checkmailUkey))
     }
+
     /**
      * 发送邮件
      */
@@ -1858,66 +1735,56 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
          }*/
         var needEncryptEmail = false;
         var fileKey = RxEncryptTool.generateAESKey()
-        if(userPassWord != "")
-        {
+        if (userPassWord != "") {
             var len = userPassWord.length
-            if(len > 32)
-            {
-                userPassWord = userPassWord.substring(0,32)
-            }else if(len < 32)
-            {
-                var need = 32- len;
-                for (index in 1..need){
+            if (len > 32) {
+                userPassWord = userPassWord.substring(0, 32)
+            } else if (len < 32) {
+                var need = 32 - len;
+                for (index in 1..need) {
                     userPassWord += "0"
                 }
             }
             fileKey = userPassWord;
         }
         var contentHtml = re_main_editor.html
-        if(flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null)
-        {
+        if (flag == 1 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.content != null) {
             var from = emailMeaasgeInfoData!!.from
-            var toStr  = emailMeaasgeInfoData!!.to
-            var centerStr =  " <br />"+
-                    " <br />"+
-                    " <br />"+
-                    "<div style=\"background: #f2f2f2;\">"+
-                    getString(R.string.Original_mail)+
-                    "   <br />"+getString(R.string.From)+"：&quot;"+from+"&quot;"+
-                    "   <br />"+getString(R.string.To)+"：&quot;"+toStr+"&quot;"+
-                    "   <br />"+getString(R.string.Subject)+"：&quot;"+emailMeaasgeInfoData!!.subject+"&quot;"+
-                    "   <br />"+getString(R.string.Date)+"："+emailMeaasgeInfoData!!.date+
-                    "  </div>"+
-                    "   <br />"+
+            var toStr = emailMeaasgeInfoData!!.to
+            var centerStr = " <br />" +
+                    " <br />" +
+                    " <br />" +
+                    "<div style=\"background: #f2f2f2;\">" +
+                    getString(R.string.Original_mail) +
+                    "   <br />" + getString(R.string.From) + "：&quot;" + from + "&quot;" +
+                    "   <br />" + getString(R.string.To) + "：&quot;" + toStr + "&quot;" +
+                    "   <br />" + getString(R.string.Subject) + "：&quot;" + emailMeaasgeInfoData!!.subject + "&quot;" +
+                    "   <br />" + getString(R.string.Date) + "：" + emailMeaasgeInfoData!!.date +
+                    "  </div>" +
+                    "   <br />" +
                     "   <br />";
-            contentHtml +=  centerStr
-            if(emailMeaasgeInfoData!!.originalText != "")
-            {
-                contentHtml +=emailMeaasgeInfoData!!.originalText
-            }else{
-                contentHtml +=emailMeaasgeInfoData!!.content
+            contentHtml += centerStr
+            if (emailMeaasgeInfoData!!.originalText != "") {
+                contentHtml += emailMeaasgeInfoData!!.originalText
+            } else {
+                contentHtml += emailMeaasgeInfoData!!.content
             }
-            if(contentHtml.contains("id=\"newconfidantkey"))
-            {
+            if (contentHtml.contains("id=\"newconfidantkey")) {
                 var beginFlag = contentHtml.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
-                if(beginFlag < 0)
-                {
+                if (beginFlag < 0) {
                     beginFlag = contentHtml.indexOf("<span style=\"display:none\" id=\"newconfidantkey")
                 }
-                if(beginFlag >= 0)
-                {
-                    contentHtml = contentHtml.substring(0,beginFlag)
+                if (beginFlag >= 0) {
+                    contentHtml = contentHtml.substring(0, beginFlag)
                 }
             }
 
         }
         var needTipsShow = true;
-        if(contentHtml.contains("id=\"newmyconfidantbegin"))
-        {
+        if (contentHtml.contains("id=\"newmyconfidantbegin")) {
             var endIndex = contentHtml.indexOf("<div id=\"newmyconfidantbegin")
-            if(endIndex > 0)
-            {
-                contentHtml = contentHtml.substring(0,endIndex)
+            if (endIndex > 0) {
+                contentHtml = contentHtml.substring(0, endIndex)
             }
         }
 
@@ -1925,134 +1792,117 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var cidNameList = ""
         var cidList = ""
         var uuid = (System.currentTimeMillis() / 1000).toString()
-        if(emailMeaasgeInfoData != null)
-        {
-            var citList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId)).list()
-            if(citList.size == 0)
-            {
-                citList =  AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
+        if (emailMeaasgeInfoData != null) {
+            var citList = AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId)).list()
+            if (citList.size == 0) {
+                citList = AppConfig.instance.mDaoMaster!!.newSession().emailCidEntityDao.queryBuilder().where(EmailCidEntityDao.Properties.MsgId.eq(emailMeaasgeInfoData!!.msgId)).list()
             }
-            for(item in citList)
-            {
+            for (item in citList) {
                 val save_dir = PathUtils.getInstance().filePath.toString() + "/"
-                var savePath = save_dir+ AppConfig.instance.emailConfig().account+"_"+emailMeaasgeInfoData!!.menu+"_"+emailMeaasgeInfoData!!.msgId+"_"+item.name
-                if(!contentHtml.equals(""))
-                {
-                    contentHtml = replaceImgCidByLocalPath(contentHtml ,item.cid ,savePath ,uuid)
+                var savePath = save_dir + AppConfig.instance.emailConfig().account + "_" + emailMeaasgeInfoData!!.menu + "_" + emailMeaasgeInfoData!!.msgId + "_" + item.name
+                if (!contentHtml.equals("")) {
+                    contentHtml = replaceImgCidByLocalPath(contentHtml, item.cid, savePath, uuid)
                 }
-                if(item.localPath != null)
-                {
-                    if(contactMapList.size == needSize)
-                    {
+                if (item.localPath != null) {
+                    if (contactMapList.size == needSize) {
                         val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
                         val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
-                        if(code ==1)
-                        {
-                            cidNameList +=base58files_dir+","
+                        if (code == 1) {
+                            cidNameList += base58files_dir + ","
 
                         }
-                    }else{
-                        cidNameList +=item.localPath+","
+                    } else {
+                        cidNameList += item.localPath + ","
                     }
-                    cidList += item.cid+","
+                    cidList += item.cid + ","
                 }
 
             }
-            if(cidNameList.length >0)
-            {
-                cidNameList = cidNameList.substring(0,cidNameList.length -1)
+            if (cidNameList.length > 0) {
+                cidNameList = cidNameList.substring(0, cidNameList.length - 1)
             }
-            if(cidList.length >0)
-            {
-                cidList = cidList.substring(0,cidList.length -1)
+            if (cidList.length > 0) {
+                cidList = cidList.substring(0, cidList.length - 1)
             }
         }
 
-        if(contactMapList.size == needSize)
-        {
+        if (contactMapList.size == needSize) {
             val contentBuffer = contentHtml.toByteArray()
-            var fileKey16 = fileKey.substring(0,16)
-            Log.i("fileKey16",fileKey16)
-            if(!contentHtml.equals(""))
-            {
+            var fileKey16 = fileKey.substring(0, 16)
+            Log.i("fileKey16", fileKey16)
+            if (!contentHtml.equals("")) {
                 var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
                 contentHtml = contentBufferMiStr;
             }
         }
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        if(userPassWord == "")
-        {
+        if (userPassWord == "") {
             var confidantKey = "";
-            for(item in contactMapList)
-            {
+            for (item in contactMapList) {
                 var account = item.key
                 var friendMiPublicKey = item.value
                 var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, friendMiPublicKey)))
-                confidantKey += account+"&&"+dstKey+"##";
+                confidantKey += account + "&&" + dstKey + "##";
             }
-            if(confidantKey != "")
-            {
+            if (confidantKey != "") {
                 var myAccountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
                 var dstKey = String(RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, ConstantValue.libsodiumpublicMiKey!!)))
-                confidantKey += myAccountBase64+"&&"+dstKey;
+                confidantKey += myAccountBase64 + "&&" + dstKey;
             }
 
-            if(contactMapList.size == needSize)
-            {
-                contentHtml += "<span style=\"display:none\" id=\""+"newconfidantkey"+confidantKey+"\"></span>"; //confidantkey
+            if (contactMapList.size == needSize) {
+                contentHtml += "<span style=\"display:none\" id=\"" + "newconfidantkey" + confidantKey + "\"></span>"; //confidantkey
             }
-        }else{
-            contentHtml += "<span style=\"display:none\" id=\""+"newconfidantpass"+userPassWordTips+"\"></span>"; //手动加密标记
+        } else {
+            contentHtml += "<span style=\"display:none\" id=\"" + "newconfidantpass" + userPassWordTips + "\"></span>"; //手动加密标记
         }
-        contentHtml += "<span style=\"display:none\" id=\"newconfidantuserid"+userId+"\"></span>";
-        var endStr =  "<div id=\"newmyconfidantbegin\">"+
-                "<br />"+
-                " <br />"+
-                " <br />"+
-                "<span>"+
-                getString(R.string.sendfromconfidant)+
-                "</span>"+
+        contentHtml += "<span style=\"display:none\" id=\"newconfidantuserid" + userId + "\"></span>";
+        var endStr = "<div id=\"newmyconfidantbegin\">" +
+                "<br />" +
+                " <br />" +
+                " <br />" +
+                "<span>" +
+                getString(R.string.sendfromconfidant) +
+                "</span>" +
                 "</div>"
 
 
         var myAccountStr = ConstantValue.currentEmailConfigEntity!!.account
-        var addEnd = "<div id=\"box\"> "+
-                "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;} .jusCenter {display: flex;justify-content: center;align-items: center;} .rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}.h3logo {"+
-                "            position: relative;"+
-                "            top: 5px;"+
-                "            width: 24px;"+
-                "            margin-right: 5px;"+
-                "        }/*]]>*/</style> "+
-                "   <section> "+
-                "    <div class=\"rowDiv\"> "+
-                "    </div> "+
-                "    <div class=\"rowDiv\" style=\"border: 0;\"> "+
-                "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> "+
-                "    </div>"+
-                "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">"+
-                "     <div style=\"padding:15px;\">"+
-                "      <a href=\"https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/apps_tore.png\'></a>"+
-                "     </div>"+
-                "     <div style=\"padding:15px;\">"+
-                "      <a href=\"https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/google_play.png\'></a>"+
-                "     </div>"+
-                "    </div>  "+
-                "   </section>"+
+        var addEnd = "<div id=\"box\"> " +
+                "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;} .jusCenter {display: flex;justify-content: center;align-items: center;} .rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}.h3logo {" +
+                "            position: relative;" +
+                "            top: 5px;" +
+                "            width: 24px;" +
+                "            margin-right: 5px;" +
+                "        }/*]]>*/</style> " +
+                "   <section> " +
+                "    <div class=\"rowDiv\"> " +
+                "    </div> " +
+                "    <div class=\"rowDiv\" style=\"border: 0;\"> " +
+                "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> " +
+                "    </div>" +
+                "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">" +
+                "     <div style=\"padding:15px;\">" +
+                "      <a href=\"https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/apps_tore.png\'></a>" +
+                "     </div>" +
+                "     <div style=\"padding:15px;\">" +
+                "      <a href=\"https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/google_play.png\'></a>" +
+                "     </div>" +
+                "    </div>  " +
+                "   </section>" +
                 "  </div>";
 
-        if(userPassWord == "")
-        {
-            if(contactMapList.size == needSize)//需要加密
+        if (userPassWord == "") {
+            if (contactMapList.size == needSize)//需要加密
             {
                 needEncryptEmail = true;
             }
-        }else{//手动加密
+        } else {//手动加密
             needEncryptEmail = true;
         }
-        if(needEncryptEmail)
-        {
+        if (needEncryptEmail) {
             contentHtml += endStr
-        }else{
+        } else {
             contentHtml += addEnd
         }
         var toAdress = getEditText(toAdressEdit)
@@ -2061,29 +1911,25 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
 
         var toAdressArr = toAdress.split(",")
-        for(item in toAdressArr)
-        {
-            if(item != "")
-            {
-                if(!StringUitl.checkEmail(item))
-                {
+        for (item in toAdressArr) {
+            if (item != "") {
+                if (!StringUitl.checkEmail(item)) {
                     toast(R.string.Illegal_address)
                     return
                 }
-                var name  = item.substring(0,item.indexOf("@"))
-                name = name.replace("\"","")
-                name = name.replace("\"","")
-                var account=item
+                var name = item.substring(0, item.indexOf("@"))
+                name = name.replace("\"", "")
+                name = name.replace("\"", "")
+                var account = item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
-                if(localEmailContacts.size == 0)
-                {
-                    var emailContactsEntity= EmailContactsEntity();
+                if (localEmailContacts.size == 0) {
+                    var emailContactsEntity = EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
-                }else{
+                } else {
                     var emailContactsEntity = localEmailContacts.get(0)
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
@@ -2092,24 +1938,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
         var ccAdressArr = ccAdress.split(",")
-        for(item in ccAdressArr)
-        {
-            if(item != "")
-            {
-                var name  = item.substring(0,item.indexOf("@"))
-                name = name.replace("\"","")
-                name = name.replace("\"","")
-                var account=item
+        for (item in ccAdressArr) {
+            if (item != "") {
+                var name = item.substring(0, item.indexOf("@"))
+                name = name.replace("\"", "")
+                name = name.replace("\"", "")
+                var account = item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
-                if(localEmailContacts.size == 0)
-                {
-                    var emailContactsEntity= EmailContactsEntity();
+                if (localEmailContacts.size == 0) {
+                    var emailContactsEntity = EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
-                }else{
+                } else {
                     var emailContactsEntity = localEmailContacts.get(0)
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
@@ -2118,24 +1961,21 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
         var bccAdressArr = bccAdress.split(",")
-        for(item in bccAdressArr)
-        {
-            if(item != "")
-            {
-                var name  = item.substring(0,item.indexOf("@"))
-                name = name.replace("\"","")
-                name = name.replace("\"","")
-                var account=item
+        for (item in bccAdressArr) {
+            if (item != "") {
+                var name = item.substring(0, item.indexOf("@"))
+                name = name.replace("\"", "")
+                name = name.replace("\"", "")
+                var account = item
                 account = account.toLowerCase()
                 var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.queryBuilder().where(EmailContactsEntityDao.Properties.Account.eq(account)).list()
-                if(localEmailContacts.size == 0)
-                {
-                    var emailContactsEntity= EmailContactsEntity();
+                if (localEmailContacts.size == 0) {
+                    var emailContactsEntity = EmailContactsEntity();
                     emailContactsEntity.name = name
                     emailContactsEntity.account = account
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.insert(emailContactsEntity)
-                }else{
+                } else {
                     var emailContactsEntity = localEmailContacts.get(0)
                     emailContactsEntity.createTime = System.currentTimeMillis()
                     AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.update(emailContactsEntity)
@@ -2143,154 +1983,97 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
 
         }
-        /*val toSelectionEnd = toAdressEdit.length()
-        val toSelectionStart = 0
-        val toSpans = toAdressEdit!!.getText()!!.getSpans(toSelectionStart, toSelectionEnd, User::class.java)
-
-        var toIndex = 0
-        for (span in toSpans) {
-            if (span != null && span!!.id != null && span!!.id != "") {
-                if (toIndex > 0) {
-                    toAdress += "," + span!!.id
-                } else {
-                    toAdress += span!!.id
-                }
-                toIndex++
-            }
-        }
-        val ccSelectionEnd = ccAdressEdit.length()
-        val ccSelectionStart = 0
-        val ccSpans = ccAdressEdit!!.getText()!!.getSpans(ccSelectionStart, ccSelectionEnd, User::class.java)
-        var ccIndex = 0
-        for (span in ccSpans) {
-            if (span != null && span!!.id != null && span!!.id != "") {
-                if (ccIndex > 0) {
-                    ccAdress += "," + span!!.id
-                } else {
-                    ccAdress += span!!.id
-                }
-                ccIndex++
-            }
-        }
-        val bccSelectionEnd = bccAdressEdit.length()
-        val bccSelectionStart = 0
-        val bccSpans = bccAdressEdit!!.getText()!!.getSpans(bccSelectionStart, bccSelectionEnd, User::class.java)
-        var bccIndex = 0
-        for (span in bccSpans) {
-            if (span != null && span!!.id != null && span!!.id != "") {
-                if (bccIndex > 0) {
-                    bccAdress += "," + span!!.id
-                } else {
-                    bccAdress += span!!.id
-                }
-                bccIndex++
-            }
-        }*/
-        if(toAdress== "")
-        {
+        if (toAdress == "") {
             toast(R.string.The_recipient_cant_be_empty)
             return
         }
-        if(userPassWord != "" && contentHtml== "")
-        {
+        if (userPassWord != "" && contentHtml == "") {
             toast(R.string.The_body_cannot_be_empty)
             return
         }
         var attachList = ""
         var emaiAttachAdapterList = emaiAttachAdapter!!.data
-        for(item in emaiAttachAdapterList)
-        {
-            if(item.localPath != null)
-            {
-                if(contactMapList.size == needSize)
-                {
+        for (item in emaiAttachAdapterList) {
+            if (item.localPath != null) {
+                if (contactMapList.size == needSize) {
                     val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + item.name
                     val code = FileUtil.copySdcardToxFileAndEncrypt(item.localPath, base58files_dir, fileKey.substring(0, 16))
-                    if(code ==1)
-                    {
-                        attachList +=base58files_dir+","
+                    if (code == 1) {
+                        attachList += base58files_dir + ","
                     }
-                }else{
-                    attachList +=item.localPath+","
+                } else {
+                    attachList += item.localPath + ","
                 }
 
 
             }
 
         }
-        if(attachList.length >0)
-        {
-            attachList = attachList.substring(0,attachList.length -1)
+        if (attachList.length > 0) {
+            attachList = attachList.substring(0, attachList.length - 1)
         }
-        if(galleryPath!="")
-        {
+        if (galleryPath != "") {
             attachList = galleryPath + "circleCode.jpg"
         }
         val emailSendClient = EmailSendClient(AppConfig.instance.emailConfig())
         var myAccount = AppConfig.instance.emailConfig().account
-        var name = myAccount.substring(0,myAccount.indexOf("@"))
-        if(AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "")
-        {
+        var name = myAccount.substring(0, myAccount.indexOf("@"))
+        if (AppConfig.instance.emailConfig().name != null && AppConfig.instance.emailConfig().name != "") {
             name = AppConfig.instance.emailConfig().name;
         }
         var subjectStr = emailSendClient.getUTFStr(subject.getText().toString())
-        if(send)
-        {
+        if (send) {
             runOnUiThread {
                 showProgressDialog(getString(R.string.Sending))
             }
             var drafts = ""
             var draftsId = ""
-            if(foward == 3)
-            {
+            if (foward == 3) {
                 drafts = ConstantValue.currentEmailConfigEntity!!.drafMenu
                 draftsId = emailMeaasgeInfoData!!.msgId
             }
             var myAccount = ConstantValue.currentEmailConfigEntity!!.account
-            var addBefore = "<div id=\"box\"> "+
-                    "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;} .jusCenter {display: flex;justify-content: center;align-items: center;} .rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}.h3logo {"+
-                    "            position: relative;"+
-                    "            top: 5px;"+
-                    "            width: 24px;"+
-                    "            margin-right: 5px;"+
-                    "        }/*]]>*/</style> "+
-                    "   <section> "+
-                    "    <div class=\"rowDiv\"> "+
-                    "     <h3><img class=\"h3logo\" src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_n.png\" />Encrypted Email</h3> "+
-                    "     <p>Encrypted email client and beyond - your comprehensive privacy&nbsp;protection tool</p> "+
-                    "    </div> "+
-                    "    <div class=\"rowDiv\" style=\"border: 0;\"> "+
-                    "     <p style=\"font-size: 14px;\">You have received a secure message from</p> "+
-                    "     <h3 style=\"color:#6646F7\">"+myAccount+"</h3> "+
-                    "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> "+
-                    "    </div>"+
-                    "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">"+
-                    "     <div style=\"padding:15px;\">"+
-                    "      <a href=\"https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/apps_tore.png\'></a>"+
-                    "     </div>"+
-                    "     <div style=\"padding:15px;\">"+
-                    "      <a href=\"https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/google_play.png\'></a>"+
-                    "     </div>"+
-                    "    </div>  "+
-                    "   </section>"+
+            var addBefore = "<div id=\"box\"> " +
+                    "   <style type=\"text/css\">/*<![CDATA[*/* {padding: 0;border: 0;outline: 0;margin: 0;}a {    text-decoration: none;    background-color: transparent}a:hover,a:active {    outline-width: 0;    text-decoration: none}#box {width: 100vw;box-sizing: border-box;}#box section {padding: 16px;}#box header .Star {float: right;}.userHead {display: flex;width: 100%;    box-sizing: border-box;    border-bottom: 1px solid #e6e6e6;}.userHeadA {width: 44px;height: 44px;padding: 18px 0;}.userHeadB {width: 240px;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadC {flex: 1;    text-align: right;height: 44px;padding: 18px 0;outline: 0px solid #ccc;}.userHeadAimg {width: 44px;height: 44px;    border-radius: 22px;}.userHeadBdate {color: #ccc;    margin-left: 8px;}.rowDiv {padding: 20px 0;    text-align: center;    border-bottom: 1px solid #e6e6e6;}button {background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;}.rowDiv3Btn {padding: 12px 34px;background: rgba(102, 70, 247, 1);    border-radius: 7px;color: #fff;} .jusCenter {display: flex;justify-content: center;align-items: center;} .rowDiv h3 {    font-size: 18px;    line-height: 18px;}#box p {line-height: 20px;font-size: 12px;}#box h3 {line-height: 40px;}.h3logo {" +
+                    "            position: relative;" +
+                    "            top: 5px;" +
+                    "            width: 24px;" +
+                    "            margin-right: 5px;" +
+                    "        }/*]]>*/</style> " +
+                    "   <section> " +
+                    "    <div class=\"rowDiv\"> " +
+                    "     <h3><img class=\"h3logo\" src=\"https://confidant.oss-cn-hongkong.aliyuncs.com/images/confidant_logo_n.png\" />Encrypted Email</h3> " +
+                    "     <p>Encrypted email client and beyond - your comprehensive privacy&nbsp;protection tool</p> " +
+                    "    </div> " +
+                    "    <div class=\"rowDiv\" style=\"border: 0;\"> " +
+                    "     <p style=\"font-size: 14px;\">You have received a secure message from</p> " +
+                    "     <h3 style=\"color:#6646F7\">" + myAccount + "</h3> " +
+                    "     <p>I’m using Confidant to send and receive secure emails.&nbsp;Click the&nbsp;link below to decrypt and view&nbsp;my&nbsp;message.</p> " +
+                    "    </div>" +
+                    "    <div class=\"rowDiv jusCenter\" style=\"text-align: center;padding: 0;\">" +
+                    "     <div style=\"padding:15px;\">" +
+                    "      <a href=\"https://apps.apple.com/us/app/my-confidant/id1456735273?l=zh&amp;ls=1\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/apps_tore.png\'></a>" +
+                    "     </div>" +
+                    "     <div style=\"padding:15px;\">" +
+                    "      <a href=\"https://play.google.com/store/apps/details?id=com.stratagile.pnrouter\"><img width=\'140\' src=\'https://confidant.oss-cn-hongkong.aliyuncs.com/images/google_play.png\'></a>" +
+                    "     </div>" +
+                    "    </div>  " +
+                    "   </section>" +
                     "  </div>";
-            if(userPassWord == "")
-            {
-                if(contactMapList.size == needSize)//需要加密
+            if (userPassWord == "") {
+                if (contactMapList.size == needSize)//需要加密
                 {
                     var contentHtmlBase64 = String(RxEncodeTool.base64Encode(contentHtml))
-                    contentHtml = addBefore+ "<span style=\"display:none\" id=\""+"newconfidantcontent"+contentHtmlBase64+"\"></span>";
+                    contentHtml = addBefore + "<span style=\"display:none\" id=\"" + "newconfidantcontent" + contentHtmlBase64 + "\"></span>";
                 }
-            }else{//手动加密
+            } else {//手动加密
                 var contentHtmlBase64 = String(RxEncodeTool.base64Encode(contentHtml))
-                contentHtml = addBefore+ "<span style=\"display:none\" id=\""+"newconfidantcontent"+contentHtmlBase64+"\"></span>";
+                contentHtml = addBefore + "<span style=\"display:none\" id=\"" + "newconfidantcontent" + contentHtmlBase64 + "\"></span>";
             }
-            if(InviteURLText!= "")
-            {
+            if (InviteURLText != "") {
                 contentHtml = InviteURLText;
             }
-            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
-            {
+            if (ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "") {
                 emailSendClient
                         .setTo(toAdress)                //收件人的邮箱地址
                         .setCc(ccAdress)
@@ -2307,42 +2090,41 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 runOnUiThread {
                                     closeProgressDialog()
                                     var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                                    if(emailConfigEntityChooseList.size > 0) {
+                                    if (emailConfigEntityChooseList.size > 0) {
                                         var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
                                         emailConfigEntityChoose.sendMenuRefresh = true
                                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
-                                    if(foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
-                                    {
+                                    if (foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId != "") {
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                        var emailId= RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
-                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId,emailId)
-                                        var sendData = BaseData(6,AddFriendsAutoReq);
+                                        var emailId = RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
+                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId, emailId)
+                                        var sendData = BaseData(6, AddFriendsAutoReq);
                                         if (ConstantValue.isWebsocketConnected) {
                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                        }else if (ConstantValue.isToxConnected) {
+                                        } else if (ConstantValue.isToxConnected) {
                                             var baseData = sendData
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
                                                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
+                                            } else {
                                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
                                         }
                                     }
 
                                     var addFriendReq = MailSendNotice(addressBase64)
-                                    var sendData = BaseData(6,addFriendReq);
+                                    var sendData = BaseData(6, addFriendReq);
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                    }else if (ConstantValue.isToxConnected) {
+                                    } else if (ConstantValue.isToxConnected) {
                                         var baseData = sendData
                                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                         if (ConstantValue.isAntox) {
                                             //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                             //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                        }else{
+                                        } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                     }
@@ -2358,18 +2140,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 }
                                 try {
                                     Islands.ordinaryDialog(this@EmailSendActivity)
-                                            .setText(null, getString(R.string.error)+":"+errorMsg)
+                                            .setText(null, getString(R.string.error) + ":" + errorMsg)
                                             .setButton(getString(R.string.close), null, null)
                                             .click().show()
-                                }catch (e:Exception)
-                                {
+                                } catch (e: Exception) {
 
                                 }
 
                             }
-                        },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId)
-            }else{
-                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                        }, ConstantValue.currentEmailConfigEntity!!.sendMenu, drafts, draftsId)
+            } else {
+                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance, ConstantValue.currentEmailConfigEntity!!.account);
                 emailSendClient
                         .setTo(toAdress)                //收件人的邮箱地址
                         .setCc(ccAdress)
@@ -2386,43 +2167,42 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                 runOnUiThread {
                                     closeProgressDialog()
                                     var emailConfigEntityChooseList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
-                                    if(emailConfigEntityChooseList.size > 0) {
+                                    if (emailConfigEntityChooseList.size > 0) {
                                         var emailConfigEntityChoose = emailConfigEntityChooseList.get(0)
                                         emailConfigEntityChoose.sendMenuRefresh = true
                                         AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntityChoose)
                                     }
 
-                                    if(foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId!= "")
-                                    {
+                                    if (foward == 0 && emailMeaasgeInfoData != null && emailMeaasgeInfoData!!.userId != null && emailMeaasgeInfoData!!.userId != "") {
                                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                        var emailId= RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
-                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId,emailId)
-                                        var sendData = BaseData(6,AddFriendsAutoReq);
+                                        var emailId = RxEncodeTool.base64Encode2String(ConstantValue.currentEmailConfigEntity!!.account.toByteArray())
+                                        var AddFriendsAutoReq = AddFriendsAutoReq(1, selfUserId!!, emailMeaasgeInfoData!!.userId, emailId)
+                                        var sendData = BaseData(6, AddFriendsAutoReq);
                                         if (ConstantValue.isWebsocketConnected) {
                                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                        }else if (ConstantValue.isToxConnected) {
+                                        } else if (ConstantValue.isToxConnected) {
                                             var baseData = sendData
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
                                                 //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
+                                            } else {
                                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
                                         }
                                     }
 
                                     var addFriendReq = MailSendNotice(addressBase64)
-                                    var sendData = BaseData(6,addFriendReq);
+                                    var sendData = BaseData(6, addFriendReq);
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                    }else if (ConstantValue.isToxConnected) {
+                                    } else if (ConstantValue.isToxConnected) {
                                         var baseData = sendData
                                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                         if (ConstantValue.isAntox) {
                                             //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                             //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                        }else{
+                                        } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                     }
@@ -2437,20 +2217,19 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                     closeProgressDialog()
                                 }
                                 Islands.ordinaryDialog(this@EmailSendActivity)
-                                        .setText(null, getString(R.string.error)+":"+errorMsg)
+                                        .setText(null, getString(R.string.error) + ":" + errorMsg)
                                         .setButton(getString(R.string.close), null, null)
                                         .click().show()
                             }
-                        },ConstantValue.currentEmailConfigEntity!!.sendMenu,drafts,draftsId,gmailService,"me")
+                        }, ConstantValue.currentEmailConfigEntity!!.sendMenu, drafts, draftsId, gmailService, "me")
             }
 
 
-        }else{
+        } else {
             runOnUiThread {
                 showProgressDialog(getString(R.string.Saving))
             }
-            if(ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "")
-            {
+            if (ConstantValue.currentEmailConfigEntity!!.userId == null || ConstantValue.currentEmailConfigEntity!!.userId == "") {
                 emailSendClient
                         .setTo(toAdress)                //收件人的邮箱地址
                         .setCc(ccAdress)
@@ -2480,9 +2259,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         .setButton(getString(R.string.close), null, null)
                                         .click().show()
                             }
-                        },ConstantValue.currentEmailConfigEntity!!.drafMenu,"draf")
-            }else{
-                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance,ConstantValue.currentEmailConfigEntity!!.account);
+                        }, ConstantValue.currentEmailConfigEntity!!.drafMenu, "draf")
+            } else {
+                var gmailService = GmailQuickstart.getGmailService(AppConfig.instance, ConstantValue.currentEmailConfigEntity!!.account);
                 emailSendClient
                         .setTo(toAdress)                //收件人的邮箱地址
                         .setCc(ccAdress)
@@ -2512,12 +2291,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                                         .setButton(getString(R.string.close), null, null)
                                         .click().show()
                             }
-                        },ConstantValue.currentEmailConfigEntity!!.drafMenu,"draf",gmailService,"me")
+                        }, ConstantValue.currentEmailConfigEntity!!.drafMenu, "draf", gmailService, "me")
             }
 
         }
 
     }
+
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
 
@@ -2552,8 +2332,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         }
     }
-    fun getEditText(edit:EditText):String
-    {
+
+    fun getEditText(edit: EditText): String {
         val toSelectionEnd = edit.length()
         val toSelectionStart = 0
         val toSpans = edit!!.getText()!!.getSpans(toSelectionStart, toSelectionEnd, User::class.java)
@@ -2561,13 +2341,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         var toIndex = 0
         for (span in toSpans) {
             var id = span!!.id
-            if(id != null)
-            {
-                id.replace("\"","")
-                id.replace("\"","")
+            if (id != null) {
+                id.replace("\"", "")
+                id.replace("\"", "")
                 id = id.trim()
             }
-            if (span != null && id != null && id!= "") {
+            if (span != null && id != null && id != "") {
                 if (toIndex > 0) {
                     toAdress += "," + id
                 } else {
@@ -2578,6 +2357,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         return toAdress
     }
+
     /**
      * capture new image
      */
@@ -2622,6 +2402,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(this, videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30).putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0),
                 REQUEST_CODE_VIDEO)
     }
+
     /**
      * select local image
      * //todo
@@ -2656,6 +2437,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 .isDragFrame(false)
                 .forResult(REQUEST_CODE_LOCAL)
     }
+
     /**
      * 初始化文本编辑器
      */
@@ -2684,11 +2466,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             }
         })
         re_main_editor.setOnFocusChangeListener(object : View.OnFocusChangeListener {
-            override fun onFocusChange( v:View,  hasFocus:Boolean) {
-                if(hasFocus)
-                {
+            override fun onFocusChange(v: View, hasFocus: Boolean) {
+                if (hasFocus) {
                     EditorIconParent.visibility = View.VISIBLE
-                }else{
+                } else {
                     EditorIconParent.visibility = View.GONE
                 }
             }
@@ -2705,7 +2486,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 re_main_editor.setTextColor(color)
             }
 
-            override  fun onStartTrackingTouch(picker: ColorPickerView) {
+            override fun onStartTrackingTouch(picker: ColorPickerView) {
 
             }
 
@@ -2910,14 +2691,13 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
              startActivity(intent)*/
         }//H1--H6省略，需要的自己添加
         else if (id == R.id.showCcAndBcc) {//预览
-            if(ccParent.visibility == View.VISIBLE)
-            {
+            if (ccParent.visibility == View.VISIBLE) {
                 var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_lower)
                 drawable.setBounds(0, 0, 48, 48);
                 showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
                 ccParent.visibility = View.GONE
                 bccParent.visibility = View.GONE
-            }else{
+            } else {
                 var drawable = getResources().getDrawable(R.mipmap.tabbar_arrow_upper)
                 drawable.setBounds(0, 0, 48, 48);
                 showCcAndBcc.setCompoundDrawables(drawable, null, null, null);
@@ -2925,67 +2705,61 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 bccParent.visibility = View.VISIBLE
             }
 
-        }
-        else if (id == R.id.addTo) {
+        } else if (id == R.id.addTo) {
             val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
             oldAdress = getEditText(toAdressEdit)
             intent.putExtra("oldAdress", oldAdress)
-            startActivityForResult(intent,REQUEST_CODE_TO)
-        }else if (id == R.id.addCc) {
+            startActivityForResult(intent, REQUEST_CODE_TO)
+        } else if (id == R.id.addCc) {
             val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
             oldAdress = getEditText(ccAdressEdit)
             intent.putExtra("oldAdress", oldAdress)
-            startActivityForResult(intent,REQUEST_CODE_CC)
-        }else if (id == R.id.addBcc) {
+            startActivityForResult(intent, REQUEST_CODE_CC)
+        } else if (id == R.id.addBcc) {
             val intent = Intent(this@EmailSendActivity, SelectEmailFriendActivity::class.java)
             oldAdress = getEditText(bccAdressEdit)
             intent.putExtra("oldAdress", oldAdress)
-            startActivityForResult(intent,REQUEST_CODE_BCC)
-        }else if (id == R.id.backBtn ) {
+            startActivityForResult(intent, REQUEST_CODE_BCC)
+        } else if (id == R.id.backBtn) {
             var toAdress = toAdressEdit.text.toString()
             var subject = subject.text.toString()
             var re_main_editorStr = re_main_editor.html
-            if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
-            {
-                if(foward != 3 && InviteURLText == "")
-                {
+            if (toAdress != "" || subject != "" || re_main_editorStr != "") {
+                if (foward != 3 && InviteURLText == "") {
                     showDialog()
-                }else{
+                } else {
                     finish()
                 }
-            }else{
+            } else {
                 finish()
             }
             //onBackPressed()
-        }else if (id == R.id.sendBtn ) {
+        } else if (id == R.id.sendBtn) {
             allSpan(toAdressEdit)
             allSpan(ccAdressEdit)
             allSpan(bccAdressEdit)
             sendCheck(true);
             //sendEmail()
-        }else if (id == R.id.addKeyImg ) {
-            PopWindowUtil.showPopKeyMenuWindow(this@EmailSendActivity, addKeyImg,userPassWord,userPassWordTips, object : PopWindowUtil.OnSelectListener {
+        } else if (id == R.id.addKeyImg) {
+            PopWindowUtil.showPopKeyMenuWindow(this@EmailSendActivity, addKeyImg, userPassWord, userPassWordTips, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
-                    var map = obj as HashMap<String,String>
+                    var map = obj as HashMap<String, String>
                     userPassWord = map.get("password") as String
                     userPassWordTips = map.get("passTips") as String
-                    if(userPassWord != ""&& InviteURLText == "")
-                    {
+                    if (userPassWord != "" && InviteURLText == "") {
                         addKeyImg.setImageResource(R.mipmap.tabbar_email1_selected)
                         lockTips.visibility = View.VISIBLE
-                    }else{
+                    } else {
                         addKeyImg.setImageResource(R.mipmap.tabbar_email1_unselected)
-                        if(contactMapList.size == needSize && InviteURLText == "")
-                        {
+                        if (contactMapList.size == needSize && InviteURLText == "") {
                             lockTips.visibility = View.VISIBLE
-                        }else{
+                        } else {
                             lockTips.visibility = View.GONE
                         }
                     }
                 }
             })
-        }else if(id == R.id.addSubjectImg)
-        {
+        } else if (id == R.id.addSubjectImg) {
             sendRoot.fullScroll(NestedScrollView.FOCUS_DOWN)
             subject.requestFocus()
             iv_add.performClick()
@@ -3045,6 +2819,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         }
         return animator
     }
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.getAction() === MotionEvent.ACTION_DOWN) {
             val v = currentFocus
@@ -3060,6 +2835,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             true
         } else onTouchEvent(ev)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -3079,9 +2855,9 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
-                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/")+1,videoFilePath.length)
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/") + 1, videoFilePath.length)
                     emailAttachEntity.isCanDelete = true
-                    emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                    emaiAttachAdapter!!.addData(0, emailAttachEntity)
                     emaiAttachAdapter!!.notifyDataSetChanged();
                 }
             } else if (requestCode == REQUEST_CODE_VIDEO) {
@@ -3100,16 +2876,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var emailAttachEntity = EmailAttachEntity()
                     emailAttachEntity.isHasData = true
                     emailAttachEntity.localPath = videoFilePath
-                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/")+1,videoFilePath.length)
+                    emailAttachEntity.name = videoFilePath.substring(videoFilePath.lastIndexOf("/") + 1, videoFilePath.length)
                     emailAttachEntity.isCanDelete = true
-                    emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                    emaiAttachAdapter!!.addData(0, emailAttachEntity)
                     emaiAttachAdapter!!.notifyDataSetChanged();
-                    if( emaiAttachAdapter!!.itemCount > 1)
-                    {
+                    if (emaiAttachAdapter!!.itemCount > 1) {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
-                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
                         addSubject.visibility = View.GONE
-                    }else{
+                    } else {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.GONE
@@ -3137,18 +2912,17 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                         var emailAttachEntity = EmailAttachEntity()
                         emailAttachEntity.isHasData = true
                         emailAttachEntity.localPath = list.get(i).path
-                        emailAttachEntity.name = list.get(i).path.substring(list.get(i).path.lastIndexOf("/")+1,list.get(i).path.length)
+                        emailAttachEntity.name = list.get(i).path.substring(list.get(i).path.lastIndexOf("/") + 1, list.get(i).path.length)
                         emailAttachEntity.isCanDelete = true
-                        emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                        emaiAttachAdapter!!.addData(0, emailAttachEntity)
 
                     }
                     emaiAttachAdapter!!.notifyDataSetChanged();
-                    if( emaiAttachAdapter!!.itemCount > 1)
-                    {
+                    if (emaiAttachAdapter!!.itemCount > 1) {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
-                        addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                        addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
                         addSubject.visibility = View.GONE
-                    }else{
+                    } else {
                         addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                         addSubject.text = ""
                         addSubject.visibility = View.GONE
@@ -3173,16 +2947,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                             var emailAttachEntity = EmailAttachEntity()
                             emailAttachEntity.isHasData = true
                             emailAttachEntity.localPath = file.path
-                            emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/")+1,file.path.length)
+                            emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length)
                             emailAttachEntity.isCanDelete = true
-                            emaiAttachAdapter!!.addData(0,emailAttachEntity)
+                            emaiAttachAdapter!!.addData(0, emailAttachEntity)
                             emaiAttachAdapter!!.notifyDataSetChanged();
-                            if( emaiAttachAdapter!!.itemCount > 1)
-                            {
+                            if (emaiAttachAdapter!!.itemCount > 1) {
                                 addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
-                                addSubject.text = (emaiAttachAdapter!!.itemCount -1).toString()
+                                addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
                                 addSubject.visibility = View.GONE
-                            }else{
+                            } else {
                                 addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
                                 addSubject.text = ""
                                 addSubject.visibility = View.GONE
@@ -3201,13 +2974,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var selectAdressStrArray = selectAdressStr.split(",")
                     var nameAdressStrArray = nameAdressStr.split(",")
                     var i = 0;
-                    for (item in selectAdressStrArray)
-                    {
-                        if(!oldAdress.contains(item))
-                        {
+                    for (item in selectAdressStrArray) {
+                        if (!oldAdress.contains(item)) {
                             var adress = item
-                            var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name,name)
+                            var name = nameAdressStrArray.get(i)
+                            var user = User(adress, name, name)
                             (toAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
@@ -3224,13 +2995,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var selectAdressStrArray = selectAdressStr.split(",")
                     var nameAdressStrArray = nameAdressStr.split(",")
                     var i = 0;
-                    for (item in selectAdressStrArray)
-                    {
-                        if(!oldAdress.contains(item))
-                        {
+                    for (item in selectAdressStrArray) {
+                        if (!oldAdress.contains(item)) {
                             var adress = item
-                            var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name,name)
+                            var name = nameAdressStrArray.get(i)
+                            var user = User(adress, name, name)
                             (ccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
@@ -3247,13 +3016,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                     var selectAdressStrArray = selectAdressStr.split(",")
                     var nameAdressStrArray = nameAdressStr.split(",")
                     var i = 0;
-                    for (item in selectAdressStrArray)
-                    {
-                        if(!oldAdress.contains(item))
-                        {
+                    for (item in selectAdressStrArray) {
+                        if (!oldAdress.contains(item)) {
                             var adress = item
-                            var name =  nameAdressStrArray.get(i)
-                            var user = User(adress,name,name)
+                            var name = nameAdressStrArray.get(i)
+                            var user = User(adress, name, name)
                             (bccAdressEdit.text as SpannableStringBuilder)
                                     .append(methodContext.newSpannable(user))
                                     .append(";")
@@ -3266,9 +3033,11 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
 
         }
     }
-    fun  replaceImgCidByLocalPath(content:String ,fileName:String ,filePath:String ,pre:String):String {
-        return content.replace("file://" + filePath+"\"","cid:" + pre+fileName + "\"").toString();
+
+    fun replaceImgCidByLocalPath(content: String, fileName: String, filePath: String, pre: String): String {
+        return content.replace("file://" + filePath + "\"", "cid:" + pre + fileName + "\"").toString();
     }
+
     override fun setupActivityComponent() {
         DaggerEmailSendComponent
                 .builder()
@@ -3277,12 +3046,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 .build()
                 .inject(this)
     }
+
     override fun setPresenter(presenter: EmailSendContract.EmailSendContractPresenter) {
         mPresenter = presenter as EmailSendPresenter
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
     }
+
     override fun showProgressDialog() {
         progressDialog.show()
     }
@@ -3290,6 +3062,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+
     private fun switch() {
         val method = circularMethod()
         methodContext.method = method
@@ -3299,28 +3072,28 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
         methodContextBcc.method = method
         methodContextBcc.init(bccAdressEdit)
     }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             var toAdress = toAdressEdit.text.toString()
             var subject = subject.text.toString()
             var re_main_editorStr = re_main_editor.html
-            if(toAdress!= "" || subject!= "" || re_main_editorStr!= "")
-            {
-                if(foward != 3 && InviteURLText == "")
-                {
+            if (toAdress != "" || subject != "" || re_main_editorStr != "") {
+                if (foward != 3 && InviteURLText == "") {
                     showDialog()
-                }else{
+                } else {
 
                     finish()
                 }
 
-            }else{
+            } else {
                 finish()
             }
 
         }
         return true
     }
+
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                 .setCancelText(getString(R.string.no))
@@ -3334,6 +3107,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
                 .show()
 
     }
+
     private tailrec fun circularMethod(): Method {
         return if (iterator.hasNext()) {
             iterator.next()
@@ -3342,6 +3116,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View,View.OnClickLis
             circularMethod()
         }
     }
+
     override fun onDestroy() {
         AppConfig.instance.messageReceiver?.checkmailUkeyCallback = null
         super.onDestroy()

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.view.View
+import com.google.gson.Gson
 import com.hyphenate.easeui.utils.PathUtils
 import com.jaeger.library.StatusBarUtil
 import com.smailnet.eamil.Utils.AESCipher
@@ -42,26 +43,53 @@ import javax.inject.Inject
 
 class SplashActivity : BaseActivity(), SplashContract.View {
     private var handler: Handler? = null
-    private var myAuthCallback: MyAuthCallback? = null
-    private var cancellationSignal: CancellationSignal? = null
+//    private var myAuthCallback: MyAuthCallback? = null
+//    private var cancellationSignal: CancellationSignal? = null
     private var countDownTimerUtils: CountDownTimerUtils? = null
     override fun loginSuccees() {
-        MobileSocketClient.getInstance().destroy()
-        startActivity(Intent(this, LoginActivityActivity::class.java))
-        finish()
+//        MobileSocketClient.getInstance().destroy()
+        if (SpUtil.getBoolean(this, ConstantValue.firstOpenApp, true)) {
+            SpUtil.putBoolean(this, ConstantValue.firstOpenApp, false)
+            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
+            startActivity(Intent(this, LoginActivityActivity::class.java))
+            finish()
+        } else {
+            if (!"".equals(FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt"))) {
+                ConstantValue.logining = true
+                startActivity(Intent(this, MainActivity::class.java).putExtra("autoLogin", true))
+                finish()
+            } else {
+                startActivity(Intent(this, LoginActivityActivity::class.java))
+                finish()
+            }
+        }
     }
 
     override fun jumpToLogin() {
-        MobileSocketClient.getInstance().destroy()
-        startActivity(Intent(this, LoginActivityActivity::class.java))
-        finish()
+//        MobileSocketClient.getInstance().destroy()
+        if (SpUtil.getBoolean(this, ConstantValue.firstOpenApp, true)) {
+            SpUtil.putBoolean(this, ConstantValue.firstOpenApp, false)
+            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
+            startActivity(Intent(this, LoginActivityActivity::class.java))
+            finish()
+        } else {
+            if (!"".equals(FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt"))) {
+                ConstantValue.logining = true
+                startActivity(Intent(this, MainActivity::class.java).putExtra("autoLogin", true))
+                finish()
+            } else {
+                startActivity(Intent(this, LoginActivityActivity::class.java))
+                finish()
+            }
+        }
     }
 
     override fun jumpToGuest() {
-        MobileSocketClient.getInstance().destroy()
+//        MobileSocketClient.getInstance().destroy()
         startActivity(Intent(this, GuestActivity::class.java))
         finish()
     }
+
     override fun exitApp() {
         finish()
         System.exit(0)
@@ -100,27 +128,29 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         }*/
 
     }
+
     /**
      * 通过Uri获取文件在本地存储的真实路径
      */
-    fun  getRealPathFromURI(contentUri: Uri?):String {
+    fun getRealPathFromURI(contentUri: Uri?): String {
         var proj = arrayOf(MediaStore.MediaColumns.DATA)
-        var  cursor=getContentResolver().query(contentUri, proj!!, null, null, null);
-        if(cursor.moveToNext()){
+        var cursor = getContentResolver().query(contentUri, proj!!, null, null, null);
+        if (cursor.moveToNext()) {
             return cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
         }
         cursor.close();
         return "";
     }
+
     override fun onDestroy() {
-        if (myAuthCallback != null) {
-            myAuthCallback?.removeHandle()
-            myAuthCallback = null
-        }
-        if (cancellationSignal != null) {
-            cancellationSignal!!.cancel()
-            cancellationSignal = null
-        }
+//        if (myAuthCallback != null) {
+//            myAuthCallback?.removeHandle()
+//            myAuthCallback = null
+//        }
+//        if (cancellationSignal != null) {
+//            cancellationSignal!!.cancel()
+//            cancellationSignal = null
+//        }
         super.onDestroy()
     }
 
@@ -130,157 +160,144 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 //        StatusBarCompat.changeToLightStatusBar(this)
 //        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
+
     override fun initData() {
         KLog.i("SplashActivityAAAA：initData")
-        if(BuildConfig.DEBUG)
-        {
+        if (BuildConfig.DEBUG) {
             SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
             SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
         }
         AppConfig.instance.isOpenSplashActivity = true
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
-        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
-        for(item in localMessageList)
-        {
-            if(item.timeStamp == null  || item.timeStamp == 0L)
-            {
-                item.setTimeStamp( DateUtil.getDateTimeStame(item.date))
-                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
-            }
-            if(item.sortId == null  || item.sortId == 0L)
-            {
-                item.sortId = item.msgId.toLong();
-                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
-            }
-        }
-        if(!BuildConfig.DEBUG)
-        {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                try {
-                    val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
-                    if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
-                        try {
-                            myAuthCallback = MyAuthCallback(handler)
-                            val cryptoObjectHelper = CryptoObjectHelper()
-                            if (cancellationSignal == null) {
-                                cancellationSignal = CancellationSignal()
-                            }
-                            fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
-                                    myAuthCallback, null)
-                            ConstantValue.notNeedVerify = false
-                            var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                            if(fingerprintSwitchFlag == "-1")
-                            {
-                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-                            }
-                            if (cancellationSignal != null) {
-                                cancellationSignal?.cancel()
-                                cancellationSignal = null
-                            }
-                        } catch (e: Exception) {
-                            if (cancellationSignal != null) {
-                                cancellationSignal?.cancel()
-                                cancellationSignal = null
-                            }
-                            ConstantValue.notNeedVerify = true
-                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                        }
-
-                    } else {
-                        try {
-                            var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                            if (!mKeyguardManager.isKeyguardSecure()) {
-                                KLog.i("没有设置密码。。。。")
-                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                            }else{
-                                var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                                if(fingerprintSwitchFlag == "-1")
-                                {
-                                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-                                }
-                            }
-                            ConstantValue.notNeedVerify = false
-                        } catch (e: Exception) {
-                            ConstantValue.notNeedVerify = true
-                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                        }
-
-                    }
-
-                } catch (e: Exception) {
-                    ConstantValue.notNeedVerify = true
-                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                }
-
-            } else {
-                try {
-                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                    if (!mKeyguardManager.isKeyguardSecure()) {
-                        KLog.i("没有设置密码。。。。")
-                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                    }else{
-                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                        if(fingerprintSwitchFlag == "-1")
-                        {
-                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-                        }
-                    }
-                    ConstantValue.notNeedVerify = false
-                } catch (e: Exception) {
-                    ConstantValue.notNeedVerify = true
-                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-                }
-            }
-        }
-        KLog.i("SplashActivityAAAA：initData00")
-        LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
+//        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+//        for (item in localMessageList) {
+//            if (item.timeStamp == null || item.timeStamp == 0L) {
+//                item.setTimeStamp(DateUtil.getDateTimeStame(item.date))
+//                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+//            }
+//            if (item.sortId == null || item.sortId == 0L) {
+//                item.sortId = item.msgId.toLong();
+//                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
+//            }
+//        }
+//        if (!BuildConfig.DEBUG) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                try {
+//                    val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
+//                    if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
+//                        try {
+//                            myAuthCallback = MyAuthCallback(handler)
+//                            val cryptoObjectHelper = CryptoObjectHelper()
+//                            if (cancellationSignal == null) {
+//                                cancellationSignal = CancellationSignal()
+//                            }
+//                            fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
+//                                    myAuthCallback, null)
+//                            ConstantValue.notNeedVerify = false
+//                            var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+//                            if (fingerprintSwitchFlag == "-1") {
+//                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+//                            }
+//                            if (cancellationSignal != null) {
+//                                cancellationSignal?.cancel()
+//                                cancellationSignal = null
+//                            }
+//                        } catch (e: Exception) {
+//                            if (cancellationSignal != null) {
+//                                cancellationSignal?.cancel()
+//                                cancellationSignal = null
+//                            }
+//                            ConstantValue.notNeedVerify = true
+//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                        }
+//
+//                    } else {
+//                        try {
+//                            var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+//                            if (!mKeyguardManager.isKeyguardSecure()) {
+//                                KLog.i("没有设置密码。。。。")
+//                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                            } else {
+//                                var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+//                                if (fingerprintSwitchFlag == "-1") {
+//                                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+//                                }
+//                            }
+//                            ConstantValue.notNeedVerify = false
+//                        } catch (e: Exception) {
+//                            ConstantValue.notNeedVerify = true
+//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                        }
+//
+//                    }
+//
+//                } catch (e: Exception) {
+//                    ConstantValue.notNeedVerify = true
+//                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                }
+//
+//            } else {
+//                try {
+//                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+//                    if (!mKeyguardManager.isKeyguardSecure()) {
+//                        KLog.i("没有设置密码。。。。")
+//                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                    } else {
+//                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+//                        if (fingerprintSwitchFlag == "-1") {
+//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+//                        }
+//                    }
+//                    ConstantValue.notNeedVerify = false
+//                } catch (e: Exception) {
+//                    ConstantValue.notNeedVerify = true
+//                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+//                }
+//            }
+//        }
+//        KLog.i("SplashActivityAAAA：initData00")
+//        LogUtil.addLog("app version :" + BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
-        var this_ = this
-        handler = object : Handler() {
-            override fun handleMessage(msg: Message) {
-                super.handleMessage(msg)
-                when (msg.what) {
-                    MyAuthCallback.MSG_UPD_DATA -> {
-                        var obj:String = msg.obj.toString()
-                        if(!obj.equals(""))
-                        {
-                            var objArray = obj.split("##")
-                            var index = 0;
-                            for(item in objArray)
-                            {
-                                if(!item.equals(""))
-                                {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
-                                    var udpRouterArray = udpData.split(";")
-
-                                    if(udpRouterArray.size > 1)
-                                    {
-                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
-                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if( ConstantValue.currentRouterId.equals(udpRouterArray[1]))
-                                        {
-                                            ConstantValue.currentRouterIp = udpRouterArray[0]
-                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                            ConstantValue.port= ":18006"
-                                            ConstantValue.filePort = ":18007"
-                                            break;
-                                        }
-
-                                    }
-                                }
-                                index ++
-                            }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
-                            {
-                                ConstantValue.curreantNetworkType = "WIFI"
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-        MobileSocketClient.getInstance().init(handler,this)
+//        var this_ = this
+//        handler = object : Handler() {
+//            override fun handleMessage(msg: Message) {
+//                super.handleMessage(msg)
+//                when (msg.what) {
+//                    MyAuthCallback.MSG_UPD_DATA -> {
+//                        var obj: String = msg.obj.toString()
+//                        if (!obj.equals("")) {
+//                            var objArray = obj.split("##")
+//                            var index = 0;
+//                            for (item in objArray) {
+//                                if (!item.equals("")) {
+//                                    var udpData = AESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
+//                                    var udpRouterArray = udpData.split(";")
+//
+//                                    if (udpRouterArray.size > 1) {
+//                                        println("ipdizhi:" + udpRouterArray[1] + " ip: " + udpRouterArray[0])
+//                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+//                                        if (ConstantValue.currentRouterId.equals(udpRouterArray[1])) {
+//                                            ConstantValue.currentRouterIp = udpRouterArray[0]
+//                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
+//                                            ConstantValue.port = ":18006"
+//                                            ConstantValue.filePort = ":18007"
+//                                            break;
+//                                        }
+//
+//                                    }
+//                                }
+//                                index++
+//                            }
+//                            if (ConstantValue.currentRouterIp != null && !ConstantValue.currentRouterIp.equals("")) {
+//                                ConstantValue.curreantNetworkType = "WIFI"
+//                            }
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
+//        MobileSocketClient.getInstance().init(handler, this)
         KLog.i("SplashActivityAAAA：initData0011")
         mPresenter.getPermission()
         KLog.i("SplashActivityAAAA：initData001122")
@@ -298,6 +315,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 .build()
                 .inject(this)
     }
+
     override fun setPresenter(presenter: SplashContract.SplashContractPresenter) {
         mPresenter = presenter as SplashPresenter
     }

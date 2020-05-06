@@ -52,6 +52,7 @@
                 <ImageView
                     android:id="@+id/emailLook"
                     android:layout_marginLeft="12dp"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:scaleType="centerCrop"
@@ -110,6 +111,7 @@
                 <ImageView
                     android:id="@+id/searchBtn"
                     android:layout_width="23dp"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:layout_marginRight="12dp"
                     android:layout_height="23dp"
                     android:src="@mipmap/statusbar_search_n"
@@ -117,6 +119,7 @@
 
                 <ImageView
                     android:id="@+id/ivNewGroup"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:layout_toRightOf="@+id/searchBtn"
                     android:layout_width="23dp"
                     android:layout_height="23dp"
@@ -135,6 +138,7 @@
                     android:id="@+id/mainIv1"
                     android:layout_width="23dp"
                     android:layout_height="23dp"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:src="@mipmap/add_file"
                     android:visibility="gone" />
 
@@ -142,6 +146,7 @@
                     android:id="@+id/ivQrCode"
                     android:layout_width="23dp"
                     android:layout_height="23dp"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:src="@mipmap/icon_add_friend"
                     android:visibility="visible" />
             </RelativeLayout>
@@ -174,7 +179,7 @@
         <RelativeLayout
             android:id="@+id/rl2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/x110"
+            android:layout_height="55dp"
             android:layout_alignParentBottom="true">
 
             <com.lzy.widget.AlphaIndicator
@@ -189,6 +194,7 @@
                     android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:padding="6dp"
                     android:layout_marginTop="@dimen/x15"
                     app:av_tabIconNormal="@mipmap/navibar_chats_unselected"
@@ -202,6 +208,7 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/x84"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:background="@color/white"
                     android:padding="6dp"
                     android:layout_marginTop="@dimen/x15"
@@ -217,6 +224,7 @@
                     android:layout_height="@dimen/x84"
                     android:layout_weight="1"
                     android:background="@color/white"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:padding="6dp"
                     android:layout_marginTop="@dimen/x15"
                     app:av_tabIconNormal="@mipmap/navibar_contacts_unselected"
@@ -230,6 +238,7 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/x84"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:background="@color/white"
                     android:padding="6dp"
                     android:layout_marginTop="@dimen/x15"
@@ -255,13 +264,13 @@
                     <TextView
                         android:id="@+id/unread_count"
                         android:layout_width="wrap_content"
-                        android:minWidth="@dimen/x28"
-                        android:layout_height="@dimen/x28"
-                        android:paddingLeft="@dimen/x5"
-                        android:paddingRight="@dimen/x5"
+                        android:minWidth="14dp"
+                        android:layout_height="14dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
                         android:layout_gravity="right"
-                        android:layout_marginTop="@dimen/x6"
-                        android:layout_marginRight="@dimen/x54"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="30dp"
                         android:background="@drawable/new_message_flag_bg"
                         android:gravity="center"
                         android:text=""

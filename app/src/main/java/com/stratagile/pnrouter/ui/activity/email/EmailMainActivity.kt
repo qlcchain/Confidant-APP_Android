@@ -110,7 +110,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
                                         Toast.makeText(this@EmailMainActivity, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
                                         Log.e("oversee", "错误日志：$errorMsg")
                                     }
-                                },"INBOX",0,10,0)
+                                },"INBOX",0,7,0)
                     }
         }
     }

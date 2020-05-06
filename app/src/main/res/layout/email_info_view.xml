@@ -918,12 +918,12 @@
     <LinearLayout
         android:id="@+id/llOperate"
         android:layout_width="match_parent"
-        android:layout_marginLeft="@dimen/x50"
-        android:layout_marginRight="@dimen/x50"
-        android:layout_marginTop="@dimen/x50"
-        android:layout_marginBottom="@dimen/x40"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_height="wrap_content">
+        android:layout_height="75dp">
         <TextView
             android:id="@+id/tvRefuse"
             android:layout_width="0dp"
@@ -938,7 +938,7 @@
             android:layout_height="@dimen/x85"
             />
         <View
-            android:layout_width="@dimen/x20"
+            android:layout_width="15dp"
             android:layout_height="@dimen/x2"/>
 
         <TextView

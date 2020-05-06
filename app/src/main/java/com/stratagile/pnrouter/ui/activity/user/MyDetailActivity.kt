@@ -9,13 +9,12 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LogOutReq
-import com.stratagile.pnrouter.entity.MyFile
-import com.stratagile.pnrouter.entity.Sceen
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
+import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
 import com.stratagile.pnrouter.ui.activity.user.module.MyDetailModule
@@ -175,7 +174,7 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
                             this.stopService(intentTox)
                         }
                         ConstantValue.isWebsocketConnected = false
-                        onLogOutSuccess()
+                        onLogOutSuccess(routerEntity)
                         /*ConstantValue.isHasWebsocketInit = true
                         if(AppConfig.instance.messageReceiver != null)
                             AppConfig.instance.messageReceiver!!.close()
@@ -187,9 +186,17 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
 
 
     }
-    fun onLogOutSuccess() {
+    fun onLogOutSuccess(routerEntity: RouterEntity) {
         ConstantValue.loginReq = null
         ConstantValue.isWebsocketReConnect = false
+        routerEntity.lastCheck = false
+        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerEntity)
+        FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
+        val myRouter = MyRouter()
+        myRouter.setType(0)
+        myRouter.setRouterEntity(routerEntity)
+        LocalRouterUtils.updateLocalAssets(myRouter)
+
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(this, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
