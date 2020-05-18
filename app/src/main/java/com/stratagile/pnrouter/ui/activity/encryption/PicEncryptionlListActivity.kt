@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.LinearLayout
 import android.widget.Toast
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.OpenFileUtil
@@ -40,7 +42,9 @@ import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.PicItemEncryptionAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import kotlinx.android.synthetic.main.activity_select_friend.*
 import kotlinx.android.synthetic.main.encryption_file_list.*
+import kotlinx.android.synthetic.main.encryption_file_list.statusBar
 import kotlinx.android.synthetic.main.layout_encryption_file_list_item.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -87,7 +91,8 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
     }
     override fun initView() {
         setContentView(R.layout.encryption_file_list)
-
+        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddLocalEncryptionItemEvent(statusChange: UpdateAlbumEncryptionItemEvent) {
@@ -474,6 +479,7 @@ class PicEncryptionlListActivity : BaseActivity(), PicEncryptionlListContract.Vi
                         var aesKey = LibsodiumUtil.DecryptShareKey(chooseFileData!!.srcKey,ConstantValue.libsodiumpublicMiKey!!,ConstantValue.libsodiumprivateMiKey!!)
                         startIntent.putExtra("aesKey",aesKey)
                         startActivity(startIntent)
+                        FireBaseUtils.logEvent(this, FireBaseUtils.FIR_FLODER_UPLOAD_FILE)
                     }
 
                 }

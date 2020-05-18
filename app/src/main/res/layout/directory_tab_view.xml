@@ -5,7 +5,6 @@
     style="@style/FileInfos.Tab"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textStyle="bold"
-    android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_24dp"
-    android:drawableRight="@drawable/ic_keyboard_arrow_right_white_24dp"
+    android:drawableEnd="@mipmap/tabbar_arrow_right"
+    android:drawableRight="@mipmap/tabbar_arrow_right"
     android:gravity="center"/>

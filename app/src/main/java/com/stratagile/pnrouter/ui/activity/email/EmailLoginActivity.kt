@@ -37,6 +37,7 @@ import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
 import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
+import com.stratagile.pnrouter.utils.FireBaseUtils
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import kotlinx.android.synthetic.main.email_login_activity.*
@@ -229,6 +230,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View, PNRouterServ
                 return@setOnClickListener
             }
             showProgressDialog()
+            FireBaseUtils.logEvent(this, FireBaseUtils.FIR_EMAIL_CONFIG)
             Islands.circularProgress(this)
                     .setMessage(getString(R.string.loading))
                     .setCancelable(false)

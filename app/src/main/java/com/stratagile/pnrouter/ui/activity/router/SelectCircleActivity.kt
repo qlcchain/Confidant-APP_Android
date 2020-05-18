@@ -185,6 +185,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             LocalRouterUtils.updateList(needUpdate)
             var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+            KLog.i(autoLoginEntityStr)
             var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
             autoLoginEntity.userId = loginRsp.params!!.userId
             autoLoginEntity.userNickName = loginRsp.params!!.nickName
@@ -798,6 +799,17 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                     ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+
+                                                    var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+                                                    KLog.i(autoLoginEntityStr)
+                                                    var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+                                                    autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                    autoLoginEntity.routerId = ConstantValue.scanRouterId
+                                                    autoLoginEntity.routerSn = ConstantValue.scanRouterSN
+                                                    autoLoginEntity.port = ":18006"
+                                                    autoLoginEntity.filePort = ":18007"
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+
                                                     break;
                                                 }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
                                                 {
@@ -807,6 +819,16 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
+
+                                                    var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+                                                    KLog.i(autoLoginEntityStr)
+                                                    var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+                                                    autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                    autoLoginEntity.routerId = routerId
+                                                    autoLoginEntity.routerSn = userSn
+                                                    autoLoginEntity.port = ":18006"
+                                                    autoLoginEntity.filePort = ":18007"
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
                                                     break;
                                                 }
                                             }else{
@@ -818,6 +840,16 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                 ConstantValue.port= ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterMac = RouterMacStr
+
+                                                var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+                                                KLog.i(autoLoginEntityStr)
+                                                var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+                                                autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                autoLoginEntity.routerId = routerId
+                                                autoLoginEntity.routerSn = userSn
+                                                autoLoginEntity.port = ":18006"
+                                                autoLoginEntity.filePort = ":18007"
+                                                FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
                                                 break;
                                             }
 
@@ -1096,6 +1128,17 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
                                                     ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
+
+                                                    var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+                                                    KLog.i(autoLoginEntityStr)
+                                                    var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+                                                    autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                    autoLoginEntity.routerId = routerId
+                                                    autoLoginEntity.routerSn = userSn
+                                                    autoLoginEntity.port = ":"+httpData.serverPort.toString()
+                                                    autoLoginEntity.filePort = ":"+(httpData.serverPort +1).toString()
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                                     if(!autoLoginRouterSn.equals("") &&!autoLoginRouterSn.equals("no")&& !isStartLogin || autoLogin)

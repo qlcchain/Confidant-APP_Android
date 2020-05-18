@@ -50,6 +50,7 @@ import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu;
 import com.stratagile.pnrouter.entity.events.UnReadMessageCount;
 import com.stratagile.pnrouter.entity.events.UnReadMessageZero;
+import com.stratagile.pnrouter.utils.FireBaseUtils;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -95,6 +96,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser)
         {
+            KLog.i("设置Circle");
             EventBus.getDefault().post(new ChangFragmentMenu("Circle"));
         }
     }
@@ -143,6 +145,8 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
         errorItemContainer = (FrameLayout) getView().findViewById(R.id.fl_error_item);
         searchParent = (RelativeLayout) getView().findViewById(R.id.searchParent);
+        View emptyView = getView().findViewById(R.id.llEmpty);
+        conversationListView.setEmptyView(emptyView);
         if(searchParent != null)
         {
             searchParent.setVisibility(View.GONE);
@@ -179,6 +183,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                     LogUtil.addLog("点击会话层lastMessage:" + lastMessage.getEmMessage() + "_from:" + lastMessage.getEmMessage().getFrom() + "_to:" + lastMessage.getEmMessage().getTo(), "EaseConversationListFragment");
                     if(chatType.equals("Chat"))
                     {
+                        FireBaseUtils.logEvent(getActivity(), FireBaseUtils.FIR_CHAT_SEND_TEXT);
                         UserEntity friendInfo = null;
                         List<UserEntity> localFriendList = null;
                         if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
@@ -201,6 +206,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                         if (friendInfo != null)
                             listItemClickListener.onListItemClicked(friendInfo.getUserId(),chatType);
                     }else{
+                        FireBaseUtils.logEvent(getActivity(), FireBaseUtils.FIR_CHAT_SEND_GROUP_TEXT);
                         GroupEntity groupEntity = null;
                         List<GroupEntity> localGroupList = null;
                         localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(lastMessage.getEmMessage().getTo())).list();

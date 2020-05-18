@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/white"
+        android:visibility="gone"
+        android:gravity="center"
+        android:textColor="@color/color_333"
+        android:textSize="9sp" />
+
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="match_parent"

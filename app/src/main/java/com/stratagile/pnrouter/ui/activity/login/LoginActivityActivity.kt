@@ -68,6 +68,7 @@ import com.stratagile.pnrouter.entity.events.ToxStatusEvent
 import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.main.EncryptMsgActivity
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.login_activity2.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -467,6 +468,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                         }
                     }
+                    FireBaseUtils.logEvent(this, FireBaseUtils.FIR_REGISTER)
                 }
             }
             else -> {
@@ -555,8 +557,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         } else {
 
             var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+            KLog.i(autoLoginEntityStr)
             var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
             autoLoginEntity.userId = loginRsp.params!!.userId
+            autoLoginEntity.routerId = loginRsp.params!!.routerid
+            autoLoginEntity.routerSn = loginRsp.params!!.userSn
             autoLoginEntity.userNickName = loginRsp.params!!.nickName
             FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
 
@@ -1065,6 +1070,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             startActivity(Intent(this, EncryptMsgActivity::class.java))
             true
         }*/
+        statusBarColor = R.color.transparent
         if (ConstantValue.isGooglePlayServicesAvailable) {
             var gso = GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -1525,6 +1531,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
              toast(getString(R.string.please_type_your_password))
              return
          }*/
+        FireBaseUtils.logEvent(this, FireBaseUtils.FIR_LOGIN)
         if (ConstantValue.curreantNetworkType.equals("TOX")) {
 
             if (ConstantValue.isToxConnected) {
@@ -1771,7 +1778,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     }
 
                                     override fun onResponse(json: String) {
-
+                                        KLog.i("远程连接信息返回：" + json)
                                         val gson = GsonUtil.getIntGson()
                                         var httpData: HttpData? = null
                                         try {

@@ -40,11 +40,13 @@ import javax.inject.Inject
 class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
     var mDirectories = ArrayList<FileInfo>()
-    var  mSelectedDirectory: FileInfo? = null
+    var mSelectedDirectory: FileInfo? = null
 
     var mFragmentManager: FragmentManager? = null
 
     var mMyHandler: MyHandler? = null
+
+    var prePath = ""
 
     @Inject
     internal lateinit var mPresenter: FileChoosePresenter
@@ -52,12 +54,13 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
     //文件类型，0 代表所有文件，1 代表图片，2 代表文件,不包含图片
     var fileType = 0
 
-    @IntDef(value = [OPERATION_NONE, OPERATION_BACK_PRESSED, OPERATION_SELECTED_TAB, OPERATION_CLICK_ITEM])
+    @IntDef(value = [OPERATION_NONE, OPERATION_BACK_PRESSED, OPERATION_SELECTED_TAB, OPERATION_CLICK_ITEM, OPERATIONROOT_HAS_DIRECTOR])
     @Retention(RetentionPolicy.SOURCE)
     annotation class Operation
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        statusBarColor = R.color.headmainColor
         super.onCreate(savedInstanceState)
     }
 
@@ -70,8 +73,12 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
     override fun initData() {
         fileType = intent.getIntExtra("fileType", 0)
+        if (intent.hasExtra("prePath")) {
+            prePath = intent.getStringExtra("prePath")
+        }
         mMyHandler = MyHandler(this)
         mFragmentManager = supportFragmentManager
+//        showAllFile()
         showDirectory(null, OPERATIONROOT_NONE)
         tabLayout!!.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -86,20 +93,30 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
             }
         })
-        var fileInfo = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath+"/Download"))
-        showDirectory(fileInfo, OPERATION_CLICK_ITEM)
-    }
-   /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.choose_allfile, menu)
-        return true
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.chooseAllFile) {
-            //toast(getString(R.string.notsupported))
-            showDirectory(null, OPERATIONROOT_NONE)
+        if (!"".equals(prePath)) {
+            var list = prePath.split("/").filter { !it.equals("") }
+            KLog.i(list)
+            var handledPrePath = "/"
+            list.forEach {
+                handledPrePath += it
+                var fileInfo = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath + handledPrePath))
+                showDirectory(fileInfo, OPERATION_CLICK_ITEM)
+                handledPrePath += "/"
+            }
         }
-        return super.onOptionsItemSelected(item)
-    }*/
+    }
+
+    /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
+         menuInflater.inflate(R.menu.choose_allfile, menu)
+         return true
+     }
+     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+         if (item.itemId == R.id.chooseAllFile) {
+             //toast(getString(R.string.notsupported))
+             showDirectory(null, OPERATIONROOT_NONE)
+         }
+         return super.onOptionsItemSelected(item)
+     }*/
     override fun setupActivityComponent() {
         DaggerFileChooseComponent
                 .builder()
@@ -144,19 +161,18 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
             OPERATION_BACK_PRESSED -> showDirectoryWithBackPressed()
             OPERATION_SELECTED_TAB -> showDirectoryWithSelectedTab(fileInfo)
             OPERATION_CLICK_ITEM -> showDirectoryWithClickItem(fileInfo!!)
+            OPERATIONROOT_HAS_DIRECTOR -> showDirectoryWithDirector(fileInfo!!)
             OPERATIONROOT_NONE -> showDirectoryRootWithNone()
             else -> throw IllegalArgumentException(operation.toString() + " is invalid")
         }
     }
 
     fun showDirectoryWithNone() {
-        KLog.d("showDirectoryWithNone11111: " + (if (mSelectedDirectory == null) "null" else mSelectedDirectory!!.name) + ", size: " + mDirectories.size)
         if (mSelectedDirectory == null) {
-            var file = File(Environment.getExternalStorageDirectory().absolutePath+"/Download")
-            if(file.exists())
-            {
-                mSelectedDirectory = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath+"/Download"))
-            }else{
+            var file = File(Environment.getExternalStorageDirectory().absolutePath + "/Download")
+            if (file.exists()) {
+                mSelectedDirectory = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath + "/Download"))
+            } else {
                 mSelectedDirectory = FileInfo(Environment.getExternalStorageDirectory())
             }
             mDirectories.add(mSelectedDirectory!!)
@@ -167,9 +183,8 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         for (i in 0 until size) {
             val directory = mDirectories[i]
             var directoryname = directory.name
-            if(directoryname == "0")
-            {
-                directoryname = "root"
+            if (directoryname == "0") {
+                directoryname = "Files"
             }
             if (i == size - 1) {
 
@@ -204,15 +219,34 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         KLog.d("showDirectoryWithNone22222: " + (if (mSelectedDirectory == null) "null" else mSelectedDirectory!!.name) + ", size: " + mDirectories.size)
         mMyHandler!!.sendMessageDelayed(msg, 100L)
     }
+
+    var allFileList = mutableListOf<String>()
+    fun showAllFile() {
+        KLog.i("开始扫描所有文件")
+        var file = File(Environment.getExternalStorageDirectory().absolutePath)
+        allFileList = addFile(file.path)
+        KLog.i("结束扫描所有文件")
+        KLog.i("文件的数量为: " + allFileList.size)
+    }
+
+    fun addFile(path: String): MutableList<String> {
+        var fileList = mutableListOf<String>()
+        var file = File(path)
+        if (file.isDirectory) {
+            fileList.addAll(addFile(file.path))
+        } else {
+            fileList.add(path)
+        }
+        return fileList
+    }
+
     fun showDirectoryRootWithNone() {
-        //mDirectories.remove(mSelectedDirectory!!)
         KLog.d("showDirectoryWithNone11111: " + (if (mSelectedDirectory == null) "null" else mSelectedDirectory!!.name) + ", size: " + mDirectories.size)
         if (mSelectedDirectory == null) {
             var file = File(Environment.getExternalStorageDirectory().absolutePath)
-            if(file.exists())
-            {
+            if (file.exists()) {
                 mSelectedDirectory = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath))
-            }else{
+            } else {
                 mSelectedDirectory = FileInfo(Environment.getExternalStorageDirectory())
             }
             mDirectories.add(mSelectedDirectory!!)
@@ -224,9 +258,8 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         for (i in 0 until size) {
             val directory = mDirectories[i]
             var directoryname = directory.name
-            if(directoryname == "0")
-            {
-                directoryname = "root"
+            if (directoryname == "0") {
+                directoryname = "Files"
             }
             if (i == size - 1) {
                 tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
@@ -260,15 +293,16 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         KLog.d("showDirectoryWithNone22222: " + (if (mSelectedDirectory == null) "null" else mSelectedDirectory!!.name) + ", size: " + mDirectories.size)
         mMyHandler!!.sendMessageDelayed(msg, 100L)
         val len = mDirectories.size
-       /* for (i in 0 until len) {
-            val directory = mDirectories[i]
-            if(directory.name.equals("Download"))
-            {
-                mDirectories.remove(directory)
-                break;
-            }
-        }*/
+        /* for (i in 0 until len) {
+             val directory = mDirectories[i]
+             if(directory.name.equals("Download"))
+             {
+                 mDirectories.remove(directory)
+                 break;
+             }
+         }*/
     }
+
     fun showDirectoryWithBackPressed() {
         Preconditions.checkNotNull(mSelectedDirectory!!, "mSelectedDirectory == null")
         Preconditions.checkArgument(mDirectories.contains(mSelectedDirectory!!),
@@ -293,10 +327,11 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
                 ft.attach(f)
             }
             ft.commit()
-
-            val msg = mMyHandler!!.obtainMessage()
-            msg.arg1 = previousPosition
-            mMyHandler!!.sendMessageDelayed(msg, 100L)
+            mDirectories.removeAt(selectedPosition)
+            tabLayout.removeTabAt(selectedPosition)
+//            val msg = mMyHandler!!.obtainMessage()
+//            msg.arg1 = previousPosition
+//            mMyHandler!!.sendMessageDelayed(msg, 100L)
         }
     }
 
@@ -368,9 +403,82 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
             }
             mDirectories.add(insertedPosition, fileInfo)
             var fileInfoName = fileInfo.name
-            if(fileInfoName == "0")
-            {
-                fileInfoName = "root"
+            if (fileInfoName == "0") {
+                fileInfoName = "Files"
+            }
+            tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
+                    .setText(fileInfoName).setTag(fileInfo), insertedPosition)
+        } else {
+            val position = mDirectories.indexOf(fileInfo)
+            if (position != mDirectories.size - 1) {
+                throw IllegalStateException(position.toString() + " is not last one")
+            }
+            val lastTab = tabLayout!!.getTabAt(position)
+                    ?: throw NullPointerException("lastTab == null")
+            lastTab.customView = null
+            lastTab.setCustomView(R.layout.directory_tab_view_without_arrow)
+        }
+
+        var f = mFragmentManager!!.findFragmentByTag(fileInfo.absolutePath)
+        if (f == null) {
+            f = FileInfosFragment.newInstance(fileInfo.absolutePath, fileType)
+            ft.add(R.id.contentFrame, f!!, fileInfo.absolutePath)
+        } else {
+            ft.attach(f)
+        }
+        mSelectedDirectory = fileInfo
+        ft.commit()
+
+        val msg = mMyHandler!!.obtainMessage()
+        msg.arg1 = mDirectories.indexOf(fileInfo)
+        mMyHandler!!.sendMessageDelayed(msg, 100L)
+    }
+    fun showDirectoryWithDirector(fileInfo: FileInfo) {
+        Preconditions.checkNotNull(fileInfo, "fileInfo == null")
+        // 如果用户当前选中的文件夹已经添加到 mDirectories 中
+        val selectedPath = fileInfo.absolutePath
+        val ft = mFragmentManager!!.beginTransaction()
+        val iterator = mDirectories.iterator()
+        while (iterator.hasNext()) {
+            val child = iterator.next()
+            val childPath = child.absolutePath
+            if (!selectedPath.contains(childPath)) {
+                val f = mFragmentManager!!.findFragmentByTag(childPath)
+                if (f != null) {
+                    ft.remove(f)
+                }
+                iterator.remove()
+                val tabPosition = getPositionForTab(child)
+                if (tabPosition != -1) {
+                    tabLayout!!.removeTabAt(tabPosition)
+                }
+            }
+        }
+        if (mDirectories.contains(mSelectedDirectory)) {
+            val f = mFragmentManager!!.findFragmentByTag(mSelectedDirectory!!.absolutePath)
+            if (f != null && !f.isDetached) {
+                ft.detach(f)
+            }
+        } else {
+            val f = mFragmentManager!!.findFragmentByTag(mSelectedDirectory!!.absolutePath)
+            if (f != null) {
+                ft.remove(f)
+            }
+        }
+//        var prePathList = prePath.sub
+        if (!mDirectories.contains(fileInfo)) {
+            val insertedPosition = mDirectories.size
+            if (insertedPosition > 0) {
+                val lastPosition = insertedPosition - 1
+                val lastTab = tabLayout!!.getTabAt(lastPosition)
+                        ?: throw NullPointerException("lastTab == null")
+                lastTab.customView = null
+                lastTab.setCustomView(R.layout.directory_tab_view)
+            }
+            mDirectories.add(insertedPosition, fileInfo)
+            var fileInfoName = fileInfo.name
+            if (fileInfoName == "0") {
+                fileInfoName = "Files"
             }
             tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
                     .setText(fileInfoName).setTag(fileInfo), insertedPosition)
@@ -437,7 +545,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
     }
 
-    class MyHandler  constructor(fileInfosActivity: FileChooseActivity) : Handler() {
+    class MyHandler constructor(fileInfosActivity: FileChooseActivity) : Handler() {
 
         val mReference: WeakReference<FileChooseActivity>
 
@@ -467,12 +575,13 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
     companion object {
 
-        open   val OPERATION_NONE = 0
-        open   val OPERATION_BACK_PRESSED = 1
-        open  val OPERATION_SELECTED_TAB = 2
-        open  val OPERATION_CLICK_ITEM = 3
-        open   val OPERATIONROOT_NONE = 4
-        open   val REQUEST_CODE_OPEN_FILE = 10
+        open val OPERATION_NONE = 0
+        open val OPERATION_BACK_PRESSED = 1
+        open val OPERATION_SELECTED_TAB = 2
+        open val OPERATION_CLICK_ITEM = 3
+        open val OPERATIONROOT_NONE = 4
+        open val OPERATIONROOT_HAS_DIRECTOR = 5
+        open val REQUEST_CODE_OPEN_FILE = 10
     }
 
 }

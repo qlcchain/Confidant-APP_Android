@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.encryption.module.PicMenuLocalModule
 import com.stratagile.pnrouter.ui.activity.encryption.presenter.PicMenuLocalPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.PicMenuEncryptionAdapter
 import com.stratagile.pnrouter.utils.DeleteUtils
+import com.stratagile.pnrouter.utils.FireBaseUtils
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.picencry_menu_list.*
@@ -123,6 +124,7 @@ class PicMenuLocalFragment : BaseFragment(), PicMenuLocalContract.View {
         {
             PopWindowUtil.showCreateFolderWindow(parent, addMenuItem, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
+                    FireBaseUtils.logEvent(activity!!, FireBaseUtils.FIR_FLODER_CREATE)
                     var map = obj as HashMap<String,String>
                     var foldername = map.get("foldername") as String
                     var localFileMenu = LocalFileMenu();

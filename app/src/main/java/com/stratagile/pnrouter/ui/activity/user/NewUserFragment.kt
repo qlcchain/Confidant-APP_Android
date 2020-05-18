@@ -190,14 +190,21 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
 
                         }
                         handleUser = newFriendListAdapter!!.getItem(position)
-                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                        var it = FriendEntity()
+                        it.friendLocalStatus = 7
+                        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(handleUser!!.userId)).list()
+                        if (localFriendStatusList.size > 0)
+                            it = localFriendStatusList.get(0)
+                        if (it.friendLocalStatus == 3) {
+                            var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
-                        friendStatus = 0
+                            friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                        if (newFriendListAdapter!!.getItem(position)!!.signPublicKey != null) {
-                            UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.signPublicKey)
-                            showProgressDialog()
+                            if (newFriendListAdapter!!.getItem(position)!!.signPublicKey != null) {
+                                UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.signPublicKey)
+                                showProgressDialog()
+                            }
                         }
                     }
                     R.id.tvRefuse -> {

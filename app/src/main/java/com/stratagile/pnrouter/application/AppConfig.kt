@@ -23,8 +23,9 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.gmail.GmailRequestInitializer
 import com.google.api.services.gmail.GmailScopes
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 import com.huawei.hms.aaid.HmsInstanceId
-import com.huawei.hms.push.HmsMessaging
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
@@ -129,6 +130,8 @@ class AppConfig : MultiDexApplication() {
         {
             CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
         }
+        FirebaseApp.initializeApp(this)
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true
         DotLog.init()
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
@@ -143,8 +146,12 @@ class AppConfig : MultiDexApplication() {
         if (VersionUtil.getDeviceBrand() == 3) {
             KLog.i("华为推送初始化")
             thread {
-                HmsInstanceId.getInstance(this).deleteToken("102030623", "HCM")
-                HmsInstanceId.getInstance(this).getToken("102030623", "HCM")
+                try {
+                    //                HmsInstanceId.getInstance(this).deleteToken("102030623", "HCM")
+                    HmsInstanceId.getInstance(this).getToken("102030623", "HCM")
+                }catch (e : Exception) {
+                    e.printStackTrace()
+                }
             }
         }else{
             initMiPush()

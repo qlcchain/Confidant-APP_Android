@@ -23,6 +23,10 @@
         <attr name="textColor2" format="reference"/>
         <attr name="showNext" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="FolderSelectTextView">
+        <attr name="foldertext" format="string"/>
+        <attr name="foldersrc" format="reference"/>
+    </declare-styleable>
     <declare-styleable name="DetailView">
         <attr name="text1" format="string"/>
         <attr name="textSize1" format="dimension"/>
@@ -69,6 +73,7 @@
         <attr name="color_tick" format="color"/>
         <attr name="color_checked" format="color"/>
         <attr name="color_unchecked" format="color"/>
+        <attr name="app_clickable" format="boolean"/>
         <attr name="color_unchecked_stroke" format="color"/>
     </declare-styleable>
     <declare-styleable name="MenuItemView">

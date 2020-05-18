@@ -372,6 +372,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         AppConfig.instance.messageReceiver?.bakAddrUserNumCallback = this
         title.text = getString(R.string.Album_Contacts)
         selectNodeBtn.setOnClickListener {
+            FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CONTACTS_SYNC)
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
             menuArray = arrayListOf<String>(getString(R.string.Incremental_updating),getString(R.string.Coverage_update))
@@ -456,7 +457,7 @@ class ContactsEncryptionActivity : BaseActivity(), ContactsEncryptionContract.Vi
         }
         recoveryBtn.setOnClickListener {
 
-
+            FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CONTACTS_RECOVER)
             var menuArray = arrayListOf<String>()
             var iconArray = arrayListOf<String>()
             menuArray = arrayListOf<String>(getString(R.string.Recover_merge),getString(R.string.Recover_replace))

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="71dp"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="33dp"
+            android:layout_height="33dp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="1dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvFileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:text="Google project development.zip"
+                android:textColor="@color/main_color"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tvFileSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="13sp"
+                android:textColor="@color/color_9496a1"
+                android:text="244k" />
+        </LinearLayout>
+        <com.stratagile.pnrouter.view.SmoothCheckBox
+            android:visibility="gone"
+            android:id="@+id/checkBox"
+            app:color_unchecked_stroke="@color/main_color"
+            app:color_tick="@color/white"
+            app:app_clickable="false"
+            app:color_checked="@color/color_6646f7"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/viewLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_f2f2f2"/>
+
+</LinearLayout>

@@ -35,8 +35,8 @@ android {
         applicationId "com.stratagile.pnrouter"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode getSelfDefinedVersion("code") + 1
-        versionName "1.3.5"
+        versionCode getSelfDefinedVersion("code") + 2
+        versionName "1.3.6"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

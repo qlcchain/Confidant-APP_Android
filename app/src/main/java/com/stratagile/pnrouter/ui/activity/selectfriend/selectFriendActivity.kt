@@ -1,9 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.selectfriend
 
+import android.app.Activity
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.widget.LinearLayout
 import butterknife.ButterKnife
 import com.google.gson.Gson
 import com.hyphenate.chat.*
@@ -63,26 +65,26 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     }
 
     override fun initView() {
-        //        setContentView(R.layout.activity_selectFriend);
-        ButterKnife.bind(this)
-        setToorBar(false)
-        fromId = intent.getStringExtra("fromId")
-        message = intent.getParcelableExtra("message")
-        //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
         tvTitle.text = getString(R.string.Contacts)
-//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-//        statusBar.setLayoutParams(llp)
+        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp)
+
+        fromId = intent.getStringExtra("fromId")
+        if (intent.hasExtra("filePath")) {
+            message = EMMessage.createFileSendMessage(intent.getStringExtra("filePath"), "123456")
+        } else {
+            message = intent.getParcelableExtra("message")
+        }
     }
 
     override fun initData() {
-        EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
         fragment = ContactAndGroupFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
         bundle.putString("fromId", fromId)
-        bundle.putParcelable("message",message)
+//        bundle.putParcelable("message",message)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
@@ -1040,11 +1042,12 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             //toast(R.string.hasbeensent)
 
         }
+        setResult(Activity.RESULT_OK)
         finish()
     }
     override fun onDestroy() {
         super.onDestroy()
-        //EventBus.getDefault().unregister(this)
+        EventBus.getDefault().unregister(this)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun selectFriendChange(selectFriendChange: SelectFriendChange) {

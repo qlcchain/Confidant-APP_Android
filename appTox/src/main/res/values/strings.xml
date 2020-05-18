@@ -343,7 +343,7 @@
     <string name="waitamoment">Generation failure</string>
     <string name="Account">Account</string>
     <string name="Password">Password</string>
-    <string name="PasswordHint">Passwork Hint:</string>
+    <string name="PasswordHint">Password Hint:</string>
     <string name="passwordSetTips">The password is set by the sender to encrypt this email.</string>
 
 </resources>

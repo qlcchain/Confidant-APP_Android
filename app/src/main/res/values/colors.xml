@@ -71,6 +71,9 @@
     <color name="FFCCCCCC">#FFCCCCCC</color>
     <color name="material_red_a700">#d50000</color>
     <color name="grey">#dcdcdc</color>
+    <color name="color_9496a1">#9496A1</color>
+    <color name="color_6646f7">#6646F7</color>
+    <color name="color_d0021b">#d0021b</color>
 
 
 </resources>

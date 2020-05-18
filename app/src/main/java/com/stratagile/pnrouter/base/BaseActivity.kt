@@ -45,7 +45,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
     var mainColor = R.color.white
-    var statusBarColor = R.color.white
+    var statusBarColor = R.color.transparent
     lateinit var progressDialog: RxDialogLoading
     lateinit var title: TextView
     val point = Point()
@@ -205,11 +205,12 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         } else {
             StatusBarCompat.cancelLightStatusBar(this)
         }
+        toolbar!!.setBackgroundColor(resources.getColor(statusBarColor))
+        StatusBarUtil.setColor(this, resources.getColor(statusBarColor), 0)
         relativeLayout_root.layoutParams = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) + UIUtils.dip2px(42f, this))
         if (isEditActivity) {
             relativeLayout_root.layoutParams = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(42f, this))
             view.visibility = View.GONE
-            StatusBarUtil.setColor(this, resources.getColor(statusBarColor), 0)
         }
     }
 
