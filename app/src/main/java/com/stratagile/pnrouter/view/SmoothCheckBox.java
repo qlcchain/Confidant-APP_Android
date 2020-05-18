@@ -67,6 +67,7 @@ public class SmoothCheckBox extends View implements Checkable {
     private int mCheckedColor, mUnCheckedColor, mFloorColor, mFloorUnCheckedColor;
 
     private boolean mChecked;
+    private boolean clickable = true;
     private boolean mTickDrawing;
     private OnCheckedChangeListener mListener;
 
@@ -94,6 +95,7 @@ public class SmoothCheckBox extends View implements Checkable {
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.SmoothCheckBox);
         int tickColor = ta.getColor(R.styleable.SmoothCheckBox_color_tick, COLOR_TICK);
         mAnimDuration = ta.getInt(R.styleable.SmoothCheckBox_duration, DEF_ANIM_DURATION);
+        clickable = ta.getBoolean(R.styleable.SmoothCheckBox_app_clickable, true);
         mFloorColor = ta.getColor(R.styleable.SmoothCheckBox_color_unchecked_stroke, COLOR_FLOOR_UNCHECKED);
         mCheckedColor = ta.getColor(R.styleable.SmoothCheckBox_color_checked, COLOR_CHECKED);
         mUnCheckedColor = ta.getColor(R.styleable.SmoothCheckBox_color_unchecked, COLOR_UNCHECKED);
@@ -120,20 +122,21 @@ public class SmoothCheckBox extends View implements Checkable {
         mTickPoints[0] = new Point();
         mTickPoints[1] = new Point();
         mTickPoints[2] = new Point();
-
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggle();
-                mTickDrawing = false;
-                mDrewDistance = 0;
-                if (isChecked()) {
-                    startCheckedAnimation();
-                } else {
-                    startUnCheckedAnimation();
+        if (clickable) {
+            setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggle();
+                    mTickDrawing = false;
+                    mDrewDistance = 0;
+                    if (isChecked()) {
+                        startCheckedAnimation();
+                    } else {
+                        startUnCheckedAnimation();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override

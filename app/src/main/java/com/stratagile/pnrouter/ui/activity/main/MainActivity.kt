@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.app.Notification.BADGE_ICON_SMALL
@@ -14,8 +15,7 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.location.Location
-import android.location.LocationManager
+import android.location.*
 import android.media.Image
 import android.media.ImageReader
 import android.media.MediaPlayer
@@ -24,9 +24,11 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.*
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
+import android.support.v4.content.PermissionChecker
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
@@ -36,14 +38,17 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
 import cn.jpush.android.api.JPushInterface
+import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.floatball.FloatPermissionManager
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
-import com.huawei.hms.aaid.HmsInstanceId
-import com.huawei.hms.common.internal.HmsClient
+import com.google.gson.reflect.TypeToken
 import com.huxq17.floatball.libarary.FloatBallManager
 import com.huxq17.floatball.libarary.floatball.FloatBallCfg
 import com.huxq17.floatball.libarary.menu.FloatMenuCfg
@@ -58,17 +63,13 @@ import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.hyphenate.util.DensityUtil
-import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
-import com.pawegio.kandroid.notificationManager
-import com.pawegio.kandroid.runDelayed
-import com.pawegio.kandroid.setHeight
-import com.pawegio.kandroid.toast
+import com.pawegio.kandroid.*
 import com.smailnet.eamil.Callback.GmailAuthCallback
 import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailReceiveClient
@@ -127,10 +128,8 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.mipush.sdk.MiPushClient
 import kotlinx.android.synthetic.main.activity_file_manager.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_menu.*
-import kotlinx.android.synthetic.main.layout_add.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -140,6 +139,9 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
+import qlc.mng.AccountMng
+import qlc.rpc.AccountRpc
+import qlc.utils.Helper
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -242,9 +244,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var loginBack = false
     var isFromScan = false
     var isFromScanAdmim = false
+
     //是否点击了登陆按钮
     //是否点击了登陆按钮
     var isClickLogin = false
+
     //是否正在登陆
     var isStartLogin = false
     var stopTox = false;
@@ -260,6 +264,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var hasFinger = false
     var name: Long = 0;
     var emaiConfigChooseAdapter: EmaiConfigChooseAdapter? = null
+
+    //是否在节点页面
+    var isNodePage = true
 
     private var exitTime: Long = 0
     lateinit var viewModel: MainViewModel
@@ -474,6 +481,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             autoLoginEntity.userId = loginRsp.params!!.userId
             autoLoginEntity.userNickName = loginRsp.params!!.nickName
             FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
+            KLog.i(Gson().toJson(autoLoginEntity))
             islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
@@ -497,6 +505,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
+            runOnUiThread {
+                if (isNodePage) {
+                    rootName.text = newRouterEntity.routerName
+                }
+            }
             if (loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
@@ -554,11 +567,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //                closeProgressDialog()
 //                KLog.i("333")
 //            }
-            if (viewPager.currentItem == 0) {
-                EventBus.getDefault().post(ChangFragmentMenu("Circle"))
-            } else {
-                EventBus.getDefault().post(ChangFragmentMenu("Email"))
-            }
             LogUtil.addLog("loginBack:" + "f", "MainActivity")
             loginOk = true
             isToxLoginOverTime = false
@@ -813,7 +821,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     private fun startLogin() {
-
+        KLog.i("开始登陆的routerId：" + routerId)
         isloginOutTime = false
         isStartLogin = true
         if (!ConstantValue.lastNetworkType.equals("")) {
@@ -2754,6 +2762,61 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 unread_count.visibility = View.VISIBLE
                 unread_count.text = hasUnReadMsgCount.toString()
             }
+            EventBus.getDefault().post(BadgeUnRead(hasUnReadMsgCount))
+        }
+    }
+
+    private val LOCATION_CODE = 1
+    private val lm //【位置管理】
+            : LocationManager? = null
+    private var aa: String = ""
+    var geocoder //获取并解析位置用
+            : Geocoder? = null
+    private fun getLocation() {
+        // 获取位置管理服务
+        val serviceName = Context.LOCATION_SERVICE
+        val locationManager = this.getSystemService(serviceName) as LocationManager
+        // 查找到服务信息
+        val criteria = Criteria()
+        criteria.accuracy = Criteria.ACCURACY_FINE // 高精度
+        criteria.isAltitudeRequired = false
+        criteria.isBearingRequired = false
+        criteria.isCostAllowed = true
+        criteria.powerRequirement = Criteria.POWER_LOW // 低功耗
+        val provider = locationManager.getBestProvider(criteria, true) // 获取GPS信息
+        /**这段代码不需要深究，是locationManager.getLastKnownLocation(provider)自动生成的，不加会出错 */
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PermissionChecker.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionChecker.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            // ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //           int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        val location = locationManager.getLastKnownLocation(provider) // 通过GPS获取位置
+        updateLocation(location)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 1f, locationListener)
+    }
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {}
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
+
+    private fun updateLocation(location: Location?) {
+        if (location != null) {
+            val latitude = location.latitude
+            val longitude = location.longitude
+            Toast.makeText(this, "经度" + latitude + "纬度" + longitude, Toast.LENGTH_SHORT).show()
+            aa = "经度" + latitude + "纬度" + longitude + "**" + aa
+            KLog.i(aa)
+        } else {
+            Toast.makeText(this, "无法获取到位置信息", Toast.LENGTH_SHORT).show()
+            KLog.i("获取位置失败")
         }
     }
 
@@ -2903,12 +2966,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToMy() {
-//        KLog.i("删除3893")
-//        var list = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
+//        var list = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.queryBuilder().where(EmailMessageEntityDao.Properties.Account.eq(AppConfig.instance.emailConfig().account)).list()
 //        KLog.i("重置数据库")
-//        list.sortByDescending { it.msgId }
+//        KLog.i(AppConfig.instance.emailConfig().account)
+//        KLog.i(list.size)
+//        list.sortByDescending { it.msgId.toInt() }
 //        list.forEachIndexed { index, emailMessageEntity ->
-//            if (index <= 30)
+////            if (index <= 13)
 //            AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao!!.delete(emailMessageEntity)
 //        }
         StatusBarCompat.cancelLightStatusBar(this)
@@ -3295,9 +3359,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp + ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
 //                                                    if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no") && !isStartLogin || autoLogin) {
-                                                        runOnUiThread {
-                                                            startLogin()
-                                                        }
+                                                    runOnUiThread {
+                                                        startLogin()
+                                                    }
 
 //                                                    }
                                                     Thread.currentThread().interrupt() //方法调用终止线程
@@ -3429,97 +3493,400 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        if (intent.dataString != null) {
+            var dataString = intent.dataString
+            KLog.i(dataString)
+            var filePath = ""
+            var uri = Uri.parse(dataString)
+            if (dataString.contains("fileprovider")) {
+                filePath = FileShareUtil.getFPUriToPath(this, uri)
+            } else if (dataString.contains("content://media")){
+                filePath = FileShareUtil.getFilePathFromContentUri(uri, this)
+            } else {
+                var uri = Uri.parse(dataString)
+                filePath = uri.path
+            }
+            KLog.i(filePath)
+            var shareIntent = Intent(this, ShareFileActivity::class.java)
+            shareIntent.putExtra("mineType", intent.type)
+            shareIntent.putExtra("filePath", filePath)
+            startActivity(shareIntent)
+            overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out)
+            return
+        }
+    }
+
+    fun handlerAutoLogin() {
+        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+        try {
+            AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
+            AppConfig.instance.messageReceiver!!.bakMailsNumCallback = this
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        routerList.forEach {
+            if (adminUserSn != null && !adminUserSn.equals("")) {
+                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                if (it.userSn.equals(adminUserSn)) {
+                    routerId = it.routerId
+                    userSn = it.userSn
+                    userId = it.userId
+                    username = name!!
+                    if (it.dataFileVersion == null) {
+                        dataFileVersion = 0
+                    } else {
+                        dataFileVersion = it.dataFileVersion
+                    }
+                }
+            } else {
+                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                if (it.lastCheck) {
+                    routerId = it.routerId
+                    userSn = it.userSn
+                    userId = it.userId
+                    username = name!!
+                    if (it.dataFileVersion == null) {
+                        dataFileVersion = 0
+                    } else {
+                        dataFileVersion = it.dataFileVersion
+                    }
+                }
+
+            }
+
+        }
+
+        isClickLogin = true
+//            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
+        var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
+        KLog.i(autoLoginEntityStr)
+        var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
+        if (autoLoginEntity.userId == null || "".equals(autoLoginEntity.routerId)) {
+            autoLoginEntityStr = ""
+        }
+        if ("".equals(autoLoginEntityStr)) {
+            getServer(routerId, userSn, true, true)
+        } else {
+            routerId = autoLoginEntity.routerId
+            userSn = autoLoginEntity.routerSn
+            userId = autoLoginEntity.userId
+
+            ConstantValue.curreantNetworkType = if (autoLoginEntity.loginType == 1) {
+                "WIFI"
+            } else {
+                ""
+            }
+            ConstantValue.currentRouterIp = autoLoginEntity.routerIp
+            ConstantValue.port = autoLoginEntity.port
+            ConstantValue.filePort = autoLoginEntity.filePort
+            ConstantValue.currentRouterId = autoLoginEntity.routerId
+            if (autoLoginEntity.localCurrentRouterIp != null) {
+                ConstantValue.localCurrentRouterIp = autoLoginEntity.localCurrentRouterIp
+            }
+            ConstantValue.currentRouterSN = autoLoginEntity.routerSn
+            ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
+
+            var userEntity = UserEntity()
+            userEntity.userId = autoLoginEntity.userId
+            userEntity.nickName = autoLoginEntity.userNickName
+            UserDataManger.myUserData = userEntity
+            KLog.i(autoLoginEntityStr)
+            startLogin()
+        }
+    }
+
     override fun initData() {
+        KLog.i(this)
+        getLocation()
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        reConnect.visibility = View.GONE
+        if (intent.dataString != null) {
+            if ("".equals(SpUtil.getString(this, ConstantValue.routerId, ""))) {
+                startActivity(Intent(this, SplashActivity::class.java))
+                finish()
+                return
+            }
+            AppConfig.instance.isOpenSplashActivity = true
+            ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
+            ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
+            DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/temp/")//删除外部查看文件的临时路径
+            FileUtil.init()
+            PathUtils.getInstance().initDirs("", "", AppConfig.instance)
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionAlbumPath().toString() + "/" + "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionWeChatPath().toString() + "/" + "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionAlbumNodePath().toString() + "/" + "temp")//删除外部查看文件的临时路径
+            DeleteUtils.deleteDirectory(PathUtils.getInstance().getEncryptionWeChatNodePath().toString() + "/" + "temp")//删除外部查看文件的临时路径
+            if (ConstantValue.encryptionType.equals("0")) {
+                ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
+                ConstantValue.publicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.publicRASSp, "")
+                if (ConstantValue.privateRAS.equals("") && ConstantValue.publicRAS.equals("")) {
+                    val gson = Gson()
+                    var rsaData = FileUtil.readKeyData("data");
+                    val localRSAArrayList: java.util.ArrayList<RSAData>
+                    if (rsaData.equals("") && false) {
+                        val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
+                        val aahh = KeyPair!!.private.format
+                        val strBase64Private: String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
+                        val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
+                        ConstantValue.privateRAS = strBase64Private
+                        ConstantValue.publicRAS = strBase64Public
+                        SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                        localRSAArrayList = java.util.ArrayList()
+                        var RSAData: RSAData = RSAData()
+                        RSAData.privateKey = strBase64Private
+                        RSAData.publicKey = strBase64Public
+                        localRSAArrayList.add(RSAData)
+                        FileUtil.saveKeyData(gson.toJson(localRSAArrayList), "data")
+                    } else {
+                        var rsaStr = rsaData
+                        if (rsaStr != "") {
+                            localRSAArrayList = gson.fromJson<java.util.ArrayList<RSAData>>(rsaStr, object : TypeToken<java.util.ArrayList<RSAData>>() {
+
+                            }.type)
+                            if (localRSAArrayList.size > 0) {
+                                ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
+                                ConstantValue.publicRAS = localRSAArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                            }
+                        }
+                    }
+                }
+            } else
+            {
+                ConstantValue.libsodiumprivateSignKey = ""
+                ConstantValue.libsodiumpublicSignKey = ""
+                ConstantValue.libsodiumprivateMiKey = ""
+                ConstantValue.libsodiumpublicMiKey = ""
+                ConstantValue.localUserName = ""
+                if (ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals("")) {
+                    val gson = Gson()
+                    var signData = FileUtil.readKeyData("libsodiumdata_sign")
+                    var miData = FileUtil.readKeyData("libsodiumdata_mi")
+                    val localSignArrayList: java.util.ArrayList<CryptoBoxKeypair>
+                    val localMiArrayList: java.util.ArrayList<CryptoBoxKeypair>
+                    if (signData.equals("") && false)//不用在这里创建
+                    {
+                        var dst_public_SignKey = ByteArray(32)
+                        var dst_private_Signkey = ByteArray(64)
+                        var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey, dst_private_Signkey)
+
+                        val strSignPrivate: String = RxEncodeTool.base64Encode2String(dst_private_Signkey)
+                        val strSignPublic = RxEncodeTool.base64Encode2String(dst_public_SignKey)
+                        ConstantValue.libsodiumprivateSignKey = strSignPrivate
+                        ConstantValue.libsodiumpublicSignKey = strSignPublic
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                        localSignArrayList = java.util.ArrayList()
+                        var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
+                        SignData.privateKey = strSignPrivate
+                        SignData.publicKey = strSignPublic
+                        localSignArrayList.add(SignData)
+                        FileUtil.saveKeyData(gson.toJson(localSignArrayList), "libsodiumdata_sign")
+
+
+                        var dst_public_MiKey = ByteArray(32)
+                        var dst_private_Mikey = ByteArray(32)
+                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey, dst_public_SignKey)
+                        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey, dst_private_Signkey)
+
+                        val strMiPrivate: String = RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                        val strMiPublic = RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                        ConstantValue.libsodiumprivateMiKey = strMiPrivate
+                        ConstantValue.libsodiumpublicMiKey = strMiPublic
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                        localMiArrayList = java.util.ArrayList()
+                        var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
+                        RSAData.privateKey = strMiPrivate
+                        RSAData.publicKey = strMiPublic
+                        localMiArrayList.add(RSAData)
+                        FileUtil.saveKeyData(gson.toJson(localMiArrayList), "libsodiumdata_mi")
+
+
+                    } else {
+                        var signStr = signData
+                        if (signStr != "") {
+                            localSignArrayList = gson.fromJson<java.util.ArrayList<CryptoBoxKeypair>>(signStr, object : TypeToken<java.util.ArrayList<CryptoBoxKeypair>>() {
+
+                            }.type)
+                            if (localSignArrayList.size > 0) {
+                                ConstantValue.libsodiumprivateSignKey = localSignArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicSignKey = localSignArrayList.get(0).publicKey
+                                ConstantValue.localUserName = localSignArrayList.get(0).userName
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
+                            }
+                        }
+
+                        var miStr = miData
+                        if (miStr != "") {
+                            localMiArrayList = gson.fromJson<java.util.ArrayList<CryptoBoxKeypair>>(miStr, object : TypeToken<java.util.ArrayList<CryptoBoxKeypair>>() {
+
+                            }.type)
+                            if (localMiArrayList.size > 0) {
+                                ConstantValue.libsodiumprivateMiKey = localMiArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicMiKey = localMiArrayList.get(0).publicKey
+                                ConstantValue.localUserName = localMiArrayList.get(0).userName
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
+                            }
+                        }
+                        if (ConstantValue.libsodiumprivateSignKey != "") {
+                            var seed = Helper.byteToHexString(RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)).toLowerCase();
+                            seed = seed.substring(0, 64)
+                            try {
+                                var jsonObject = AccountMng.keyPairFromSeed(Helper.hexStringToBytes(seed), 0);
+                                var priKey = jsonObject.getString("privKey");
+                                var pubKey = jsonObject.getString("pubKey");
+                                KLog.i(jsonObject.toJSONString());
+                                var jsonArray = JSONArray()
+                                jsonArray.add(seed);
+                                var mnemonics = AccountRpc.seedToMnemonics(jsonArray);
+                                KLog.i(mnemonics);
+                                var address = QlcUtil.publicToAddress(pubKey).toLowerCase();
+                                var qlcAccountEntityList = AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.queryBuilder().where(QLCAccountDao.Properties.Address.eq(address)).list()
+                                if (qlcAccountEntityList == null || qlcAccountEntityList.size == 0) {
+                                    var qlcAccount = QLCAccount();
+                                    qlcAccount.setPrivKey(priKey.toLowerCase());
+                                    qlcAccount.setPubKey(pubKey);
+                                    qlcAccount.setAddress(address);
+                                    qlcAccount.setMnemonic(mnemonics);
+                                    qlcAccount.setIsCurrent(true);
+                                    qlcAccount.setAccountName("confidant");
+                                    qlcAccount.setSeed(seed);
+                                    qlcAccount.setIsAccountSeed(true);
+                                    qlcAccount.setWalletIndex(0);
+                                    AppConfig.instance.mDaoMaster!!.newSession().qlcAccountDao.insert(qlcAccount);
+                                }
+                            } catch (e: Exception) {
+                                //closeProgressDialog();
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                }
+            }
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+            LocalRouterUtils.inspectionLocalData();
+            LocalRouterUtils.updateGreanDaoFromLocal()
+            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/"//删除聊天的临时加密文件
+            val savedNodeFile = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Nodefile.json"
+            RxFileTool.deleteFilesInDir(tempFile)
+            RxFileTool.deleteNodefile(savedNodeFile)
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if (userId == null || userId.equals("")) {
+                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/RouterList/fileData3.json")
+            }
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "image_defalut_bg.xml", 1)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "image_defalut_fileForward_bg.xml", 1)
+            FileUtil.drawableToFile(AppConfig.instance, R.mipmap.ic_upload_photo, "image_defalut_bg.png", 1)
+            FileUtil.drawableToFile(AppConfig.instance, R.mipmap.doc_img_default, "image_defalut_fileForward_bg.png", 1)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "ease_default_amr.amr", 2)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "ease_default_vedio.mp4", 3)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "ease_default_fileForward_vedio.mp4", 3)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "file_downloading.*", 5)
+            FileUtil.drawableToFile(AppConfig.instance, R.drawable.image_defalut_bg, "file_fileForward.*", 5)
+
+
+            var needCreate = false;
+            var picMenuList = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("0")).list()
+            if (picMenuList == null || picMenuList.size == 0) {
+                needCreate = true
+            }
+            var defaultfolder = PathUtils.getInstance().getEncryptionAlbumPath().toString() + "/defaultfolder"
+            var defaultfolderFile = File(defaultfolder)
+            if (needCreate && !defaultfolderFile.exists()) {
+                defaultfolderFile.mkdirs();
+                var localFileMenu = LocalFileMenu();
+                localFileMenu.creatTime = System.currentTimeMillis();
+                localFileMenu.fileName = "Default album"
+                localFileMenu.path = defaultfolder
+                localFileMenu.fileNum = 0
+                localFileMenu.type = "0"
+                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
+            }
+            var needCreateWechat = false;
+            var picMenuListWechat = AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.queryBuilder().where(LocalFileMenuDao.Properties.Type.eq("1")).list()
+            if (picMenuListWechat == null || picMenuListWechat.size == 0) {
+                needCreateWechat = true
+            }
+            var defaultwechatfolder = PathUtils.getInstance().getEncryptionWeChatPath().toString() + "/defaultwechatfolder"
+            var defaultwechatfolderFile = File(defaultwechatfolder)
+            if (needCreateWechat && !defaultwechatfolderFile.exists()) {
+                defaultwechatfolderFile.mkdirs();
+                var localFileMenu = LocalFileMenu();
+                localFileMenu.creatTime = System.currentTimeMillis();
+                localFileMenu.fileName = "Default Wechat Folder"
+                localFileMenu.path = defaultwechatfolder
+                localFileMenu.fileNum = 0
+                localFileMenu.type = "1"
+                AppConfig.instance.mDaoMaster!!.newSession().localFileMenuDao.insert(localFileMenu)
+            }
+            /*FileUtil.getKongFile("image_defalut_bg.xml")
+            FileUtil.getKongFile("image_defalut_bg.png")
+            FileUtil.getKongFile("image_defalut_fileForward_bg.png")
+            FileUtil.getKongFile("ease_default_amr.amr")
+            FileUtil.getKongFile("ease_default_vedio.mp4")
+            FileUtil.getKongFile("ease_default_fileForward_vedio.mp4")
+            FileUtil.getKongFile("file_downloading.*")
+            FileUtil.getKongFile("file_fileForward.*")*/
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            var abvc = ""
+            routerList.forEach {
+                if (it.routerId == null || it.routerId.equals("") || it.userSn == null || it.userSn.equals("") || it.userId == null || it.userId.equals("")) {
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(it)
+                }
+            }
+
+            var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
+            var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
+            ConstantValue.currentRouterId = lastLoginRouterId;
+
+            //这里不要注释
+            var dst_public_TemKey_My = ByteArray(32)
+            var dst_private_Temkey_My = ByteArray(32)
+            var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My, dst_private_Temkey_My)
+            ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
+            ConstantValue.libsodiumpublicTemKey = RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
+            runDelayedOnUiThread(500) {
+                var dataString = intent.dataString
+                KLog.i(dataString)
+                var filePath = ""
+                var uri = Uri.parse(dataString)
+                if (dataString.contains("fileprovider")) {
+                    filePath = FileShareUtil.getFPUriToPath(this, uri)
+                } else if (dataString.contains("content://media")) {
+                    filePath = FileShareUtil.getFilePathFromContentUri(uri, this)
+                } else {
+                    var uri = Uri.parse(dataString)
+                    KLog.i(uri.path)
+                    filePath = uri.path
+                }
+                KLog.i(filePath)
+                var shareIntent = Intent(this, ShareFileActivity::class.java)
+                shareIntent.putExtra("mineType", intent.type)
+                shareIntent.putExtra("filePath", filePath)
+                startActivity(shareIntent)
+                overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out)
+            }
+            handlerAutoLogin()
+        }
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
-//        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-//        if (!autoLoginRouterSn.equals("no") && !autoLoginRouterSn.equals("")) {
-//            SpUtil.putString(this, ConstantValue.autoLoginRouterSn, ConstantValue.currentRouterSN)
-//        }
         if (intent.hasExtra("autoLogin")) {
-            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-
-            try {
-                AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
-                AppConfig.instance.messageReceiver!!.bakMailsNumCallback = this
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            routerList.forEach {
-                if (adminUserSn != null && !adminUserSn.equals("")) {
-                    val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                    if (it.userSn.equals(adminUserSn)) {
-                        routerId = it.routerId
-                        userSn = it.userSn
-                        userId = it.userId
-                        username = name!!
-                        if (it.dataFileVersion == null) {
-                            dataFileVersion = 0
-                        } else {
-                            dataFileVersion = it.dataFileVersion
-                        }
-                    }
-                } else {
-                    var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-                    val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                    if (!autoLoginRouterSn.equals("") && !autoLoginRouterSn.equals("no")) {
-                        if (it.userSn.equals(autoLoginRouterSn)) {
-                            routerId = it.routerId
-                            userSn = it.userSn
-                            userId = it.userId
-                            username = it.username
-                            if (it.dataFileVersion == null) {
-                                dataFileVersion = 0
-                            } else {
-                                dataFileVersion = it.dataFileVersion
-                            }
-                        }
-                    } else {
-                        if (it.lastCheck) {
-                            routerId = it.routerId
-                            userSn = it.userSn
-                            userId = it.userId
-                            username = name!!
-                            if (it.dataFileVersion == null) {
-                                dataFileVersion = 0
-                            } else {
-                                dataFileVersion = it.dataFileVersion
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-            isClickLogin = true
-//            FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", "")
-            var autoLoginEntityStr = FileUtil.readData(ConstantValue.localPath + "/autoLogin.txt")
-            var autoLoginEntity = Gson().fromJson<AutoLoginEntity>(autoLoginEntityStr, AutoLoginEntity::class.java)
-            if ("".equals(autoLoginEntityStr)) {
-                getServer(autoLoginEntity.routerId, userSn, true, true)
-            } else {
-                ConstantValue.curreantNetworkType = if (autoLoginEntity.loginType == 1) {"WIFI"} else {""}
-                ConstantValue.currentRouterIp = autoLoginEntity.routerIp
-                ConstantValue.port = autoLoginEntity.port
-                ConstantValue.filePort = autoLoginEntity.filePort
-                ConstantValue.currentRouterId = autoLoginEntity.routerId
-                if (autoLoginEntity.localCurrentRouterIp != null) {
-                    ConstantValue.localCurrentRouterIp = autoLoginEntity.localCurrentRouterIp
-                }
-                ConstantValue.currentRouterSN = autoLoginEntity.routerSn
-                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
-
-                var userEntity = UserEntity()
-                userEntity.userId = autoLoginEntity.userId
-                userEntity.nickName = autoLoginEntity.userNickName
-                UserDataManger.myUserData = userEntity
-                startLogin()
-            }
+            handlerAutoLogin()
         }
         var localEmailContacts = AppConfig.instance.mDaoMaster!!.newSession().emailContactsEntityDao.loadAll()
         var localEmailContactAcount = ""
@@ -3552,9 +3919,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var saveEmailConf = SaveEmailConf(1, 1, accountBase64, "", pulicSignKey)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, saveEmailConf))
         }
-        if (VersionUtil.getDeviceBrand() == 3) {
-            HmsInstanceId.getInstance(this).getToken()
-        }
+//        if (VersionUtil.getDeviceBrand() == 3) {
+//            HmsInstanceId.getInstance(this).getToken("102030623", "HCM")
+//        }
         this_ = this
         var isStartWebsocket = false
         handler = object : Handler() {
@@ -3585,6 +3952,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                     ConstantValue.currentRouterSN = ConstantValue.scanRouterSN
+
+                                                    var autoLoginEntity = AutoLoginEntity()
+                                                    autoLoginEntity.port = ConstantValue.port
+                                                    autoLoginEntity.filePort = ConstantValue.filePort
+                                                    autoLoginEntity.loginType = 1
+                                                    autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                    autoLoginEntity.routerId = ConstantValue.scanRouterId
+                                                    autoLoginEntity.routerSn = ConstantValue.scanRouterSN
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
                                                     break;
                                                 } else if (!routerId.equals("") && routerId.equals(udpRouterArray[1])) {
                                                     ConstantValue.currentRouterIp = udpRouterArray[0]
@@ -3593,6 +3969,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                     ConstantValue.filePort = ":18007"
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN = userSn
+
+                                                    var autoLoginEntity = AutoLoginEntity()
+                                                    autoLoginEntity.port = ConstantValue.port
+                                                    autoLoginEntity.filePort = ConstantValue.filePort
+                                                    autoLoginEntity.loginType = 1
+                                                    autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                    autoLoginEntity.routerId = ConstantValue.scanRouterId
+                                                    autoLoginEntity.routerSn = ConstantValue.scanRouterSN
+                                                    FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
                                                     break;
                                                 }
                                             } else {
@@ -3604,6 +3989,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 ConstantValue.port = ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterMac = RouterMacStr
+
+                                                var autoLoginEntity = AutoLoginEntity()
+                                                autoLoginEntity.port = ConstantValue.port
+                                                autoLoginEntity.filePort = ConstantValue.filePort
+                                                autoLoginEntity.loginType = 1
+                                                autoLoginEntity.routerIp = ConstantValue.currentRouterIp
+                                                autoLoginEntity.routerId = ConstantValue.scanRouterId
+                                                autoLoginEntity.routerSn = ConstantValue.scanRouterSN
+                                                FileUtil.savaData(ConstantValue.localPath + "/autoLogin.txt", Gson().toJson(autoLoginEntity))
                                                 break;
                                             }
 
@@ -3655,10 +4049,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ConstantValue.mainActivity = this
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)
+        if (ConstantValue.isGooglePlayServicesAvailable) {
+            KLog.i("Google Play可用")
+            FirebaseInstanceId.getInstance().instanceId
+                    .addOnCompleteListener(OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            KLog.w("google fcm token getInstanceId failed", task.exception)
+                            return@OnCompleteListener
+                        }
+
+                        // Get new Instance ID token
+                        val token = task.result?.token
+                        KLog.i("google fcm token :" + token)
+                        ConstantValue.fcmToken = token!!
+                    })
+        } else {
+            KLog.i("Google Play不可用")
+        }
         Thread(Runnable() {
             run() {
                 while (isSendRegId) {
-                    Thread.sleep(10 * 1000)
+                    Thread.sleep(5 * 1000)
                     ConstantValue.mJiGuangRegId = JPushInterface.getRegistrationID(applicationContext)
                     var aa = ConstantValue.mHuaWeiRegId
                     var map: HashMap<String, String> = HashMap()
@@ -3957,18 +4368,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     when (data.name) {
                         "New Email" -> {
                             onClickSendEmail()
+                            FireBaseUtils.logEvent(this@MainActivity, FireBaseUtils.FIR_ADD_NEW_EMAIL)
                         }
                         "New Chat" -> {
                             onClickCreateGroup()
+                            FireBaseUtils.logEvent(this@MainActivity, FireBaseUtils.FIR_ADD_NEW_CHAT)
                         }
                         "Add Contacts" -> {
                             mPresenter.getScanPermission()
+                            FireBaseUtils.logEvent(this@MainActivity, FireBaseUtils.FIR_ADD_CONTACTS)
                         }
                         "Invite Friends" -> {
                             onClickInviteFriendEmail()
+                            FireBaseUtils.logEvent(this@MainActivity, FireBaseUtils.FIR_ADD_INVITE_FRIENDS)
                         }
                         "Add Members" -> {
                             onClickAddMembers()
+                            FireBaseUtils.logEvent(this@MainActivity, FireBaseUtils.FIR_ADD_MEMBERS)
                         }
                     }
                 }
@@ -4716,6 +5132,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         initEvent()
     }
 
+
     fun doWaitAddFreind(waitAddFreind: String) {
 
         KLog.i("doWaitAddFreind")
@@ -5038,6 +5455,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         rootTitle.text = menu;
         mainTitle.text = menu;
         if (menu == "Circle") {
+            isNodePage = true
+            KLog.i("设置Circle")
             if (unread_count.text == "") {
                 unread_count.visibility = View.INVISIBLE
             } else {
@@ -5055,6 +5474,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newAccount.visibility = View.GONE
             newCricle.visibility = View.GONE
         } else {
+            isNodePage = false
+            KLog.i("设置Email")
             unread_count.visibility = View.INVISIBLE
             newAccount.visibility = View.VISIBLE
             newCricle.visibility = View.GONE
@@ -5184,6 +5605,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         val type = intent.type
         val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
         KLog.i("微信," + action+"#####"+type+"#####"+sharedText)*/
+        statusBarColor = R.color.transparent
         isScanSwitch = false
         if (savedInstanceState != null) {
             KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
@@ -5207,6 +5629,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     private fun initEvent() {
+        mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         emailLook.setOnClickListener(View.OnClickListener {
             if (ConstantValue.chooseFragMentMenu == "Circle") {
                 return@OnClickListener
@@ -5489,7 +5912,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                                     }
 
                                                                     override fun onResponse(json: String) {
-
+                                                                        KLog.i("远程连接信息返回：" + json)
                                                                         val gson = GsonUtil.getIntGson()
                                                                         var httpData: HttpData? = null
                                                                         try {
@@ -5750,6 +6173,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                         ConstantValue.loginReq = null
                                         AppConfig.instance.deleteEmailData()
+                                        FireBaseUtils.logEvent(this, FireBaseUtils.FIR_IMPORT_ACCOUNT)
                                         runOnUiThread {
                                             toast("Import success")
                                             startActivity(Intent(this, LoginActivityActivity::class.java))

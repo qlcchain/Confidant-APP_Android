@@ -29,10 +29,7 @@ import com.stratagile.pnrouter.ui.activity.group.presenter.CreateGroupPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.adapter.group.CreateGroupMemberAdapter
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
-import com.stratagile.pnrouter.utils.LibsodiumUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.RxEncryptTool
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_create_group.*
 import org.greenrobot.eventbus.EventBus
@@ -194,6 +191,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             if (approveInvitation.isChecked) {
                 approve = 1
             }
+            FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CHAT_ADD_GROUP)
             showProgressDialog(getString(R.string.waiting))
             val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, approve, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {

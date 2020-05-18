@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/headmainColor"
+    android:gravity="center_horizontal"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@color/headmainColor"
+        android:gravity="center_horizontal"
+        android:layout_height="match_parent">
+        <View
+            android:id="@+id/statusBar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
+        <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:background="@color/headmainColor"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/llCancel"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:src="@mipmap/statusbar_close"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="title"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/commemTextSize" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginTop="13dp"
+            android:layout_height="132dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Local Files"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/localFoldersPath"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_file_directory"
+                        app:foldertext="Files"
+                        android:layout_height="wrap_content"/>
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/localDownloadPath"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_download_directory"
+                        app:foldertext="Download"
+                        android:layout_height="wrap_content"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginTop="13dp"
+            android:layout_height="220dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Format"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typePic"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_picture"
+                        app:foldertext="Picture"
+                        android:layout_height="wrap_content"/>
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typeVedio"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_video"
+                        app:foldertext="Video"
+                        android:layout_height="wrap_content"/>
+
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typeWord"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_word"
+                        app:foldertext="Word"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typeExcel"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_excel"
+                        app:foldertext="Excel"
+                        android:layout_height="wrap_content"/>
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typePpt"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_ppt"
+                        app:foldertext="PPT"
+                        android:layout_height="wrap_content"/>
+
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/typeOther"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_other"
+                        app:foldertext="Other"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginTop="13dp"
+            android:layout_height="220dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Application"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/mainColor"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/appWeChat"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_wechat"
+                        app:foldertext="WeChat"
+                        android:layout_height="wrap_content"/>
+
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/appMessenger"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_facebook"
+                        app:foldertext="Messenger"
+                        android:layout_height="wrap_content"/>
+
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/appWhatsApp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_whatsapp"
+                        app:foldertext="WhatsApp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/appSnapchat"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_snapchat"
+                        app:foldertext="Snapchat"
+                        android:layout_height="wrap_content"/>
+                    <com.stratagile.pnrouter.view.FolderSelectTextView
+                        android:id="@+id/appTwitter"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        app:foldersrc="@mipmap/sheet_twitter"
+                        app:foldertext="Twitter"
+                        android:layout_height="wrap_content"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

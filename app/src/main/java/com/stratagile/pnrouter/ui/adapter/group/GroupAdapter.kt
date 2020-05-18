@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.entity.events.SelectGroupChange
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.FireBaseUtils
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 import org.greenrobot.eventbus.EventBus
@@ -49,6 +50,7 @@ class GroupAdapter (arrayList: List<GroupEntity>) : BaseQuickAdapter<GroupEntity
                     slelctMap.put(item.gId,checkBox.isChecked)
                     getSelectedCount()
                 }else{
+                    FireBaseUtils.logEvent(mContext, FireBaseUtils.FIR_CHAT_SEND_GROUP_TEXT)
                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
                     intent.putExtra(EaseConstant.EXTRA_USER_ID, item.gId.toString())
                     intent.putExtra(EXTRA_CHAT_GROUP, item)

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="100dp"
+        android:src="@mipmap/background_circle_a"
+        android:layout_height="100dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textSize="12sp"
+        android:textColor="@color/FF9496A1"
+        android:text="No messages"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

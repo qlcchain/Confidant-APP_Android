@@ -2010,6 +2010,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         isEditActivity = true
+        statusBarColor = R.color.white
         KLog.i("insertMessage:ChatActivity_onCreate" + chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()

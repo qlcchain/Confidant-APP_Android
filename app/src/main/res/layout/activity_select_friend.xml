@@ -9,14 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/white"
-        android:visibility="gone"
-        android:gravity="center"
-        android:textColor="@color/color_333"
-        android:textSize="9sp" />
+        android:gravity="center" />
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="match_parent"
-        android:layout_below="@+id/statusBar"
         android:background="@color/white"
         android:layout_height="@dimen/x84">
         <LinearLayout

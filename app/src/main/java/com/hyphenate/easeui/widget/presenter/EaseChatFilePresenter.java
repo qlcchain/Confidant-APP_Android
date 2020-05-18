@@ -137,7 +137,6 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                 try {
                     Intent intent = OpenFileUtil.getInstance((Activity) getContext()).openFile(newFilePath);
                     ((Activity) getContext()).startActivity(intent);
-                    //FileUtils.openFile(file, (Activity) getContext());
                 }catch (Exception e)
                 {
                     e.printStackTrace();

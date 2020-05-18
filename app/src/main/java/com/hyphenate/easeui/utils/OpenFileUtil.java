@@ -119,7 +119,7 @@ public class OpenFileUtil {
             return intent;
         }else{
             Intent intent = new Intent("android.intent.action.VIEW");
-            intent.addCategory("android.intent.category.DEFAULT");
+//            intent.addCategory("android.intent.category.DEFAULT");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Uri uri;
             if (Build.VERSION.SDK_INT >= 24) {

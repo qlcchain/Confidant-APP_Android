@@ -15,9 +15,17 @@
     <TextView
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="11dp"
+        android:layout_marginLeft="10dp"
         android:includeFontPadding="false"
         android:text="@string/Message"
         android:textSize="13sp"
         android:layout_height="wrap_content"/>
+
+    <View
+        android:id="@+id/dotViewe"
+        android:layout_width="6dp"
+        android:visibility="gone"
+        android:layout_marginLeft="6dp"
+        android:background="@drawable/red_dot"
+        android:layout_height="6dp"/>
 </LinearLayout>

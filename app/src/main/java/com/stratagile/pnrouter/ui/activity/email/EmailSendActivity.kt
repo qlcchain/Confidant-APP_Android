@@ -8,6 +8,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
@@ -25,7 +26,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.hyphenate.easeui.model.EaseCompat
@@ -38,6 +42,7 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.observable.ImagesObservable
 import com.pawegio.kandroid.longToast
+import com.pawegio.kandroid.runDelayedOnUiThread
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetAttachCallback
 import com.smailnet.eamil.Callback.GetSendCallback
@@ -61,7 +66,6 @@ import com.stratagile.pnrouter.method.Method
 import com.stratagile.pnrouter.method.MethodContext
 import com.stratagile.pnrouter.method.User
 import com.stratagile.pnrouter.method.Weibo
-import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailSendComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailSendContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailSendModule
@@ -76,10 +80,8 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.email_picture_image_grid_item.*
 import kotlinx.android.synthetic.main.email_send_edit.*
-import kotlinx.android.synthetic.main.email_send_edit.statusBar
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
 import java.io.File
@@ -94,6 +96,7 @@ import kotlin.concurrent.thread
  * @Package com.stratagile.pnrouter.ui.activity.email
  * @Description: $description
  * @date 2019/07/25 11:21:29
+ * data/data/com.android.provider.media/databases/external.db
  */
 
 class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickListener, PNRouterServiceMessageReceiver.CheckmailUkeyCallback {
@@ -123,41 +126,57 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
 
     @Inject
     internal lateinit var mPresenter: EmailSendPresenter
+
     /********************boolean开关 */
     //是否加粗
     internal var isClickBold = false
+
     //是否正在执行动画
     internal var isAnimating = false
+
     //是否按ol排序
     internal var isListOl = false
+
     //是否按ul排序
     internal var isListUL = false
+
     //是否下划线字体
     internal var isTextLean = false
+
     //是否下倾斜字体
     internal var isItalic = false
+
     //是否左对齐
     internal var isAlignLeft = false
+
     //是否右对齐
     internal var isAlignRight = false
+
     //是否中对齐
     internal var isAlignCenter = false
+
     //是否缩进
     internal var isIndent = false
+
     //是否较少缩进
     internal var isOutdent = false
+
     //是否索引
     internal var isBlockquote = false
+
     //字体中划线
     internal var isStrikethrough = false
+
     //字体上标
     internal var isSuperscript = false
+
     //字体下标
     internal var isSubscript = false
 
     private var onKeyDel = false
 
     private var ctrlPress = false
+
     /********************变量 */
     //折叠视图的宽高
     private var mFoldedViewMeasureHeight: Int = 0
@@ -195,6 +214,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
     private val users = arrayListOf(
             User("1", "激浊扬清", ""),
             User("15", "必须要\\n\n，不然不够长", ""))
+
+    //flag == 3为外界选中一个文件作为附件发送邮件
     var flag = 0;
     var foward = 0;
     var emailMeaasgeInfoData: EmailMessageEntity? = null
@@ -418,6 +439,12 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
             toAdressEdit.post(Runnable {
                 var lineCount = toAdressEdit.lineCount
                 toAdressEdit.minHeight = resources.getDimension(R.dimen.x50).toInt() * lineCount
+            })
+        } else if (flag == 3) {
+            runDelayedOnUiThread(1000, {
+                var dataIntent = Intent()
+                dataIntent.putExtra("path", intent.getStringExtra("filePath"))
+                onActivityResult(REQUEST_CODE_FILE, Activity.RESULT_OK, dataIntent)
             })
         }
         toAdressEdit.setOnItemClickListener { parent, view, position, id ->
@@ -1602,8 +1629,15 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
                                             .start()
                                 }
                                 3 -> {
-                                    startActivityForResult(Intent(this@EmailSendActivity, FileChooseActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
-                                    //startActivityForResult(Intent(this@EmailSendActivity, SelectFileActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
+//                                    val i = Intent(Intent.ACTION_GET_CONTENT)
+//                                    i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+////                                    i.addCategory(Intent.CATEGORY_OPENABLE)
+//                                    i.type = "*/*"
+//                                    startActivityForResult(Intent.createChooser(i, null), REQUEST_CODE_FILE)
+
+//                                    startActivityForResult(Intent(this@EmailSendActivity, FileChooseActivity::class.java).putExtra("fileType", 2), REQUEST_CODE_FILE)
+                                    startActivityForResult(Intent(this@EmailSendActivity, EmailSelectAttachmentActivity::class.java), REQUEST_CODE_FILE)
+                                    overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out)
                                 }
 
                             }
@@ -1831,8 +1865,10 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
             var fileKey16 = fileKey.substring(0, 16)
             Log.i("fileKey16", fileKey16)
             if (!contentHtml.equals("")) {
+                KLog.i("加密前为：" + contentHtml)
                 var contentBufferMiStr = RxEncodeTool.base64Encode2String(AESToolsCipher.aesEncryptBytes(contentBuffer, fileKey16!!.toByteArray(charset("UTF-8"))))
-                contentHtml = contentBufferMiStr;
+                contentHtml = contentBufferMiStr
+                KLog.i("解密结果为：" + String(AESToolsCipher.aesDecryptBytes(RxEncodeTool.base64Decode(contentBufferMiStr), fileKey16!!.toByteArray(charset("UTF-8")))))
             }
         }
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
@@ -2023,6 +2059,7 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
         }
         var subjectStr = emailSendClient.getUTFStr(subject.getText().toString())
         if (send) {
+            FireBaseUtils.logEvent(this, FireBaseUtils.FIR_EMAIL_SEND)
             runOnUiThread {
                 showProgressDialog(getString(R.string.Sending))
             }
@@ -2130,6 +2167,8 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
                                     }
                                     EventBus.getDefault().post(SendEmailSuccess(positionIndex))
                                     Toast.makeText(this@EmailSendActivity, R.string.success, Toast.LENGTH_SHORT).show()
+
+                                    setResult(Activity.RESULT_OK)
                                     finish()
                                 }
                             }
@@ -2931,40 +2970,45 @@ class EmailSendActivity : BaseActivity(), EmailSendContract.View, View.OnClickLi
                     Toast.makeText(this, getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show()
                 }
             } else if (requestCode == REQUEST_CODE_FILE) {
-
-                if (data!!.hasExtra("path")) {
-                    val filePath = data.getStringExtra("path")
-                    if (filePath != null) {
-                        val file = File(filePath)
-                        val md5Data = ""
-                        if (file.exists()) {
-                            if (file.length() > 1024 * 1024 * 100) {
-                                runOnUiThread {
-                                    longToast(R.string.Files_100M)
+                if (data!!.getIntExtra("offsetRequestCode", 0) == 0) {
+                    if (data!!.hasExtra("path")) {
+                        val filePath = data.getStringExtra("path")
+                        if (filePath != null) {
+                            val file = File(filePath)
+                            val md5Data = ""
+                            if (file.exists()) {
+                                if (file.length() > 1024 * 1024 * 100) {
+                                    runOnUiThread {
+                                        longToast(R.string.Files_100M)
+                                    }
+                                    return;
                                 }
-                                return;
-                            }
-                            var emailAttachEntity = EmailAttachEntity()
-                            emailAttachEntity.isHasData = true
-                            emailAttachEntity.localPath = file.path
-                            emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length)
-                            emailAttachEntity.isCanDelete = true
-                            emaiAttachAdapter!!.addData(0, emailAttachEntity)
-                            emaiAttachAdapter!!.notifyDataSetChanged();
-                            if (emaiAttachAdapter!!.itemCount > 1) {
-                                addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
-                                addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
-                                addSubject.visibility = View.GONE
-                            } else {
-                                addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
-                                addSubject.text = ""
-                                addSubject.visibility = View.GONE
+                                var emailAttachEntity = EmailAttachEntity()
+                                emailAttachEntity.isHasData = true
+                                emailAttachEntity.localPath = file.path
+                                emailAttachEntity.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length)
+                                emailAttachEntity.isCanDelete = true
+                                emaiAttachAdapter!!.addData(0, emailAttachEntity)
+                                emaiAttachAdapter!!.notifyDataSetChanged();
+                                if (emaiAttachAdapter!!.itemCount > 1) {
+                                    addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_selected)
+                                    addSubject.text = (emaiAttachAdapter!!.itemCount - 1).toString()
+                                    addSubject.visibility = View.GONE
+                                } else {
+                                    addSubjectImg.setImageResource(R.mipmap.tabbar_attach1_unselected)
+                                    addSubject.text = ""
+                                    addSubject.visibility = View.GONE
+                                }
                             }
                         }
+                    } else {
+                        val fileData = data.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("fileData")
+                        //sendFileFileForward(fileData)
                     }
-                } else {
-                    val fileData = data.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("fileData")
-                    //sendFileFileForward(fileData)
+                } else if (data!!.getIntExtra("offsetRequestCode", 0) == 1) {
+                    onActivityResult(REQUEST_CODE_LOCAL, Activity.RESULT_OK, data)
+                } else if (data!!.getIntExtra("offsetRequestCode", 0) == 2) {
+                    onActivityResult(REQUEST_CODE_VIDEO, Activity.RESULT_OK, data)
                 }
             } else if (requestCode == REQUEST_CODE_TO) {
                 toAdressEdit.requestFocus()

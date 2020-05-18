@@ -862,7 +862,7 @@ Then enter your Email address and password to log in.</string>
     <string name="Remove">Remove</string>
     <string name="SetPassword">Set Password</string>
     <string name="Encrypt_for_non_Confidant_users">Encrypt for non-Confidant users</string>
-    <string name="PassworkHint">&#160;&#160;Passwork Hint (optional)</string>
+    <string name="PassworkHint">&#160;&#160;Password Hint (optional)</string>
     <string name="Encrypted_Email">Encrypted Email</string>
     <string name="Encrypted_client">Encrypted Email client and beyond - your comprehensive privacy protection tool</string>
     <string name="You_have_received_a_secure_message_from">You have received a secure message from</string>
@@ -948,5 +948,6 @@ Then enter your Email address and password to log in.</string>
     <string name="Please_registe_your_account_first">Please register your account first</string>
     <string name="Encryption_failed">Encryption failed</string>
     <string name="Interface_call_failed">Interface call failed</string>
+    <string name="default_notification_channel_id">xx</string>
 
 </resources>

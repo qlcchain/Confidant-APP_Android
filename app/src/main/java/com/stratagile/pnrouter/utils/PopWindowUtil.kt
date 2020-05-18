@@ -515,6 +515,9 @@ object PopWindowUtil {
             var password1= password_editText.text.toString()
             var password2= password_editText2.text.toString()
             var passTips_editText= passTips_editText.text.toString()
+            if ("".equals(passTips_editText)) {
+                passTips_editText = "0"
+            }
             if(password1!= password2)
             {
                 activity.toast(R.string.Password_inconsistent)

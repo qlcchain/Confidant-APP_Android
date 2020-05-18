@@ -156,6 +156,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var message = helper.getView<TextView>(R.id.message)
         var unseen = helper.getView<TextView>(R.id.unseen)
         var startPic = helper.getView<TextView>(R.id.startPic)
+        var lockPic = helper.getView<TextView>(R.id.lockPic)
 
         if (item.content != null) {
 
@@ -185,7 +186,6 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             } else {
                 startPic.visibility = View.GONE
             }
-            var lockPic = helper.getView<TextView>(R.id.lockPic)
             if (item.originalText != null && item.originalText != "") {
                 lockPic.visibility = View.VISIBLE
             } else {
@@ -213,6 +213,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
             attach.visibility = View.GONE
             unseen.visibility = View.GONE
             startPic.visibility = View.GONE
+            lockPic.visibility = View.GONE
             message.setText("-/-")
         }
     }

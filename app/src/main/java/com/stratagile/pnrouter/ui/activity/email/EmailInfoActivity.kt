@@ -66,7 +66,9 @@ import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiAttachAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.K9WebViewClient
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.pnrouter.view.WebViewConfig
 import kotlinx.android.synthetic.main.email_info_view.*
 import kotlinx.android.synthetic.main.email_info_view.tvTitle
 import kotlinx.android.synthetic.main.emailpassword_bar3.*
@@ -135,8 +137,11 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
     var emailConfigEntityChoose: EmailConfigEntity? = null
     var emailConfigEntityChooseList = mutableListOf<EmailConfigEntity>()
     internal var previewImages: MutableList<LocalMedia> = ArrayList()
+    //缩放是否初始化
     var isScaleInit = false
+    //缩放的大小
     var newScaleInit = 0f
+    //webview是否能上下滚动
     var webViewScroll = false;
     var contentHtml = "";
     var zipSavePath = ""
@@ -219,6 +224,64 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
             emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
             if (emailMeaasgeData!!.content == null) {
                 showProgressDialog()
+                inboxTitle.text = emailMeaasgeData!!.subject
+                var fromName = ""
+                var fromAdress = ""
+                if (emailMeaasgeData!!.from.indexOf("<") > -1) {
+                    fromName = emailMeaasgeData!!.from.substring(0, emailMeaasgeData!!.from.indexOf("<"))
+                    fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"), emailMeaasgeData!!.from.length)
+                } else {
+                    var itemEndIndex = emailMeaasgeData!!.from.indexOf("@")
+                    if (itemEndIndex < 0) {
+                        itemEndIndex = 0;
+                    }
+                    fromName = emailMeaasgeData!!.from.substring(0, itemEndIndex)
+                    fromAdress = emailMeaasgeData!!.from.substring(0, emailMeaasgeData!!.from.length)
+                }
+                var toName = ""
+                var toAdress = ""
+                if (emailMeaasgeData!!.to.contains(",")) {
+                    var toList = emailMeaasgeData!!.to.split(",")
+                    for (item in toList) {
+                        if (item.indexOf("<") > -1) {
+                            toName += item.substring(0, item.indexOf("<")) + ","
+                            toAdress += item.substring(item.indexOf("<"), item.length) + ","
+                        } else {
+                            var itemEndIndex = item.indexOf("@")
+                            if (itemEndIndex < 0) {
+                                itemEndIndex = 0;
+                            }
+                            toName += item.substring(0, itemEndIndex) + ","
+                            toAdress += item.substring(0, item.length) + ","
+                        }
+                    }
+                    if (toName.contains(",")) {
+                        toName.substring(0, toName.length - 1)
+                    }
+                    if (toAdress.contains(",")) {
+                        toAdress.substring(0, toAdress.length - 1)
+                    }
+                } else {
+                    if (emailMeaasgeData!!.to.indexOf("<") > -1) {
+                        toName = emailMeaasgeData!!.to.substring(0, emailMeaasgeData!!.to.indexOf("<"))
+                        toAdress = emailMeaasgeData!!.to.substring(emailMeaasgeData!!.to.indexOf("<"), emailMeaasgeData!!.to.length)
+                    } else {
+                        var itemEndIndex = emailMeaasgeData!!.to.indexOf("@")
+                        if (itemEndIndex < 0) {
+                            itemEndIndex = 0;
+                        }
+                        toName = emailMeaasgeData!!.to.substring(0, itemEndIndex)
+                        toAdress = emailMeaasgeData!!.to.substring(0, emailMeaasgeData!!.to.length)
+                    }
+                }
+
+                title_info.text = fromName
+                avatar_info.setText(fromName)
+                time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
+                KLog.i(emailMeaasgeData!!.content)
+                mailInfo.revDate = (DateUtil.getDate(emailMeaasgeData!!.date).time / 1000).toInt()
+                fromName_Time.text = emailMeaasgeData!!.date
+                return
             }
         }
         avatar_info.setOnLongClickListener {
@@ -313,12 +376,12 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                                                 }
                                                 flag++;
                                             }
-                                            if (messageList.size > 0) {
-                                                runOnUiThread {
-                                                    startActivity(Intent(this@EmailInfoActivity, LogActivity::class.java))
-                                                }
-
-                                            }
+//                                            if (messageList.size > 0) {
+//                                                runOnUiThread {
+//                                                    startActivity(Intent(this@EmailInfoActivity, LogActivity::class.java))
+//                                                }
+//
+//                                            }
                                             runOnUiThread {
 
                                                 progressDialog.dismiss()
@@ -376,43 +439,43 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                     return
                 }
             }
-
-
-            if (emailMeaasgeData!!.content.contains("newconfidantpass") && !hasPassWord) {
-
-                var miTxtEndAllIndex = emailMeaasgeData!!.content.indexOf("newconfidantpass")
-                var newconfidantpassAllText = emailMeaasgeData!!.content.substring(miTxtEndAllIndex, emailMeaasgeData!!.content.length)
-                var newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("\"");
-                if (newconfidantpassTextEndIndex == -1) {
-                    newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("'");
-                }
-                var newconfidantpassText = newconfidantpassAllText.substring("newconfidantpass".length, newconfidantpassTextEndIndex);
-                if (newconfidantpassText != "") {
-                    passwordTips.text = getString(R.string.PasswordHint) + newconfidantpassText;
-                    passwordTips.visibility = View.VISIBLE;
-                } else {
-                    passwordTips.visibility = View.GONE;
-                }
-                backMenu.visibility = View.GONE
-                moreMenu.visibility = View.GONE
-                jiemiRoot.visibility = View.GONE
-                inputPassWordParent.visibility = View.VISIBLE
-                webViewParent.visibility = View.GONE
-                llOperate.visibility = View.GONE
-                attachListParent.visibility = View.GONE
-                newconfidantpassOp = false;
-            } else {
-                backMenu.visibility = View.VISIBLE
-                moreMenu.visibility = View.VISIBLE
-                webViewParent.visibility = View.VISIBLE
-                llOperate.visibility = View.VISIBLE
-                jiemiRoot.visibility = View.GONE
-                inputPassWordParent.visibility = View.GONE
-                hasPassWord = true;
-            }
-
         }
+        KLog.i(emailMeaasgeData!!.content)
+        KLog.i(emailMeaasgeData!!.contentText)
+        KLog.i(emailMeaasgeData!!.originalText)
+        KLog.i(emailMeaasgeData!!.subject)
+        if (emailMeaasgeData!!.content.contains("newconfidantpass") && !hasPassWord) {
 
+            var miTxtEndAllIndex = emailMeaasgeData!!.content.indexOf("newconfidantpass")
+            var newconfidantpassAllText = emailMeaasgeData!!.content.substring(miTxtEndAllIndex, emailMeaasgeData!!.content.length)
+            var newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("\"");
+            if (newconfidantpassTextEndIndex == -1) {
+                newconfidantpassTextEndIndex = newconfidantpassAllText.indexOf("'");
+            }
+            var newconfidantpassText = newconfidantpassAllText.substring("newconfidantpass".length, newconfidantpassTextEndIndex);
+            if (newconfidantpassText != "") {
+                passwordTips.text = getString(R.string.PasswordHint) + newconfidantpassText;
+                passwordTips.visibility = View.VISIBLE;
+            } else {
+                passwordTips.visibility = View.GONE;
+            }
+            backMenu.visibility = View.GONE
+            moreMenu.visibility = View.GONE
+            jiemiRoot.visibility = View.GONE
+            inputPassWordParent.visibility = View.VISIBLE
+            webViewParent.visibility = View.GONE
+            llOperate.visibility = View.GONE
+            attachListParent.visibility = View.GONE
+            newconfidantpassOp = false;
+        } else {
+            backMenu.visibility = View.VISIBLE
+            moreMenu.visibility = View.VISIBLE
+            webViewParent.visibility = View.VISIBLE
+            llOperate.visibility = View.VISIBLE
+            jiemiRoot.visibility = View.GONE
+            inputPassWordParent.visibility = View.GONE
+            hasPassWord = true;
+        }
         var accountBase64 = String(RxEncodeTool.base64Encode(AppConfig.instance.emailConfig().account))
         var uuid = AppConfig.instance.emailConfig().account + "_" + ConstantValue.chooseEmailMenuName + "_" + emailMeaasgeData!!.msgId
         var saveEmailConf = BakMailsCheck(accountBase64, uuid)
@@ -476,6 +539,8 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                     val save_dir = PathUtils.getInstance().filePath.toString() + "/"
                     var addMenu = false
                     var attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(emailMeaasgeData!!.menu + "_" + msgId)).list()
+                    KLog.i("附件个数为：" + attachList.size)
+                    KLog.i(emailMeaasgeData!!.menu + "_" + msgId)
                     if (attachList.size == 0) {
                         addMenu = true
                         attachList = AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.queryBuilder().where(EmailAttachEntityDao.Properties.MsgId.eq(msgId)).list()
@@ -498,6 +563,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                             AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.update(attach)
 
                             var fileName = attach.name
+                            KLog.i(attach.name)
                             if (fileName.contains("jpg") || fileName.contains("JPG") || fileName.contains("png")) {
                                 val localMedia = LocalMedia()
                                 localMedia.isCompressed = false
@@ -1104,7 +1170,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
         title_info.text = fromName
         avatar_info.setText(fromName)
         time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
-        KLog.i(emailMeaasgeData.toString())
+        KLog.i(emailMeaasgeData!!.content)
         mailInfo.revDate = (DateUtil.getDate(emailMeaasgeData!!.date).time / 1000).toInt()
         fromName_Time.text = emailMeaasgeData!!.date
         attach_info.setOnClickListener {
@@ -1737,57 +1803,63 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
 
             }
         }
-        NestedScrollViewParent.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-                isScaleInit = true
-                return false
-            }
-        })
+//        NestedScrollViewParent.setOnTouchListener(object : View.OnTouchListener {
+//            override fun onTouch(v: View, event: MotionEvent): Boolean {
+//                isScaleInit = true
+//                return false
+//            }
+//        })
+        webView.configure(WebViewConfig(false, true, 100))
+//        val webSettings = webView.getSettings()
+//        //允许webview对文件的操作
+//        webSettings.setAllowUniversalAccessFromFileURLs(true);
+//        webSettings.setAllowFileAccess(true);
+//        webSettings.setAllowFileAccessFromFileURLs(true);
+//
+//        webSettings.useWideViewPort = true// 扩大比例的缩放
+//        webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING//自适应屏幕
+//        webSettings.loadWithOverviewMode = true
+//        webSettings.displayZoomControls = true//隐藏缩放工具
 
-        val webSettings = webView.getSettings()
-        //允许webview对文件的操作
-        webSettings.setAllowUniversalAccessFromFileURLs(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAllowFileAccessFromFileURLs(true);
-        if (needOp) {
-
-            if (Build.VERSION.SDK_INT >= 19) {
-                webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
-            }
-            if (Build.VERSION.SDK_INT >= 19) {
-                webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
-            } else {
-                webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
-            }
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
-            webView.setLayerType(View.LAYER_TYPE_NONE, null);
-            webSettings.javaScriptEnabled = true // 设置支持javascript脚本
-            //webSettings.setTextSize(WebSettings.TextSize.LARGEST)
-//        webSettings.setPluginState(WebSettings.PluginState.ON);
-            webSettings.setSupportZoom(true)// 设置可以支持缩放
-
-            /* webSettings.setUseWideViewPort(true);    //设置webview推荐使用的窗口，使html界面自适应屏幕
-             webSettings.setLoadWithOverviewMode(true);     //缩放至屏幕的大小*/
-
-            webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
-
-            webSettings.displayZoomControls = false//隐藏缩放工具
-            webSettings.useWideViewPort = true// 扩大比例的缩放
-
-            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
-            webSettings.loadWithOverviewMode = true
-
-            /* webSettings.databaseEnabled = true//
-             webSettings.savePassword = true//保存密码
-             webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
-
-             webView.setSaveEnabled(true)
-             webView.setKeepScreenOn(true)*/
-        }
+//        if (needOp) {
+//
+//            if (Build.VERSION.SDK_INT >= 19) {
+//                webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
+//            }
+//            if (Build.VERSION.SDK_INT >= 19) {
+//                webSettings.setLoadsImagesAutomatically(true)//图片自动缩放 打开
+//            } else {
+//                webSettings.setLoadsImagesAutomatically(false)//图片自动缩放 关闭
+//            }
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//                webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)//软件解码
+//            }
+//            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)//硬件解码
+//            webView.setLayerType(View.LAYER_TYPE_NONE, null);
+//            webSettings.javaScriptEnabled = true // 设置支持javascript脚本
+//            //webSettings.setTextSize(WebSettings.TextSize.LARGEST)
+////        webSettings.setPluginState(WebSettings.PluginState.ON);
+//            webSettings.setSupportZoom(true)// 设置可以支持缩放
+//
+//            /* webSettings.setUseWideViewPort(true);    //设置webview推荐使用的窗口，使html界面自适应屏幕
+//             webSettings.setLoadWithOverviewMode(true);     //缩放至屏幕的大小*/
+//
+//            webSettings.builtInZoomControls = true// 设置出现缩放工具 是否使用WebView内置的缩放组件，由浮动在窗口上的缩放控制和手势缩放控制组成，默认false
+//
+//            webSettings.displayZoomControls = false//隐藏缩放工具
+//
+//            webSettings.useWideViewPort = true// 扩大比例的缩放
+//            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN//自适应屏幕
+//            webSettings.loadWithOverviewMode = true
+//
+//            /* webSettings.databaseEnabled = true//
+//             webSettings.savePassword = true//保存密码
+//             webSettings.domStorageEnabled = true//是否开启本地DOM存储  鉴于它的安全特性（任何人都能读取到它，尽管有相应的限制，将敏感数据存储在这里依然不是明智之举），Android 默认是关闭该功能的。
+//
+//             webView.setSaveEnabled(true)
+//             webView.setKeepScreenOn(true)*/
+//        }
 
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -1810,74 +1882,97 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
             }
 
         }
-        webView.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-                isScaleInit = true
-                if (!needOp) {
-                    webViewScroll = false
-                }
-                webView.requestDisallowInterceptTouchEvent(webViewScroll)
-                return false
-            }
-        })
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                webView.loadUrl("javascript:window.HTMLOUT.getContentWidth(document.getElementsByTagName('html')[0].scrollWidth);");
-            }
+//        webView.setOnTouchListener(object : View.OnTouchListener {
+//            override fun onTouch(v: View, event: MotionEvent): Boolean {
+//                when(event.action) {
+//                    MotionEvent.ACTION_DOWN -> {
+//                        KLog.i("一个手指按下")
+//                    }
+//                    MotionEvent.ACTION_POINTER_DOWN -> {
+//                        KLog.i("另外一个手指按下")
+//                    }
+//                    MotionEvent.ACTION_UP -> {
+//                        KLog.i("唯一的一个手指放开")
+//                    }
+//                    MotionEvent.ACTION_POINTER_UP -> {
+//                        KLog.i("非第一个手指放开")
+//                    }
+//                    MotionEvent.ACTION_MOVE -> {
+//                        KLog.i("当有点在屏幕上移动")
+//                    }
+//                }
+//                isScaleInit = true
+//                if (!needOp) {
+//                    webViewScroll = false
+//                }
+//                webView.requestDisallowInterceptTouchEvent(false)
+//                return false
+//            }
+//        })
 
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                //view.loadUrl(url)
-                val intent = Intent()
-                intent.action = "android.intent.action.VIEW"
-                val url = Uri.parse(url)
-                intent.data = url
-                startActivity(intent)
-                return true
-            }
+        webView.webViewClient = K9WebViewClient.newInstance()
 
-            override fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float) {
-                var saleOld = oldScale
-                var sscaleNew = newScale
-                if (!isScaleInit) {
-                    newScaleInit = newScale
-                }
-                if (newScaleInit == newScale) {
-                    webViewScroll = false
-                } else {
-                    webViewScroll = true
-                }
-                Log.i("onScaleChanged", saleOld.toString() + "##" + sscaleNew.toString() + "##" + (saleOld - sscaleNew))
-                super.onScaleChanged(view, oldScale, newScale)
-            }
-
-            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
-                if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
-                        || error.getPrimaryError() == SslError.SSL_EXPIRED
-                        || error.getPrimaryError() == SslError.SSL_INVALID
-                        || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
-                    handler.proceed();
-                } else {
-                    handler.cancel();
-                }
-                super.onReceivedSslError(view, handler, error)
-            }
-
-            override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
-                KLog.i("ddddddd")
-                super.onReceivedHttpError(view, request, errorResponse)
-            }
-
-            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-                KLog.i("ddddddd")
-                super.onReceivedError(view, request, error)
-            }
-
-        }
+//        webView.webViewClient = object : WebViewClient() {
+//            override fun onPageFinished(view: WebView?, url: String?) {
+//                super.onPageFinished(view, url)
+//                webView.loadUrl("javascript:window.HTMLOUT.getContentWidth(document.getElementsByTagName('html')[0].scrollWidth);");
+//            }
+//
+//            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+//                //view.loadUrl(url)
+//                val intent = Intent()
+//                intent.action = "android.intent.action.VIEW"
+//                val url = Uri.parse(url)
+//                intent.data = url
+//                startActivity(intent)
+//                return true
+//            }
+//
+//            override fun onScaleChanged(view: WebView?, oldScale: Float, newScale: Float) {
+//                var saleOld = oldScale
+//                var sscaleNew = newScale
+//                if (!isScaleInit) {
+//                    newScaleInit = newScale
+//                }
+//                if (newScaleInit == newScale) {
+//                    webViewScroll = false
+//                } else {
+//                    webViewScroll = true
+//                }
+//                Log.i("onScaleChanged", saleOld.toString() + "##" + sscaleNew.toString() + "##" + (saleOld - sscaleNew))
+//                super.onScaleChanged(view, oldScale, newScale)
+//            }
+//
+//            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {
+//                if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
+//                        || error.getPrimaryError() == SslError.SSL_EXPIRED
+//                        || error.getPrimaryError() == SslError.SSL_INVALID
+//                        || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
+//                    handler.proceed();
+//                } else {
+//                    handler.cancel();
+//                }
+//                super.onReceivedSslError(view, handler, error)
+//            }
+//
+//            override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
+//                KLog.i("ddddddd")
+//                super.onReceivedHttpError(view, request, errorResponse)
+//            }
+//
+//            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+//                KLog.i("ddddddd")
+//                super.onReceivedError(view, request, error)
+//            }
+//
+//        }
         var URLText = "";
         Log.i("URLText", emailMeaasgeData!!.content)
         if (menu != "node") {
-            var headStr = "<head><style>body {font-family: Helvetica;font-size: 16px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style></head>"
+            var headStr = "<head>" +
+                    "<style>body {font-family: Helvetica;font-size: 20px;word-wrap: break-word;-webkit-text-size-adjust:none;-webkit-nbsp-mode: space;}pre {white-space: pre-wrap;}</style>" +
+                    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.8, minimum-scale=0.1, maximum-scale=1.5, user-scalable=yes\">" +
+                    "</head>"
             var iframeStr = "<iframe src='x-mailcore-msgviewloaded:' style='width: 0px; height: 0px; border: none;'></iframe>"
             iframeStr = ""
             if (emailMeaasgeData!!.originalText != null && emailMeaasgeData!!.originalText != "") {
@@ -1902,68 +1997,6 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                 webView.loadDataWithBaseURL(null, URLText, "text/html", "utf-8", null);
             }
         }
-        /* try {
-             if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
-             {
-
-                 var miContentSoucreBgeinIndex= 0
-                 var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
-                 if(miContentSoucreEndIndex == -1)
-                 {
-                     miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
-                 }
-                 var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
-                 if(beginIndex == -1)
-                 {
-                     beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
-                 }
-                 var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-                 var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
-                 var endIndex = confidantkeyBefore.indexOf("'></span>")
-                 var confidantkey = confidantkeyBefore.substring(14,endIndex)
-
-                 var confidantkeyArr = listOf<String>()
-                 var accountMi = ""
-                 var shareMiKey = ""
-                 var account =  String(RxEncodeTool.base64Decode(accountMi))
-                 if(confidantkey!!.contains("##"))
-                 {
-                     var confidantkeyList = confidantkey.split("##")
-                     for(item in confidantkeyList)
-                     {
-                         confidantkeyArr = item.split("&&")
-                         accountMi = confidantkeyArr.get(0)
-                         shareMiKey = confidantkeyArr.get(1)
-                         account =  String(RxEncodeTool.base64Decode(accountMi))
-                         if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
-                         {
-                             break;
-                         }
-                     }
-
-                 }else{
-                     confidantkeyArr = confidantkey.split("&&")
-                     accountMi = confidantkeyArr.get(0)
-                     shareMiKey = confidantkeyArr.get(1)
-                 }
-
-
-                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-                 val sourceContent = String(miContent)
-
-                 emailMeaasgeData!!.content = sourceContent;
-                 URLText = "<html><body>"+sourceContent+"</body></html>";
-                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-             }else{
-                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-             }
-         }catch (e:Exception)
-         {
-             e.printStackTrace();
-             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-         }*/
 
 
     }
@@ -3428,70 +3461,6 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View, PNRouterServic
                 webView.loadDataWithBaseURL(null, URLText, "text/html", "utf-8", null);
             }
         }
-        /* try {
-             if(emailMeaasgeData!!.content.contains("confidantKey") || emailMeaasgeData!!.content.contains("confidantkey"))
-             {
-
-                 var miContentSoucreBgeinIndex= 0
-                 var miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantkey=")
-                 if(miContentSoucreEndIndex == -1)
-                 {
-                     miContentSoucreEndIndex = emailMeaasgeData!!.content.indexOf("<span style='display:none' confidantKey=")
-                 }
-                 var beginIndex = emailMeaasgeData!!.content.indexOf("confidantkey='")
-                 if(beginIndex == -1)
-                 {
-                     beginIndex = emailMeaasgeData!!.content.indexOf("confidantKey='")
-                 }
-                 var miContentSoucreBase64 = emailMeaasgeData!!.content.substring(miContentSoucreBgeinIndex,miContentSoucreEndIndex)
-                 var confidantkeyBefore = emailMeaasgeData!!.content.substring(beginIndex,emailMeaasgeData!!.content.length)
-                 var endIndex = confidantkeyBefore.indexOf("'></span>")
-                 var confidantkey = confidantkeyBefore.substring(14,endIndex)
-
-                 var confidantkeyArr = listOf<String>()
-                 var accountMi = ""
-                 var shareMiKey = ""
-                 var account =  String(RxEncodeTool.base64Decode(accountMi))
-                 if(confidantkey!!.contains("##"))
-                 {
-                     var confidantkeyList = confidantkey.split("##")
-                     for(item in confidantkeyList)
-                     {
-                         confidantkeyArr = item.split("&&")
-                         accountMi = confidantkeyArr.get(0)
-                         shareMiKey = confidantkeyArr.get(1)
-                         account =  String(RxEncodeTool.base64Decode(accountMi))
-                         if(account != "" && account.contains(AppConfig.instance.emailConfig().account))
-                         {
-                             break;
-                         }
-                     }
-
-                 }else{
-                     confidantkeyArr = confidantkey.split("&&")
-                     accountMi = confidantkeyArr.get(0)
-                     shareMiKey = confidantkeyArr.get(1)
-                 }
-
-
-                 var aesKey = LibsodiumUtil.DecryptShareKey(shareMiKey);
-                 var miContentSoucreBase = RxEncodeTool.base64Decode(miContentSoucreBase64)
-                 val miContent = AESCipher.aesDecryptBytes(miContentSoucreBase, aesKey.toByteArray())
-                 val sourceContent = String(miContent)
-
-                 emailMeaasgeData!!.content = sourceContent;
-                 URLText = "<html><body>"+sourceContent+"</body></html>";
-                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-             }else{
-                 webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-             }
-         }catch (e:Exception)
-         {
-             e.printStackTrace();
-             webView.loadDataWithBaseURL(null,URLText,"text/html","utf-8",null);
-         }*/
-
-
     }
 
     fun doBackUp() {

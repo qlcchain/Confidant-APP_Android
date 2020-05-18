@@ -1,27 +1,26 @@
 package com.stratagile.pnrouter.ui.activity.main
 
-import android.app.KeyguardManager
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.hardware.fingerprint.FingerprintManager
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.content.pm.ProviderInfo
+import android.database.Cursor
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
+import android.support.v4.content.FileProvider
+import android.util.Log
 import android.view.View
-import com.google.gson.Gson
-import com.hyphenate.easeui.utils.PathUtils
-import com.jaeger.library.StatusBarUtil
-import com.smailnet.eamil.Utils.AESCipher
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.LocalFileMenu
-import com.stratagile.pnrouter.db.LocalFileMenuDao
-import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
-import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.statusbar.StatusBarCompat
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
@@ -32,7 +31,11 @@ import com.stratagile.pnrouter.utils.*
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
 import java.io.File
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.net.URI
 import javax.inject.Inject
+
 
 /**
  * @author hzp
@@ -43,7 +46,8 @@ import javax.inject.Inject
 
 class SplashActivity : BaseActivity(), SplashContract.View {
     private var handler: Handler? = null
-//    private var myAuthCallback: MyAuthCallback? = null
+
+    //    private var myAuthCallback: MyAuthCallback? = null
 //    private var cancellationSignal: CancellationSignal? = null
     private var countDownTimerUtils: CountDownTimerUtils? = null
     override fun loginSuccees() {
@@ -169,135 +173,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         }
         AppConfig.instance.isOpenSplashActivity = true
         ConstantValue.isGooglePlayServicesAvailable = SystemUtil.isGooglePlayServicesAvailable(this)
-//        var localMessageList = AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.loadAll()
-//        for (item in localMessageList) {
-//            if (item.timeStamp == null || item.timeStamp == 0L) {
-//                item.setTimeStamp(DateUtil.getDateTimeStame(item.date))
-//                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
-//            }
-//            if (item.sortId == null || item.sortId == 0L) {
-//                item.sortId = item.msgId.toLong();
-//                AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.update(item)
-//            }
-//        }
-//        if (!BuildConfig.DEBUG) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                try {
-//                    val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
-//                    if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
-//                        try {
-//                            myAuthCallback = MyAuthCallback(handler)
-//                            val cryptoObjectHelper = CryptoObjectHelper()
-//                            if (cancellationSignal == null) {
-//                                cancellationSignal = CancellationSignal()
-//                            }
-//                            fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
-//                                    myAuthCallback, null)
-//                            ConstantValue.notNeedVerify = false
-//                            var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-//                            if (fingerprintSwitchFlag == "-1") {
-//                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-//                            }
-//                            if (cancellationSignal != null) {
-//                                cancellationSignal?.cancel()
-//                                cancellationSignal = null
-//                            }
-//                        } catch (e: Exception) {
-//                            if (cancellationSignal != null) {
-//                                cancellationSignal?.cancel()
-//                                cancellationSignal = null
-//                            }
-//                            ConstantValue.notNeedVerify = true
-//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                        }
-//
-//                    } else {
-//                        try {
-//                            var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-//                            if (!mKeyguardManager.isKeyguardSecure()) {
-//                                KLog.i("没有设置密码。。。。")
-//                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                            } else {
-//                                var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-//                                if (fingerprintSwitchFlag == "-1") {
-//                                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-//                                }
-//                            }
-//                            ConstantValue.notNeedVerify = false
-//                        } catch (e: Exception) {
-//                            ConstantValue.notNeedVerify = true
-//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                        }
-//
-//                    }
-//
-//                } catch (e: Exception) {
-//                    ConstantValue.notNeedVerify = true
-//                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                }
-//
-//            } else {
-//                try {
-//                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-//                    if (!mKeyguardManager.isKeyguardSecure()) {
-//                        KLog.i("没有设置密码。。。。")
-//                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                    } else {
-//                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-//                        if (fingerprintSwitchFlag == "-1") {
-//                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
-//                        }
-//                    }
-//                    ConstantValue.notNeedVerify = false
-//                } catch (e: Exception) {
-//                    ConstantValue.notNeedVerify = true
-//                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
-//                }
-//            }
-//        }
-//        KLog.i("SplashActivityAAAA：initData00")
-//        LogUtil.addLog("app version :" + BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
-//        var this_ = this
-//        handler = object : Handler() {
-//            override fun handleMessage(msg: Message) {
-//                super.handleMessage(msg)
-//                when (msg.what) {
-//                    MyAuthCallback.MSG_UPD_DATA -> {
-//                        var obj: String = msg.obj.toString()
-//                        if (!obj.equals("")) {
-//                            var objArray = obj.split("##")
-//                            var index = 0;
-//                            for (item in objArray) {
-//                                if (!item.equals("")) {
-//                                    var udpData = AESCipher.aesDecryptString(objArray[index], "slph\$%*&^@-78231")
-//                                    var udpRouterArray = udpData.split(";")
-//
-//                                    if (udpRouterArray.size > 1) {
-//                                        println("ipdizhi:" + udpRouterArray[1] + " ip: " + udpRouterArray[0])
-//                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-//                                        if (ConstantValue.currentRouterId.equals(udpRouterArray[1])) {
-//                                            ConstantValue.currentRouterIp = udpRouterArray[0]
-//                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-//                                            ConstantValue.port = ":18006"
-//                                            ConstantValue.filePort = ":18007"
-//                                            break;
-//                                        }
-//
-//                                    }
-//                                }
-//                                index++
-//                            }
-//                            if (ConstantValue.currentRouterIp != null && !ConstantValue.currentRouterIp.equals("")) {
-//                                ConstantValue.curreantNetworkType = "WIFI"
-//                            }
-//                        }
-//
-//                    }
-//                }
-//            }
-//        }
-//        MobileSocketClient.getInstance().init(handler, this)
         KLog.i("SplashActivityAAAA：initData0011")
         mPresenter.getPermission()
         KLog.i("SplashActivityAAAA：initData001122")

@@ -378,6 +378,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 startActivity(intent)*/
                 UserDataManger.curreantfriendUserData = userInfo
                 startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo?.userId))
+                FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CHAT_SEND_TEXT)
             } else if (itStatus.friendLocalStatus == 3) {
                 acceptFriend()
             }
@@ -486,6 +487,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
      * 删除好友
      */
     fun deleteFriend() {
+        FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CONTACT_DEL)
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
 //        var delFriendCmdReq = DelFriendCmdReq(userId!!, userInfo!!.userId)
         UserProvider.getInstance().deleteFriend(userId!!, userInfo!!.userId)
@@ -581,6 +583,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
 
     fun addFriend() {
+        FireBaseUtils.logEvent(this, FireBaseUtils.FIR_CHAT_ADD_FRIEND)
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         UserProvider.getInstance().addFriend(selfUserId!!, nickName!!, userInfo!!.userId)

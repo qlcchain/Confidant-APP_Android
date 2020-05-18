@@ -118,6 +118,7 @@ import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FromChat;
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity;
+import com.stratagile.pnrouter.ui.activity.email.EmailSelectAttachmentActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupMembersActivity;
@@ -2592,7 +2593,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     break;
                 case ITEM_FILE:
                     //startActivityForResult(new Intent(getActivity(), FileChooseActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
-                    startActivityForResult(new Intent(getActivity(), SelectFileActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
+                    startActivityForResult(new Intent(getActivity(), EmailSelectAttachmentActivity.class), REQUEST_CODE_FILE);
+//                    startActivityForResult(new Intent(getActivity(), SelectFileActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
                     break;
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();

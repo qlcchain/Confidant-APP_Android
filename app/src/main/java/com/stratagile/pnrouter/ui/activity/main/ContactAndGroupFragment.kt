@@ -266,7 +266,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
     var toReduceList: ArrayList<UserEntity>? = null
 
     var fromId: String? = null
-    var message: EMMessage? = null
+//    var message: EMMessage? = null
     var refreshEnable1 = true
     var routerId: String? = null
     var onViewCreated = false;

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.stratagile.pnrouter">
+
     <permission
         android:name="${applicationId}.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
@@ -10,12 +11,13 @@
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <!-- Optional for location -->
-<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
-<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />&lt;!&ndash; Android Q后台定位权限&ndash;&gt;-->
+        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />&lt;!&ndash; Android Q后台定位权限&ndash;&gt;-->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,9 +31,9 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-<!--    <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
-<!--    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />-->
-<!--    <uses-permission android:name="android.permission.WRITE_SETTINGS" />-->
+    <!--    <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+    <!--    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />-->
+    <!--    <uses-permission android:name="android.permission.WRITE_SETTINGS" />-->
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -47,7 +49,7 @@
     <!-- 接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 ${PACKAGE_NAME} 要替换上您应用的包名 -->
     <permission
         android:name="${applicationId}.permission.PROCESS_PUSH_MSG"
-        android:protectionLevel="signatureOrSystem"/>
+        android:protectionLevel="signatureOrSystem" />
 
     <!--接收PUSH TOKEN的广播以及PUSH消息需要定义该权限 ${PACKAGE_NAME} 要替换上您应用的包名 -->
     <uses-permission android:name="${applicationId}.permission.PROCESS_PUSH_MSG" />
@@ -69,9 +71,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme.Base"
         tools:replace="android:allowBackup">
         <activity
@@ -85,12 +87,17 @@
             </intent-filter>
             <intent-filter>
                 <!--协议部分，随便设置-->
-                <data android:scheme="xl" android:host="pnrouter" android:path="/openpnrouter" android:port="8888"/>
+                <data
+                    android:host="pnrouter"
+                    android:path="/openpnrouter"
+                    android:port="8888"
+                    android:scheme="xl" />
                 <!--下面这几行也必须得设置-->
-                <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
         </activity>
         <!--<service
             android:name="chat.tox.antox.tox.ToxService"
@@ -106,13 +113,13 @@
             android:name=".ui.activity.main.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        <!--<intent-filter>
-            <action android:name="android.intent.action.SEND"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-            <data android:mimeType="*/*"/>
-        </intent-filter>-->
-
+            android:theme="@style/SplashTheme"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.register.RegisterActivity"
@@ -120,8 +127,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.activity.main.SearchActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.test.TestJPushActivity"
             android:screenOrientation="portrait">
@@ -341,58 +347,57 @@
         <activity
             android:name=".ui.activity.main.SettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.group.GroupChatsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.group.CreateGroupActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.selectfriend.SelectFriendCreateGroupActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.group.RemoveGroupMemberActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.user.PrivacyActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activity.group.GroupChatsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.group.CreateGroupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.selectfriend.SelectFriendCreateGroupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.group.RemoveGroupMemberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.user.PrivacyActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.activity.email.EmailLoginActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.ContactsEncryptionActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionListActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionNodelListActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.SMSEncryptionNodelSecondActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.encryption.WexinChatActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
-                <data android:mimeType="*/*"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.ALTERNATIVE"/>
-                <category android:name="android.intent.category.ALTERNATIVE_SELECTED"/>
+                <data android:mimeType="*/*" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <category android:name="android.intent.category.ALTERNATIVE_SELECTED" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.activity.encryption.ShowZipInfoActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.activity.email.EmailMainActivity"
             android:screenOrientation="portrait" />
@@ -410,7 +415,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.email.EmailInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name=".ui.activity.email.EmailEditActivity"
             android:screenOrientation="portrait" />
@@ -449,17 +456,17 @@
         <!-- Rich push 核心功能 since 2.0.6-->
         <activity
             android:name="cn.jpush.android.ui.PopWinActivity"
-            android:theme="@style/MyDialogStyle"
-            android:exported="false">
-        </activity>
+            android:exported="false"
+            android:theme="@style/MyDialogStyle"></activity>
         <!-- Required SDK核心功能-->
         <activity
             android:name="cn.jpush.android.ui.PushActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="cn.jpush.android.ui.PushActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="${applicationId}" />
             </intent-filter>
@@ -469,8 +476,8 @@
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
         <service
             android:name="cn.jpush.android.service.PushService"
-            android:process=":pushcore"
-            android:exported="false">
+            android:exported="false"
+            android:process=":pushcore">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -481,11 +488,10 @@
 
         <!-- since 3.0.9 Required SDK 核心功能-->
         <provider
-            android:authorities="${applicationId}.DataProvider"
             android:name="cn.jpush.android.service.DataProvider"
-            android:process=":pushcore"
+            android:authorities="${applicationId}.DataProvider"
             android:exported="false"
-            />
+            android:process=":pushcore" />
 
 
         <provider
@@ -498,9 +504,9 @@
                 android:resource="@xml/file_path" />
         </provider>
         <!-- 设置环信应用的appkey -->
-      <!--  <meta-data
-            android:name="channel"
-            android:value="${APP_CHANNEL_VALUE}"/>-->
+        <!--  <meta-data
+              android:name="channel"
+              android:value="${APP_CHANNEL_VALUE}"/>-->
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="easemob-demo#chatdemoui" />
@@ -509,7 +515,8 @@
             android:name="com.hyphenate.chat.EMChatService"
             android:exported="true" />
         <service
-            android:name=".screencapture.FloatWindowsService" android:exported="false"/>
+            android:name=".screencapture.FloatWindowsService"
+            android:exported="false" />
 
         <!-- 声明sdk所需的receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
@@ -601,8 +608,8 @@
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
         <service
             android:name="cn.jpush.android.service.PushService"
-            android:process=":pushcore"
-            android:exported="false">
+            android:exported="false"
+            android:process=":pushcore">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -610,6 +617,7 @@
                 <action android:name="cn.jpush.android.intent.PUSH_TIME" />
             </intent-filter>
         </service>
+
         <receiver
             android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
             android:exported="true">
@@ -649,15 +657,28 @@
         </receiver>
         <!--集成华为推送-->
 
-        <activity android:name=".ui.activity.group.GroupInfoActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.group.RemoveGroupDetailMemberActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.group.GroupMembersActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.router.SelectCircleActivity" android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.group.GroupInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.group.RemoveGroupDetailMemberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.group.GroupMembersActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.router.SelectCircleActivity"
+            android:screenOrientation="portrait" />
         <!--<activity android:name=".ui.activity.user.UserInfoActaivity" />-->
-        <activity android:name=".ui.activity.main.WebViewActivity" android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.file.SelectFileActivity" android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".ui.activity.main.WebViewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.file.SelectFileActivity"
+            android:screenOrientation="portrait" />
 
 
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
@@ -675,10 +696,9 @@
 
         <!-- since 3.1.0 Required SDK 核心功能-->
         <provider
-            android:authorities="${applicationId}.DownloadProvider"
             android:name="cn.jpush.android.service.DownloadProvider"
-            android:exported="true"
-            />
+            android:authorities="${applicationId}.DownloadProvider"
+            android:exported="true" />
 
         <!-- Required SDK核心功能-->
         <receiver
@@ -703,14 +723,16 @@
         </receiver>
 
         <!-- Required SDK核心功能-->
-        <receiver android:name="cn.jpush.android.service.AlarmReceiver" android:exported="false"/>
+        <receiver
+            android:name="cn.jpush.android.service.AlarmReceiver"
+            android:exported="false" />
 
 
         <!-- User defined.  For test only  用户自定义的广播接收器-->
         <receiver
             android:name=".reciver.MyReceiver"
-            android:exported="false"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTRATION" /> <!--Required  用户注册SDK的intent-->
                 <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" /> <!--Required  用户接收SDK消息的intent-->
@@ -720,7 +742,6 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
-
 
 
         <!-- User defined.  For test only  用户自定义接收消息器,3.0.7开始支持,目前新tag/alias接口设置结果会在该广播接收器对应的方法中回调-->
@@ -743,11 +764,16 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.main.ShareFileActivity" >
+        </activity>
+        <activity android:name=".ui.activity.email.EmailSelectAttachmentActivity" />
+        <activity android:name=".ui.activity.email.EmailFileAttachmentShowActivity" />
 
         <!-- since 3.3.0 Required SDK 核心功能-->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->
         <!--User defined.  For test only 继承自cn.jpush.android.service.JCommonService-->
-        <service android:name=".data.service.PushService"
+        <service
+            android:name=".data.service.PushService"
             android:process=":pushcore">
             <intent-filter>
                 <action android:name="cn.jiguang.user.service.action" />
@@ -755,8 +781,12 @@
         </service>
 
         <!-- Required  . Enable it you can get statistics data with channel -->
-        <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
-        <meta-data android:name="JPUSH_APPKEY" android:value="590fe4b2a75e8f169cab50fd" /> <!--  </>值来自开发者平台取得的AppKey-->
+        <meta-data
+            android:name="JPUSH_CHANNEL"
+            android:value="developer-default" />
+        <meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="590fe4b2a75e8f169cab50fd" /> <!--  </>值来自开发者平台取得的AppKey-->
         <meta-data
             android:name="push_kit_auto_init_enabled"
             android:value="true" />
@@ -785,6 +815,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+
+        <!--        <meta-data-->
+        <!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+        <!--            android:value="@string/default_notification_channel_id" />-->
 
     </application>
 

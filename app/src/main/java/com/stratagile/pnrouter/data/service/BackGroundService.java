@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.data.service;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,10 +11,17 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.socks.library.KLog;
@@ -37,6 +45,7 @@ import okhttp3.Response;
 import static android.app.Notification.PRIORITY_MAX;
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
+import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
 
 
 /**

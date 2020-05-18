@@ -180,6 +180,7 @@ public class EmailReceiveClient {
     }
     /**
      * 使用imap协议接收历史邮件，接收完毕并切回主线程
+     * 测试页面的拉邮件的方法
      * @param getReceiveCallback
      */
     public void imapReceiveMoreAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback, final String menu, final int beginIndex, final int pageSize,final int lastTotalCount){

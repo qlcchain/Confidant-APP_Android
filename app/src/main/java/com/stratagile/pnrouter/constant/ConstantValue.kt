@@ -116,6 +116,7 @@ object ConstantValue {
     var mJiGuangRegId = ""
     //        var pushURL = "http://47.96.76.184:9000/v1/pareg"
     var pushURL = "https://pprouter.online:9001/v1/pareg"
+//    var pushURL = "https://47.244.138.61:9001/v1/pareg/appPushRegHashGet"
     var loginOut = false//是否登出
     var logining = false//登录状态
     var freindStatus = 0
@@ -141,6 +142,7 @@ object ConstantValue {
     var waitAddFreind = "";
 
     var firstOpenApp = "firstOpenApp"
+    var fcmToken = ""
     //1：qq企业邮箱
     //2：qq邮箱
     //3：163邮箱

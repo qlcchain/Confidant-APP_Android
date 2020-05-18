@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.entity.events.BadgeUnRead
 import com.stratagile.pnrouter.entity.events.ChangFragmentMenu
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
@@ -52,6 +53,8 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgePagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeRule
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.ArrayList
 
 /**
@@ -68,28 +71,44 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
     lateinit var commonNavigator : CommonNavigator
     private var conversationListFragment: EaseConversationListFragment? = null
     private var emailMessageFragment: EmailMessageFragment? = null
-
+    lateinit var dotViewe : View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         commonNavigator = CommonNavigator(this.activity)
+        EventBus.getDefault().register(this)
         //commonNavigator.setAdjustMode(true)
         var view = inflater.inflate(R.layout.activity_chat_email, null);
         return view
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun changeUnreadCount(badgeUnRead: BadgeUnRead) {
+        KLog.i("未读数量为：" + badgeUnRead.unReadCount)
+        if (badgeUnRead.unReadCount > 0) {
+            dotViewe.visibility = View.VISIBLE
+        } else {
+            dotViewe.visibility = View.GONE
+        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
         emailMessageFragment = EmailMessageFragment()
         var titles = ArrayList<String>()
-        titles.add(getString(R.string.Message))
         titles.add(getString(R.string.Email))
+        titles.add(getString(R.string.Message))
         var icon = ArrayList<Drawable>()
-        icon.add(getResources().getDrawable(R.mipmap.tabbar_circle_selected))
         icon.add(getResources().getDrawable(R.mipmap.tabbar_email_selected))
+        icon.add(getResources().getDrawable(R.mipmap.tabbar_circle_selected))
         commonNavigator.isAdjustMode = true
         viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
-                if (position == 0) {
+                if (position == 1) {
                     val args = Bundle()
                     args.putString("from", "")
                     conversationListFragment!!.arguments = args
@@ -121,7 +140,8 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
                 var view = layoutInflater.inflate(R.layout.main_indicator_layout, null, false)
                 var ivAvatar = view.findViewById<ImageView>(R.id.ivAvatar)
                 var tvContent = view.findViewById<TextView>(R.id.tvContent)
-                if (index == 0) {
+                if (index == 1) {
+                    dotViewe = view.findViewById<View>(R.id.dotViewe)
                     ivAvatar.setImageResource(R.mipmap.tabbar_circle_selected)
                     tvContent.text = getString(R.string.Message)
                 } else {
